@@ -68,17 +68,21 @@ export default function SellerFeatures() {
 							key={index}
 							className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300"
 						>
-							<div className="w-16 h-16 bg-orange-100 p-2 rounded-full flex items-center justify-center mb-4">
-								<img src={feature.icon.src} alt="Banner" className="" />
-							</div>
+                                                        <div className="w-16 h-16 bg-orange-100 p-2 rounded-full flex items-center justify-center mb-4">
+                                                                <img src={feature.icon.src} alt={feature.title} className="" />
+                                                        </div>
 							<h3 className="text-xl font-bold text-gray-900 mb-2">
 								{feature.title}
 							</h3>
 							<p className="text-gray-600 mb-4">{feature.description}</p>
 
-							{feature.img && (
-								<img src={feature.img.src} className="w-auto mx-auto h-[300px]" />
-							)}
+                                                        {feature.img && (
+                                                                <img
+                                                                        src={feature.img.src}
+                                                                        alt={feature.title}
+                                                                        className="w-auto mx-auto h-[300px]"
+                                                                />
+                                                        )}
 						</div>
 					))}
 				</div>
@@ -86,14 +90,16 @@ export default function SellerFeatures() {
 				<div className="flex flex-col lg:flex-row justify-between bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300 mb-10">
 					<div>
 						<div className="w-20 h-20 bg-orange-100 p-2 rounded-full flex items-center justify-center mb-6">
-							<img src={features[2].icon.src} alt="" />
+                                                        <img src={features[2].icon.src} alt={features[2].title} />
 						</div>
 						<h3 className="text-xl font-bold text-gray-900 mb-4">
 							{features[2].title}
 						</h3>
 						<p className="text-gray-600">{features[2].description}</p>
 					</div>
-					{features[2].img && <img src={features[2].img.src} />}
+                                        {features[2].img && (
+                                                <img src={features[2].img.src} alt={features[2].title} />
+                                        )}
 				</div>
 
 				<div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-10">
@@ -103,13 +109,15 @@ export default function SellerFeatures() {
 							className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300"
 						>
 							<div className="w-16 h-16 bg-orange-100 p-2 rounded-full flex items-center justify-center mb-6">
-								<img src={feature.icon.src} alt="" />
+                                                                <img src={feature.icon.src} alt={feature.title} />
 							</div>
 							<h3 className="text-xl font-bold text-gray-900 mb-4">
 								{feature.title}
 							</h3>
 							<p className="text-gray-600">{feature.description}</p>
-							{feature.img && <img src={feature.img.src} />}
+                                                        {feature.img && (
+                                                                <img src={feature.img.src} alt={feature.title} />
+                                                        )}
 						</div>
 					))}
 				</div>
