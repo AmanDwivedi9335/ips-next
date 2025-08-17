@@ -535,9 +535,11 @@ const SidebarMenuBadge = React.forwardRef(({ className, ...props }, ref) => (
 SidebarMenuBadge.displayName = "SidebarMenuBadge"
 
 const SidebarMenuSkeleton = React.forwardRef(({ className, showIcon = false, ...props }, ref) => {
-  // Random width between 50 to 90%.
-  const width = React.useMemo(() => {
-    return `${Math.floor(Math.random() * 40) + 50}%`;
+  // Random width between 50 to 90% generated on the client to avoid hydration mismatches.
+  const [width, setWidth] = React.useState("80%")
+
+  React.useEffect(() => {
+    setWidth(`${Math.floor(Math.random() * 40) + 50}%`)
   }, [])
 
   return (
