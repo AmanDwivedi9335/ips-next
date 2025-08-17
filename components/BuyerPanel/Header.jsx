@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import Logo from "@/public/SafetyLogo.png";
+import Logo from "@/public/ipslogo.png";
 
 import { Button } from "@/components/ui/button";
 import { Menu, ShoppingCart, Heart, User, X } from "lucide-react";
