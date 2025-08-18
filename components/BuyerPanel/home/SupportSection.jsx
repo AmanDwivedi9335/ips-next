@@ -13,12 +13,12 @@ export default function SupportSection() {
 		{
 			icon: Headphones,
 			title: "Give Us A Call",
-			description: "+91 9945234161",
+			description: "+91 7999704487",
 		},
 		{
 			icon: Heart,
 			title: "Email Us",
-			description: "hello@safetyonline.in",
+			description: "info@industrialprintsolutions.in",
 		},
 		{
 			icon: Shield,

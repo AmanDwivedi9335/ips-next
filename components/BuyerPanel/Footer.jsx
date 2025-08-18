@@ -10,7 +10,7 @@ export default function Footer() {
 	const footerSections = {
 		support: {
 			title: "Support",
-			items: ["hello@safetyonline.in", "9945234161"],
+			items: ["info@industrialprintsolutions.in", "7999704487"],
 		},
 		account: {
 			title: "Account",
@@ -30,9 +30,9 @@ export default function Footer() {
 					<div className="lg:col-span-1">
 						<h3 className="text-xl font-bold mb-4">Exclusive</h3>
 						<h4 className="text-lg mb-4">Subscribe</h4>
-						<p className="text-gray-400 mb-6">
+						{/* <p className="text-gray-400 mb-6">
 							Get 10% off on your first order
-						</p>
+						</p> */}
 						<div className="flex">
 							<Input
 								placeholder="Enter your email"
@@ -102,7 +102,7 @@ export default function Footer() {
 					{/* Download App */}
 					<div>
 						<h3 className="text-xl font-bold mb-4">Download App</h3>
-						<p className="text-gray-400 mb-4">Save $3 with App New User Only</p>
+						{/* <p className="text-gray-400 mb-4">Save $3 with App New User Only</p> */}
 						<div className="flex flex-col sm:flex-row lg:flex-col xl:flex-row space-y-4 sm:space-y-0 sm:space-x-4 lg:space-x-0 lg:space-y-4 xl:space-y-0 xl:space-x-4 mb-6">
 							<Image
 								src={Barcode}
@@ -137,7 +137,7 @@ export default function Footer() {
 				</div>
 
 				<div className="border-t border-white/20 mt-8 md:mt-12 pt-8 text-center text-gray-400">
-					<p>© Copyright Rimel 2022. All right reserved</p>
+					<p>© Copyright Industrial Print Solutions 2025. All right reserved</p>
 				</div>
 			</div>
 		</footer>

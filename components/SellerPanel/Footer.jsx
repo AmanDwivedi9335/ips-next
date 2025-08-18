@@ -8,8 +8,8 @@ export default function Footer() {
 		support: {
 			title: "Support",
 			links: [
-				{ label: "help@safetyonline.in", href: "mailto:help@safetyonline.in" },
-				{ label: "9945234161", href: "#" },
+				{ label: "info@industrialprintsolutions.in", href: "mailto:info@industrialprintsolutions.in" },
+				{ label: "7999704487", href: "#" },
 			],
 		},
 		account: {
@@ -67,7 +67,7 @@ export default function Footer() {
 						<div className="w-full">
 							<h4 className="text-lg font-semibold mb-4">Exclusive</h4>
 							<h4 className="text-lg font-semibold mb-4">Subscribe</h4>
-							<p className="mb-4">Get 10% off your first order</p>
+							{/* <p className="mb-4">Get 10% off your first order</p> */}
 							<div className="w-full flex">
 								<input
 									type="email"
@@ -102,7 +102,7 @@ export default function Footer() {
 						{/* Download App */}
 						<div>
 							<h3 className="text-xl font-bold mb-4">Download App</h3>
-							<p className="mb-4">Save $3 with App New User Only</p>
+							{/* <p className="mb-4">Save $3 with App New User Only</p> */}
 							<div className="flex flex-col sm:flex-row lg:flex-col xl:flex-row space-y-4 sm:space-y-0 sm:space-x-4 lg:space-x-0 lg:space-y-4 xl:space-y-0 xl:space-x-4 mb-6">
 								<Image
 									src={Barcode}
@@ -140,7 +140,7 @@ export default function Footer() {
 					{/* Copyright */}
 					<div className="border-t border-white/20 mt-12 pt-8 text-center">
 						<p className="font-semibold tracking-widexwhite">
-							© Copyright Safety Online 2025. All rights reserved
+							© Copyright Industrial Print Solutions 2025. All rights reserved
 						</p>
 					</div>
 				</div>

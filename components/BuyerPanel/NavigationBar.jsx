@@ -16,7 +16,7 @@ import { useProductStore } from "@/store/productStore.js";
 export default function NavigationBar({ isMenuOpen, onMenuClose }) {
        const [searchQuery, setSearchQuery] = useState("");
        const [categories, setCategories] = useState([
-               { id: "all", label: "All Products" },
+               { id: "all", label: "Categories" },
        ]);
        const router = useRouter();
        const {
@@ -38,7 +38,7 @@ export default function NavigationBar({ isMenuOpen, onMenuClose }) {
                                                label: cat.name,
                                        }));
                                        setCategories([
-                                               { id: "all", label: "All Products" },
+                                               { id: "all", label: "Categories" },
                                                ...mapped,
                                        ]);
                                }
@@ -53,7 +53,7 @@ export default function NavigationBar({ isMenuOpen, onMenuClose }) {
 
        const currentLabel =
                categories.find((cat) => cat.id === currentCategory)?.label ||
-               "All Products";
+               "Categories";
 
        const handleCategoryClick = (categoryId) => {
                setCurrentCategory(categoryId);
