@@ -1,4 +1,4 @@
-import { razorpay } from "@/lib/razorpay.js";
+import { getRazorpayInstance } from "@/lib/razorpay.js";
 import { NextResponse } from "next/server";
 
 export async function POST(req) {
@@ -20,7 +20,7 @@ export async function POST(req) {
 			payment_capture: 1,
 		};
 
-		const order = await razorpay.orders.create(options);
+                const order = await getRazorpayInstance().orders.create(options);
 
 		return NextResponse.json({
 			success: true,
