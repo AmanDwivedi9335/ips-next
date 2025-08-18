@@ -47,6 +47,7 @@ export default function NavigationBar({ isMenuOpen, onMenuClose }) {
                        }
                };
 
+
                fetchCategories();
        }, []);
 
@@ -54,11 +55,15 @@ export default function NavigationBar({ isMenuOpen, onMenuClose }) {
                categories.find((cat) => cat.id === currentCategory)?.label ||
                "All Products";
 
-	const handleCategoryClick = (categoryId) => {
-		setCurrentCategory(categoryId);
-		router.push(`/products?category=${categoryId}`);
-		if (onMenuClose) onMenuClose();
-	};
+       const handleCategoryClick = (categoryId) => {
+               setCurrentCategory(categoryId);
+               if (categoryId === "all") {
+                       router.push("/products");
+               } else {
+                       router.push(`/products?category=${categoryId}`);
+               }
+               if (onMenuClose) onMenuClose();
+       };
 
 	const handleSearch = (e) => {
 		e.preventDefault();
