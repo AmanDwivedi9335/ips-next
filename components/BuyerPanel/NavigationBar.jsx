@@ -47,6 +47,7 @@ export default function NavigationBar({ isMenuOpen, onMenuClose }) {
                        }
                };
 
+
                fetchCategories();
        }, []);
 
