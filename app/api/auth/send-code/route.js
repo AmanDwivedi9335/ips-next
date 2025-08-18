@@ -15,22 +15,30 @@ const transporter = nodemailer.createTransport({
 });
 
 export async function POST(req) {
-	await dbConnect();
-	const { email } = await req.json();
-	const code = generateCode();
+        try {
+                await dbConnect();
+                const { email } = await req.json();
+                const code = generateCode();
 
-	await Verification.findOneAndUpdate(
-		{ email },
-		{ code, expiresAt: new Date(Date.now() + 10 * 60 * 1000) },
-		{ upsert: true }
-	);
+                await Verification.findOneAndUpdate(
+                        { email },
+                        { code, expiresAt: new Date(Date.now() + 10 * 60 * 1000) },
+                        { upsert: true }
+                );
 
-	await transporter.sendMail({
-		from: process.env.MAIL_USER,
-		to: email,
-		subject: "Verification Code",
-		text: `Your verification code is ${code}`,
-	});
+                await transporter.sendMail({
+                        from: process.env.MAIL_USER,
+                        to: email,
+                        subject: "Verification Code",
+                        text: `Your verification code is ${code}`,
+                });
 
-	return Response.json({ message: "Verification code sent" });
+                return Response.json({ message: "Verification code sent" });
+        } catch (error) {
+                console.error("Error sending verification code:", error);
+                return Response.json(
+                        { message: "Failed to send verification code" },
+                        { status: 500 }
+                );
+        }
 }
