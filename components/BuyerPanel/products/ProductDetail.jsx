@@ -192,7 +192,7 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
 									src={
 										product.images?.[selectedImage] ||
 										product.image ||
-										"https://res.cloudinary.com/drjt9guif/image/upload/v1755168534/safetyonline_fks0th.png"
+										"https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png"
 									}
 									alt={product.name}
 									fill
@@ -218,7 +218,7 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
 										<Image
 											src={
 												image ||
-												"https://res.cloudinary.com/drjt9guif/image/upload/v1755168534/safetyonline_fks0th.png"
+												"https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png"
 											}
 											alt={`${product.name} view ${index + 1}`}
 											fill

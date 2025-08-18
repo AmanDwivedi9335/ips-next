@@ -147,7 +147,7 @@ export const useCartStore = create(
 									originalPrice: item.product.price,
 									image:
 										item.product.images?.[0] ||
-										"https://res.cloudinary.com/drjt9guif/image/upload/v1755168534/safetyonline_fks0th.png",
+										"https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png",
 									quantity: item.quantity,
 									inStock: item.product.inStock,
 								}));
@@ -216,7 +216,7 @@ export const useCartStore = create(
 									originalPrice: item.product.price,
 									image:
 										item.product.images?.[0] ||
-										"https://res.cloudinary.com/drjt9guif/image/upload/v1755168534/safetyonline_fks0th.png",
+										"https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png",
 									quantity: item.quantity,
 									inStock: item.product.inStock,
 								}));
@@ -267,7 +267,7 @@ export const useCartStore = create(
 									originalPrice: item.product.price,
 									image:
 										item.product.images?.[0] ||
-										"https://res.cloudinary.com/drjt9guif/image/upload/v1755168534/safetyonline_fks0th.png",
+										"https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png",
 									quantity: item.quantity,
 									inStock: item.product.inStock,
 								}));
@@ -356,7 +356,7 @@ export const useCartStore = create(
 								originalPrice: item.product.price,
 								image:
 									item.product.images?.[0] ||
-									"https://res.cloudinary.com/drjt9guif/image/upload/v1755168534/safetyonline_fks0th.png",
+									"https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png",
 								quantity: item.quantity,
 								inStock: item.product.inStock,
 							}));

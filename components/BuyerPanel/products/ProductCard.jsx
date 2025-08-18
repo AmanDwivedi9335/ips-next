@@ -53,7 +53,7 @@ export default function ProductCard({ product, viewMode = "grid" }) {
 								src={
 									product.images?.[0] ||
 									product.image ||
-									"https://res.cloudinary.com/drjt9guif/image/upload/v1755168534/safetyonline_fks0th.png"
+									"https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png"
 								}
 								alt={product.title}
 								fill
@@ -165,7 +165,7 @@ export default function ProductCard({ product, viewMode = "grid" }) {
 								src={
 									product.images?.[0] ||
 									product.image ||
-									"https://res.cloudinary.com/drjt9guif/image/upload/v1755168534/safetyonline_fks0th.png"
+									"https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png"
 								}
 								alt={product.title}
 								fill

@@ -653,7 +653,7 @@ export default function CheckoutPage() {
 									<Image
 										src={
 											item.productImage ||
-											"https://res.cloudinary.com/drjt9guif/image/upload/v1755168534/safetyonline_fks0th.png"
+											"https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png"
 										}
 										alt={item.productName}
 										fill

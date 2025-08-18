@@ -86,7 +86,7 @@ export async function GET(request) {
 					: product.discount,
 			image:
 				product.images?.[0] ||
-				"https://res.cloudinary.com/drjt9guif/image/upload/v1755168534/safetyonline_fks0th.png",
+				"https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png",
 			images: product.images || [],
 			gallery: product.images || [],
 			category: product.category,
