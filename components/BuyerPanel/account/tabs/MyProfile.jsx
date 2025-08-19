@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import {
@@ -36,23 +36,13 @@ const cardVariants = {
 
 export function MyProfile() {
         const [profile, setProfile] = useState({
-                firstName: "John",
-                lastName: "Doe",
-                email: "john.doe@example.com",
-                phone: "+1 (555) 123-4567",
+                firstName: "",
+                lastName: "",
+                email: "",
+                phone: "",
                 bio: "",
         });
-        const [addresses, setAddresses] = useState([
-                {
-                        tag: "home",
-                        name: "Home Address",
-                        street: "123 Main Street, Apt 4B",
-                        city: "New York",
-                        state: "NY",
-                        zipCode: "10001",
-                        country: "United States",
-                },
-        ]);
+        const [addresses, setAddresses] = useState([]);
         const [addressForm, setAddressForm] = useState({
                 tag: "home",
                 name: "",
@@ -64,6 +54,45 @@ export function MyProfile() {
         });
         const [showAddressForm, setShowAddressForm] = useState(false);
         const [editingIndex, setEditingIndex] = useState(null);
+        const [languages, setLanguages] = useState([]);
+        const [selectedLanguage, setSelectedLanguage] = useState("");
+
+        useEffect(() => {
+                const fetchData = async () => {
+                        try {
+                                const [profileRes, addressRes, languageRes] = await Promise.all([
+                                        fetch("/api/auth/me"),
+                                        fetch("/api/user/addresses"),
+                                        fetch("/api/languages"),
+                                ]);
+
+                                if (profileRes.ok) {
+                                        const { user } = await profileRes.json();
+                                        setProfile({
+                                                firstName: user?.firstName || "",
+                                                lastName: user?.lastName || "",
+                                                email: user?.email || "",
+                                                phone: user?.mobile || "",
+                                                bio: user?.bio || "",
+                                        });
+                                }
+
+                                if (addressRes.ok) {
+                                        const data = await addressRes.json();
+                                        setAddresses(data.addresses || []);
+                                }
+
+                                if (languageRes.ok) {
+                                        const data = await languageRes.json();
+                                        setLanguages(data.languages || []);
+                                }
+                        } catch (err) {
+                                console.error("Error loading profile data", err);
+                        }
+                };
+
+                fetchData();
+        }, []);
 
         const handleProfileChange = (e) => {
                 setProfile({ ...profile, [e.target.id]: e.target.value });
@@ -91,7 +120,7 @@ export function MyProfile() {
                 setShowAddressForm(false);
         };
 
-        const handleAddOrUpdateAddress = () => {
+        const handleAddOrUpdateAddress = async () => {
                 if (
                         !addressForm.name ||
                         !addressForm.street ||
@@ -105,10 +134,25 @@ export function MyProfile() {
                         const updated = [...addresses];
                         updated[editingIndex] = addressForm;
                         setAddresses(updated);
-                } else {
-                        setAddresses([...addresses, addressForm]);
+                        resetAddressForm();
+                        return;
                 }
-                resetAddressForm();
+
+                try {
+                        const res = await fetch("/api/user/addresses", {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify(addressForm),
+                        });
+
+                        if (res.ok) {
+                                const data = await res.json();
+                                setAddresses([...addresses, data.address]);
+                                resetAddressForm();
+                        }
+                } catch (err) {
+                        console.error("Failed to save address", err);
+                }
         };
 
         const handleEditAddress = (idx) => {
@@ -353,15 +397,22 @@ export function MyProfile() {
                                                 <div className="grid grid-cols-2 gap-4">
                                                         <div className="space-y-2">
                                                                 <Label htmlFor="language">Language</Label>
-                                                                <Select defaultValue="en">
+                                                                <Select
+                                                                        value={selectedLanguage}
+                                                                        onValueChange={setSelectedLanguage}
+                                                                >
                                                                         <SelectTrigger>
-                                                                                <SelectValue />
+                                                                                <SelectValue placeholder="Select language" />
                                                                         </SelectTrigger>
                                                                         <SelectContent>
-                                                                                <SelectItem value="en">English</SelectItem>
-                                                                                <SelectItem value="es">Spanish</SelectItem>
-                                                                                <SelectItem value="fr">French</SelectItem>
-                                                                                <SelectItem value="de">German</SelectItem>
+                                                                                {languages.map((lang) => (
+                                                                                        <SelectItem
+                                                                                                key={lang.code}
+                                                                                                value={lang.code}
+                                                                                        >
+                                                                                                {lang.name}
+                                                                                        </SelectItem>
+                                                                                ))}
                                                                         </SelectContent>
                                                                 </Select>
                                                         </div>
