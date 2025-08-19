@@ -1,24 +1,28 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
+        Card,
+        CardContent,
+        CardDescription,
+        CardHeader,
+        CardTitle,
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
+import { Input } from "@/components/ui/input";
 import {
-	Bell,
-	Mail,
-	MessageSquare,
-	Smartphone,
-	ShoppingCart,
-	CreditCard,
+        Bell,
+        Mail,
+        MessageSquare,
+        Smartphone,
+        ShoppingCart,
+        CreditCard,
+        Plus,
+        Trash2,
 } from "lucide-react";
 
 const cardVariants = {
@@ -33,7 +37,7 @@ const cardVariants = {
 	}),
 };
 
-const notificationCategories = [
+const initialCategories = [
 	{
 		title: "Order Updates",
 		description: "Get notified about your order status",
@@ -121,8 +125,39 @@ const notificationCategories = [
 ];
 
 export function NotificationSettings() {
-	return (
-		<div className="space-y-6">
+        const [categories, setCategories] = useState(initialCategories);
+        const [addingIndex, setAddingIndex] = useState(null);
+        const [newSetting, setNewSetting] = useState({ label: "", email: false, push: false, sms: false });
+
+        const handleToggle = (catIdx, setIdx, field) => {
+                const updated = [...categories];
+                updated[catIdx].settings[setIdx][field] = !updated[catIdx].settings[setIdx][field];
+                setCategories(updated);
+        };
+
+        const handleLabelChange = (catIdx, setIdx, value) => {
+                const updated = [...categories];
+                updated[catIdx].settings[setIdx].label = value;
+                setCategories(updated);
+        };
+
+        const handleDelete = (catIdx, setIdx) => {
+                const updated = [...categories];
+                updated[catIdx].settings.splice(setIdx, 1);
+                setCategories(updated);
+        };
+
+        const handleAddSetting = (catIdx) => {
+                if (!newSetting.label) return;
+                const updated = [...categories];
+                updated[catIdx].settings.push({ id: Date.now().toString(), ...newSetting });
+                setCategories(updated);
+                setNewSetting({ label: "", email: false, push: false, sms: false });
+                setAddingIndex(null);
+        };
+
+        return (
+                <div className="space-y-6">
 			{/* Notification Channels */}
 			<motion.div
 				custom={0}
@@ -187,7 +222,7 @@ export function NotificationSettings() {
 			</motion.div>
 
 			{/* Notification Categories */}
-			{notificationCategories.map((category, categoryIndex) => (
+                        {categories.map((category, categoryIndex) => (
 				<motion.div
 					key={category.title}
 					custom={categoryIndex + 1}
@@ -201,7 +236,7 @@ export function NotificationSettings() {
 								<category.icon className="h-5 w-5" />
 								{category.title}
 							</CardTitle>
-							<CardDescription>{category.description}</CardDescription>
+                                                        <CardDescription>{category.description}</CardDescription>
 						</CardHeader>
 						<CardContent>
 							<div className="space-y-4">
@@ -212,39 +247,126 @@ export function NotificationSettings() {
 									<div className="text-center">SMS</div>
 								</div>
 
-								{category.settings.map((setting) => (
-									<div
-										key={setting.id}
-										className="grid grid-cols-4 gap-4 items-center"
-									>
-										<div className="font-medium">{setting.label}</div>
-										<div className="flex justify-center">
-											<Switch defaultChecked={setting.email} />
-										</div>
-										<div className="flex justify-center">
-											<Switch defaultChecked={setting.push} />
-										</div>
-										<div className="flex justify-center">
-											<Switch defaultChecked={setting.sms} />
-										</div>
-									</div>
-								))}
-							</div>
-						</CardContent>
-					</Card>
-				</motion.div>
-			))}
+                                                                {category.settings.map((setting, setIdx) => (
+                                                                        <div
+                                                                                key={setting.id}
+                                                                                className="grid grid-cols-5 gap-4 items-center"
+                                                                        >
+                                                                                <Input
+                                                                                        value={setting.label}
+                                                                                        onChange={(e) =>
+                                                                                                handleLabelChange(categoryIndex, setIdx, e.target.value)
+                                                                                        }
+                                                                                />
+                                                                                <div className="flex justify-center">
+                                                                                        <Switch
+                                                                                                checked={setting.email}
+                                                                                                onCheckedChange={() =>
+                                                                                                        handleToggle(categoryIndex, setIdx, "email")
+                                                                                                }
+                                                                                        />
+                                                                                </div>
+                                                                                <div className="flex justify-center">
+                                                                                        <Switch
+                                                                                                checked={setting.push}
+                                                                                                onCheckedChange={() =>
+                                                                                                        handleToggle(categoryIndex, setIdx, "push")
+                                                                                                }
+                                                                                        />
+                                                                                </div>
+                                                                                <div className="flex justify-center">
+                                                                                        <Switch
+                                                                                                checked={setting.sms}
+                                                                                                onCheckedChange={() =>
+                                                                                                        handleToggle(categoryIndex, setIdx, "sms")
+                                                                                                }
+                                                                                        />
+                                                                                </div>
+                                                                                <div className="flex justify-end">
+                                                                                        <Button
+                                                                                                variant="ghost"
+                                                                                                size="sm"
+                                                                                                onClick={() => handleDelete(categoryIndex, setIdx)}
+                                                                                        >
+                                                                                                <Trash2 className="h-4 w-4" />
+                                                                                        </Button>
+                                                                                </div>
+                                                                        </div>
+                                                                ))}
+                                                                {addingIndex === categoryIndex && (
+                                                                        <div className="grid grid-cols-5 gap-4 items-center">
+                                                                                <Input
+                                                                                        value={newSetting.label}
+                                                                                        onChange={(e) =>
+                                                                                                setNewSetting({ ...newSetting, label: e.target.value })
+                                                                                        }
+                                                                                />
+                                                                                <div className="flex justify-center">
+                                                                                        <Switch
+                                                                                                checked={newSetting.email}
+                                                                                                onCheckedChange={() =>
+                                                                                                        setNewSetting({ ...newSetting, email: !newSetting.email })
+                                                                                                }
+                                                                                        />
+                                                                                </div>
+                                                                                <div className="flex justify-center">
+                                                                                        <Switch
+                                                                                                checked={newSetting.push}
+                                                                                                onCheckedChange={() =>
+                                                                                                        setNewSetting({ ...newSetting, push: !newSetting.push })
+                                                                                                }
+                                                                                        />
+                                                                                </div>
+                                                                                <div className="flex justify-center">
+                                                                                        <Switch
+                                                                                                checked={newSetting.sms}
+                                                                                                onCheckedChange={() =>
+                                                                                                        setNewSetting({ ...newSetting, sms: !newSetting.sms })
+                                                                                                }
+                                                                                        />
+                                                                                </div>
+                                                                                <div className="flex justify-end gap-2">
+                                                                                        <Button
+                                                                                                variant="outline"
+                                                                                                size="sm"
+                                                                                                onClick={() => {
+                                                                                                        setAddingIndex(null);
+                                                                                                        setNewSetting({ label: "", email: false, push: false, sms: false });
+                                                                                                }}
+                                                                                        >
+                                                                                                Cancel
+                                                                                        </Button>
+                                                                                        <Button size="sm" onClick={() => handleAddSetting(categoryIndex)}>
+                                                                                                Save
+                                                                                        </Button>
+                                                                                </div>
+                                                                        </div>
+                                                                )}
+                                                                <div className="flex justify-end pt-2">
+                                                                        <Button
+                                                                                size="sm"
+                                                                                variant="outline"
+                                                                                onClick={() => setAddingIndex(categoryIndex)}
+                                                                        >
+                                                                                <Plus className="h-4 w-4 mr-2" /> Add Setting
+                                                                        </Button>
+                                                                </div>
+                                                        </div>
+                                                </CardContent>
+                                        </Card>
+                                </motion.div>
+                        ))}
 
-			{/* Save Button */}
-			<motion.div
-				custom={notificationCategories.length + 1}
-				initial="hidden"
-				animate="visible"
-				variants={cardVariants}
-				className="flex justify-end"
-			>
-				<Button size="lg">Save Notification Settings</Button>
-			</motion.div>
-		</div>
-	);
+                        {/* Save Button */}
+                        <motion.div
+                                custom={categories.length + 1}
+                                initial="hidden"
+                                animate="visible"
+                                variants={cardVariants}
+                                className="flex justify-end"
+                        >
+                                <Button size="lg">Save Notification Settings</Button>
+                        </motion.div>
+                </div>
+        );
 }
