@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import BannerSettings from "@/components/AdminPanel/BannerSettings.jsx";
 
 export default function SettingsPage() {
 	const [settings, setSettings] = useState({
@@ -51,7 +52,7 @@ export default function SettingsPage() {
 				<h1 className="text-3xl font-bold text-gray-900">Settings</h1>
 			</motion.div>
 
-			<form onSubmit={handleSubmit} className="space-y-6">
+                        <form onSubmit={handleSubmit} className="space-y-6">
 				<Card>
 					<CardHeader>
 						<CardTitle>General Settings</CardTitle>
@@ -304,8 +305,10 @@ export default function SettingsPage() {
 							Update
 						</Button>
 					</CardContent>
-				</Card>
-			</form>
-		</div>
-	);
+                                </Card>
+                        </form>
+
+                        <BannerSettings />
+                </div>
+        );
 }
