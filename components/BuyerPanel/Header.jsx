@@ -5,7 +5,7 @@ import Link from "next/link";
 import Logo from "@/public/ipslogo.png";
 
 import { Button } from "@/components/ui/button";
-import { Menu, ShoppingCart, Heart, User, X } from "lucide-react";
+import { Menu, ShoppingCart, Heart, User, X, GraduationCap } from "lucide-react";
 import { useCartStore } from "@/store/cartStore";
 import MiniCart from "./cart/MiniCart";
 import {
@@ -47,26 +47,31 @@ export default function Header({ onMenuToggle, isMenuOpen }) {
 							</Button>
 						</div>
 
-						<div className="flex items-center space-x-2 md:space-x-4">
-							<Button
-								variant="ghost"
-								size="icon"
-								className="lg:hidden"
-								onClick={onMenuToggle}
-							>
-								{isMenuOpen ? (
-									<X className="h-6 w-6" />
-								) : (
-									<Menu className="h-6 w-6" />
-								)}
-							</Button>
+                                                <div className="flex items-center space-x-2 md:space-x-4">
+                                                        <Button
+                                                                variant="ghost"
+                                                                size="icon"
+                                                                className="lg:hidden"
+                                                                onClick={onMenuToggle}
+                                                        >
+                                                                {isMenuOpen ? (
+                                                                        <X className="h-6 w-6" />
+                                                                ) : (
+                                                                        <Menu className="h-6 w-6" />
+                                                                )}
+                                                        </Button>
 
-							<Link href="/" className="flex items-center space-x-2">
-								{/* <div className="h-8 w-20 lg:w-24 bg-gray-200 rounded flex items-center justify-center">
-									<span className="text-xs font-bold">LOGO</span>
-								</div> */}
-								<Image
-									src={Logo}
+                                                        <Link href="/lms" className="flex items-center space-x-2 text-sm font-medium">
+                                                                <GraduationCap className="h-5 w-5" />
+                                                                <span className="hidden sm:inline">Get training now</span>
+                                                        </Link>
+
+                                                        <Link href="/" className="flex items-center space-x-2">
+                                                                {/* <div className="h-8 w-20 lg:w-24 bg-gray-200 rounded flex items-center justify-center">
+                                                                        <span className="text-xs font-bold">LOGO</span>
+                                                                </div> */}
+                                                                <Image
+                                                                        src={Logo}
 									alt="Logo"
 									className="h-auto w-20 lg:w-24 object-cover"
 								/>
