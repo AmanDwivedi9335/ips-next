@@ -1,32 +1,40 @@
 "use client";
 
-import { useState } from "react";
+
+import { useEffect, useState } from "react";
+
 import { useBannerStore } from "@/store/bannerStore.js";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
 export default function BannerSettings() {
-        const { banners, addBanner, updateBanner, removeBanner } = useBannerStore();
-        const [newBanner, setNewBanner] = useState({ image: null, link: "" });
+        const { banners, fetchBanners, addBanner, updateBanner, removeBanner } =
+                useBannerStore();
+        const [newBanner, setNewBanner] = useState({ file: null, preview: null, link: "" });
 
-        const handleAdd = () => {
-                if (!newBanner.image) return;
-                addBanner({ image: newBanner.image, link: newBanner.link });
-                setNewBanner({ image: null, link: "" });
+        useEffect(() => {
+                fetchBanners();
+        }, [fetchBanners]);
+
+        const handleAdd = async () => {
+                if (!newBanner.file) return;
+                await addBanner({ file: newBanner.file, link: newBanner.link });
+                setNewBanner({ file: null, preview: null, link: "" });
+
         };
 
         const handleNewImage = (file) => {
                 if (file) {
-                        const url = URL.createObjectURL(file);
-                        setNewBanner((prev) => ({ ...prev, image: url }));
+                        const preview = URL.createObjectURL(file);
+                        setNewBanner((prev) => ({ ...prev, file, preview }));
                 }
         };
 
-        const handleImageChange = (id, file) => {
+        const handleImageChange = async (id, file) => {
                 if (file) {
-                        const url = URL.createObjectURL(file);
-                        updateBanner(id, { image: url });
+                        await updateBanner(id, { file });
+
                 }
         };
 
@@ -37,7 +45,8 @@ export default function BannerSettings() {
                         </CardHeader>
                         <CardContent className="space-y-4">
                                 {banners.map((banner) => (
-                                        <div key={banner.id} className="flex items-center gap-4">
+                                        <div key={banner._id} className="flex items-center gap-4">
+
                                                 <img
                                                         src={banner.image}
                                                         alt="banner"
@@ -45,19 +54,30 @@ export default function BannerSettings() {
                                                 />
                                                 <Input
                                                         value={banner.link}
-                                                        onChange={(e) => updateBanner(banner.id, { link: e.target.value })}
+                                                        onChange={(e) =>
+                                                                updateBanner(banner._id, {
+                                                                        link: e.target.value,
+                                                                })
+                                                        }
+
                                                         placeholder="Banner Link"
                                                 />
                                                 <Input
                                                         type="file"
                                                         accept="image/*"
                                                         onChange={(e) =>
-                                                                handleImageChange(banner.id, e.target.files?.[0])
+
+                                                                handleImageChange(
+                                                                        banner._id,
+                                                                        e.target.files?.[0]
+                                                                )
+
                                                         }
                                                 />
                                                 <Button
                                                         variant="destructive"
-                                                        onClick={() => removeBanner(banner.id)}
+                                                        onClick={() => removeBanner(banner._id)}
+
                                                 >
                                                         Delete
                                                 </Button>
@@ -65,9 +85,11 @@ export default function BannerSettings() {
                                 ))}
 
                                 <div className="pt-4 border-t space-y-2">
-                                        {newBanner.image && (
+
+                                        {newBanner.preview && (
                                                 <img
-                                                        src={newBanner.image}
+                                                        src={newBanner.preview}
+
                                                         alt="new banner preview"
                                                         className="w-32 h-16 object-cover rounded"
                                                 />
@@ -81,10 +103,17 @@ export default function BannerSettings() {
                                                 placeholder="Banner Link"
                                                 value={newBanner.link}
                                                 onChange={(e) =>
-                                                        setNewBanner((prev) => ({ ...prev, link: e.target.value }))
+                                                        setNewBanner((prev) => ({
+                                                                ...prev,
+                                                                link: e.target.value,
+                                                        }))
                                                 }
                                         />
-                                        <Button onClick={handleAdd} className="bg-green-600 hover:bg-green-700">
+                                        <Button
+                                                onClick={handleAdd}
+                                                className="bg-green-600 hover:bg-green-700"
+                                        >
+
                                                 Add Banner
                                         </Button>
                                 </div>
