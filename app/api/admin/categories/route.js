@@ -79,8 +79,8 @@ export async function POST(request) {
 	await dbConnect();
 
 	try {
-		const { name, description, icon, published, sortOrder } =
-			await request.json();
+                const { name, description, icon, published, sortOrder, parent } =
+                        await request.json();
 
 		if (!name || !description) {
 			return Response.json(
@@ -92,10 +92,11 @@ export async function POST(request) {
 		const category = new Category({
 			name,
 			description,
-			icon: icon || "",
-			published: published !== undefined ? published : true,
-			sortOrder: sortOrder || 0,
-		});
+                        icon: icon || "",
+                        published: published !== undefined ? published : true,
+                        sortOrder: sortOrder || 0,
+                        parent: parent || null,
+                });
 
 		await category.save();
 
@@ -123,7 +124,7 @@ export async function PUT(request) {
 	await dbConnect();
 
 	try {
-		const { categoryId, ...updateData } = await request.json();
+                const { categoryId, ...updateData } = await request.json();
 
 		if (!categoryId) {
 			return Response.json(

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,66 +20,17 @@ import { DeletePopup } from "@/components/AdminPanel/Popups/DeletePopup.jsx";
 import { AddLanguagePopup } from "@/components/AdminPanel/Popups/AddLanguagePopup.jsx";
 import { UpdateLanguagePopup } from "@/components/AdminPanel/Popups/UpdateLanguagePopup.jsx";
 import { BulkUpdateLanguagesPopup } from "@/components/AdminPanel/Popups/BulkUpdateLanguagesPopup.jsx";
-
-const languages = [
-	{
-		id: 1,
-		name: "Hindi",
-		isoCode: "HI",
-		flag: "🇮🇳",
-		published: true,
-	},
-	{
-		id: 2,
-		name: "Bangla",
-		isoCode: "Bn",
-		flag: "🇧🇩",
-		published: true,
-	},
-	{
-		id: 3,
-		name: "English",
-		isoCode: "En",
-		flag: "🇬🇧",
-		published: true,
-	},
-	{
-		id: 4,
-		name: "Spanish",
-		isoCode: "Es",
-		flag: "🇪🇸",
-		published: true,
-	},
-	{
-		id: 5,
-		name: "French",
-		isoCode: "Fr",
-		flag: "🇫🇷",
-		published: true,
-	},
-	{
-		id: 6,
-		name: "German",
-		isoCode: "De",
-		flag: "🇩🇪",
-		published: true,
-	},
-	{
-		id: 7,
-		name: "Chinese",
-		isoCode: "Zh",
-		flag: "🇨🇳",
-		published: true,
-	},
-];
+import { useAdminLanguageStore } from "@/store/adminLanguageStore.js";
 
 export default function LanguagesPage() {
-	const [searchQuery, setSearchQuery] = useState("");
-	const [selectedLanguages, setSelectedLanguages] = useState([]);
-	const [deletePopup, setDeletePopup] = useState({
-		open: false,
-		language: null,
-	});
+        const { languages, fetchLanguages, deleteLanguage } =
+                useAdminLanguageStore();
+        const [searchQuery, setSearchQuery] = useState("");
+        const [selectedLanguages, setSelectedLanguages] = useState([]);
+        const [deletePopup, setDeletePopup] = useState({
+                open: false,
+                language: null,
+        });
 	const [addPopup, setAddPopup] = useState(false);
 	const [updatePopup, setUpdatePopup] = useState({
 		open: false,
@@ -87,21 +38,25 @@ export default function LanguagesPage() {
 	});
 	const [bulkUpdatePopup, setBulkUpdatePopup] = useState(false);
 
-	const handleSelectAll = (checked) => {
-		if (checked) {
-			setSelectedLanguages(languages.map((lang) => lang.id));
-		} else {
-			setSelectedLanguages([]);
-		}
-	};
+        useEffect(() => {
+                fetchLanguages();
+        }, [fetchLanguages]);
 
-	const handleSelectLanguage = (languageId, checked) => {
-		if (checked) {
-			setSelectedLanguages([...selectedLanguages, languageId]);
-		} else {
-			setSelectedLanguages(selectedLanguages.filter((id) => id !== languageId));
-		}
-	};
+        const handleSelectAll = (checked) => {
+                if (checked) {
+                        setSelectedLanguages(languages.map((lang) => lang._id));
+                } else {
+                        setSelectedLanguages([]);
+                }
+        };
+
+        const handleSelectLanguage = (languageId, checked) => {
+                if (checked) {
+                        setSelectedLanguages([...selectedLanguages, languageId]);
+                } else {
+                        setSelectedLanguages(selectedLanguages.filter((id) => id !== languageId));
+                }
+        };
 
 	const handleDelete = (language) => {
 		setDeletePopup({ open: true, language });
@@ -111,9 +66,11 @@ export default function LanguagesPage() {
 		setUpdatePopup({ open: true, language });
 	};
 
-	const confirmDelete = () => {
-		console.log("Deleting language:", deletePopup.language?.name);
-	};
+        const confirmDelete = async () => {
+                if (deletePopup.language) {
+                        await deleteLanguage(deletePopup.language._id);
+                }
+        };
 
 	const handleBulkDelete = () => {
 		console.log("Bulk deleting languages:", selectedLanguages);
@@ -188,82 +145,59 @@ export default function LanguagesPage() {
 
 					<CardContent>
 						<Table>
-							<TableHeader>
-								<TableRow>
-									<TableHead className="w-12">
-										<Checkbox
-											checked={selectedLanguages.length === languages.length}
-											onCheckedChange={handleSelectAll}
-										/>
-									</TableHead>
-									<TableHead>SR</TableHead>
-									<TableHead>Name</TableHead>
-									<TableHead>ISO Code</TableHead>
-									<TableHead>Flag</TableHead>
-									<TableHead>Published</TableHead>
-									<TableHead>Actions</TableHead>
-								</TableRow>
-							</TableHeader>
-							<TableBody>
-								{languages.map((language, index) => (
-									<motion.tr
-										key={language.id}
-										initial={{ opacity: 0, y: 10 }}
-										animate={{ opacity: 1, y: 0 }}
-										transition={{ duration: 0.2, delay: index * 0.05 }}
-									>
-										<TableCell>
-											<Checkbox
-												checked={selectedLanguages.includes(language.id)}
-												onCheckedChange={(checked) =>
-													handleSelectLanguage(language.id, checked)
-												}
-											/>
-										</TableCell>
-										<TableCell className="font-medium">{index + 1}</TableCell>
-										<TableCell className="font-medium">
-											{language.name}
-										</TableCell>
-										<TableCell>{language.isoCode}</TableCell>
-										<TableCell>
-											<div className="w-8 h-6 rounded border flex items-center justify-center text-lg">
-												{language.flag}
-											</div>
-										</TableCell>
-										<TableCell>
-											<Switch
-												checked={language.published}
-												onCheckedChange={(checked) =>
-													handlePublishToggle(language.id, checked)
-												}
-											/>
-										</TableCell>
-										<TableCell>
-											<div className="flex gap-2">
-												<Button size="icon" variant="outline">
-													<Eye className="w-4 h-4" />
-												</Button>
-												<Button
-													size="icon"
-													variant="outline"
-													onClick={() => handleUpdate(language)}
-												>
-													<Edit className="w-4 h-4" />
-												</Button>
-												<Button
-													size="icon"
-													variant="outline"
-													className="text-red-600 hover:text-red-700 bg-transparent"
-													onClick={() => handleDelete(language)}
-												>
-													<Trash2 className="w-4 h-4" />
-												</Button>
-											</div>
-										</TableCell>
-									</motion.tr>
-								))}
-							</TableBody>
-						</Table>
+                                                        <TableHeader>
+                                                                <TableRow>
+                                                                        <TableHead className="w-12">
+                                                                                <Checkbox
+                                                                                        checked={selectedLanguages.length === languages.length}
+                                                                                        onCheckedChange={handleSelectAll}
+                                                                                />
+                                                                        </TableHead>
+                                                                        <TableHead>SR</TableHead>
+                                                                        <TableHead>Name</TableHead>
+                                                                        <TableHead>ISO Code</TableHead>
+                                                                        <TableHead>Actions</TableHead>
+                                                                </TableRow>
+                                                        </TableHeader>
+                                                        <TableBody>
+                                                                {languages.map((language, index) => (
+                                                                        <motion.tr
+                                                                                key={language._id}
+                                                                                initial={{ opacity: 0, y: 10 }}
+                                                                                animate={{ opacity: 1, y: 0 }}
+                                                                                transition={{ duration: 0.2, delay: index * 0.05 }}
+                                                                        >
+                                                                                <TableCell>
+                                                                                        <Checkbox
+                                                                                                checked={selectedLanguages.includes(language._id)}
+                                                                                                onCheckedChange={(checked) =>
+                                                                                                        handleSelectLanguage(language._id, checked)
+                                                                                                }
+                                                                                        />
+                                                                                </TableCell>
+                                                                                <TableCell className="font-medium">{index + 1}</TableCell>
+                                                                                <TableCell className="font-medium">
+                                                                                        {language.name}
+                                                                                </TableCell>
+                                                                                <TableCell>{language.code}</TableCell>
+                                                                                <TableCell>
+                                                                                        <div className="flex gap-2">
+                                                                                                <Button size="icon" variant="outline" onClick={() => handleUpdate(language)}>
+                                                                                                        <Edit className="w-4 h-4" />
+                                                                                                </Button>
+                                                                                                <Button
+                                                                                                        size="icon"
+                                                                                                        variant="destructive"
+                                                                                                        onClick={() => handleDelete(language)}
+                                                                                                >
+                                                                                                        <Trash2 className="w-4 h-4" />
+                                                                                                </Button>
+                                                                                        </div>
+                                                                                </TableCell>
+                                                                        </motion.tr>
+                                                                ))}
+                                                        </TableBody>
+                                                </Table>
 
 						<div className="flex items-center justify-between mt-4">
 							<p className="text-sm text-gray-600">Showing 1-2 of 2</p>

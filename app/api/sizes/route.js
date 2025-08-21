@@ -14,3 +14,24 @@ export async function POST(request) {
         const size = await Size.create({ name });
         return NextResponse.json({ success: true, size });
 }
+
+
+export async function PUT(request) {
+        await dbConnect();
+        const { id, ...data } = await request.json();
+        const size = await Size.findByIdAndUpdate(id, data, { new: true });
+        return size
+                ? NextResponse.json({ success: true, size })
+                : NextResponse.json(
+                          { success: false, message: "Size not found" },
+                          { status: 404 }
+                  );
+}
+
+export async function DELETE(request) {
+        await dbConnect();
+        const { id } = await request.json();
+        await Size.findByIdAndDelete(id);
+        return NextResponse.json({ success: true });
+}
+
