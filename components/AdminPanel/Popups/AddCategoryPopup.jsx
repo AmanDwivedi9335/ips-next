@@ -15,10 +15,17 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
+import {
+        Select,
+        SelectContent,
+        SelectItem,
+        SelectTrigger,
+        SelectValue,
+} from "@/components/ui/select";
 import { useAdminCategoryStore } from "@/store/adminCategoryStore.js";
 
 export function AddCategoryPopup({ open, onOpenChange }) {
-	const { addCategory } = useAdminCategoryStore();
+        const { addCategory, categories } = useAdminCategoryStore();
 	const [isSubmitting, setIsSubmitting] = useState(false);
 
 	const [formData, setFormData] = useState({
@@ -26,14 +33,18 @@ export function AddCategoryPopup({ open, onOpenChange }) {
 		description: "",
 		icon: "",
 		published: true,
-		sortOrder: 0,
+                sortOrder: 0,
+                parent: "",
 	});
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 		setIsSubmitting(true);
 
-		const success = await addCategory(formData);
+                const success = await addCategory({
+                        ...formData,
+                        parent: formData.parent || null,
+                });
 		if (success) {
 			onOpenChange(false);
 			resetForm();
@@ -42,13 +53,14 @@ export function AddCategoryPopup({ open, onOpenChange }) {
 	};
 
 	const resetForm = () => {
-		setFormData({
-			name: "",
-			description: "",
-			icon: "",
-			published: true,
-			sortOrder: 0,
-		});
+                setFormData({
+                        name: "",
+                        description: "",
+                        icon: "",
+                        published: true,
+                        sortOrder: 0,
+                        parent: "",
+                });
 	};
 
 	return (
@@ -114,25 +126,58 @@ export function AddCategoryPopup({ open, onOpenChange }) {
 							</p>
 						</div>
 
-						<div>
-							<Label htmlFor="sortOrder">Sort Order</Label>
-							<Input
-								id="sortOrder"
-								type="number"
-								placeholder="0"
-								value={formData.sortOrder}
-								onChange={(e) =>
-									setFormData({
-										...formData,
-										sortOrder: Number.parseInt(e.target.value) || 0,
-									})
-								}
-								className="mt-1"
-							/>
-							<p className="text-xs text-gray-500 mt-1">
-								Lower numbers appear first
-							</p>
-						</div>
+                                                <div>
+                                                        <Label htmlFor="sortOrder">Sort Order</Label>
+                                                        <Input
+                                                                id="sortOrder"
+                                                                type="number"
+                                                                placeholder="0"
+                                                                value={formData.sortOrder}
+                                                                onChange={(e) =>
+                                                                        setFormData({
+                                                                                ...formData,
+                                                                                sortOrder:
+                                                                                        Number.parseInt(
+                                                                                                e.target.value
+                                                                                        ) || 0,
+                                                                        })
+                                                                }
+                                                                className="mt-1"
+                                                        />
+                                                        <p className="text-xs text-gray-500 mt-1">
+                                                                Lower numbers appear first
+                                                        </p>
+                                                </div>
+
+                                                <div>
+                                                        <Label>Parent Category</Label>
+                                                        <Select
+                                                                value={formData.parent}
+                                                                onValueChange={(value) =>
+                                                                        setFormData({
+                                                                                ...formData,
+                                                                                parent: value,
+                                                                        })
+                                                                }
+                                                        >
+                                                                <SelectTrigger className="mt-1">
+                                                                        <SelectValue placeholder="None" />
+                                                                </SelectTrigger>
+                                                                <SelectContent>
+                                                                        <SelectItem value="">
+                                                                                None
+                                                                        </SelectItem>
+                                                                        {categories.map((cat) => (
+                                                                                <SelectItem
+                                                                                        key={cat._id}
+                                                                                        value={cat._id}
+                                                                                >
+                                                                                        {cat.name}
+                                                                                </SelectItem>
+                                                                        ))}
+                                                                </SelectContent>
+                                                        </Select>
+                                                </div>
 
 						<div className="flex items-center justify-between">
 							<div>

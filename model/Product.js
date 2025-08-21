@@ -9,9 +9,22 @@ const ProductSchema = new mongoose.Schema(
 		category: { type: String, required: true },
 		published: { type: Boolean, default: true },
 		stocks: { type: Number, required: true },
-		price: { type: Number, required: true },
-		salePrice: { type: Number, default: 0 },
-		discount: { type: Number, default: 0 },
+                price: { type: Number, required: true },
+                salePrice: { type: Number, default: 0 },
+                discount: { type: Number, default: 0 },
+
+                code: { type: String },
+                mrp: { type: Number },
+                languageImages: [
+                        {
+                                language: { type: String },
+                                image: { type: String },
+                        },
+                ],
+                sizes: [{ type: String }],
+                materials: [{ type: String }],
+                materialSpecification: { type: String },
+                subcategory: { type: String },
 
 		inStock: { type: Boolean, default: true },
 

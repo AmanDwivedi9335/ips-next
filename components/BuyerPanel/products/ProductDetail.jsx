@@ -6,6 +6,13 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import {
+        Select,
+        SelectContent,
+        SelectItem,
+        SelectTrigger,
+        SelectValue,
+} from "@/components/ui/select";
+import {
 	ArrowLeft,
 	ShoppingCart,
 	Heart,
@@ -32,11 +39,29 @@ import { toast } from "react-hot-toast";
 import Image from "next/image";
 
 export default function ProductDetail({ product, relatedProducts = [] }) {
-	const [selectedImage, setSelectedImage] = useState(0);
-	const [quantity, setQuantity] = useState(1);
-	const [selectedQuantityOffer, setSelectedQuantityOffer] = useState(null);
-	const router = useRouter();
-	const { addItem, isLoading } = useCartStore();
+        const [selectedImage, setSelectedImage] = useState(0);
+        const [quantity, setQuantity] = useState(1);
+        const [selectedQuantityOffer, setSelectedQuantityOffer] = useState(null);
+        const [selectedLanguage, setSelectedLanguage] = useState(
+                product.languageImages?.[0]?.language || ""
+        );
+        const [selectedSize, setSelectedSize] = useState(
+                product.sizes?.[0] || ""
+        );
+        const [selectedMaterial, setSelectedMaterial] = useState(
+                product.materials?.[0] || ""
+        );
+        const router = useRouter();
+        const { addItem, isLoading } = useCartStore();
+
+        const languageImage = product.languageImages?.find(
+                (l) => l.language === selectedLanguage
+        )?.image;
+        const discount = product.mrp
+                ? Math.round(((product.mrp - product.price) / product.mrp) * 100)
+                : product.discountPercentage;
+        const categoryName = product.category?.replace("-", " ");
+        const subcategoryName = product.subcategory?.replace("-", " ");
 
 	// Mock reviews data - you can replace this with real reviews from the API
 	const reviews = [
@@ -165,9 +190,32 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
 	}
 
 	return (
-		<div className="min-h-screen bg-gray-50">
-			<div className="container mx-auto px-4 lg:px-10 py-8">
-				{/* Product Details */}
+                <div className="min-h-screen bg-gray-50">
+                        <div className="container mx-auto px-4 lg:px-10 py-8">
+                                <div className="text-sm mb-4">
+                                        <Link
+                                                href="/"
+                                                className="text-gray-600 hover:underline"
+                                        >
+                                                Home
+                                        </Link>
+                                        {" > "}
+                                        <Link
+                                                href={`/products?category=${product.category}`}
+                                                className="text-gray-600 hover:underline"
+                                        >
+                                                {categoryName}
+                                        </Link>
+                                        {product.subcategory && (
+                                                <>
+                                                        {" > "}
+                                                        <span className="text-gray-600">
+                                                                {subcategoryName}
+                                                        </span>
+                                                </>
+                                        )}
+                                </div>
+                                {/* Product Details */}
 				<div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
 					{/* Product Images */}
 					<div className="space-y-6">
@@ -188,17 +236,18 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
 							</div>
 
 							<div className="relative w-full h-96 lg:h-[400px]">
-								<Image
-									src={
-										product.images?.[selectedImage] ||
-										product.image ||
-										"https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png"
-									}
-									alt={product.name}
-									fill
-									className="object-contain p-8"
-									priority
-								/>
+                                                               <Image
+                                                                       src={
+                                                                               languageImage ||
+                                                                               product.images?.[selectedImage] ||
+                                                                               product.image ||
+                                                                               "https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png"
+                                                                       }
+                                                                       alt={product.name}
+                                                                       fill
+                                                                       className="object-contain p-8"
+                                                                       priority
+                                                               />
 							</div>
 						</motion.div>
 
@@ -245,8 +294,15 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
 								{product.name}
 							</h1>
 
-							{/* Product rating */}
-							<div className="flex items-center mb-2">
+                                                        {/* Product code */}
+                                                        {product.code && (
+                                                                <p className="text-sm text-gray-600 mb-2">
+                                                                        Code: {product.code}
+                                                                </p>
+                                                        )}
+
+                                                        {/* Product rating */}
+                                                        <div className="flex items-center mb-2">
 								<span className="flex items-center gap-2 bg-green-600 text-white px-2 py-1 rounded-lg">
 									{product.rating || 4.5}
 									<Star className="w-4 h-4 fill-white text-white" />
@@ -256,36 +312,99 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
 								</span>
 							</div>
 
-							{/* Product price */}
-							<p className="text-xl lg:text-2xl font-semibold text-black mb-2">
-								₹ {product.price.toLocaleString()}
-							</p>
+                                                        {/* Product price */}
+                                                        <p className="text-xl lg:text-2xl font-semibold text-black mb-2">
+                                                                ₹ {product.price.toLocaleString()}
+                                                        </p>
 
-							{/* Discounted price and discount percentage */}
-							{product.originalPrice > product.price && (
-								<div className="flex items-center mb-4">
-									<span className="text-gray-500 line-through mr-2">
-										₹ {product.originalPrice.toLocaleString()}
-									</span>
-									<span className="text-green-500">
-										{product.discountPercentage}% off
-									</span>
-								</div>
-							)}
-						</div>
+                                                        {/* MRP and discount */}
+                                                        {product.mrp && product.mrp > product.price && (
+                                                                <div className="flex items-center mb-4">
+                                                                        <span className="text-gray-500 line-through mr-2">
+                                                                                ₹ {product.mrp.toLocaleString()}
+                                                                        </span>
+                                                                        <span className="text-green-500">
+                                                                                {discount}% off
+                                                                        </span>
+                                                                </div>
+                                                        )}
+                                                </div>
 
-						{/* Product Colors */}
-						<div className="w-fit flex space-x-2 p-3 bg-gray-200 rounded-lg">
-							{colors.map((color, i) => (
-								<div
-									key={i}
-									className={`w-6 h-6 rounded-full border border-gray-200 cursor-pointer ${color}`}
-								/>
-							))}
-						</div>
+                                                {/* Product Colors */}
+                                                <div className="w-fit flex space-x-2 p-3 bg-gray-200 rounded-lg">
+                                                        {colors.map((color, i) => (
+                                                                <div
+                                                                        key={i}
+                                                                        className={`w-6 h-6 rounded-full border border-gray-200 cursor-pointer ${color}`}
+                                                                />
+                                                        ))}
+                                                </div>
 
-						{/* Quantity and Add to Cart */}
-						<div className="space-y-4">
+                                                {product.languageImages && product.languageImages.length > 0 && (
+                                                        <div className="mt-4">
+                                                                <Select
+                                                                        value={selectedLanguage}
+                                                                        onValueChange={setSelectedLanguage}
+                                                                >
+                                                                        <SelectTrigger className="w-40">
+                                                                                <SelectValue placeholder="Language" />
+                                                                        </SelectTrigger>
+                                                                        <SelectContent>
+                                                                                {product.languageImages.map((li) => (
+                                                                                        <SelectItem
+                                                                                                key={li.language}
+                                                                                                value={li.language}
+                                                                                        >
+                                                                                                {li.language}
+                                                                                        </SelectItem>
+                                                                                ))}
+                                                                        </SelectContent>
+                                                                </Select>
+                                                        </div>
+                                                )}
+
+                                                {product.sizes && product.sizes.length > 0 && (
+                                                        <div className="mt-4">
+                                                                <Select
+                                                                        value={selectedSize}
+                                                                        onValueChange={setSelectedSize}
+                                                                >
+                                                                        <SelectTrigger className="w-40">
+                                                                                <SelectValue placeholder="Size" />
+                                                                        </SelectTrigger>
+                                                                        <SelectContent>
+                                                                                {product.sizes.map((size) => (
+                                                                                        <SelectItem key={size} value={size}>
+                                                                                                {size}
+                                                                                        </SelectItem>
+                                                                                ))}
+                                                                        </SelectContent>
+                                                                </Select>
+                                                        </div>
+                                                )}
+
+                                                {product.materials && product.materials.length > 0 && (
+                                                        <div className="mt-4">
+                                                                <Select
+                                                                        value={selectedMaterial}
+                                                                        onValueChange={setSelectedMaterial}
+                                                                >
+                                                                        <SelectTrigger className="w-40">
+                                                                                <SelectValue placeholder="Material" />
+                                                                        </SelectTrigger>
+                                                                        <SelectContent>
+                                                                                {product.materials.map((mat) => (
+                                                                                        <SelectItem key={mat} value={mat}>
+                                                                                                {mat}
+                                                                                        </SelectItem>
+                                                                                ))}
+                                                                        </SelectContent>
+                                                                </Select>
+                                                        </div>
+                                                )}
+
+                                                {/* Quantity and Add to Cart */}
+                                                <div className="space-y-4">
 							<div className="flex items-center space-x-4">
 								<span className="font-medium">Quantity:</span>
 								<div className="flex items-center border rounded-lg">
@@ -353,14 +472,50 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
 								{product.status}
 							</span>
 						</div>
-					</motion.div>
-				</div>
+                                        </motion.div>
+                                </div>
+                                {product.materialSpecification ||
+                                        product.description ||
+                                        product.longDescription ? (
+                                        <div className="space-y-6 mb-10">
+                                                {product.materialSpecification && (
+                                                        <div>
+                                                                <h2 className="text-xl font-bold mb-2">
+                                                                        Material Specification
+                                                                </h2>
+                                                                <p className="text-gray-700 whitespace-pre-line">
+                                                                        {product.materialSpecification}
+                                                                </p>
+                                                        </div>
+                                                )}
+                                                {product.description && (
+                                                        <div>
+                                                                <h2 className="text-xl font-bold mb-2">
+                                                                        Product Short Description
+                                                                </h2>
+                                                                <p className="text-gray-700 whitespace-pre-line">
+                                                                        {product.description}
+                                                                </p>
+                                                        </div>
+                                                )}
+                                                {product.longDescription && (
+                                                        <div>
+                                                                <h2 className="text-xl font-bold mb-2">
+                                                                        Description
+                                                                </h2>
+                                                                <p className="text-gray-700 whitespace-pre-line">
+                                                                        {product.longDescription}
+                                                                </p>
+                                                        </div>
+                                                )}
+                                        </div>
+                                ) : null}
 
-				{/* Delivery Details and Offers */}
-				<div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-10">
-					{/* Delivery Details Section */}
-					<motion.div
-						initial={{ opacity: 0, y: 20 }}
+                                {/* Delivery Details and Offers */}
+                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-10">
+                                        {/* Delivery Details Section */}
+                                        <motion.div
+                                                initial={{ opacity: 0, y: 20 }}
 						animate={{ opacity: 1, y: 0 }}
 						transition={{ duration: 0.5, delay: 0.3 }}
 						className="flex-1"

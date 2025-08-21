@@ -15,33 +15,39 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Upload, X } from "lucide-react";
+import { useAdminLanguageStore } from "@/store/adminLanguageStore.js";
 
 export function UpdateLanguagePopup({ open, onOpenChange, language }) {
-	const [formData, setFormData] = useState({
-		languageName: "",
-		language: "",
-		isoCode: "",
-		flag: null,
-		published: true,
-	});
+        const { updateLanguage } = useAdminLanguageStore();
+        const [formData, setFormData] = useState({
+                languageName: "",
+                isoCode: "",
+                flag: null,
+                published: true,
+        });
 
 	useEffect(() => {
 		if (language) {
 			setFormData({
-				languageName: language.name || "",
-				language: language.name || "",
-				isoCode: language.isoCode || "",
-				flag: null,
-				published: language.published || false,
-			});
-		}
-	}, [language]);
+                                languageName: language.name || "",
+                                isoCode: language.code || "",
+                                flag: null,
+                                published: true,
+                        });
+                }
+        }, [language]);
 
-	const handleSubmit = (e) => {
-		e.preventDefault();
-		console.log("Updating language:", formData);
-		onOpenChange(false);
-	};
+        const handleSubmit = async (e) => {
+                e.preventDefault();
+                if (!language) return;
+                const success = await updateLanguage(language._id, {
+                        code: formData.isoCode,
+                        name: formData.languageName,
+                });
+                if (success) {
+                        onOpenChange(false);
+                }
+        };
 
 	const handleFileUpload = (e) => {
 		const file = e.target.files[0];
@@ -86,24 +92,10 @@ export function UpdateLanguagePopup({ open, onOpenChange, language }) {
 							/>
 						</div>
 
-						<div>
-							<Label htmlFor="language">Language</Label>
-							<Input
-								id="language"
-								placeholder="Language"
-								value={formData.language}
-								onChange={(e) =>
-									setFormData({ ...formData, language: e.target.value })
-								}
-								className="mt-1"
-								required
-							/>
-						</div>
-
-						<div>
-							<Label htmlFor="iso-code">Iso Code</Label>
-							<Input
-								id="iso-code"
+                                                <div>
+                                                        <Label htmlFor="iso-code">Iso Code</Label>
+                                                        <Input
+                                                                id="iso-code"
 								placeholder="Iso Code"
 								value={formData.isoCode}
 								onChange={(e) =>

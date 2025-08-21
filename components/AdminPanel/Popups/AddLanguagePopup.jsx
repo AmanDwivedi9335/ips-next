@@ -15,26 +15,33 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Upload, X } from "lucide-react";
+import { useAdminLanguageStore } from "@/store/adminLanguageStore.js";
 
 export function AddLanguagePopup({ open, onOpenChange }) {
-	const [formData, setFormData] = useState({
-		languageName: "",
-		isoCode: "",
-		flag: null,
-		published: true,
-	});
+        const { addLanguage } = useAdminLanguageStore();
+        const [formData, setFormData] = useState({
+                languageName: "",
+                isoCode: "",
+                flag: null,
+                published: true,
+        });
 
-	const handleSubmit = (e) => {
-		e.preventDefault();
-		console.log("Adding language:", formData);
-		onOpenChange(false);
-		setFormData({
-			languageName: "",
-			isoCode: "",
-			flag: null,
-			published: true,
-		});
-	};
+        const handleSubmit = async (e) => {
+                e.preventDefault();
+                const success = await addLanguage({
+                        code: formData.isoCode,
+                        name: formData.languageName,
+                });
+                if (success) {
+                        onOpenChange(false);
+                        setFormData({
+                                languageName: "",
+                                isoCode: "",
+                                flag: null,
+                                published: true,
+                        });
+                }
+        };
 
 	const handleFileUpload = (e) => {
 		const file = e.target.files[0];
