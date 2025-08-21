@@ -33,3 +33,4 @@ export async function DELETE(request) {
         await Language.findByIdAndDelete(id);
         return NextResponse.json({ success: true });
 }
+

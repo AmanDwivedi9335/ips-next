@@ -15,6 +15,7 @@ export async function POST(request) {
         return NextResponse.json({ success: true, material });
 }
 
+
 export async function PUT(request) {
         await dbConnect();
         const { id, ...data } = await request.json();
@@ -33,3 +34,4 @@ export async function DELETE(request) {
         await Material.findByIdAndDelete(id);
         return NextResponse.json({ success: true });
 }
+
