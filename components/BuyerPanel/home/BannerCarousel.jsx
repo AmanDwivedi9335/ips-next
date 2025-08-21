@@ -14,11 +14,10 @@ export default function BannerCarousel() {
                 fetchBanners();
         }, [fetchBanners]);
 
-
         if (!banners.length) return null;
 
         return (
-                <div className="overflow-hidden" ref={emblaRef}>
+                <div className="w-full overflow-hidden" ref={emblaRef}>
                         <div className="flex">
                                 {banners.map((banner) => (
                                         <div key={banner._id} className="flex-[0_0_100%]">
@@ -27,7 +26,9 @@ export default function BannerCarousel() {
                                                         <img
                                                                 src={banner.image}
                                                                 alt="banner"
-                                                                className="w-full h-48 object-cover"
+
+                                                                className="w-full h-auto"
+
                                                         />
                                                 </a>
                                         </div>
