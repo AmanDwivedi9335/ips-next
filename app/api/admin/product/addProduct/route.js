@@ -92,16 +92,31 @@ export async function POST(request) {
 		console.log("Images uploaded successfully:", imageUrls.length);
 
 		// Parse features safely
-		let features = [];
-		try {
-			const featuresString = formData.get("features");
-			if (featuresString) {
-				features = JSON.parse(featuresString);
-			}
-		} catch (error) {
-			console.error("Error parsing features:", error);
-			features = [];
-		}
+                let features = [];
+                try {
+                        const featuresString = formData.get("features");
+                        if (featuresString) {
+                                features = JSON.parse(featuresString);
+                        }
+                } catch (error) {
+                        console.error("Error parsing features:", error);
+                        features = [];
+                }
+
+                // Parse array fields
+                let languages = [];
+                let materials = [];
+                let sizes = [];
+                try {
+                        const langStr = formData.get("languages");
+                        const matStr = formData.get("materials");
+                        const sizeStr = formData.get("sizes");
+                        if (langStr) languages = JSON.parse(langStr);
+                        if (matStr) materials = JSON.parse(matStr);
+                        if (sizeStr) sizes = JSON.parse(sizeStr);
+                } catch (error) {
+                        console.error("Error parsing arrays:", error);
+                }
 
 		// Create new product
 		const product = new Product({
@@ -116,12 +131,15 @@ export async function POST(request) {
 			salePrice: formData.get("salePrice")
 				? parseFloat(formData.get("salePrice"))
 				: 0,
-			discount: formData.get("discount")
-				? parseFloat(formData.get("discount"))
-				: 0,
-			type: formData.get("type") || "featured",
-			features: features,
-		});
+                        discount: formData.get("discount")
+                                ? parseFloat(formData.get("discount"))
+                                : 0,
+                        type: formData.get("type") || "featured",
+                        features: features,
+                        languages,
+                        materials,
+                        sizes,
+                });
 
 		await product.save();
 

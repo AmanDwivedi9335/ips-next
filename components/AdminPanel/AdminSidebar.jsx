@@ -63,6 +63,7 @@ const menuItems = [
                         { title: "Attributes", href: "/admin/catalog/attributes", icon: Layers },
                         { title: "Materials", href: "/admin/catalog/materials", icon: Layers },
                         { title: "Sizes", href: "/admin/catalog/sizes", icon: Package },
+                        { title: "Languages", href: "/admin/catalog/languages", icon: Languages },
                         { title: "Coupons", href: "/admin/catalog/coupons", icon: Ticket },
                 ],
         },
