@@ -335,14 +335,14 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                                                 </div>
 
                                                 {/* Product Colors */}
-                                                <div className="w-fit flex space-x-2 p-3 bg-gray-200 rounded-lg">
+                                                {/* <div className="w-fit flex space-x-2 p-3 bg-gray-200 rounded-lg">
                                                         {colors.map((color, i) => (
                                                                 <div
                                                                         key={i}
                                                                         className={`w-6 h-6 rounded-full border border-gray-200 cursor-pointer ${color}`}
                                                                 />
                                                         ))}
-                                                </div>
+                                                </div> */}
 
                                                 {languages.length > 0 && (
                                                         <div className="mt-4">
