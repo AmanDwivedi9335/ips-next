@@ -30,7 +30,7 @@ export default function HeroSection() {
 						transition={{ duration: 0.8 }}
 						className="text-3xl md:text-4xl lg:text-8xl font-black leading-tight mb-6 lg:mb-8 absolute top-0 left-10 transform -translate-x-1/2 -translate-y-1/2 hidden md:block"
 					>
-						SAFETY BEGINS,
+						Build for industry
 					</motion.h1>
 					<motion.h1
 						initial={{ opacity: 0, y: 30 }}
@@ -38,9 +38,9 @@ export default function HeroSection() {
 						transition={{ duration: 0.8 }}
 						className="text-3xl md:text-4xl lg:text-8xl font-black leading-tight mb-6 lg:mb-8 absolute top-28 right-16 transform -translate-x-1/2 -translate-y-1/2 z-10 hidden md:block"
 					>
-						WITH{" "}
-						<span className="text-black/50 stroke-white">YO</span>
-						<span className="text-black/50 stroke-white">U</span>
+						designed{" "}
+						<span className="text-black/50 stroke-white">for</span>{" "}
+						<span className="text-black/50 stroke-white">Safety</span>
 						
 					</motion.h1>
 
@@ -80,7 +80,7 @@ export default function HeroSection() {
 								transition={{ delay: 0.3, duration: 0.8 }}
 								className="flex flex-col mb-0"
 							>
-								<p className="text-center md:text-left text-gray-600 mb-6 max-w-md text-sm md:text-base">
+								<p className="text-center md:text-left text-gray-600 mb-6 mt-20 max-w-md text-sm md:text-base">
 									We offer a diverse collection of displays covering a wide range of topics such as safety (fire, electrical, health, environmental, etc.), quality and productivity, motivation, global best practices, Covid-19 awareness, and more. Our products are available in multiple categories, including safety posters, safety signs, informative boards, and identification boards.
 								</p>
 								<Button className="bg-black text-white px-6 md:px-8 py-2 md:py-3 rounded-full w-full md:w-fit">

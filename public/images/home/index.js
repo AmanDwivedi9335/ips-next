@@ -1,7 +1,7 @@
 "use client";
 
 import Logo from "@/public/images/home/Logo.png";
-import HeroImg from "@/public/images/home/HeroMan.png";
+import HeroImg from "@/public/images/home/logoslogan.png";
 import Barcode from "@/public/images/home/Barcode.png";
 import AppStore from "@/public/images/home/AppStore.png";
 import GooglePlay from "@/public/images/home/GooglePlay.png";
