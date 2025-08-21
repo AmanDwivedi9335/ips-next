@@ -151,33 +151,33 @@ export function AddCategoryPopup({ open, onOpenChange }) {
 
                                                 <div>
                                                         <Label>Parent Category</Label>
-                                                        <Select
-                                                                value={formData.parent}
-                                                                onValueChange={(value) =>
-                                                                        setFormData({
-                                                                                ...formData,
-                                                                                parent: value,
-                                                                        })
-                                                                }
-                                                        >
+                                                       <Select
+                                                               value={formData.parent}
+                                                               onValueChange={(value) =>
+                                                                       setFormData({
+                                                                               ...formData,
+                                                                               parent: value === "none" ? "" : value,
+                                                                       })
+                                                               }
+                                                       >
                                                                 <SelectTrigger className="mt-1">
                                                                         <SelectValue placeholder="None" />
                                                                 </SelectTrigger>
-                                                                <SelectContent>
-                                                                        <SelectItem value="">
-                                                                                None
-                                                                        </SelectItem>
-                                                                        {categories.map((cat) => (
-                                                                                <SelectItem
-                                                                                        key={cat._id}
-                                                                                        value={cat._id}
-                                                                                >
-                                                                                        {cat.name}
-                                                                                </SelectItem>
-                                                                        ))}
-                                                                </SelectContent>
-                                                        </Select>
-                                                </div>
+                                                               <SelectContent>
+                                                                       <SelectItem value="none">
+                                                                               None
+                                                                       </SelectItem>
+                                                                       {categories.map((cat) => (
+                                                                               <SelectItem
+                                                                                       key={cat._id}
+                                                                                       value={cat._id}
+                                                                               >
+                                                                                       {cat.name}
+                                                                               </SelectItem>
+                                                                       ))}
+                                                               </SelectContent>
+                                                       </Select>
+                                               </div>
 
 						<div className="flex items-center justify-between">
 							<div>
