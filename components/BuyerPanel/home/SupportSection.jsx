@@ -18,7 +18,7 @@ export default function SupportSection() {
 		{
 			icon: Heart,
 			title: "Email Us",
-			description: "info@industrialprintsolutions.in",
+			description: "info@industrialprintsolutions.com",
 		},
 		{
 			icon: Shield,

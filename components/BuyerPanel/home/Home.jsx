@@ -70,7 +70,7 @@ export default function HomePage() {
 			<NavigationBar />
 			<HeroSection />
 			<ProductShowcase products={discountedProducts} />
-			<TrustedCompanies />
+			{/* <TrustedCompanies /> */}
 
 			<CategorySection
 				products={categoryProducts}

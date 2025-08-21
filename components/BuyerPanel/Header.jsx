@@ -38,13 +38,10 @@ export default function Header({ onMenuToggle, isMenuOpen }) {
 					<div className="flex items-center justify-between py-3">
 						{/* Desktop Menu */}
 						<div className="hidden lg:block">
-							<Button variant="ghost" size="icon" onClick={onMenuToggle}>
-								{isMenuOpen ? (
-									<X className="h-6 w-6" />
-								) : (
-									<Menu className="h-6 w-6" />
-								)}
-							</Button>
+							<Link href="/lms" className="flex items-center space-x-2 text-sm font-medium">
+                                                                <GraduationCap className="h-5 w-5" />
+                                                                <span className="hidden sm:inline">Get training now</span>
+                                                        </Link>
 						</div>
 
                                                 <div className="flex items-center space-x-2 md:space-x-4">
@@ -61,10 +58,7 @@ export default function Header({ onMenuToggle, isMenuOpen }) {
                                                                 )}
                                                         </Button>
 
-                                                        <Link href="/lms" className="flex items-center space-x-2 text-sm font-medium">
-                                                                <GraduationCap className="h-5 w-5" />
-                                                                <span className="hidden sm:inline">Get training now</span>
-                                                        </Link>
+                                                        
 
                                                         <Link href="/" className="flex items-center space-x-2">
                                                                 {/* <div className="h-8 w-20 lg:w-24 bg-gray-200 rounded flex items-center justify-center">

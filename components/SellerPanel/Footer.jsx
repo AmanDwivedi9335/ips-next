@@ -8,7 +8,7 @@ export default function Footer() {
 		support: {
 			title: "Support",
 			links: [
-				{ label: "info@industrialprintsolutions.in", href: "mailto:info@industrialprintsolutions.in" },
+				{ label: "info@industrialprintsolutions.com", href: "mailto:info@industrialprintsolutions.com" },
 				{ label: "7999704487", href: "#" },
 			],
 		},
