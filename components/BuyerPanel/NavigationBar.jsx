@@ -16,8 +16,9 @@ import { useProductStore } from "@/store/productStore.js";
 export default function NavigationBar({ isMenuOpen, onMenuClose }) {
        const [searchQuery, setSearchQuery] = useState("");
        const [categories, setCategories] = useState([
-               { id: "all", label: "Categories" },
+               { id: "all", label: "All" },
        ]);
+       const [moreOpen, setMoreOpen] = useState(false);
        const router = useRouter();
        const {
                setSearchQuery: setGlobalSearch,
@@ -38,7 +39,7 @@ export default function NavigationBar({ isMenuOpen, onMenuClose }) {
                                                label: cat.name,
                                        }));
                                        setCategories([
-                                               { id: "all", label: "Categories" },
+                                               { id: "all", label: "All" },
                                                ...mapped,
                                        ]);
                                }
@@ -51,9 +52,7 @@ export default function NavigationBar({ isMenuOpen, onMenuClose }) {
                fetchCategories();
        }, []);
 
-       const currentLabel =
-               categories.find((cat) => cat.id === currentCategory)?.label ||
-               "Categories";
+       const VISIBLE_CATEGORIES = 6;
 
        const handleCategoryClick = (categoryId) => {
                setCurrentCategory(categoryId);
@@ -81,28 +80,55 @@ export default function NavigationBar({ isMenuOpen, onMenuClose }) {
 		>
 			<div className="px-4 lg:px-10">
 				<div className="flex flex-col lg:flex-row lg:items-center lg:justify-between py-4 space-y-4 lg:space-y-0 overflow-x-auto hide-scrollbar">
-                                        <div className="flex flex-col lg:flex-row lg:items-center space-y-2 lg:space-y-0 lg:space-x-8">
-                                                <DropdownMenu>
-                                                        <DropdownMenuTrigger asChild>
+                                        <div className="flex items-center space-x-2 overflow-x-auto hide-scrollbar">
+                                                {categories
+                                                        .slice(0, VISIBLE_CATEGORIES)
+                                                        .map((category) => (
                                                                 <Button
+                                                                        key={category.id}
                                                                         variant="ghost"
-                                                                        className="justify-start lg:justify-center hover:bg-gray-100"
+                                                                        className={`whitespace-nowrap hover:bg-gray-100 ${
+                                                                                currentCategory === category.id
+                                                                                        ? "bg-gray-100"
+                                                                                        : ""
+                                                                        }`}
+                                                                        onClick={() => handleCategoryClick(category.id)}
                                                                 >
-                                                                        {currentLabel}
-                                                                        <ChevronDown className="ml-1 h-4 w-4" />
+                                                                        {category.label}
                                                                 </Button>
-                                                        </DropdownMenuTrigger>
-                                                        <DropdownMenuContent align="start">
-                                                                {categories.map((category) => (
-                                                                        <DropdownMenuItem
-                                                                                key={category.id}
-                                                                                onSelect={() => handleCategoryClick(category.id)}
+                                                        ))}
+                                                {categories.length > VISIBLE_CATEGORIES && (
+                                                        <DropdownMenu
+                                                                open={moreOpen}
+                                                                onOpenChange={setMoreOpen}
+                                                        >
+                                                                <DropdownMenuTrigger asChild>
+                                                                        <Button
+                                                                                variant="ghost"
+                                                                                className="hover:bg-gray-100"
+                                                                                onMouseEnter={() => setMoreOpen(true)}
+                                                                                onMouseLeave={() => setMoreOpen(false)}
                                                                         >
-                                                                                {category.label}
-                                                                        </DropdownMenuItem>
-                                                                ))}
-                                                        </DropdownMenuContent>
-                                                </DropdownMenu>
+                                                                                More
+                                                                                <ChevronDown className="ml-1 h-4 w-4" />
+                                                                        </Button>
+                                                                </DropdownMenuTrigger>
+                                                                <DropdownMenuContent
+                                                                        align="start"
+                                                                        onMouseEnter={() => setMoreOpen(true)}
+                                                                        onMouseLeave={() => setMoreOpen(false)}
+                                                                >
+                                                                        {categories.map((category) => (
+                                                                                <DropdownMenuItem
+                                                                                        key={category.id}
+                                                                                        onSelect={() => handleCategoryClick(category.id)}
+                                                                                >
+                                                                                        {category.label}
+                                                                                </DropdownMenuItem>
+                                                                        ))}
+                                                                </DropdownMenuContent>
+                                                        </DropdownMenu>
+                                                )}
                                         </div>
 
 					<form
