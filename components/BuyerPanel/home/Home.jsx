@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useHomeData } from "@/hooks/useHomeData";
 import NavigationBar from "@/components/BuyerPanel/NavigationBar.jsx";
+import BannerCarousel from "@/components/BuyerPanel/home/BannerCarousel.jsx";
 import HeroSection from "@/components/BuyerPanel/home/HeroSection.jsx";
 import ProductShowcase from "@/components/BuyerPanel/home/ProductShowcase.jsx";
 import TrustedCompanies from "@/components/BuyerPanel/home/TrustedCompanies.jsx";
@@ -66,9 +67,10 @@ export default function HomePage() {
 	}
 
 	return (
-		<div className="min-h-[calc(100vh-68px)] bg-white hide-scrollbar">
-			<NavigationBar />
-			<HeroSection />
+                <div className="min-h-[calc(100vh-68px)] bg-white hide-scrollbar">
+                        <NavigationBar />
+                        <BannerCarousel />
+                        <HeroSection />
 			<ProductShowcase products={discountedProducts} />
 			<TrustedCompanies />
 
