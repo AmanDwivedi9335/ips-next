@@ -35,11 +35,11 @@ export default function FeaturedSection({
 				{bestSellingProduct && <FeaturedProduct product={bestSellingProduct} />}
 			</div>
 
-			<Image
+			{/* <Image
 				src={BannerImg}
 				alt="Banner"
 				className="w-full h-auto mb-12 md:mb-16 object-cover"
-			/>
+			/> */}
 
 			<div className="px-10">
 				{/* Featured Products Grid */}
