@@ -59,6 +59,9 @@ export function AddProductPopup({ open, onOpenChange }) {
         const [selectedLanguages, setSelectedLanguages] = useState([]);
         const [selectedMaterials, setSelectedMaterials] = useState([]);
         const [selectedSizes, setSelectedSizes] = useState([]);
+        const [languageImages, setLanguageImages] = useState([
+                { language: "", image: "" },
+        ]);
 
         useEffect(() => {
                 fetchLanguages();
@@ -85,21 +88,37 @@ export function AddProductPopup({ open, onOpenChange }) {
 		setIsSubmitting(true);
 
 		try {
-			// Prepare product data with proper types
-			const productData = {
-				title: formData.title,
-				description: formData.description,
-				longDescription: formData.longDescription || formData.description,
-				category: formData.category,
-				price: parseFloat(formData.price),
-				salePrice: formData.salePrice ? parseFloat(formData.salePrice) : 0,
-				stocks: parseInt(formData.stocks),
-                                discount: formData.discount ? parseFloat(formData.discount) : 0,
+                        const languageImagesData = languageImages.filter(
+                                (li) => li.language && li.image
+                        );
+                        const allLanguages = Array.from(
+                                new Set([
+                                        ...selectedLanguages,
+                                        ...languageImagesData.map((li) => li.language),
+                                ])
+                        );
+
+                        // Prepare product data with proper types
+                        const productData = {
+                                title: formData.title,
+                                description: formData.description,
+                                longDescription:
+                                        formData.longDescription || formData.description,
+                                category: formData.category,
+                                price: parseFloat(formData.price),
+                                salePrice: formData.salePrice
+                                        ? parseFloat(formData.salePrice)
+                                        : 0,
+                                stocks: parseInt(formData.stocks),
+                                discount: formData.discount
+                                        ? parseFloat(formData.discount)
+                                        : 0,
                                 type: formData.type,
                                 published: formData.published,
                                 features: features.filter((f) => f.title && f.description),
                                 images: formData.images,
-                                languages: selectedLanguages,
+                                languageImages: languageImagesData,
+                                languages: allLanguages,
                                 materials: selectedMaterials,
                                 sizes: selectedSizes,
                         };
@@ -139,6 +158,7 @@ export function AddProductPopup({ open, onOpenChange }) {
                 setSelectedLanguages([]);
                 setSelectedMaterials([]);
                 setSelectedSizes([]);
+                setLanguageImages([{ language: "", image: "" }]);
         };
 
 	const addFeature = () => {
@@ -149,11 +169,28 @@ export function AddProductPopup({ open, onOpenChange }) {
 		setFeatures(features.filter((_, i) => i !== index));
 	};
 
-	const updateFeature = (index, field, value) => {
-		const updatedFeatures = [...features];
-		updatedFeatures[index][field] = value;
-		setFeatures(updatedFeatures);
-	};
+        const updateFeature = (index, field, value) => {
+                const updatedFeatures = [...features];
+                updatedFeatures[index][field] = value;
+                setFeatures(updatedFeatures);
+        };
+
+        const addLanguageImage = () => {
+                setLanguageImages([
+                        ...languageImages,
+                        { language: "", image: "" },
+                ]);
+        };
+
+        const removeLanguageImage = (index) => {
+                setLanguageImages(languageImages.filter((_, i) => i !== index));
+        };
+
+        const updateLanguageImage = (index, field, value) => {
+                const updated = [...languageImages];
+                updated[index][field] = value;
+                setLanguageImages(updated);
+        };
 
 	return (
 		<Dialog open={open} onOpenChange={onOpenChange}>
@@ -220,17 +257,78 @@ export function AddProductPopup({ open, onOpenChange }) {
 								/>
 							</div>
 
-							<div className="md:col-span-2">
-								<ImageUpload
-									images={formData.images}
-									onImagesChange={(images) =>
-										setFormData({ ...formData, images })
-									}
-									maxImages={5}
-									label="Product Images"
-									required={true}
-								/>
-							</div>
+                                                        <div className="md:col-span-2">
+                                                                <ImageUpload
+                                                                        images={formData.images}
+                                                                        onImagesChange={(images) =>
+                                                                                setFormData({ ...formData, images })
+                                                                        }
+                                                                        maxImages={5}
+                                                                        label="Product Images"
+                                                                        required={true}
+                                                                />
+                                                        </div>
+
+                                                        <div className="md:col-span-2">
+                                                                <Label>Language Specific Images</Label>
+                                                                {languageImages.map((li, index) => (
+                                                                        <div
+                                                                                key={index}
+                                                                                className="flex flex-col md:flex-row md:items-end gap-4 mt-2"
+                                                                        >
+                                                                                <div className="md:w-40">
+                                                                                        <Select
+                                                                                                value={li.language}
+                                                                                                onValueChange={(value) =>
+                                                                                                        updateLanguageImage(index, "language", value)
+                                                                                                }
+                                                                                        >
+                                                                                                <SelectTrigger>
+                                                                                                        <SelectValue placeholder="Language" />
+                                                                                                </SelectTrigger>
+                                                                                                <SelectContent>
+                                                                                                        {languages.map((lang) => (
+                                                                                                                <SelectItem
+                                                                                                                        key={lang._id}
+                                                                                                                        value={lang.name}
+                                                                                                                >
+                                                                                                                        {lang.name}
+                                                                                                                </SelectItem>
+                                                                                                        ))}
+                                                                                                </SelectContent>
+                                                                                        </Select>
+                                                                                </div>
+                                                                                <div className="flex-1">
+                                                                                        <ImageUpload
+                                                                                                images={li.image ? [li.image] : []}
+                                                                                                onImagesChange={(images) =>
+                                                                                                        updateLanguageImage(index, "image", images[0] || "")
+                                                                                                }
+                                                                                                maxImages={1}
+                                                                                                label="Image"
+                                                                                                required={true}
+                                                                                        />
+                                                                                </div>
+                                                                                {languageImages.length > 1 && (
+                                                                                        <Button
+                                                                                                type="button"
+                                                                                                variant="ghost"
+                                                                                                onClick={() => removeLanguageImage(index)}
+                                                                                        >
+                                                                                                <X className="h-4 w-4" />
+                                                                                        </Button>
+                                                                                )}
+                                                                        </div>
+                                                                ))}
+                                                                <Button
+                                                                        type="button"
+                                                                        variant="outline"
+                                                                        className="mt-2"
+                                                                        onClick={addLanguageImage}
+                                                                >
+                                                                        <Plus className="h-4 w-4 mr-2" /> Add Language Image
+                                                                </Button>
+                                                        </div>
 
 							<div>
 								<Label>Category *</Label>

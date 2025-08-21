@@ -107,36 +107,84 @@ export async function POST(request) {
                 let languages = [];
                 let materials = [];
                 let sizes = [];
+                let languageImages = [];
                 try {
                         const langStr = formData.get("languages");
                         const matStr = formData.get("materials");
                         const sizeStr = formData.get("sizes");
+                        const langImgStr = formData.get("languageImages");
                         if (langStr) languages = JSON.parse(langStr);
                         if (matStr) materials = JSON.parse(matStr);
                         if (sizeStr) sizes = JSON.parse(sizeStr);
+                        if (langImgStr) languageImages = JSON.parse(langImgStr);
                 } catch (error) {
                         console.error("Error parsing arrays:", error);
                 }
 
-		// Create new product
-		const product = new Product({
-			title,
-			description,
-			longDescription: formData.get("longDescription") || description,
-			images: imageUrls,
-			category,
-			published: formData.get("published") === "true",
-			stocks: stocks,
-			price: price,
-			salePrice: formData.get("salePrice")
-				? parseFloat(formData.get("salePrice"))
-				: 0,
+                // Upload language-specific images
+                const languageImageUrls = await Promise.all(
+                        languageImages.map(async ({ language, image }) => {
+                                if (!image) return null;
+                                try {
+                                        const base64Data = image.split(",")[1];
+                                        const buffer = Buffer.from(base64Data, "base64");
+
+                                        const url = await new Promise((resolve, reject) => {
+                                                cloudinary.uploader
+                                                        .upload_stream(
+                                                                {
+                                                                        resource_type: "image",
+                                                                        folder: "safety_products_images",
+                                                                        quality: "auto",
+                                                                        format: "webp",
+                                                                },
+                                                                (error, result) => {
+                                                                        if (error) {
+                                                                                reject(error);
+                                                                        } else {
+                                                                                resolve(result.secure_url);
+                                                                        }
+                                                                }
+                                                        )
+                                                        .end(buffer);
+                                        });
+
+                                        return { language, image: url };
+                                } catch (error) {
+                                        console.error("Language image upload error:", error);
+                                        return null;
+                                }
+                        })
+                );
+
+                const filteredLanguageImages = languageImageUrls.filter(Boolean);
+                const allLanguages = Array.from(
+                        new Set([
+                                ...languages,
+                                ...filteredLanguageImages.map((li) => li.language),
+                        ])
+                );
+
+                // Create new product
+                const product = new Product({
+                        title,
+                        description,
+                        longDescription: formData.get("longDescription") || description,
+                        images: imageUrls,
+                        languageImages: filteredLanguageImages,
+                        category,
+                        published: formData.get("published") === "true",
+                        stocks: stocks,
+                        price: price,
+                        salePrice: formData.get("salePrice")
+                                ? parseFloat(formData.get("salePrice"))
+                                : 0,
                         discount: formData.get("discount")
                                 ? parseFloat(formData.get("discount"))
                                 : 0,
                         type: formData.get("type") || "featured",
                         features: features,
-                        languages,
+                        languages: allLanguages,
                         materials,
                         sizes,
                 });
