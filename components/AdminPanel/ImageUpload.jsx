@@ -5,17 +5,18 @@ import { Label } from "@/components/ui/label";
 import { Upload, X, ImageIcon } from "lucide-react";
 
 export function ImageUpload({
-	images = [], // Array of base64 strings
-	onImagesChange,
-	label = "Product Images",
-	required = true,
+        images = [], // Array of base64 strings
+        onImagesChange,
+        label = "Product Images",
+        required = true,
+        maxImages = 5,
 }) {
 	const [isDragging, setIsDragging] = useState(false);
 	const [errors, setErrors] = useState([]);
 	const [imageMetadata, setImageMetadata] = useState([]); // Store metadata separately
 	const fileInputRef = useRef(null);
 
-	const MAX_IMAGES = 5;
+        const MAX_IMAGES = maxImages;
 	const MAX_SIZE = 5 * 1024 * 1024; // 5MB
 	const VALID_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
 
