@@ -13,15 +13,20 @@ const CategorySchema = new mongoose.Schema(
 			required: true,
 			trim: true,
 		},
-		slug: {
-			type: String,
-			unique: true,
-			lowercase: true,
-		},
-		icon: {
-			type: String, // URL to icon image
-			default: "",
-		},
+                slug: {
+                        type: String,
+                        unique: true,
+                        lowercase: true,
+                },
+                parent: {
+                        type: mongoose.Schema.Types.ObjectId,
+                        ref: "Category",
+                        default: null,
+                },
+                icon: {
+                        type: String, // URL to icon image
+                        default: "",
+                },
 		published: {
 			type: Boolean,
 			default: true,

@@ -110,26 +110,32 @@ export async function GET(request) {
 		const totalPages = Math.ceil(total / limit);
 
 		// Transform products for frontend
-		const transformedProducts = products.map((product) => ({
-			id: product._id.toString(),
-			name: product.title,
-			description: product.description,
-			longDescription: product.longDescription,
-			price: product.salePrice > 0 ? product.salePrice : product.price,
-			originalPrice: product.price,
-			salePrice: product.salePrice,
-			discount: product.discount,
-			discountPercentage:
-				product.salePrice > 0
-					? Math.round(
-							((product.price - product.salePrice) / product.price) * 100
-					  )
-					: product.discount,
-			image:
-				product.images?.[0] ||
-				"https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png",
-			images: product.images || [],
-			category: product.category,
+                const transformedProducts = products.map((product) => ({
+                        id: product._id.toString(),
+                        name: product.title,
+                        description: product.description,
+                        longDescription: product.longDescription,
+                        price: product.salePrice > 0 ? product.salePrice : product.price,
+                        mrp: product.mrp || product.price,
+                        code: product.code,
+                        salePrice: product.salePrice,
+                        discount: product.discount,
+                        subcategory: product.subcategory,
+                        languageImages: product.languageImages || [],
+                        sizes: product.sizes || [],
+                        materials: product.materials || [],
+                        materialSpecification: product.materialSpecification || "",
+                        discountPercentage:
+                                product.salePrice > 0
+                                        ? Math.round(
+                                                        ((product.price - product.salePrice) / product.price) * 100
+                                          )
+                                        : product.discount,
+                        image:
+                                product.images?.[0] ||
+                                "https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png",
+                        images: product.images || [],
+                        category: product.category,
 			inStock: product.inStock,
 			stocks: product.stocks,
 			status: product.status,
