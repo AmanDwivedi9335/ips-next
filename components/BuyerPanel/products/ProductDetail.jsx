@@ -42,8 +42,12 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
         const [selectedImage, setSelectedImage] = useState(0);
         const [quantity, setQuantity] = useState(1);
         const [selectedQuantityOffer, setSelectedQuantityOffer] = useState(null);
+        const languages =
+                product.languages && product.languages.length > 0
+                        ? product.languages
+                        : product.languageImages?.map((li) => li.language) || [];
         const [selectedLanguage, setSelectedLanguage] = useState(
-                product.languageImages?.[0]?.language || ""
+                languages[0] || ""
         );
         const [selectedSize, setSelectedSize] = useState(
                 product.sizes?.[0] || ""
@@ -340,7 +344,7 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                                                         ))}
                                                 </div>
 
-                                                {product.languageImages && product.languageImages.length > 0 && (
+                                                {languages.length > 0 && (
                                                         <div className="mt-4">
                                                                 <Select
                                                                         value={selectedLanguage}
@@ -350,12 +354,9 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                                                                                 <SelectValue placeholder="Language" />
                                                                         </SelectTrigger>
                                                                         <SelectContent>
-                                                                                {product.languageImages.map((li) => (
-                                                                                        <SelectItem
-                                                                                                key={li.language}
-                                                                                                value={li.language}
-                                                                                        >
-                                                                                                {li.language}
+                                                                                {languages.map((lang) => (
+                                                                                        <SelectItem key={lang} value={lang}>
+                                                                                                {lang}
                                                                                         </SelectItem>
                                                                                 ))}
                                                                         </SelectContent>

@@ -38,6 +38,7 @@ export async function GET(req, { params }) {
                         images: product.images || [],
                         gallery: product.images || [],
                         languageImages: product.languageImages || [],
+                        languages: product.languages || [],
                         sizes: product.sizes || [],
                         materials: product.materials || [],
                         materialSpecification: product.materialSpecification || "",

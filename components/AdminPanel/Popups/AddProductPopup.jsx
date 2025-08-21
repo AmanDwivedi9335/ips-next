@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
 	Dialog,
@@ -22,8 +22,12 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
+import { Checkbox } from "@/components/ui/checkbox";
 import { X, Plus } from "lucide-react";
 import { useAdminProductStore } from "@/store/adminProductStore.js";
+import { useAdminLanguageStore } from "@/store/adminLanguageStore.js";
+import { useAdminMaterialStore } from "@/store/adminMaterialStore.js";
+import { useAdminSizeStore } from "@/store/adminSizeStore.js";
 import { ImageUpload } from "@/components/AdminPanel/ImageUpload.jsx";
 
 const categories = [
@@ -46,9 +50,21 @@ const productTypes = [
 ];
 
 export function AddProductPopup({ open, onOpenChange }) {
-	const { addProduct } = useAdminProductStore();
-	const [isSubmitting, setIsSubmitting] = useState(false);
-	const [features, setFeatures] = useState([{ title: "", description: "" }]);
+        const { addProduct } = useAdminProductStore();
+        const { languages, fetchLanguages } = useAdminLanguageStore();
+        const { materials, fetchMaterials } = useAdminMaterialStore();
+        const { sizes, fetchSizes } = useAdminSizeStore();
+        const [isSubmitting, setIsSubmitting] = useState(false);
+        const [features, setFeatures] = useState([{ title: "", description: "" }]);
+        const [selectedLanguages, setSelectedLanguages] = useState([]);
+        const [selectedMaterials, setSelectedMaterials] = useState([]);
+        const [selectedSizes, setSelectedSizes] = useState([]);
+
+        useEffect(() => {
+                fetchLanguages();
+                fetchMaterials();
+                fetchSizes();
+        }, [fetchLanguages, fetchMaterials, fetchSizes]);
 
 	const [formData, setFormData] = useState({
 		title: "",
@@ -78,12 +94,15 @@ export function AddProductPopup({ open, onOpenChange }) {
 				price: parseFloat(formData.price),
 				salePrice: formData.salePrice ? parseFloat(formData.salePrice) : 0,
 				stocks: parseInt(formData.stocks),
-				discount: formData.discount ? parseFloat(formData.discount) : 0,
-				type: formData.type,
-				published: formData.published,
-				features: features.filter((f) => f.title && f.description),
-				images: formData.images,
-			};
+                                discount: formData.discount ? parseFloat(formData.discount) : 0,
+                                type: formData.type,
+                                published: formData.published,
+                                features: features.filter((f) => f.title && f.description),
+                                images: formData.images,
+                                languages: selectedLanguages,
+                                materials: selectedMaterials,
+                                sizes: selectedSizes,
+                        };
 
 			console.log("Product Data:", productData);
 
@@ -103,21 +122,24 @@ export function AddProductPopup({ open, onOpenChange }) {
 	};
 
 	const resetForm = () => {
-		setFormData({
-			title: "",
-			description: "",
-			longDescription: "",
-			category: "",
-			price: "",
-			salePrice: "",
-			stocks: "",
-			discount: "",
-			type: "featured",
-			published: true,
-			images: [],
-		});
-		setFeatures([{ title: "", description: "" }]);
-	};
+                setFormData({
+                        title: "",
+                        description: "",
+                        longDescription: "",
+                        category: "",
+                        price: "",
+                        salePrice: "",
+                        stocks: "",
+                        discount: "",
+                        type: "featured",
+                        published: true,
+                        images: [],
+                });
+                setFeatures([{ title: "", description: "" }]);
+                setSelectedLanguages([]);
+                setSelectedMaterials([]);
+                setSelectedSizes([]);
+        };
 
 	const addFeature = () => {
 		setFeatures([...features, { title: "", description: "" }]);
@@ -313,54 +335,171 @@ export function AddProductPopup({ open, onOpenChange }) {
 								/>
 							</div>
 						</div>
+                                                {/* Languages */}
+                                                <div className="mt-4">
+                                                        <Label>Languages</Label>
+                                                        <div className="flex flex-wrap gap-2 mt-2">
+                                                                {languages.map((lang) => (
+                                                                        <div
+                                                                                key={lang._id}
+                                                                                className="flex items-center space-x-2"
+                                                                        >
+                                                                                <Checkbox
+                                                                                        id={`lang-${lang._id}`}
+                                                                                        checked={selectedLanguages.includes(
+                                                                                                lang.name
+                                                                                        )}
+                                                                                        onCheckedChange={(checked) => {
+                                                                                                setSelectedLanguages(
+                                                                                                        checked
+                                                                                                                ? [
+                                                                                                                          ...selectedLanguages,
+                                                                                                                          lang.name,
+                                                                                                                  ]
+                                                                                                                : selectedLanguages.filter(
+                                                                                                                          (l) =>
+                                                                                                                                  l !==
+                                                                                                                                  lang.name
+                                                                                                                  )
+                                                                                                );
+                                                                                        }}
+                                                                                />
+                                                                                <Label htmlFor={`lang-${lang._id}`}>
+                                                                                        {lang.name}
+                                                                                </Label>
+                                                                        </div>
+                                                                ))}
+                                                        </div>
+                                                </div>
 
-						{/* Features Section */}
-						<div>
-							<div className="flex items-center justify-between mb-3">
-								<Label>Product Features</Label>
-								<Button
-									type="button"
-									variant="outline"
-									size="sm"
-									onClick={addFeature}
-								>
-									<Plus className="w-4 h-4 mr-1" />
-									Add Feature
-								</Button>
-							</div>
-							<div className="space-y-3">
-								{features.map((feature, index) => (
-									<div key={index} className="flex gap-3 items-start">
-										<Input
-											placeholder="Feature title"
-											value={feature.title}
-											onChange={(e) =>
-												updateFeature(index, "title", e.target.value)
-											}
-											className="flex-1"
-										/>
-										<Input
-											placeholder="Feature description"
-											value={feature.description}
-											onChange={(e) =>
-												updateFeature(index, "description", e.target.value)
-											}
-											className="flex-1"
-										/>
-										{features.length > 1 && (
-											<Button
-												type="button"
-												variant="outline"
-												size="icon"
-												onClick={() => removeFeature(index)}
-											>
-												<X className="w-4 h-4" />
-											</Button>
-										)}
-									</div>
-								))}
-							</div>
-						</div>
+                                                {/* Materials */}
+                                                <div className="mt-4">
+                                                        <Label>Materials</Label>
+                                                        <div className="flex flex-wrap gap-2 mt-2">
+                                                                {materials.map((mat) => (
+                                                                        <div
+                                                                                key={mat._id}
+                                                                                className="flex items-center space-x-2"
+                                                                        >
+                                                                                <Checkbox
+                                                                                        id={`mat-${mat._id}`}
+                                                                                        checked={selectedMaterials.includes(
+                                                                                                mat.name
+                                                                                        )}
+                                                                                        onCheckedChange={(checked) => {
+                                                                                                setSelectedMaterials(
+                                                                                                        checked
+                                                                                                                ? [
+                                                                                                                          ...selectedMaterials,
+                                                                                                                          mat.name,
+                                                                                                                  ]
+                                                                                                                : selectedMaterials.filter(
+                                                                                                                          (m) =>
+                                                                                                                                  m !==
+                                                                                                                                  mat.name
+                                                                                                                  )
+                                                                                                );
+                                                                                        }}
+                                                                                />
+                                                                                <Label htmlFor={`mat-${mat._id}`}>
+                                                                                        {mat.name}
+                                                                                </Label>
+                                                                        </div>
+                                                                ))}
+                                                        </div>
+                                                </div>
+
+                
+                                                {/* Sizes */}
+                                                <div className="mt-4">
+                                                        <Label>Sizes</Label>
+                                                        <div className="flex flex-wrap gap-2 mt-2">
+                                                                {sizes.map((s) => (
+                                                                        <div
+                                                                                key={s._id}
+                                                                                className="flex items-center space-x-2"
+                                                                        >
+                                                                                <Checkbox
+                                                                                        id={`size-${s._id}`}
+                                                                                        checked={selectedSizes.includes(s.name)}
+                                                                                        onCheckedChange={(checked) => {
+                                                                                                setSelectedSizes(
+                                                                                                        checked
+                                                                                                                ? [
+                                                                                                                          ...selectedSizes,
+                                                                                                                          s.name,
+                                                                                                                  ]
+                                                                                                                : selectedSizes.filter(
+                                                                                                                          (sz) =>
+                                                                                                                                  sz !==
+                                                                                                                                  s.name
+                                                                                                                  )
+                                                                                                );
+                                                                                        }}
+                                                                                />
+                                                                                <Label htmlFor={`size-${s._id}`}>
+                                                                                        {s.name}
+                                                                                </Label>
+                                                                        </div>
+                                                                ))}
+                                                        </div>
+                                                </div>
+
+                                                {/* Features Section */}
+                                                <div className="mt-4">
+                                                        <div className="flex items-center justify-between mb-3">
+                                                                <Label>Product Features</Label>
+                                                                <Button
+                                                                        type="button"
+                                                                        variant="outline"
+                                                                        size="sm"
+                                                                        onClick={addFeature}
+                                                                >
+                                                                        <Plus className="w-4 h-4 mr-1" />
+                                                                        Add Feature
+                                                                </Button>
+                                                        </div>
+                                                        <div className="space-y-3">
+                                                                {features.map((feature, index) => (
+                                                                        <div key={index} className="flex gap-3 items-start">
+                                                                                <Input
+                                                                                        placeholder="Feature title"
+                                                                                        value={feature.title}
+                                                                                        onChange={(e) =>
+                                                                                                updateFeature(
+                                                                                                        index,
+                                                                                                        "title",
+                                                                                                        e.target.value
+                                                                                                )
+                                                                                        }
+                                                                                        className="flex-1"
+                                                                                />
+                                                                                <Input
+                                                                                        placeholder="Feature description"
+                                                                                        value={feature.description}
+                                                                                        onChange={(e) =>
+                                                                                                updateFeature(
+                                                                                                        index,
+                                                                                                        "description",
+                                                                                                        e.target.value
+                                                                                                )
+                                                                                        }
+                                                                                        className="flex-1"
+                                                                                />
+                                                                                {features.length > 1 && (
+                                                                                        <Button
+                                                                                                type="button"
+                                                                                                variant="outline"
+                                                                                                size="icon"
+                                                                                                onClick={() => removeFeature(index)}
+                                                                                        >
+                                                                                                <X className="w-4 h-4" />
+                                                                                        </Button>
+                                                                                )}
+                                                                        </div>
+                                                                ))}
+                                                        </div>
+                                                </div>
 
 						{/* Published Toggle */}
 						<div className="flex items-center justify-between">

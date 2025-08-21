@@ -96,8 +96,22 @@ export const useAdminProductStore = create((set, get) => ({
 			formData.append("type", productData.type);
 			formData.append("published", productData.published);
 
-			// Add features as JSON string
-			formData.append("features", JSON.stringify(productData.features || []));
+                        // Add features as JSON string
+                        formData.append("features", JSON.stringify(productData.features || []));
+
+                        // Add arrays as JSON strings
+                        formData.append(
+                                "languages",
+                                JSON.stringify(productData.languages || [])
+                        );
+                        formData.append(
+                                "materials",
+                                JSON.stringify(productData.materials || [])
+                        );
+                        formData.append(
+                                "sizes",
+                                JSON.stringify(productData.sizes || [])
+                        );
 
 			// Handle base64 images - convert them to Blob objects
 			if (productData.images && productData.images.length > 0) {
@@ -172,8 +186,22 @@ export const useAdminProductStore = create((set, get) => ({
 			formData.append("type", updateData.type);
 			formData.append("published", updateData.published);
 
-			// Add features as JSON string
-			formData.append("features", JSON.stringify(updateData.features || []));
+                        // Add features as JSON string
+                        formData.append("features", JSON.stringify(updateData.features || []));
+
+                        // Add arrays as JSON strings
+                        formData.append(
+                                "languages",
+                                JSON.stringify(updateData.languages || [])
+                        );
+                        formData.append(
+                                "materials",
+                                JSON.stringify(updateData.materials || [])
+                        );
+                        formData.append(
+                                "sizes",
+                                JSON.stringify(updateData.sizes || [])
+                        );
 
 			// Handle images - convert base64 to blobs
 			if (updateData.images && updateData.images.length > 0) {

@@ -122,6 +122,7 @@ export async function GET(request) {
                         discount: product.discount,
                         subcategory: product.subcategory,
                         languageImages: product.languageImages || [],
+                        languages: product.languages || [],
                         sizes: product.sizes || [],
                         materials: product.materials || [],
                         materialSpecification: product.materialSpecification || "",
