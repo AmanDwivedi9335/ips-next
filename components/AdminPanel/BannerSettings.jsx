@@ -1,6 +1,5 @@
 "use client";
 
-
 import { useEffect, useState } from "react";
 
 import { useBannerStore } from "@/store/bannerStore.js";
@@ -85,7 +84,6 @@ export default function BannerSettings() {
                                 ))}
 
                                 <div className="pt-4 border-t space-y-2">
-
                                         {newBanner.preview && (
                                                 <img
                                                         src={newBanner.preview}
