@@ -35,14 +35,14 @@ export default function Header({ onMenuToggle, isMenuOpen }) {
 			<header className="bg-white shadow-sm sticky top-0 z-40">
 				<div className="px-4 lg:px-10">
 					{/* Top Bar */}
-                                        <div className="flex items-center py-3">
+                                        <div className="flex items-center py-5">
                                                 {/* Logo */}
                                                 <div className="flex items-center flex-1 space-x-2 md:space-x-4">
                                                         <Link href="/" className="flex items-center space-x-2">
                                                                 <Image
                                                                         src={Logo}
                                                                         alt="Logo"
-                                                                        className="h-auto w-28 lg:w-36 object-contain"
+                                                                        className="h-auto w-32 lg:w-40 object-contain"
                                                                 />
                                                         </Link>
                                                 </div>
