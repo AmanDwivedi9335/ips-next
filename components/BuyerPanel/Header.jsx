@@ -35,16 +35,30 @@ export default function Header({ onMenuToggle, isMenuOpen }) {
 			<header className="bg-white shadow-sm sticky top-0 z-40">
 				<div className="px-4 lg:px-10">
 					{/* Top Bar */}
-					<div className="flex items-center justify-between py-3">
-						{/* Desktop Menu */}
-						<div className="hidden lg:block">
-							<Link href="/lms" className="flex items-center space-x-2 text-sm font-medium">
-                                                                <GraduationCap className="h-5 w-5" />
-                                                                <span className="hidden sm:inline">Get training now</span>
+                                        <div className="flex items-center py-3">
+                                                {/* Logo */}
+                                                <div className="flex items-center flex-1 space-x-2 md:space-x-4">
+                                                        <Link href="/" className="flex items-center space-x-2">
+                                                                <Image
+                                                                        src={Logo}
+                                                                        alt="Logo"
+                                                                        className="h-auto w-28 lg:w-36 object-contain"
+                                                                />
                                                         </Link>
-						</div>
+                                                </div>
 
-                                                <div className="flex items-center space-x-2 md:space-x-4">
+                                                {/* Training Button */}
+                                                <div className="flex justify-center">
+                                                        <Link href="/lms">
+                                                                <Button className="text-sm font-medium">
+                                                                        <GraduationCap className="h-5 w-5 mr-2" />
+                                                                        Get training now
+                                                                </Button>
+                                                        </Link>
+                                                </div>
+
+                                                {/* Actions */}
+                                                <div className="flex items-center justify-end flex-1 space-x-2 md:space-x-4">
                                                         <Button
                                                                 variant="ghost"
                                                                 size="icon"
@@ -58,65 +72,50 @@ export default function Header({ onMenuToggle, isMenuOpen }) {
                                                                 )}
                                                         </Button>
 
-                                                        
+                                                        <Button
+                                                                variant="ghost"
+                                                                size="icon"
+                                                                className="relative"
+                                                                onClick={handleCartClick}
+                                                        >
+                                                                <ShoppingCart className="h-5 w-5 md:h-6 md:w-6" />
+                                                                {totalItems > 0 && (
+                                                                        <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                                                                                {totalItems > 99 ? "99+" : totalItems}
+                                                                        </span>
+                                                                )}
+                                                        </Button>
+                                                        <Button variant="ghost" size="icon">
+                                                                <Heart className="h-5 w-5 md:h-6 md:w-6" />
+                                                        </Button>
 
-                                                        <Link href="/" className="flex items-center space-x-2">
-                                                                {/* <div className="h-8 w-20 lg:w-24 bg-gray-200 rounded flex items-center justify-center">
-                                                                        <span className="text-xs font-bold">LOGO</span>
-                                                                </div> */}
-                                                                <Image
-                                                                        src={Logo}
-									alt="Logo"
-									className="h-auto w-20 lg:w-24 object-cover"
-								/>
-							</Link>
-						</div>
-
-						<div className="flex items-center space-x-2 md:space-x-4">
-							<Button
-								variant="ghost"
-								size="icon"
-								className="relative"
-								onClick={handleCartClick}
-							>
-								<ShoppingCart className="h-5 w-5 md:h-6 md:w-6" />
-								{totalItems > 0 && (
-									<span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-										{totalItems > 99 ? "99+" : totalItems}
-									</span>
-								)}
-							</Button>
-							<Button variant="ghost" size="icon">
-								<Heart className="h-5 w-5 md:h-6 md:w-6" />
-							</Button>
-
-							{isAuthenticated ? (
-								<div className="flex items-center space-x-2 md:space-x-4">
-									<Link href="/account">
-										<div className="flex items-center space-x-2">
-											<Image
-												src={profilePic}
-												alt="Profile"
-												width={40}
-												height={40}
-												className="h-6 w-6 md:h-8 md:w-8 rounded-full"
-											/>
-											<div className="hidden md:block">
-												<p className="text-sm font-medium">{fullName}</p>
-												<p className="text-xs text-gray-600">{email}</p>
-											</div>
-										</div>
-									</Link>
-								</div>
-							) : (
-								<Link href="/account">
-									<Button variant="ghost" size="icon">
-										<User className="h-5 w-5 md:h-6 md:w-6" />
-									</Button>
-								</Link>
-							)}
-						</div>
-					</div>
+                                                        {isAuthenticated ? (
+                                                                <div className="flex items-center space-x-2 md:space-x-4">
+                                                                        <Link href="/account">
+                                                                                <div className="flex items-center space-x-2">
+                                                                                        <Image
+                                                                                                src={profilePic}
+                                                                                                alt="Profile"
+                                                                                                width={40}
+                                                                                                height={40}
+                                                                                                className="h-6 w-6 md:h-8 md:w-8 rounded-full"
+                                                                                        />
+                                                                                        <div className="hidden md:block">
+                                                                                                <p className="text-sm font-medium">{fullName}</p>
+                                                                                                <p className="text-xs text-gray-600">{email}</p>
+                                                                                        </div>
+                                                                                </div>
+                                                                        </Link>
+                                                                </div>
+                                                        ) : (
+                                                                <Link href="/account">
+                                                                        <Button variant="ghost" size="icon">
+                                                                                <User className="h-5 w-5 md:h-6 md:w-6" />
+                                                                        </Button>
+                                                                </Link>
+                                                        )}
+                                                </div>
+                                        </div>
 				</div>
 			</header>
 			<MiniCart />
