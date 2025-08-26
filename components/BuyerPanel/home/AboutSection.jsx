@@ -10,7 +10,7 @@ import {
   QrCode,
 } from "lucide-react";
 
-const aboutItems = [
+const features = [
   {
     icon: Target,
     title: "Mission",
@@ -57,10 +57,17 @@ const aboutItems = [
 
 export default function AboutSection() {
   return (
-    <section className="py-8 md:py-16 bg-white">
+    <section className="relative bg-black py-16 text-white">
       <div className="px-10">
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-          {aboutItems.map((item, index) => {
+        <div className="mb-12 max-w-xl">
+          <h2 className="text-3xl md:text-5xl font-bold leading-tight">
+            Sharing Expertise,
+            <br />
+            Creating Excellence
+          </h2>
+        </div>
+        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+          {features.map((item, index) => {
             const Icon = item.icon;
             return (
               <motion.div
@@ -69,23 +76,22 @@ export default function AboutSection() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
-                className="border rounded-lg p-6 flex flex-col items-center text-center bg-white shadow-sm"
+                className="rounded-lg bg-neutral-900 p-6 h-full flex space-x-4"
               >
-                <div className="w-12 h-12 mb-4 bg-black rounded-full flex items-center justify-center">
-                  <Icon className="h-6 w-6 text-white" />
+                <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-md bg-blue-500/10">
+                  <Icon className="h-6 w-6 text-blue-400" />
                 </div>
-                <h3 className="text-xl md:text-2xl font-bold">{item.title}</h3>
-                <p className="text-yellow-500 font-medium mb-2">
-                  {item.tagline}
-                </p>
-                <p className="text-gray-600 text-sm md:text-base">
-                  {item.description}
-                </p>
+                <div>
+                  <h3 className="text-lg font-semibold">{item.title}</h3>
+                  <p className="text-sm font-medium text-blue-400">{item.tagline}</p>
+                  <p className="mt-2 text-sm text-gray-400">{item.description}</p>
+                </div>
               </motion.div>
             );
           })}
         </div>
       </div>
+      <div className="absolute left-0 bottom-0 hidden md:block border-y-[60px] border-y-transparent border-r-[120px] border-r-red-600"></div>
     </section>
   );
 }
