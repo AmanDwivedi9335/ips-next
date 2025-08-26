@@ -58,22 +58,22 @@ const aboutItems = [
 export default function AboutSection() {
   return (
     <section className="py-8 md:py-16 bg-white">
-      <div className="px-10 space-y-8 md:space-y-12">
-        {aboutItems.map((item, index) => {
-          const Icon = item.icon;
-          return (
-            <motion.div
-              key={item.title}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.1 }}
-              className="flex items-start gap-6"
-            >
-              <div className="flex-shrink-0 w-12 h-12 bg-black rounded-full flex items-center justify-center">
-                <Icon className="h-6 w-6 text-white" />
-              </div>
-              <div>
+      <div className="px-10">
+        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+          {aboutItems.map((item, index) => {
+            const Icon = item.icon;
+            return (
+              <motion.div
+                key={item.title}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 }}
+                className="border rounded-lg p-6 flex flex-col items-center text-center bg-white shadow-sm"
+              >
+                <div className="w-12 h-12 mb-4 bg-black rounded-full flex items-center justify-center">
+                  <Icon className="h-6 w-6 text-white" />
+                </div>
                 <h3 className="text-xl md:text-2xl font-bold">{item.title}</h3>
                 <p className="text-yellow-500 font-medium mb-2">
                   {item.tagline}
@@ -81,10 +81,10 @@ export default function AboutSection() {
                 <p className="text-gray-600 text-sm md:text-base">
                   {item.description}
                 </p>
-              </div>
-            </motion.div>
-          );
-        })}
+              </motion.div>
+            );
+          })}
+        </div>
       </div>
     </section>
   );
