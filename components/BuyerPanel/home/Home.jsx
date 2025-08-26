@@ -71,8 +71,8 @@ export default function HomePage() {
                 <div className="min-h-[calc(100vh-68px)] bg-white hide-scrollbar">
                         <NavigationBar />
                         <BannerCarousel />
-                        <HeroSection />
                         <CategoriesGrid />
+                        <HeroSection />
                         <ProductShowcase products={discountedProducts} />
                         <TrustedCompanies />
 
