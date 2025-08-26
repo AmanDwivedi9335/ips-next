@@ -7,7 +7,7 @@ export default function SupportSection() {
 	const supportItems = [
 		{
 			icon: Truck,
-			title: "FAST & FREE SHIPPING",
+			title: "FAST SHIPPING",
 			description: "All Over India",
 		},
 		{
