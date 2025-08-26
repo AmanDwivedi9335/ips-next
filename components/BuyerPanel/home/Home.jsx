@@ -9,6 +9,7 @@ import CategoriesGrid from "@/components/BuyerPanel/home/CategoriesGrid.jsx";
 import ProductShowcase from "@/components/BuyerPanel/home/ProductShowcase.jsx";
 import TrustedCompanies from "@/components/BuyerPanel/home/TrustedCompanies.jsx";
 import CategorySection from "@/components/BuyerPanel/home/CategorySection.jsx";
+import AboutSection from "@/components/BuyerPanel/home/AboutSection.jsx";
 import SupportSection from "@/components/BuyerPanel/home/SupportSection.jsx";
 import FeaturedSection from "@/components/BuyerPanel/home/FeaturedSection.jsx";
 import SearchSection from "@/components/BuyerPanel/home/SearchSection.jsx";
@@ -76,18 +77,19 @@ export default function HomePage() {
                         <ProductShowcase products={discountedProducts} />
                         {/* <TrustedCompanies /> */}
 
-			<CategorySection
-				products={categoryProducts}
-				categories={categories}
-				searchQuery={searchQuery}
-				selectedCategory={selectedCategory}
-				setSelectedCategory={handleCategoryChange}
-				onSearch={handleSearch}
-				pagination={pagination}
-				onLoadMore={handleLoadMore}
-				isLoading={isLoading}
-			/>
-			<SupportSection />
+                        <CategorySection
+                                products={categoryProducts}
+                                categories={categories}
+                                searchQuery={searchQuery}
+                                selectedCategory={selectedCategory}
+                                setSelectedCategory={handleCategoryChange}
+                                onSearch={handleSearch}
+                                pagination={pagination}
+                                onLoadMore={handleLoadMore}
+                                isLoading={isLoading}
+                        />
+                        <AboutSection />
+                        <SupportSection />
 
 			<FeaturedSection
 				topSellingProducts={topSellingProducts}
