@@ -64,8 +64,8 @@ export default function CategorySection({
 					viewport={{ once: true }}
 					className="text-center mb-8 md:mb-12"
 				>
-					<p className="text-yellow-500 text-sm font-medium mb-2">Categories</p>
-					<h2 className="text-2xl md:text-3xl font-bold">Browse By Category</h2>
+					{/* <p className="text-yellow-500 text-sm font-medium mb-2">Categories</p> */}
+					<h2 className="text-2xl md:text-3xl font-bold">Browse Top Products</h2>
 				</motion.div>
 
 				{/* Search Bar */}

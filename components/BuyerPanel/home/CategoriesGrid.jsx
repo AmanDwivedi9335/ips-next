@@ -39,7 +39,7 @@ export default function CategoriesGrid() {
                                         viewport={{ once: true }}
                                         className="text-center mb-8 md:mb-12"
                                 >
-                                        <p className="text-yellow-500 text-sm font-medium mb-2">Category</p>
+                                        {/* <p className="text-yellow-500 text-sm font-medium mb-2">Category</p> */}
                                         <h2 className="text-2xl md:text-3xl font-bold">Browse Categories</h2>
                                 </motion.div>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
@@ -60,7 +60,7 @@ export default function CategoriesGrid() {
                                                                         fill
                                                                         className="object-cover transition-transform duration-300 group-hover:scale-105"
                                                                 />
-                                                                <div className="absolute inset-0 bg-orange-500/90 flex flex-col items-center justify-center text-white opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                                                                <div className="absolute inset-0 bg-[#301b70]/90 flex flex-col items-center justify-center text-white opacity-0 transition-opacity duration-300 group-hover:opacity-100">
                                                                         <p className="text-lg font-semibold mb-2">{cat.name}</p>
                                                                         <span className="px-4 py-2 bg-white text-black rounded text-sm">Shop Now</span>
                                                                 </div>

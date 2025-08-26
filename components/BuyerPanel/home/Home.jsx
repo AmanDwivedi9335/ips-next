@@ -72,8 +72,8 @@ export default function HomePage() {
                         <NavigationBar />
                         <BannerCarousel />
                         <CategoriesGrid />
-                        <HeroSection />
-                        <ProductShowcase products={discountedProducts} />
+                        {/* <HeroSection /> */}
+                        {/* <ProductShowcase products={discountedProducts} /> */}
                         {/* <TrustedCompanies /> */}
 
 			<CategorySection
