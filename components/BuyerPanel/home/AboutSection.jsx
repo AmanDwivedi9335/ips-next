@@ -59,6 +59,7 @@ export default function AboutSection() {
   return (
     <section className="py-8 md:py-16 bg-white">
       <div className="px-10">
+        {/* tst */}
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
           {aboutItems.map((item, index) => {
             const Icon = item.icon;
