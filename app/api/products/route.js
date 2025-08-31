@@ -12,6 +12,7 @@ export async function GET(request) {
 		// Extract query parameters
 		const minPrice = searchParams.get("minPrice");
 		const maxPrice = searchParams.get("maxPrice");
+		const inStock = searchParams.get("inStock");
 		const discount = searchParams.get("discount");
 		const category = searchParams.get("category");
 		const search = searchParams.get("search");
@@ -56,6 +57,11 @@ export async function GET(request) {
 			});
 		}
 
+		// Stock filter
+		if (inStock === "true") {
+			query.inStock = true;
+			query.stocks = { $gt: 0 };
+		}
 
 		// Discount filter
 		if (discount) {
@@ -131,6 +137,9 @@ export async function GET(request) {
                                 "https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png",
                         images: product.images || [],
                         category: product.category,
+			inStock: product.inStock,
+			stocks: product.stocks,
+			status: product.status,
 			type: product.type,
 			features: product.features || [],
 			createdAt: product.createdAt,

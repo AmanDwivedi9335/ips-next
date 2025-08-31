@@ -47,8 +47,9 @@ export function BulkUploadPopup({ open, onOpenChange }) {
 				description: "This is a sample product description",
 				longDescription: "This is a detailed description of the sample product",
 				category: "personal-safety",
-                                price: 99.99,
-                                salePrice: 79.99,
+				price: 99.99,
+				salePrice: 79.99,
+				stocks: 100,
 				discount: 20,
 				type: "featured",
 				published: true,
@@ -69,8 +70,9 @@ export function BulkUploadPopup({ open, onOpenChange }) {
 				description: "Another sample product",
 				longDescription: "Detailed description for the second product",
 				category: "road-safety",
-                                price: 149.99,
-                                salePrice: 0,
+				price: 149.99,
+				salePrice: 0,
+				stocks: 50,
 				discount: 0,
 				type: "top-selling",
 				published: true,
@@ -181,6 +183,7 @@ export function BulkUploadPopup({ open, onOpenChange }) {
     "description": "Short description",
     "category": "personal-safety",
     "price": 99.99,
+    "stocks": 100,
     "published": true,
     "images": []
   }
@@ -191,11 +194,11 @@ export function BulkUploadPopup({ open, onOpenChange }) {
 									rows={12}
 									required
 								/>
-                                                                <p className="text-xs text-gray-500 mt-1">
-                                                                        Paste your JSON array of products here. Required fields:
-                                                                        title, description, category, price. Images should be
-                                                                        base64 encoded strings in the images array.
-                                                                </p>
+								<p className="text-xs text-gray-500 mt-1">
+									Paste your JSON array of products here. Required fields:
+									title, description, category, price, stocks. Images should be
+									base64 encoded strings in the images array.
+								</p>
 							</div>
 
 							<DialogFooter className="flex gap-3">

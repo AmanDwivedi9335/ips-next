@@ -14,6 +14,7 @@ export async function GET(request) {
 		const maxPrice = searchParams.get("maxPrice");
 		const discount = searchParams.get("discount");
 		const published = searchParams.get("published");
+		const inStock = searchParams.get("inStock");
 		const page = Number.parseInt(searchParams.get("page") || "1");
 		const limit = Number.parseInt(searchParams.get("limit") || "10");
 		const sort = searchParams.get("sort") || "createdAt";
@@ -74,6 +75,11 @@ export async function GET(request) {
 			query.published = published === "true";
 		}
 
+		// Stock filter
+		if (inStock === "true") {
+			query.inStock = true;
+			query.stocks = { $gt: 0 };
+		}
 
 		// Build sort object
 		const sortObj = {};

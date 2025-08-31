@@ -43,6 +43,9 @@ export async function GET(req, { params }) {
                         materials: product.materials || [],
                         materialSpecification: product.materialSpecification || "",
                         image: product.images?.[0] || "https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png",
+                        inStock: product.stocks > 0,
+                        stocks: product.stocks,
+                        status: product.stocks > 0 ? "In Stock" : "Out of Stock",
 			type: product.type,
 			published: product.published,
 			features: product.features || [],
@@ -61,6 +64,8 @@ export async function GET(req, { params }) {
 			originalPrice: p.price,
 			discountPercentage: p.discount || 0,
 			image: p.images?.[0] || "https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png",
+			inStock: p.stocks > 0,
+			status: p.stocks > 0 ? "In Stock" : "Out of Stock",
 			category: p.category,
 			type: p.type,
 		}));

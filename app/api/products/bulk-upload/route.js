@@ -10,11 +10,13 @@ function transformProductData(productData) {
 		images: productData.gallery || [productData.image],
 		category: productData.category,
 		published: true,
-                price: productData.price,
-                salePrice: 0, // Set if there's a sale price
-                discount: 0, // Set if there's a discount
-                features: productData.features || [],
-                // The schema will auto-generate type based on other fields
+		stocks: 50, // Default stock value, you can modify this
+		price: productData.price,
+		salePrice: 0, // Set if there's a sale price
+		discount: 0, // Set if there's a discount
+		inStock: productData.inStock !== undefined ? productData.inStock : true,
+		features: productData.features || [],
+		// The schema will auto-generate status and type based on other fields
 	};
 }
 
@@ -146,7 +148,8 @@ export async function GET() {
 					image: "main_image_url",
 					gallery: ["image1_url", "image2_url"], // optional array
 					category: "product-category", // required
-                                        featured: false, // optional
+					inStock: true, // optional, defaults to true
+					featured: false, // optional
 					features: [
 						// optional array
 						{
@@ -160,8 +163,9 @@ export async function GET() {
 			clearExisting: false, // optional, set to true to clear all existing products first
 		},
 		notes: [
-                        "The 'published' field will default to true",
-                        "The 'type' field will be auto-generated based on pricing",
+			"The 'stocks' field will default to 50 for all products",
+			"The 'published' field will default to true",
+			"The 'status' and 'type' fields will be auto-generated based on stock and pricing",
 			"Related products should be set up after initial upload using product IDs",
 			"Images should be accessible URLs or uploaded to your storage first",
 		],
