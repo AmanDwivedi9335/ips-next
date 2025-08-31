@@ -12,8 +12,6 @@ export async function POST(request) {
 		// Extract product data from formData
 		const title = formData.get("title");
 		const description = formData.get("description");
-		const price = parseFloat(formData.get("price"));
-		const stocks = parseInt(formData.get("stocks"));
                 const category = formData.get("category");
                 const subcategory = formData.get("subcategory");
                 const productType = formData.get("productType") || "poster";
@@ -21,18 +19,14 @@ export async function POST(request) {
                 console.log("Received data:", {
                         title,
                         description,
-                        price,
-                        stocks,
                         category,
                         subcategory,
                 });
 
 		// Validate required fields
-		if (
-			!title ||
-			!description ||
-			!price ||
-			!stocks ||
+                if (
+                        !title ||
+                        !description ||
                         !category
                 ) {
                         return Response.json(
@@ -42,8 +36,6 @@ export async function POST(request) {
                                         received: {
                                                 title: !!title,
                                                 description: !!description,
-                                                price: !!price,
-                                                stocks: !!stocks,
                                                 category: !!category,
                                         },
                                 },
@@ -133,6 +125,8 @@ export async function POST(request) {
                 );
 
                 // Create new product
+                const basePrice = pricing[0]?.price || 0;
+
                 const product = new Product({
                         title,
                         description,
@@ -143,11 +137,9 @@ export async function POST(request) {
                         subcategory,
                         productType,
                         published: formData.get("published") === "true",
-                        stocks: stocks,
-                        price: price,
-                        salePrice: formData.get("salePrice")
-                                ? parseFloat(formData.get("salePrice"))
-                                : 0,
+                        stocks: 0,
+                        price: basePrice,
+                        salePrice: basePrice,
                         discount: formData.get("discount")
                                 ? parseFloat(formData.get("discount"))
                                 : 0,
