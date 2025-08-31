@@ -89,6 +89,10 @@ export const useAdminProductStore = create((set, get) => ({
 				productData.longDescription || productData.description
 			);
                         formData.append("category", productData.category);
+                        formData.append(
+                                "subcategory",
+                                productData.subcategory || ""
+                        );
                         formData.append("productType", productData.productType);
                         formData.append("price", productData.price.toString());
                         formData.append("salePrice", (productData.salePrice || 0).toString());
@@ -192,6 +196,10 @@ export const useAdminProductStore = create((set, get) => ({
 				updateData.longDescription || updateData.description
 			);
                         formData.append("category", updateData.category);
+                        formData.append(
+                                "subcategory",
+                                updateData.subcategory || ""
+                        );
                         formData.append("productType", updateData.productType);
                         formData.append("price", updateData.price.toString());
 			formData.append("salePrice", (updateData.salePrice || 0).toString());

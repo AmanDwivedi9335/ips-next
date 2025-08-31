@@ -60,9 +60,7 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                 product.layouts?.[0] || "",
         );
         const [hasQr, setHasQr] = useState(false);
-        const [calculatedPrice, setCalculatedPrice] = useState(
-                product.salePrice || product.price
-        );
+        const [calculatedPrice, setCalculatedPrice] = useState(0);
         const router = useRouter();
         const { addItem, isLoading } = useCartStore();
 
