@@ -22,15 +22,14 @@ export default function ProductCard({ product, viewMode = "grid" }) {
 		e.stopPropagation();
 
 		// Use the unified addItem function
-		await addItem({
-			id: product.id || product._id,
-			name: product.title,
-			description: product.description,
-			price: product.salePrice || product.price,
-			originalPrice: product.price,
-			image: product.images?.[0] || product.image,
-			inStock: product.inStock,
-		});
+                await addItem({
+                        id: product.id || product._id,
+                        name: product.title,
+                        description: product.description,
+                        price: product.salePrice || product.price,
+                        originalPrice: product.price,
+                        image: product.images?.[0] || product.image,
+                });
 	};
 
 	const handleBuyNow = async (e) => {
@@ -105,13 +104,6 @@ export default function ProductCard({ product, viewMode = "grid" }) {
 											</p>
 										)}
 									</div>
-									<p
-										className={`text-sm ${
-											product.inStock ? "text-green-600" : "text-red-600"
-										}`}
-									>
-										{product.inStock ? "In Stock" : "Out of Stock"}
-									</p>
 								</div>
 
 								<div className="flex items-center gap-2">
@@ -122,20 +114,20 @@ export default function ProductCard({ product, viewMode = "grid" }) {
 									>
 										<Heart className="h-4 w-4" />
 									</Button>
-									<Button
-										onClick={handleAddToCart}
-										disabled={!product.inStock || isLoading}
-										variant="outline"
-										className="rounded-full bg-transparent"
-									>
+                                                                        <Button
+                                                                                onClick={handleAddToCart}
+                                                                                disabled={isLoading}
+                                                                                variant="outline"
+                                                                                className="rounded-full bg-transparent"
+                                                                        >
 										<ShoppingCart className="h-4 w-4 mr-2" />
 										Add to Cart
 									</Button>
-									<Button
-										onClick={handleBuyNow}
-										disabled={!product.inStock || isLoading}
-										className="bg-black text-white hover:bg-gray-800 rounded-full"
-									>
+                                                                        <Button
+                                                                                onClick={handleBuyNow}
+                                                                                disabled={isLoading}
+                                                                                className="bg-black text-white hover:bg-gray-800 rounded-full"
+                                                                        >
 										Buy Now
 										<ArrowRight className="ml-2 h-4 w-4" />
 									</Button>
@@ -234,13 +226,6 @@ export default function ProductCard({ product, viewMode = "grid" }) {
 									</p>
 								)}
 							</div>
-							<p
-								className={`text-xs ${
-									product.inStock ? "text-green-600" : "text-red-600"
-								}`}
-							>
-								{product.inStock ? "In Stock" : "Out of Stock"}
-							</p>
 						</div>
 
 						{/* Actions */}
@@ -253,23 +238,23 @@ export default function ProductCard({ product, viewMode = "grid" }) {
 								>
 									<Heart className="h-4 w-4" />
 								</Button>
-								<Button
-									variant="outline"
-									size="icon"
-									onClick={handleAddToCart}
-									disabled={!product.inStock || isLoading}
-									className="rounded-full border-gray-300 hover:border-gray-400 bg-transparent"
-								>
+                                                                <Button
+                                                                        variant="outline"
+                                                                        size="icon"
+                                                                        onClick={handleAddToCart}
+                                                                        disabled={isLoading}
+                                                                        className="rounded-full border-gray-300 hover:border-gray-400 bg-transparent"
+                                                                >
 									<ShoppingCart className="h-4 w-4" />
 								</Button>
 							</div>
 
-							<Button
-								onClick={handleBuyNow}
-								disabled={!product.inStock || isLoading}
-								className="bg-black text-white hover:bg-gray-800 rounded-full flex-1 max-w-[120px]"
-								size="sm"
-							>
+                                                        <Button
+                                                                onClick={handleBuyNow}
+                                                                disabled={isLoading}
+                                                                className="bg-black text-white hover:bg-gray-800 rounded-full flex-1 max-w-[120px]"
+                                                                size="sm"
+                                                        >
 								Buy Now
 								<ArrowRight className="ml-1 h-3 w-3" />
 							</Button>

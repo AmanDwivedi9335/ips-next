@@ -26,9 +26,8 @@ const products = [
 		price: "₹5,000",
 		originalPrice: "₹7,500",
 		discount: "33% OFF",
-		image: Product1.src,
-		rating: 4.5,
-		inStock: true,
+                image: Product1.src,
+                rating: 4.5,
 	},
 	{
 		id: 2,
@@ -36,9 +35,8 @@ const products = [
 		price: "₹5,000",
 		originalPrice: "₹7,500",
 		discount: "33% OFF",
-		image: Product2.src,
-		rating: 4.8,
-		inStock: true,
+                image: Product2.src,
+                rating: 4.8,
 	},
 	{
 		id: 3,
@@ -46,9 +44,8 @@ const products = [
 		price: "₹5,000",
 		originalPrice: "₹7,500",
 		discount: "33% OFF",
-		image: Product3.src,
-		rating: 4.6,
-		inStock: true,
+                image: Product3.src,
+                rating: 4.6,
 	},
 	{
 		id: 4,
@@ -56,9 +53,8 @@ const products = [
 		price: "₹5,000",
 		originalPrice: "₹7,500",
 		discount: "33% OFF",
-		image: Product4.src,
-		rating: 4.7,
-		inStock: false,
+                image: Product4.src,
+                rating: 4.7,
 	},
 ];
 

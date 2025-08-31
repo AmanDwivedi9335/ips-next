@@ -137,7 +137,6 @@ export async function POST(request) {
                         subcategory,
                         productType,
                         published: formData.get("published") === "true",
-                        stocks: 0,
                         price: basePrice,
                         salePrice: basePrice,
                         discount: formData.get("discount")
