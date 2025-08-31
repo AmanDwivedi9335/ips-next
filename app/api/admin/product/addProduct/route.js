@@ -14,18 +14,18 @@ export async function POST(request) {
 		const description = formData.get("description");
 		const price = parseFloat(formData.get("price"));
 		const stocks = parseInt(formData.get("stocks"));
-		const category = formData.get("category");
-                const imageFiles = formData.getAll("images");
+                const category = formData.get("category");
+                const subcategory = formData.get("subcategory");
                 const productType = formData.get("productType") || "poster";
 
-		console.log("Received data:", {
-			title,
-			description,
-			price,
-			stocks,
-			category,
-			imageCount: imageFiles.length,
-		});
+                console.log("Received data:", {
+                        title,
+                        description,
+                        price,
+                        stocks,
+                        category,
+                        subcategory,
+                });
 
 		// Validate required fields
 		if (
@@ -33,65 +33,23 @@ export async function POST(request) {
 			!description ||
 			!price ||
 			!stocks ||
-			!category ||
-			!imageFiles.length
-		) {
-			return Response.json(
-				{
-					success: false,
-					message: "Missing required fields",
-					received: {
-						title: !!title,
-						description: !!description,
-						price: !!price,
-						stocks: !!stocks,
-						category: !!category,
-						images: imageFiles.length,
-					},
-				},
-				{ status: 400 }
-			);
-		}
-
-		// Upload images to Cloudinary
-		const uploadPromises = imageFiles.map(async (file) => {
-			try {
-				// Check if file is a Blob/File object
-				if (!(file instanceof Blob)) {
-					throw new Error("Invalid file format");
-				}
-
-				const buffer = Buffer.from(await file.arrayBuffer());
-
-				return new Promise((resolve, reject) => {
-					cloudinary.uploader
-						.upload_stream(
-							{
-								resource_type: "image",
-								folder: "safety_products_images",
-								quality: "auto",
-								format: "webp",
-							},
-							(error, result) => {
-								if (error) {
-									console.error("Cloudinary upload error:", error);
-									reject(error);
-								} else {
-									resolve(result.secure_url);
-								}
-							}
-						)
-						.end(buffer);
-				});
-			} catch (error) {
-				console.error("File processing error:", error);
-				throw error;
-			}
-		});
-
-		const imageUrls = await Promise.all(uploadPromises);
-
-		console.log("Images uploaded successfully:", imageUrls.length);
+                        !category
+                ) {
+                        return Response.json(
+                                {
+                                        success: false,
+                                        message: "Missing required fields",
+                                        received: {
+                                                title: !!title,
+                                                description: !!description,
+                                                price: !!price,
+                                                stocks: !!stocks,
+                                                category: !!category,
+                                        },
+                                },
+                                { status: 400 }
+                        );
+                }
 
 		// Parse features safely
                 let features = [];
@@ -166,6 +124,7 @@ export async function POST(request) {
                 );
 
                 const filteredLanguageImages = languageImageUrls.filter(Boolean);
+                const imageUrls = filteredLanguageImages.map((li) => li.image);
                 const allLanguages = Array.from(
                         new Set([
                                 ...languages,
@@ -181,6 +140,7 @@ export async function POST(request) {
                         images: imageUrls,
                         languageImages: filteredLanguageImages,
                         category,
+                        subcategory,
                         productType,
                         published: formData.get("published") === "true",
                         stocks: stocks,
