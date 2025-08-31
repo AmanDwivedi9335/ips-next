@@ -24,27 +24,21 @@ import {
 } from "@/components/ui/collapsible";
 import { Button } from "@/components/ui/button";
 import {
-	LayoutDashboard,
-	Package,
-	Users,
-	ShoppingCart,
-	UserCheck,
-	Settings,
-	Globe,
-	Store,
-	HelpCircle,
-	ChevronDown,
-	Sun,
-	DollarSign,
-	Moon,
-	FolderOpen,
-	Tags,
+        LayoutDashboard,
+        Package,
+        Users,
+        ShoppingCart,
+        Settings,
+        HelpCircle,
+        ChevronDown,
+        Sun,
+        DollarSign,
+        Moon,
+        FolderOpen,
+        Tags,
         Layers,
         Ticket,
         Languages,
-        Eye,
-	Palette,
-	Cog,
 } from "lucide-react";
 import Logo from "@/public/ipslogo.png";
 
@@ -54,13 +48,12 @@ const menuItems = [
 		icon: LayoutDashboard,
 		href: "/admin/dashboard",
 	},
-	{
-		title: "Catalog",
-		icon: Package,
-		items: [
+        {
+                title: "Catalog",
+                icon: Package,
+                items: [
                         { title: "Products", href: "/admin/catalog/products", icon: FolderOpen },
                         { title: "Categories", href: "/admin/catalog/categories", icon: Tags },
-                        { title: "Attributes", href: "/admin/catalog/attributes", icon: Layers },
                         { title: "Materials", href: "/admin/catalog/materials", icon: Layers },
                         { title: "Sizes", href: "/admin/catalog/sizes", icon: Package },
                         { title: "Languages", href: "/admin/catalog/languages", icon: Languages },
@@ -68,65 +61,26 @@ const menuItems = [
                         { title: "Pricing", href: "/admin/catalog/prices", icon: DollarSign },
                 ],
         },
-	{
-		title: "Customers",
-		icon: Users,
-		href: "/admin/customers",
-	},
-	{
-		title: "Sellers",
-		icon: Users,
-		href: "/admin/sellers",
-	},
-	{
-		title: "Orders",
-		icon: ShoppingCart,
-		href: "/admin/orders",
-	},
-	{
-		title: "Our Staff",
-		icon: UserCheck,
-		href: "/admin/our-staff",
-	},
-	{
-		title: "Settings",
-		icon: Settings,
-		href: "/admin/settings",
-	},
-	{
-		title: "International",
-		icon: Globe,
-		items: [
-			{
-				title: "Languages",
-				href: "/admin/international/languages",
-				icon: Languages,
-			},
-			{
-				title: "Currencies",
-				href: "/admin/international/currencies",
-				icon: DollarSign,
-			},
-		],
-	},
-	{
-		title: "Online Store",
-		icon: Store,
-		items: [
-			{ title: "View Store", href: "/admin/store/view", icon: Eye },
-			{
-				title: "Store Customizations",
-				href: "/admin/store/customizations",
-				icon: Palette,
-			},
-			{ title: "Store Settings", href: "/admin/store/settings", icon: Cog },
-		],
-	},
-	{
-		title: "Help & getting started",
-		icon: HelpCircle,
-		href: "/admin/help",
-	},
+        {
+                title: "Customers",
+                icon: Users,
+                href: "/admin/customers",
+        },
+        {
+                title: "Orders",
+                icon: ShoppingCart,
+                href: "/admin/orders",
+        },
+        {
+                title: "Settings",
+                icon: Settings,
+                href: "/admin/settings",
+        },
+        {
+                title: "Help & getting started",
+                icon: HelpCircle,
+                href: "/admin/help",
+        },
 ];
 
 export function AdminSidebar() {
