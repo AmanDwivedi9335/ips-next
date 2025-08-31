@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -12,6 +12,7 @@ import {
         SelectTrigger,
         SelectValue,
 } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import {
 	ArrowLeft,
 	ShoppingCart,
@@ -55,14 +56,43 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
         const [selectedMaterial, setSelectedMaterial] = useState(
                 product.materials?.[0] || ""
         );
+        const [selectedLayout, setSelectedLayout] = useState(
+                product.layouts?.[0] || "",
+        );
+        const [hasQr, setHasQr] = useState(false);
+        const [calculatedPrice, setCalculatedPrice] = useState(
+                product.salePrice || product.price
+        );
         const router = useRouter();
         const { addItem, isLoading } = useCartStore();
+
+        useEffect(() => {
+                const fetchPrice = async () => {
+                        try {
+                                const params = new URLSearchParams({
+                                        productType: product.productType,
+                                        layout: selectedLayout,
+                                        size: selectedSize,
+                                        material: selectedMaterial,
+                                        qr: hasQr,
+                                });
+                                const res = await fetch(`/api/prices?${params.toString()}`);
+                                const data = await res.json();
+                                if (data.prices && data.prices.length > 0) {
+                                        setCalculatedPrice(data.prices[0].price);
+                                }
+                        } catch (e) {
+                                // ignore
+                        }
+                };
+                fetchPrice();
+        }, [selectedLayout, selectedSize, selectedMaterial, hasQr, product]);
 
         const languageImage = product.languageImages?.find(
                 (l) => l.language === selectedLanguage
         )?.image;
         const discount = product.mrp
-                ? Math.round(((product.mrp - product.price) / product.mrp) * 100)
+                ? Math.round(((product.mrp - calculatedPrice) / product.mrp) * 100)
                 : product.discountPercentage;
         const categoryName = product.category?.replace("-", " ");
         const subcategoryName = product.subcategory?.replace("-", " ");
@@ -98,25 +128,25 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
 	const quantityOffers = [
 		{
 			qty: 2,
-			price: Math.round(product.price * 0.95),
+                        price: Math.round(calculatedPrice * 0.95),
 			discount: 5,
 			label: "Qty 2",
 		},
 		{
 			qty: 3,
-			price: Math.round(product.price * 0.9),
+                        price: Math.round(calculatedPrice * 0.9),
 			discount: 10,
 			label: "Qty 3",
 		},
 		{
 			qty: 5,
-			price: Math.round(product.price * 0.85),
+                        price: Math.round(calculatedPrice * 0.85),
 			discount: 15,
 			label: "Qty 5",
 		},
 		{
 			qty: 10,
-			price: Math.round(product.price * 0.8),
+                        price: Math.round(calculatedPrice * 0.8),
 			discount: 20,
 			label: "Qty 10",
 		},
@@ -130,8 +160,8 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
 			id: product.id || product._id,
 			name: product.title,
 			description: product.description,
-			price: product.salePrice || product.price,
-			originalPrice: product.price,
+                        price: calculatedPrice,
+                        originalPrice: calculatedPrice,
 			image: product.images?.[0] || product.image,
 			inStock: product.inStock,
 		});
@@ -318,11 +348,11 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
 
                                                         {/* Product price */}
                                                         <p className="text-xl lg:text-2xl font-semibold text-black mb-2">
-                                                                ₹ {product.price.toLocaleString()}
+                                                        ₹ {calculatedPrice.toLocaleString()}
                                                         </p>
 
                                                         {/* MRP and discount */}
-                                                        {product.mrp && product.mrp > product.price && (
+                                                        {product.mrp && product.mrp > calculatedPrice && (
                                                                 <div className="flex items-center mb-4">
                                                                         <span className="text-gray-500 line-through mr-2">
                                                                                 ₹ {product.mrp.toLocaleString()}
@@ -364,6 +394,25 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                                                         </div>
                                                 )}
 
+                                                {product.layouts && product.layouts.length > 0 && (
+                                                        <div className="mt-4">
+                                                                <Select
+                                                                        value={selectedLayout}
+                                                                        onValueChange={setSelectedLayout}
+                                                                >
+                                                                        <SelectTrigger className="w-40">
+                                                                                <SelectValue placeholder="Layout" />
+                                                                        </SelectTrigger>
+                                                                        <SelectContent>
+                                                                                {product.layouts.map((lay) => (
+                                                                                        <SelectItem key={lay} value={lay}>
+                                                                                                {lay}
+                                                                                        </SelectItem>
+                                                                                ))}
+                                                                        </SelectContent>
+                                                                </Select>
+                                                        </div>
+                                                )}
                                                 {product.sizes && product.sizes.length > 0 && (
                                                         <div className="mt-4">
                                                                 <Select
@@ -401,6 +450,12 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                                                                                 ))}
                                                                         </SelectContent>
                                                                 </Select>
+                                                        </div>
+                                                )}
+                                                {product.category?.toLowerCase() === "poster" && (
+                                                        <div className="mt-4 flex items-center space-x-2">
+                                                                <Switch checked={hasQr} onCheckedChange={setHasQr} />
+                                                                <span>QR Code</span>
                                                         </div>
                                                 )}
 

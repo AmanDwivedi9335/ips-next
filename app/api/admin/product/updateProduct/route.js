@@ -32,7 +32,8 @@ export async function PUT(request) {
 		const title = formData.get("title");
 		const description = formData.get("description");
 		const longDescription = formData.get("longDescription");
-		const category = formData.get("category");
+                const category = formData.get("category");
+                const productType = formData.get("productType") || "poster";
 		const price = parseFloat(formData.get("price"));
 		const salePrice = formData.get("salePrice")
 			? parseFloat(formData.get("salePrice"))
@@ -41,20 +42,24 @@ export async function PUT(request) {
 		const discount = formData.get("discount")
 			? parseFloat(formData.get("discount"))
 			: 0;
-		const type = formData.get("type");
-		const published = formData.get("published") === "true";
+                const type = formData.get("type");
+                const published = formData.get("published") === "true";
 
 		// Parse features
-		let features = [];
-		try {
-			const featuresString = formData.get("features");
-			if (featuresString) {
-				features = JSON.parse(featuresString);
-			}
-		} catch (error) {
-			console.error("Error parsing features:", error);
-			features = [];
-		}
+                let features = [];
+                let layouts = [];
+                try {
+                        const featuresString = formData.get("features");
+                        if (featuresString) {
+                                features = JSON.parse(featuresString);
+                        }
+                        const layoutsStr = formData.get("layouts");
+                        if (layoutsStr) layouts = JSON.parse(layoutsStr);
+                } catch (error) {
+                        console.error("Error parsing features/layouts:", error);
+                        features = [];
+                        layouts = [];
+                }
 
 		// Handle images
 		let imageUrls = [];
@@ -124,15 +129,17 @@ export async function PUT(request) {
 		product.title = title;
 		product.description = description;
 		product.longDescription = longDescription || description;
-		product.category = category;
+                product.category = category;
+                product.productType = productType;
 		product.price = price;
 		product.salePrice = salePrice;
 		product.stocks = stocks;
 		product.discount = discount;
-		product.type = type;
-		product.published = published;
-		product.features = features;
-		product.images = imageUrls;
+                product.type = type;
+                product.published = published;
+                product.features = features;
+                product.layouts = layouts;
+                product.images = imageUrls;
 
 		await product.save();
 
