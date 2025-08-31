@@ -41,14 +41,7 @@ export async function POST(req) {
 
 		await order.save();
 
-		// Update product stocks
-		for (const item of orderData.products) {
-			await Product.findByIdAndUpdate(item.productId, {
-				$inc: { stocks: -item.quantity },
-			});
-		}
-
-		// Clear cart if it's a cart checkout
+                // Clear cart if it's a cart checkout
 		if (clearCart && userId) {
 			await Cart.findOneAndUpdate(
 				{ user: userId },

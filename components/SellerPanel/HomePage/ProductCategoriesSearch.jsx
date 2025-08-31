@@ -68,7 +68,7 @@ const filterOptions = [
 	{ id: 1, label: "Category", icon: Icon1 },
 	{ id: 2, label: "Price", icon: Icon1 },
 	{ id: 3, label: "MOQ", icon: Icon2 },
-	{ id: 4, label: "Stock Availability", icon: Icon3 },
+        { id: 4, label: "Availability", icon: Icon3 },
 	{ id: 5, label: "Verified Seller", icon: Icon4 },
 	{ id: 6, label: "Delivery Timeline", icon: Icon5 },
 	{ id: 7, label: "Ratings", icon: Icon6 },

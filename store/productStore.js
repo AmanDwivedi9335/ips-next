@@ -13,9 +13,8 @@ export const useProductStore = create(
 				filters: {
 					categories: [],
 					priceRange: [0, 10000],
-					inStock: false,
-					discount: 0,
-					type: "",
+                                        discount: 0,
+                                        type: "",
 				},
 				availableFilters: null,
 				currentCategory: "all",
@@ -64,9 +63,6 @@ export const useProductStore = create(
 							params.append("maxPrice", filters.priceRange[1].toString());
 						}
 
-						if (filters.inStock) {
-							params.append("inStock", "true");
-						}
 
 						if (filters.discount > 0) {
 							params.append("discount", filters.discount.toString());
@@ -105,13 +101,13 @@ export const useProductStore = create(
 						if (data.success) {
 							set({
 								availableFilters: data.filters,
-								filters: {
-									...get().filters,
-									priceRange: [
-										data.filters.priceRange.min,
-										data.filters.priceRange.max,
-									],
-								},
+                                filters: {
+                                        ...get().filters,
+                                        priceRange: [
+                                                data.filters.priceRange.min,
+                                                data.filters.priceRange.max,
+                                        ],
+                                },
 							});
 						}
 					} catch (error) {
