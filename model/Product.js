@@ -6,7 +6,12 @@ const ProductSchema = new mongoose.Schema(
 		description: { type: String, required: true },
 		longDescription: { type: String, required: true },
 		images: [{ type: String }],
-		category: { type: String, required: true },
+                category: { type: String, required: true },
+                productType: {
+                        type: String,
+                        enum: ["poster", "sign"],
+                        required: true,
+                },
 		published: { type: Boolean, default: true },
 		stocks: { type: Number, required: true },
                 price: { type: Number, required: true },
@@ -24,6 +29,7 @@ const ProductSchema = new mongoose.Schema(
                 languages: [{ type: String }],
                 sizes: [{ type: String }],
                 materials: [{ type: String }],
+                layouts: [{ type: String }],
                 materialSpecification: { type: String },
                 subcategory: { type: String },
 

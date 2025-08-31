@@ -1,5 +1,6 @@
 import { dbConnect } from "@/lib/dbConnect.js";
 import Product from "@/model/Product.js";
+import Price from "@/model/Price.js";
 import cloudinary from "@/lib/cloudnary.js";
 
 export async function POST(request) {
@@ -14,7 +15,8 @@ export async function POST(request) {
 		const price = parseFloat(formData.get("price"));
 		const stocks = parseInt(formData.get("stocks"));
 		const category = formData.get("category");
-		const imageFiles = formData.getAll("images");
+                const imageFiles = formData.getAll("images");
+                const productType = formData.get("productType") || "poster";
 
 		console.log("Received data:", {
 			title,
@@ -107,16 +109,22 @@ export async function POST(request) {
                 let languages = [];
                 let materials = [];
                 let sizes = [];
+                let layouts = [];
                 let languageImages = [];
+                let pricing = [];
                 try {
                         const langStr = formData.get("languages");
                         const matStr = formData.get("materials");
                         const sizeStr = formData.get("sizes");
+                        const layoutStr = formData.get("layouts");
                         const langImgStr = formData.get("languageImages");
+                        const priceStr = formData.get("pricing");
                         if (langStr) languages = JSON.parse(langStr);
                         if (matStr) materials = JSON.parse(matStr);
                         if (sizeStr) sizes = JSON.parse(sizeStr);
+                        if (layoutStr) layouts = JSON.parse(layoutStr);
                         if (langImgStr) languageImages = JSON.parse(langImgStr);
+                        if (priceStr) pricing = JSON.parse(priceStr);
                 } catch (error) {
                         console.error("Error parsing arrays:", error);
                 }
@@ -173,6 +181,7 @@ export async function POST(request) {
                         images: imageUrls,
                         languageImages: filteredLanguageImages,
                         category,
+                        productType,
                         published: formData.get("published") === "true",
                         stocks: stocks,
                         price: price,
@@ -187,16 +196,26 @@ export async function POST(request) {
                         languages: allLanguages,
                         materials,
                         sizes,
+                        layouts,
                 });
 
-		await product.save();
+                await product.save();
 
-		console.log("Product saved successfully:", product._id);
+                console.log("Product saved successfully:", product._id);
 
-		return Response.json({
-			success: true,
-			message: "Product added successfully",
-			product,
+                if (pricing.length > 0) {
+                        const priceDocs = pricing.map((p) => ({
+                                ...p,
+                                product: product._id,
+                                productType,
+                        }));
+                        await Price.insertMany(priceDocs);
+                }
+
+                return Response.json({
+                        success: true,
+                        message: "Product added successfully",
+                        product,
 		});
 	} catch (error) {
 		console.error("Add product error:", error);

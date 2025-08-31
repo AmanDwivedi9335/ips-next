@@ -59,8 +59,13 @@ export function AddProductPopup({ open, onOpenChange }) {
         const [selectedLanguages, setSelectedLanguages] = useState([]);
         const [selectedMaterials, setSelectedMaterials] = useState([]);
         const [selectedSizes, setSelectedSizes] = useState([]);
+        const [selectedLayouts, setSelectedLayouts] = useState([]);
+        const [layoutInput, setLayoutInput] = useState("");
         const [languageImages, setLanguageImages] = useState([
                 { language: "", image: "" },
+        ]);
+        const [prices, setPrices] = useState([
+                { layout: "", material: "", size: "", qr: false, price: "" },
         ]);
 
         useEffect(() => {
@@ -78,10 +83,11 @@ export function AddProductPopup({ open, onOpenChange }) {
 		salePrice: "",
 		stocks: "",
 		discount: "",
-		type: "featured",
-		published: true,
-		images: [],
-	});
+                type: "featured",
+                productType: "poster",
+                published: true,
+                images: [],
+        });
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
@@ -99,6 +105,19 @@ export function AddProductPopup({ open, onOpenChange }) {
                         );
 
                         // Prepare product data with proper types
+                        const priceData = prices
+                                .filter(
+                                        (p) =>
+                                                p.layout &&
+                                                p.material &&
+                                                p.size &&
+                                                p.price !== ""
+                                )
+                                .map((p) => ({
+                                        ...p,
+                                        price: parseFloat(p.price),
+                                }));
+
                         const productData = {
                                 title: formData.title,
                                 description: formData.description,
@@ -121,6 +140,9 @@ export function AddProductPopup({ open, onOpenChange }) {
                                 languages: allLanguages,
                                 materials: selectedMaterials,
                                 sizes: selectedSizes,
+                                layouts: selectedLayouts,
+                                productType: formData.productType,
+                                pricing: priceData,
                         };
 
 			console.log("Product Data:", productData);
@@ -158,7 +180,9 @@ export function AddProductPopup({ open, onOpenChange }) {
                 setSelectedLanguages([]);
                 setSelectedMaterials([]);
                 setSelectedSizes([]);
+                setSelectedLayouts([]);
                 setLanguageImages([{ language: "", image: "" }]);
+                setPrices([{ layout: "", material: "", size: "", qr: false, price: "" }]);
         };
 
 	const addFeature = () => {
@@ -190,6 +214,34 @@ export function AddProductPopup({ open, onOpenChange }) {
                 const updated = [...languageImages];
                 updated[index][field] = value;
                 setLanguageImages(updated);
+        };
+
+        const addLayout = () => {
+                if (layoutInput.trim()) {
+                        setSelectedLayouts([...selectedLayouts, layoutInput.trim()]);
+                        setLayoutInput("");
+                }
+        };
+
+        const removeLayout = (layout) => {
+                setSelectedLayouts(selectedLayouts.filter((l) => l !== layout));
+        };
+
+        const addPriceRow = () => {
+                setPrices([
+                        ...prices,
+                        { layout: "", material: "", size: "", qr: false, price: "" },
+                ]);
+        };
+
+        const removePriceRow = (index) => {
+                setPrices(prices.filter((_, i) => i !== index));
+        };
+
+        const updatePriceRow = (index, field, value) => {
+                const updated = [...prices];
+                updated[index][field] = value;
+                setPrices(updated);
         };
 
 	return (
@@ -348,11 +400,32 @@ export function AddProductPopup({ open, onOpenChange }) {
 											</SelectItem>
 										))}
 									</SelectContent>
-								</Select>
-							</div>
+                                                                </Select>
+                                                        </div>
 
-							<div>
-								<Label>Product Type</Label>
+                                                        <div>
+                                                                <Label>Product Kind *</Label>
+                                                                <Select
+                                                                        value={formData.productType}
+                                                                        onValueChange={(value) =>
+                                                                                setFormData({
+                                                                                        ...formData,
+                                                                                        productType: value,
+                                                                                })
+                                                                        }
+                                                                >
+                                                                        <SelectTrigger className="mt-1">
+                                                                                <SelectValue placeholder="Select kind" />
+                                                                        </SelectTrigger>
+                                                                        <SelectContent>
+                                                                                <SelectItem value="poster">Poster</SelectItem>
+                                                                                <SelectItem value="sign">Sign</SelectItem>
+                                                                        </SelectContent>
+                                                                </Select>
+                                                        </div>
+
+                                                        <div>
+                                                                <Label>Product Type</Label>
 								<Select
 									value={formData.type}
 									onValueChange={(value) =>
@@ -542,6 +615,175 @@ export function AddProductPopup({ open, onOpenChange }) {
                                                                 ))}
                                                         </div>
                                                 </div>
+
+                                                {/* Layouts */}
+                                                <div className="mt-4">
+                                                        <Label>Layouts</Label>
+                                                        <div className="flex space-x-2 mt-2">
+                                                                <Input
+                                                                        placeholder="Add layout"
+                                                                        value={layoutInput}
+                                                                        onChange={(e) => setLayoutInput(e.target.value)}
+                                                                />
+                                                                <Button
+                                                                        type="button"
+                                                                        variant="outline"
+                                                                        onClick={addLayout}
+                                                                >
+                                                                        <Plus className="h-4 w-4 mr-2" /> Add Layout
+                                                                </Button>
+                                                        </div>
+                                                        <div className="flex flex-wrap gap-2 mt-2">
+                                                                {selectedLayouts.map((layout) => (
+                                                                        <div
+                                                                                key={layout}
+                                                                                className="flex items-center space-x-1 bg-gray-200 rounded px-2 py-1 text-sm"
+                                                                        >
+                                                                                <span>{layout}</span>
+                                                                                <X
+                                                                                        className="h-3 w-3 cursor-pointer"
+                                                                                        onClick={() => removeLayout(layout)}
+                                                                                />
+                                                                        </div>
+                                                                ))}
+                                                        </div>
+                                                </div>
+
+                                                {formData.productType === "poster" && (
+                                                        <div className="mt-6">
+                                                                <Label>Pricing</Label>
+                                                                {prices.map((p, index) => (
+                                                                        <div
+                                                                                key={index}
+                                                                                className="grid grid-cols-5 gap-2 items-center mt-2"
+                                                                        >
+                                                                                <Select
+                                                                                        value={p.material}
+                                                                                        onValueChange={(value) =>
+                                                                                                updatePriceRow(
+                                                                                                        index,
+                                                                                                        "material",
+                                                                                                        value
+                                                                                                )
+                                                                                        }
+                                                                                >
+                                                                                        <SelectTrigger>
+                                                                                                <SelectValue placeholder="Material" />
+                                                                                        </SelectTrigger>
+                                                                                        <SelectContent>
+                                                                                                {selectedMaterials.map((m) => (
+                                                                                                        <SelectItem
+                                                                                                                key={m}
+                                                                                                                value={m}
+                                                                                                        >
+                                                                                                                {m}
+                                                                                                        </SelectItem>
+                                                                                                ))}
+                                                                                        </SelectContent>
+                                                                                </Select>
+                                                                                <Select
+                                                                                        value={p.size}
+                                                                                        onValueChange={(value) =>
+                                                                                                updatePriceRow(index, "size", value)
+                                                                                        }
+                                                                                >
+                                                                                        <SelectTrigger>
+                                                                                                <SelectValue placeholder="Size" />
+                                                                                        </SelectTrigger>
+                                                                                        <SelectContent>
+                                                                                                {selectedSizes.map((s) => (
+                                                                                                        <SelectItem
+                                                                                                                key={s}
+                                                                                                                value={s}
+                                                                                                        >
+                                                                                                                {s}
+                                                                                                        </SelectItem>
+                                                                                                ))}
+                                                                                        </SelectContent>
+                                                                                </Select>
+                                                                                <Select
+                                                                                        value={p.layout}
+                                                                                        onValueChange={(value) =>
+                                                                                                updatePriceRow(
+                                                                                                        index,
+                                                                                                        "layout",
+                                                                                                        value
+                                                                                                )
+                                                                                        }
+                                                                                >
+                                                                                        <SelectTrigger>
+                                                                                                <SelectValue placeholder="Layout" />
+                                                                                        </SelectTrigger>
+                                                                                        <SelectContent>
+                                                                                                {selectedLayouts.map((l) => (
+                                                                                                        <SelectItem
+                                                                                                                key={l}
+                                                                                                                value={l}
+                                                                                                        >
+                                                                                                                {l}
+                                                                                                        </SelectItem>
+                                                                                                ))}
+                                                                                        </SelectContent>
+                                                                                </Select>
+                                                                                <Select
+                                                                                        value={p.qr ? "true" : "false"}
+                                                                                        onValueChange={(value) =>
+                                                                                                updatePriceRow(
+                                                                                                        index,
+                                                                                                        "qr",
+                                                                                                        value === "true"
+                                                                                                )
+                                                                                        }
+                                                                                >
+                                                                                        <SelectTrigger>
+                                                                                                <SelectValue placeholder="QR" />
+                                                                                        </SelectTrigger>
+                                                                                        <SelectContent>
+                                                                                                <SelectItem value="false">
+                                                                                                        Without QR
+                                                                                                </SelectItem>
+                                                                                                <SelectItem value="true">
+                                                                                                        With QR
+                                                                                                </SelectItem>
+                                                                                        </SelectContent>
+                                                                                </Select>
+                                                                                <div className="flex items-center gap-2">
+                                                                                        <Input
+                                                                                                type="number"
+                                                                                                placeholder="Price"
+                                                                                                value={p.price}
+                                                                                                onChange={(e) =>
+                                                                                                        updatePriceRow(
+                                                                                                                index,
+                                                                                                                "price",
+                                                                                                                e.target.value
+                                                                                                        )
+                                                                                                }
+                                                                                        />
+                                                                                        {prices.length > 1 && (
+                                                                                                <Button
+                                                                                                        type="button"
+                                                                                                        variant="ghost"
+                                                                                                        onClick={() =>
+                                                                                                                removePriceRow(index)
+                                                                                                        }
+                                                                                                >
+                                                                                                        <X className="h-4 w-4" />
+                                                                                                </Button>
+                                                                                        )}
+                                                                                </div>
+                                                                        </div>
+                                                                ))}
+                                                                <Button
+                                                                        type="button"
+                                                                        variant="outline"
+                                                                        className="mt-2"
+                                                                        onClick={addPriceRow}
+                                                                >
+                                                                        <Plus className="h-4 w-4 mr-2" /> Add Price
+                                                                </Button>
+                                                        </div>
+                                                )}
 
                                                 {/* Features Section */}
                                                 <div className="mt-4">

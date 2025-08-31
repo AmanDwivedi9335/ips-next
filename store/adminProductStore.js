@@ -88,10 +88,11 @@ export const useAdminProductStore = create((set, get) => ({
 				"longDescription",
 				productData.longDescription || productData.description
 			);
-			formData.append("category", productData.category);
-			formData.append("price", productData.price.toString());
-			formData.append("salePrice", (productData.salePrice || 0).toString());
-			formData.append("stocks", productData.stocks.toString());
+                        formData.append("category", productData.category);
+                        formData.append("productType", productData.productType);
+                        formData.append("price", productData.price.toString());
+                        formData.append("salePrice", (productData.salePrice || 0).toString());
+                        formData.append("stocks", productData.stocks.toString());
 			formData.append("discount", (productData.discount || 0).toString());
 			formData.append("type", productData.type);
 			formData.append("published", productData.published);
@@ -113,8 +114,16 @@ export const useAdminProductStore = create((set, get) => ({
                                 JSON.stringify(productData.sizes || [])
                         );
                         formData.append(
+                                "layouts",
+                                JSON.stringify(productData.layouts || [])
+                        );
+                        formData.append(
                                 "languageImages",
                                 JSON.stringify(productData.languageImages || [])
+                        );
+                        formData.append(
+                                "pricing",
+                                JSON.stringify(productData.pricing || [])
                         );
 
 			// Handle base64 images - convert them to Blob objects
@@ -182,8 +191,9 @@ export const useAdminProductStore = create((set, get) => ({
 				"longDescription",
 				updateData.longDescription || updateData.description
 			);
-			formData.append("category", updateData.category);
-			formData.append("price", updateData.price.toString());
+                        formData.append("category", updateData.category);
+                        formData.append("productType", updateData.productType);
+                        formData.append("price", updateData.price.toString());
 			formData.append("salePrice", (updateData.salePrice || 0).toString());
 			formData.append("stocks", updateData.stocks.toString());
 			formData.append("discount", (updateData.discount || 0).toString());
@@ -205,6 +215,10 @@ export const useAdminProductStore = create((set, get) => ({
                         formData.append(
                                 "sizes",
                                 JSON.stringify(updateData.sizes || [])
+                        );
+                        formData.append(
+                                "layouts",
+                                JSON.stringify(updateData.layouts || [])
                         );
                         formData.append(
                                 "languageImages",
