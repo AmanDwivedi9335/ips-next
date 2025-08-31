@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/card";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import Logo from "@/public/SafetyLogo.png";
+import Logo from "@/public/ipslogo.png";
 import LoginModel from "@/public/images/login/LoginModel.png";
 
 const SignupPage = () => {
