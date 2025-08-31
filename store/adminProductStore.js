@@ -13,8 +13,9 @@ export const useAdminProductStore = create((set, get) => ({
 		category: "all",
 		minPrice: "",
 		maxPrice: "",
-                discount: "",
-                published: null,
+		discount: "",
+		published: null,
+		inStock: null,
 	},
 	pagination: {
 		currentPage: 1,
@@ -373,7 +374,7 @@ export const useAdminProductStore = create((set, get) => ({
 				maxPrice: "",
 				discount: "",
 				published: null,
-                            
+				inStock: null,
 			},
 			pagination: { ...get().pagination, currentPage: 1 },
 		});

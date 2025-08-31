@@ -90,6 +90,10 @@ export async function GET(request) {
 			images: product.images || [],
 			gallery: product.images || [],
 			category: product.category,
+			inStock: product.inStock && product.stocks > 0,
+			stocks: product.stocks,
+			status:
+				product.inStock && product.stocks > 0 ? "In Stock" : "Out of Stock",
 			type: product.type,
 			features: product.features || [],
 			colors: ["blue", "black", "red", "orange"],

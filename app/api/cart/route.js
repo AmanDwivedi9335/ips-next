@@ -24,7 +24,7 @@ export async function GET() {
 
 		let cart = await Cart.findOne({ user: decoded.id }).populate({
 			path: "products.product",
-                        select: "title description images price salePrice discount",
+			select: "title description images price salePrice discount inStock",
 		});
 
 		if (!cart) {
@@ -56,12 +56,18 @@ export async function POST(req) {
 		const decoded = verifyToken(token);
 		const { productId, quantity = 1 } = await req.json();
 
-                // Verify product exists
+		// Verify product exists and is in stock
 		const product = await Product.findById(productId);
 		if (!product) {
 			return Response.json({ message: "Product not found" }, { status: 404 });
 		}
 
+		if (!product.inStock || product.stocks < quantity) {
+			return Response.json(
+				{ message: "Product out of stock" },
+				{ status: 400 }
+			);
+		}
 
 		// Find or create cart
 		let cart = await Cart.findOne({ user: decoded.id });

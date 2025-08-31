@@ -146,7 +146,9 @@ export default function AdminProductsPage() {
 				"Category",
 				"Price",
 				"Sale Price",
-                                "Published",
+				"Stock",
+				"Status",
+				"Published",
 			].join(","),
 			...products.map((product) =>
 				[
@@ -155,7 +157,9 @@ export default function AdminProductsPage() {
 					product.category,
 					product.price,
 					product.salePrice || product.price,
-                                        product.published ? "Yes" : "No",
+					product.stocks,
+					product.inStock ? "In Stock" : "Out of Stock",
+					product.published ? "Yes" : "No",
 				].join(",")
 			),
 		].join("\n");
@@ -389,13 +393,24 @@ export default function AdminProductsPage() {
 												</Button>
 											</TableHead>
 											<TableHead>Sale Price</TableHead>
-                                                                                        <TableHead>Published</TableHead>
-                                                                                        <TableHead>Actions</TableHead>
-                                                                               </TableRow>
-                                                                       </TableHeader>
-                                                                       <TableBody>
-                                                                               {products.map((product, index) => (
-                                                                                       <motion.tr
+											<TableHead>
+												<Button
+													variant="ghost"
+													onClick={() => handleSort("stocks")}
+													className="p-0 h-auto font-medium"
+												>
+													Stock
+													<ArrowUpDown className="ml-2 h-4 w-4" />
+												</Button>
+											</TableHead>
+											<TableHead>Status</TableHead>
+											<TableHead>Published</TableHead>
+											<TableHead>Actions</TableHead>
+										</TableRow>
+									</TableHeader>
+									<TableBody>
+										{products.map((product, index) => (
+											<motion.tr
 												key={product._id}
 												initial={{ opacity: 0, y: 10 }}
 												animate={{ opacity: 1, y: 0 }}
@@ -443,19 +458,40 @@ export default function AdminProductsPage() {
 														? `₹${product.salePrice.toLocaleString()}`
 														: "-"}
 												</TableCell>
-                                                                                                <TableCell>
-                                                                                                        <Switch
-                                                                                                                checked={product.published}
-                                                                                                                onCheckedChange={(checked) =>
-                                                                                                                        handlePublishToggle(product._id, checked)
-                                                                                                                }
-                                                                                                        />
-                                                                                                </TableCell>
-                                                                                                <TableCell>
-                                                                                                        <div className="flex gap-2">
-                                                                                                                {/* <Button size="icon" variant="outline">
-                                                                                                                        <Eye className="w-4 h-4" />
-                                                                                                                </Button> */}
+												<TableCell>
+													<div className="flex items-center gap-2">
+														<span>{product.stocks}</span>
+														<div
+															className={`w-2 h-2 rounded-full ${
+																product.inStock ? "bg-green-500" : "bg-red-500"
+															}`}
+														/>
+													</div>
+												</TableCell>
+												<TableCell>
+													<Badge
+														className={
+															product.inStock
+																? "bg-green-100 text-green-800 hover:bg-green-200"
+																: "bg-red-100 text-red-800 hover:bg-red-200"
+														}
+													>
+														{product.inStock ? "In Stock" : "Out of Stock"}
+													</Badge>
+												</TableCell>
+												<TableCell>
+													<Switch
+														checked={product.published}
+														onCheckedChange={(checked) =>
+															handlePublishToggle(product._id, checked)
+														}
+													/>
+												</TableCell>
+												<TableCell>
+													<div className="flex gap-2">
+														{/* <Button size="icon" variant="outline">
+															<Eye className="w-4 h-4" />
+														</Button> */}
 														<Button
 															size="icon"
 															variant="outline"

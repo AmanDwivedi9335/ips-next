@@ -25,9 +25,9 @@ export async function POST(request) {
 		for (const productData of products) {
 			try {
 				// Validate required fields
-                                const { title, description, price, category } = productData;
+				const { title, description, price, stocks, category } = productData;
 
-                                if (!title || !description || !price || !category) {
+				if (!title || !description || !price || !stocks || !category) {
 					results.failed.push({
 						data: productData,
 						error: "Missing required fields",
@@ -70,6 +70,7 @@ export async function POST(request) {
 					category,
 					published:
 						productData.published !== undefined ? productData.published : true,
+					stocks: Number.parseInt(stocks),
 					price: Number.parseFloat(price),
 					salePrice: productData.salePrice
 						? Number.parseFloat(productData.salePrice)
