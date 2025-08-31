@@ -17,7 +17,7 @@ import {
 import { useAuthStore } from "@/store/authStore";
 import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
-import Logo from "@/public/SafetyLogo.png";
+import Logo from "@/public/ipslogo.png";
 import LoginModel from "@/public/images/login/LoginModel.png";
 
 const LoginPage = () => {
