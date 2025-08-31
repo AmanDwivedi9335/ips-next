@@ -35,6 +35,7 @@ import {
 	HelpCircle,
 	ChevronDown,
 	Sun,
+	DollarSign,
 	Moon,
 	FolderOpen,
 	Tags,

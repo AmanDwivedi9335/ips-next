@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
         images: {
-                domains: ["res.cloudinary.com", "buysafetyposters.com"],
+                domains: ["res.cloudinary.com", "www.buysafetyposters.com"],
         },
         eslint: {
                 ignoreDuringBuilds: true,
