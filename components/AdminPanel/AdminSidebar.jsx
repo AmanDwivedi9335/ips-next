@@ -46,7 +46,7 @@ import {
 	Palette,
 	Cog,
 } from "lucide-react";
-import Logo from "@/public/SafetyLogo.png";
+import Logo from "@/public/ipslogo.png";
 
 const menuItems = [
 	{
