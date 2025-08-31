@@ -89,19 +89,6 @@ export async function GET() {
 		// Get available types
 		const types = await Product.distinct("type", { published: true });
 
-		// Check stock availability
-		const stockStats = await Product.aggregate([
-			{ $match: { published: true } },
-			{
-				$group: {
-					_id: null,
-					inStockCount: { $sum: { $cond: ["$inStock", 1, 0] } },
-					outOfStockCount: { $sum: { $cond: ["$inStock", 0, 1] } },
-				},
-			},
-		]);
-
-		const { inStockCount = 0, outOfStockCount = 0 } = stockStats[0] || {};
 
 		return Response.json({
 			success: true,
@@ -121,11 +108,6 @@ export async function GET() {
 				discount: {
 					min: Math.floor(minDiscount),
 					max: Math.ceil(maxDiscount),
-				},
-				stock: {
-					inStock: inStockCount,
-					outOfStock: outOfStockCount,
-					total: inStockCount + outOfStockCount,
 				},
 				types: types.map((type) => ({
 					id: type,

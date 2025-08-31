@@ -159,9 +159,8 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
 			description: product.description,
                         price: calculatedPrice,
                         originalPrice: calculatedPrice,
-			image: product.images?.[0] || product.image,
-			inStock: product.inStock,
-		});
+                        image: product.images?.[0] || product.image,
+                });
 	};
 
 	const handleBuyNow = async (e) => {
@@ -469,21 +468,20 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                                                         </div>
 
 							<div className="flex flex-col sm:flex-row gap-4">
-								<Button
-									onClick={handleAddToCart}
-									disabled={!product.inStock || isLoading}
-									className="flex-1 bg-black text-white hover:bg-gray-800"
-									size="lg"
-								>
+                                                                <Button
+                                                                        onClick={handleAddToCart}
+                                                                        disabled={isLoading}
+                                                                        className="flex-1 bg-black text-white hover:bg-gray-800"
+                                                                        size="lg"
+                                                                >
 									<ShoppingCart className="h-5 w-5 mr-2" />
 									Add to Cart
 								</Button>
-								<Button
-									onClick={handleBuyNow}
-									disabled={!product.inStock}
-									className="flex-1 bg-green-600 text-white hover:bg-green-700"
-									size="lg"
-								>
+                                                                <Button
+                                                                        onClick={handleBuyNow}
+                                                                        className="flex-1 bg-green-600 text-white hover:bg-green-700"
+                                                                        size="lg"
+                                                                >
 									Buy Now
 								</Button>
 								<Button variant="outline" size="lg">
@@ -496,19 +494,7 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
 							</div>
 						</div>
 
-						{/* Stock Status */}
-						<div className="flex items-center space-x-2">
-							<div
-								className={`w-3 h-3 rounded-full ${
-									product.inStock ? "bg-green-500" : "bg-red-500"
-								}`}
-							/>
-							<span
-								className={product.inStock ? "text-green-600" : "text-red-600"}
-							>
-								{product.status}
-							</span>
-						</div>
+                                                {/* Availability status removed */}
                                         </motion.div>
                                 </div>
                                 {product.materialSpecification ||

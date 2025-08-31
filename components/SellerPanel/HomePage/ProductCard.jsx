@@ -78,13 +78,7 @@ export default function ProductCard({ product, viewMode = "grid" }) {
 											</p>
 										)}
 									</div>
-									<p
-										className={`text-sm ${
-											product.inStock ? "text-green-600" : "text-red-600"
-										}`}
-									>
-										{product.status}
-									</p>
+                                                                        {/* Availability status removed */}
 								</div>
 
 								<div className="flex items-center gap-2">
@@ -95,18 +89,16 @@ export default function ProductCard({ product, viewMode = "grid" }) {
 									>
 										<Heart className="h-4 w-4" />
 									</Button>
-									<Button
-										disabled={!product.inStock}
-										variant="outline"
-										className="rounded-full bg-transparent"
-									>
+                                                                        <Button
+                                                                                variant="outline"
+                                                                                className="rounded-full bg-transparent"
+                                                                        >
 										<ShoppingCart className="h-4 w-4 mr-2" />
 										Add to Cart
 									</Button>
-									<Button
-										disabled={!product.inStock}
-										className="bg-black text-white hover:bg-gray-800 rounded-full"
-									>
+                                                                        <Button
+                                                                                className="bg-black text-white hover:bg-gray-800 rounded-full"
+                                                                        >
 										Buy Now
 										<ArrowRight className="ml-2 h-4 w-4" />
 									</Button>
@@ -207,13 +199,7 @@ export default function ProductCard({ product, viewMode = "grid" }) {
 									</div>
 								)}
 							</div>
-							{/* <p
-								className={`text-xs ${
-									product.inStock ? "text-green-600" : "text-red-600"
-								}`}
-							>
-								{product.inStock ? "In stock" : "Out of stock"}
-							</p> */}
+                                                        {/* Availability information removed */}
 						</div>
 
 						{/* Actions */}
@@ -226,21 +212,19 @@ export default function ProductCard({ product, viewMode = "grid" }) {
 								>
 									<Heart className="h-4 w-4" />
 								</Button>
-								<Button
-									variant="outline"
-									size="icon"
-									// disabled={!product.inStock}
-									className="rounded-full border-gray-300 hover:border-gray-400 bg-transparent"
-								>
+                                                                <Button
+                                                                        variant="outline"
+                                                                        size="icon"
+                                                                        className="rounded-full border-gray-300 hover:border-gray-400 bg-transparent"
+                                                                >
 									<ShoppingCart className="h-4 w-4" />
 								</Button>
 							</div>
 
-							<Button
-								// disabled={!product.inStock}
-								className="bg-black text-white hover:bg-gray-800 rounded-full flex-1 max-w-[120px]"
-								size="sm"
-							>
+                                                        <Button
+                                                                className="bg-black text-white hover:bg-gray-800 rounded-full flex-1 max-w-[120px]"
+                                                                size="sm"
+                                                        >
 								Buy Now
 								<ArrowRight className="ml-1 h-3 w-3" />
 							</Button>

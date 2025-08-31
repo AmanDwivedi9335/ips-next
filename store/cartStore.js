@@ -148,15 +148,14 @@ export const useCartStore = create(
 									image:
 										item.product.images?.[0] ||
 										"https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png",
-									quantity: item.quantity,
-									inStock: item.product.inStock,
+                                                                        quantity: item.quantity,
 								}));
 
-								set({
-									items: serverItems,
-									serverCart: data.cart,
-									lastSyncTime: Date.now(),
-								});
+                                                                set({
+                                                                        items: serverItems,
+                                                                        serverCart: data.cart,
+                                                                        lastSyncTime: Date.now(),
+                                                                });
 
 								get().calculateTotals();
 								toast.success("Added to cart!");
@@ -208,18 +207,17 @@ export const useCartStore = create(
 								const data = await cartAPI.updateQuantity(productId, quantity);
 
 								// Update local state with server response
-								const serverItems = data.cart.products.map((item) => ({
-									id: item.product._id,
-									name: item.product.title,
-									description: item.product.description,
-									price: item.product.salePrice || item.product.price,
-									originalPrice: item.product.price,
-									image:
-										item.product.images?.[0] ||
-										"https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png",
-									quantity: item.quantity,
-									inStock: item.product.inStock,
-								}));
+                                                                const serverItems = data.cart.products.map((item) => ({
+                                                                        id: item.product._id,
+                                                                        name: item.product.title,
+                                                                        description: item.product.description,
+                                                                        price: item.product.salePrice || item.product.price,
+                                                                        originalPrice: item.product.price,
+                                                                        image:
+                                                                                item.product.images?.[0] ||
+                                                                                "https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png",
+                                                                        quantity: item.quantity,
+                                                                }));
 
 								set({
 									items: serverItems,
@@ -259,18 +257,17 @@ export const useCartStore = create(
 								const data = await cartAPI.removeItem(productId);
 
 								// Update local state with server response
-								const serverItems = data.cart.products.map((item) => ({
-									id: item.product._id,
-									name: item.product.title,
-									description: item.product.description,
-									price: item.product.salePrice || item.product.price,
-									originalPrice: item.product.price,
-									image:
-										item.product.images?.[0] ||
-										"https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png",
-									quantity: item.quantity,
-									inStock: item.product.inStock,
-								}));
+                                                                const serverItems = data.cart.products.map((item) => ({
+                                                                        id: item.product._id,
+                                                                        name: item.product.title,
+                                                                        description: item.product.description,
+                                                                        price: item.product.salePrice || item.product.price,
+                                                                        originalPrice: item.product.price,
+                                                                        image:
+                                                                                item.product.images?.[0] ||
+                                                                                "https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png",
+                                                                        quantity: item.quantity,
+                                                                }));
 
 								set({
 									items: serverItems,
@@ -348,18 +345,17 @@ export const useCartStore = create(
 
 						try {
 							const data = await cartAPI.fetchCart();
-							const serverItems = data.cart.products.map((item) => ({
-								id: item.product._id,
-								name: item.product.title,
-								description: item.product.description,
-								price: item.product.salePrice || item.product.price,
-								originalPrice: item.product.price,
-								image:
-									item.product.images?.[0] ||
-									"https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png",
-								quantity: item.quantity,
-								inStock: item.product.inStock,
-							}));
+                                                        const serverItems = data.cart.products.map((item) => ({
+                                                                id: item.product._id,
+                                                                name: item.product.title,
+                                                                description: item.product.description,
+                                                                price: item.product.salePrice || item.product.price,
+                                                                originalPrice: item.product.price,
+                                                                image:
+                                                                        item.product.images?.[0] ||
+                                                                        "https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png",
+                                                                quantity: item.quantity,
+                                                        }));
 
 							set({
 								items: serverItems,

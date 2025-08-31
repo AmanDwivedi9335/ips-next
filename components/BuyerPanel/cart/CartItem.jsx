@@ -107,9 +107,7 @@ export default function CartItem({ item }) {
 										</Button>
 									</div>
 
-									<p className="text-sm text-gray-600">
-										{item.inStock ? "In Stock" : "Out of Stock"}
-									</p>
+                                                                        {/* Availability information removed */}
 								</div>
 
 								{/* Wishlist Button - Need to add functionality */}

@@ -43,12 +43,9 @@ const dummyProduct = {
 	originalPrice: 5000,
 	image: ISP2.src,
 	category: "industrial-safety",
-	inStock: true,
-	featured: true,
-	rating: 4.5,
-	stocks: 50,
-	status: "In Stock",
-	discountPercentage: 10,
+        featured: true,
+        rating: 4.5,
+        discountPercentage: 10,
 	features: [
 		{
 			title: "Complete Protection",
@@ -106,8 +103,7 @@ const products = [
 		originalPrice: "₹3,500",
 		discount: "33% OFF",
 		image: ISP1.src,
-		rating: 4.5,
-		inStock: true,
+                rating: 4.5,
 	},
 	{
 		id: 2,
@@ -116,8 +112,7 @@ const products = [
 		originalPrice: "₹7,500",
 		discount: "33% OFF",
 		image: PSP5.src,
-		rating: 4.8,
-		inStock: true,
+                rating: 4.8,
 	},
 	{
 		id: 3,
@@ -126,8 +121,7 @@ const products = [
 		originalPrice: "₹7,000",
 		discount: "50% OFF",
 		image: ISP5.src,
-		rating: 4.6,
-		inStock: true,
+                rating: 4.6,
 	},
 	{
 		id: 4,
@@ -136,8 +130,7 @@ const products = [
 		originalPrice: "₹7,500",
 		discount: "33% OFF",
 		image: ISP4.src,
-		rating: 4.7,
-		inStock: false,
+                rating: 4.7,
 	},
 ];
 
@@ -311,9 +304,7 @@ export default function ProductDetailDemo() {
 										<Plus className="h-4 w-4" />
 									</Button>
 								</div>
-								<span className="text-sm text-gray-500">
-									({dummyProduct.stocks} available)
-								</span>
+                                                                {/* Availability information removed */}
 							</div>
 
 							<div className="flex flex-col sm:flex-row gap-4">
@@ -340,7 +331,7 @@ export default function ProductDetailDemo() {
 							</div>
 						</div>
 
-						{/* Stock Status */}
+                                                {/* Availability Status */}
 						<div className="flex items-center space-x-2">
 							<div className="w-3 h-3 rounded-full bg-green-500" />
 							<span className="text-green-600">{dummyProduct.status}</span>
