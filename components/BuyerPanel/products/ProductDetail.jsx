@@ -70,7 +70,9 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                 const fetchPrice = async () => {
                         try {
                                 const params = new URLSearchParams({
+
                                         product: product._id || product.id,
+
                                         layout: selectedLayout,
                                         size: selectedSize,
                                         material: selectedMaterial,

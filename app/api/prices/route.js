@@ -6,6 +6,7 @@ export async function GET(request) {
         await dbConnect();
         const { searchParams } = new URL(request.url);
         const product = searchParams.get("product");
+
         const productType = searchParams.get("productType");
         const layout = searchParams.get("layout");
         const size = searchParams.get("size");
@@ -13,7 +14,9 @@ export async function GET(request) {
         const qr = searchParams.get("qr");
 
         const query = {};
+
         if (product) query.product = product;
+
         if (productType) query.productType = productType;
         if (layout) query.layout = layout;
         if (size) query.size = size;

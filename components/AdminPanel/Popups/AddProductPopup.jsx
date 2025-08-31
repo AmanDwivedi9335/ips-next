@@ -142,7 +142,9 @@ export function AddProductPopup({ open, onOpenChange }) {
                                 sizes: selectedSizes,
                                 layouts: selectedLayouts,
                                 productType: formData.productType,
+
                                 pricing: priceData,
+
                         };
 
 			console.log("Product Data:", productData);
@@ -243,6 +245,7 @@ export function AddProductPopup({ open, onOpenChange }) {
                 updated[index][field] = value;
                 setPrices(updated);
         };
+
 
 	return (
 		<Dialog open={open} onOpenChange={onOpenChange}>
@@ -784,6 +787,7 @@ export function AddProductPopup({ open, onOpenChange }) {
                                                                 </Button>
                                                         </div>
                                                 )}
+
 
                                                 {/* Features Section */}
                                                 <div className="mt-4">
