@@ -34,14 +34,9 @@ export async function PUT(request) {
 		const longDescription = formData.get("longDescription");
                 const category = formData.get("category");
                 const productType = formData.get("productType") || "poster";
-		const price = parseFloat(formData.get("price"));
-		const salePrice = formData.get("salePrice")
-			? parseFloat(formData.get("salePrice"))
-			: 0;
-		const stocks = parseInt(formData.get("stocks"));
-		const discount = formData.get("discount")
-			? parseFloat(formData.get("discount"))
-			: 0;
+                const discount = formData.get("discount")
+                        ? parseFloat(formData.get("discount"))
+                        : 0;
                 const type = formData.get("type");
                 const published = formData.get("published") === "true";
 
@@ -131,10 +126,7 @@ export async function PUT(request) {
 		product.longDescription = longDescription || description;
                 product.category = category;
                 product.productType = productType;
-		product.price = price;
-		product.salePrice = salePrice;
-		product.stocks = stocks;
-		product.discount = discount;
+                product.discount = discount;
                 product.type = type;
                 product.published = published;
                 product.features = features;

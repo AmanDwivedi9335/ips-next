@@ -81,9 +81,6 @@ export function AddProductPopup({ open, onOpenChange }) {
                 longDescription: "",
                 category: "",
                 subcategory: "",
-                price: "",
-                salePrice: "",
-                stocks: "",
                 discount: "",
                 type: "featured",
                 productType: "poster",
@@ -126,11 +123,6 @@ export function AddProductPopup({ open, onOpenChange }) {
                                         formData.longDescription || formData.description,
                                 category: formData.category,
                                 subcategory: formData.subcategory,
-                                price: parseFloat(formData.price),
-                                salePrice: formData.salePrice
-                                        ? parseFloat(formData.salePrice)
-                                        : 0,
-                                stocks: parseInt(formData.stocks),
                                 discount: formData.discount
                                         ? parseFloat(formData.discount)
                                         : 0,
@@ -172,9 +164,6 @@ export function AddProductPopup({ open, onOpenChange }) {
                         longDescription: "",
                         category: "",
                         subcategory: "",
-                        price: "",
-                        salePrice: "",
-                        stocks: "",
                         discount: "",
                         type: "featured",
                         published: true,
@@ -472,57 +461,11 @@ export function AddProductPopup({ open, onOpenChange }) {
 								</Select>
 							</div>
 
-							<div>
-								<Label htmlFor="price">Regular Price *</Label>
-								<Input
-									id="price"
-									placeholder="0.00"
-									value={formData.price}
-									onChange={(e) =>
-										setFormData({ ...formData, price: e.target.value })
-									}
-									className="mt-1"
-									type="number"
-									step="0.01"
-									required
-								/>
-							</div>
-
-							<div>
-								<Label htmlFor="salePrice">Sale Price</Label>
-								<Input
-									id="salePrice"
-									placeholder="0.00"
-									value={formData.salePrice}
-									onChange={(e) =>
-										setFormData({ ...formData, salePrice: e.target.value })
-									}
-									className="mt-1"
-									type="number"
-									step="0.01"
-								/>
-							</div>
-
-							<div>
-								<Label htmlFor="stocks">Stock Quantity *</Label>
-								<Input
-									id="stocks"
-									placeholder="0"
-									value={formData.stocks}
-									onChange={(e) =>
-										setFormData({ ...formData, stocks: e.target.value })
-									}
-									className="mt-1"
-									type="number"
-									required
-								/>
-							</div>
-
-							<div>
-								<Label htmlFor="discount">Discount (%)</Label>
-								<Input
-									id="discount"
-									placeholder="0"
+                                                        <div>
+                                                                <Label htmlFor="discount">Discount (%)</Label>
+                                                                <Input
+                                                                        id="discount"
+                                                                        placeholder="0"
 									value={formData.discount}
 									onChange={(e) =>
 										setFormData({ ...formData, discount: e.target.value })

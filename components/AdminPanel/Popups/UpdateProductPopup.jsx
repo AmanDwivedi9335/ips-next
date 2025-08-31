@@ -54,15 +54,12 @@ export function UpdateProductPopup({ open, onOpenChange, product }) {
 		title: "",
 		description: "",
 		longDescription: "",
-		category: "",
-		price: "",
-		salePrice: "",
-		stocks: "",
-		discount: "",
-		type: "featured",
-		published: true,
-		images: [],
-	});
+                category: "",
+                discount: "",
+                type: "featured",
+                published: true,
+                images: [],
+        });
 
 	// Helper function to convert URL to base64
 	const convertUrlToBase64 = async (url) => {
@@ -102,19 +99,16 @@ export function UpdateProductPopup({ open, onOpenChange, product }) {
 					);
 				}
 
-				setFormData({
-					title: product.title || "",
-					description: product.description || "",
-					longDescription: product.longDescription || "",
-					category: product.category || "",
-					price: product.price?.toString() || "",
-					salePrice: product.salePrice?.toString() || "",
-					stocks: product.stocks?.toString() || "",
-					discount: product.discount?.toString() || "",
-					type: product.type || "featured",
-					published: product.published !== undefined ? product.published : true,
-					images: convertedImages,
-				});
+                                setFormData({
+                                        title: product.title || "",
+                                        description: product.description || "",
+                                        longDescription: product.longDescription || "",
+                                        category: product.category || "",
+                                        discount: product.discount?.toString() || "",
+                                        type: product.type || "featured",
+                                        published: product.published !== undefined ? product.published : true,
+                                        images: convertedImages,
+                                });
 			};
 
 			convertImages();
@@ -135,20 +129,17 @@ export function UpdateProductPopup({ open, onOpenChange, product }) {
 
 		try {
 			// Prepare the update data similar to addProduct
-			const updateData = {
-				title: formData.title,
-				description: formData.description,
-				longDescription: formData.longDescription || formData.description,
-				category: formData.category,
-				price: parseFloat(formData.price),
-				salePrice: formData.salePrice ? parseFloat(formData.salePrice) : 0,
-				stocks: parseInt(formData.stocks),
-				discount: formData.discount ? parseFloat(formData.discount) : 0,
-				type: formData.type,
-				published: formData.published,
-				features: features.filter((f) => f.title && f.description),
-				images: formData.images, // Pass the base64 images array
-			};
+                        const updateData = {
+                                title: formData.title,
+                                description: formData.description,
+                                longDescription: formData.longDescription || formData.description,
+                                category: formData.category,
+                                discount: formData.discount ? parseFloat(formData.discount) : 0,
+                                type: formData.type,
+                                published: formData.published,
+                                features: features.filter((f) => f.title && f.description),
+                                images: formData.images, // Pass the base64 images array
+                        };
 
 			console.log("Update Data:", updateData);
 
@@ -296,57 +287,11 @@ export function UpdateProductPopup({ open, onOpenChange, product }) {
 								</Select>
 							</div>
 
-							<div>
-								<Label htmlFor="price">Regular Price *</Label>
-								<Input
-									id="price"
-									placeholder="0.00"
-									value={formData.price}
-									onChange={(e) =>
-										setFormData({ ...formData, price: e.target.value })
-									}
-									className="mt-1"
-									type="number"
-									step="0.01"
-									required
-								/>
-							</div>
-
-							<div>
-								<Label htmlFor="salePrice">Sale Price</Label>
-								<Input
-									id="salePrice"
-									placeholder="0.00"
-									value={formData.salePrice}
-									onChange={(e) =>
-										setFormData({ ...formData, salePrice: e.target.value })
-									}
-									className="mt-1"
-									type="number"
-									step="0.01"
-								/>
-							</div>
-
-							<div>
-								<Label htmlFor="stocks">Stock Quantity *</Label>
-								<Input
-									id="stocks"
-									placeholder="0"
-									value={formData.stocks}
-									onChange={(e) =>
-										setFormData({ ...formData, stocks: e.target.value })
-									}
-									className="mt-1"
-									type="number"
-									required
-								/>
-							</div>
-
-							<div>
-								<Label htmlFor="discount">Discount (%)</Label>
-								<Input
-									id="discount"
-									placeholder="0"
+                                                        <div>
+                                                                <Label htmlFor="discount">Discount (%)</Label>
+                                                                <Input
+                                                                        id="discount"
+                                                                        placeholder="0"
 									value={formData.discount}
 									onChange={(e) =>
 										setFormData({ ...formData, discount: e.target.value })

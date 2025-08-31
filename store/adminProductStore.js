@@ -94,12 +94,9 @@ export const useAdminProductStore = create((set, get) => ({
                                 productData.subcategory || ""
                         );
                         formData.append("productType", productData.productType);
-                        formData.append("price", productData.price.toString());
-                        formData.append("salePrice", (productData.salePrice || 0).toString());
-                        formData.append("stocks", productData.stocks.toString());
-			formData.append("discount", (productData.discount || 0).toString());
-			formData.append("type", productData.type);
-			formData.append("published", productData.published);
+                        formData.append("discount", (productData.discount || 0).toString());
+                        formData.append("type", productData.type);
+                        formData.append("published", productData.published);
 
                         // Add features as JSON string
                         formData.append("features", JSON.stringify(productData.features || []));
@@ -201,12 +198,9 @@ export const useAdminProductStore = create((set, get) => ({
                                 updateData.subcategory || ""
                         );
                         formData.append("productType", updateData.productType);
-                        formData.append("price", updateData.price.toString());
-			formData.append("salePrice", (updateData.salePrice || 0).toString());
-			formData.append("stocks", updateData.stocks.toString());
-			formData.append("discount", (updateData.discount || 0).toString());
-			formData.append("type", updateData.type);
-			formData.append("published", updateData.published);
+                        formData.append("discount", (updateData.discount || 0).toString());
+                        formData.append("type", updateData.type);
+                        formData.append("published", updateData.published);
 
                         // Add features as JSON string
                         formData.append("features", JSON.stringify(updateData.features || []));

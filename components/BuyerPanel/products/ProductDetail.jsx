@@ -91,9 +91,6 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
         const languageImage = product.languageImages?.find(
                 (l) => l.language === selectedLanguage
         )?.image;
-        const discount = product.mrp
-                ? Math.round(((product.mrp - calculatedPrice) / product.mrp) * 100)
-                : product.discountPercentage;
         const categoryName = product.category?.replace("-", " ");
         const subcategoryName = product.subcategory?.replace("-", " ");
 
@@ -176,12 +173,12 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
 		);
 	};
 
-	const handleQuantityChange = (change) => {
-		const newQuantity = quantity + change;
-		if (newQuantity >= 1 && newQuantity <= product.stocks) {
-			setQuantity(newQuantity);
-		}
-	};
+        const handleQuantityChange = (change) => {
+                const newQuantity = quantity + change;
+                if (newQuantity >= 1) {
+                        setQuantity(newQuantity);
+                }
+        };
 
 	const colors = [
 		"bg-blue-500",
@@ -348,20 +345,8 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
 
                                                         {/* Product price */}
                                                         <p className="text-xl lg:text-2xl font-semibold text-black mb-2">
-                                                        ₹ {calculatedPrice.toLocaleString()}
+                                                                ₹ {calculatedPrice.toLocaleString()} (Sale Price)
                                                         </p>
-
-                                                        {/* MRP and discount */}
-                                                        {product.mrp && product.mrp > calculatedPrice && (
-                                                                <div className="flex items-center mb-4">
-                                                                        <span className="text-gray-500 line-through mr-2">
-                                                                                ₹ {product.mrp.toLocaleString()}
-                                                                        </span>
-                                                                        <span className="text-green-500">
-                                                                                {discount}% off
-                                                                        </span>
-                                                                </div>
-                                                        )}
                                                 </div>
 
                                                 {/* Product Colors */}
@@ -473,19 +458,15 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
 										<Minus className="h-4 w-4" />
 									</Button>
 									<span className="px-4 py-2 font-medium">{quantity}</span>
-									<Button
-										variant="ghost"
-										size="icon"
-										onClick={() => handleQuantityChange(1)}
-										disabled={quantity >= product.stocks}
-									>
-										<Plus className="h-4 w-4" />
-									</Button>
-								</div>
-								<span className="text-sm text-gray-500">
-									({product.stocks} available)
-								</span>
-							</div>
+                                                                        <Button
+                                                                                variant="ghost"
+                                                                                size="icon"
+                                                                                onClick={() => handleQuantityChange(1)}
+                                                                        >
+                                                                                <Plus className="h-4 w-4" />
+                                                                        </Button>
+                                                                </div>
+                                                        </div>
 
 							<div className="flex flex-col sm:flex-row gap-4">
 								<Button
