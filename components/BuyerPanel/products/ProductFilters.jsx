@@ -42,9 +42,6 @@ export default function ProductFilters() {
 		setFilters({ priceRange: value });
 	};
 
-	const handleStockChange = (checked) => {
-		setFilters({ inStock: checked });
-	};
 
 	const handleDiscountChange = (value) => {
 		setFilters({ discount: Number.parseInt(value) || 0 });
@@ -65,9 +62,8 @@ export default function ProductFilters() {
 			priceRange: availableFilters
 				? [availableFilters.priceRange.min, availableFilters.priceRange.max]
 				: [0, 10000],
-			inStock: false,
-			discount: 0,
-			type: "",
+                        discount: 0,
+                        type: "",
 		});
 		applyFilters();
 	};
@@ -115,7 +111,6 @@ export default function ProductFilters() {
 					filters={filters}
 					onCategoryChange={handleCategoryChange}
 					onPriceChange={handlePriceChange}
-					onStockChange={handleStockChange}
 					onDiscountChange={handleDiscountChange}
 					onTypeChange={handleTypeChange}
 					onApply={handleApplyFilters}
@@ -155,10 +150,9 @@ export default function ProductFilters() {
 								filters={filters}
 								onCategoryChange={handleCategoryChange}
 								onPriceChange={handlePriceChange}
-								onStockChange={handleStockChange}
-								onDiscountChange={handleDiscountChange}
-								onTypeChange={handleTypeChange}
-								onApply={handleApplyFilters}
+                                                                onDiscountChange={handleDiscountChange}
+                                                                onTypeChange={handleTypeChange}
+                                                                onApply={handleApplyFilters}
 							/>
 						</motion.div>
 					</motion.div>
@@ -169,14 +163,13 @@ export default function ProductFilters() {
 }
 
 function FilterContent({
-	availableFilters,
-	filters,
-	onCategoryChange,
-	onPriceChange,
-	onStockChange,
-	onDiscountChange,
-	onTypeChange,
-	onApply,
+        availableFilters,
+        filters,
+        onCategoryChange,
+        onPriceChange,
+        onDiscountChange,
+        onTypeChange,
+        onApply,
 }) {
 	return (
 		<div className="space-y-6">
@@ -284,35 +277,11 @@ function FilterContent({
 				</AccordionItem>
 			</Accordion>
 
-			{/* Availability */}
-			<Accordion type="single" collapsible defaultValue="availability">
-				<AccordionItem value="availability">
-					<AccordionTrigger>Availability</AccordionTrigger>
-					<AccordionContent>
-						<div className="pt-4 space-y-3">
-							<div className="flex items-center space-x-2">
-								<Checkbox
-									id="in-stock"
-									checked={filters.inStock}
-									onCheckedChange={onStockChange}
-								/>
-								<label
-									htmlFor="in-stock"
-									className="text-sm font-medium leading-none cursor-pointer"
-								>
-									In Stock Only ({availableFilters.stock.inStock})
-								</label>
-							</div>
-						</div>
-					</AccordionContent>
-				</AccordionItem>
-			</Accordion>
-
-			{/* Apply Button */}
-			<Button
-				onClick={onApply}
-				className="w-full bg-black text-white hover:bg-gray-800"
-			>
+                        {/* Apply Button */}
+                        <Button
+                                onClick={onApply}
+                                className="w-full bg-black text-white hover:bg-gray-800"
+                        >
 				Apply Filters
 			</Button>
 		</div>

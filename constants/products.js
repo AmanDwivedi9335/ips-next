@@ -47,9 +47,7 @@ const products = [
 			"This green safety helmet is designed to provide maximum protection for industrial workers. Made from high-density polyethylene (HDPE) material, it offers excellent impact resistance and durability. The helmet features an adjustable suspension system for comfortable fit and proper weight distribution. It meets international safety standards and is ideal for construction sites, manufacturing facilities, and other industrial environments.",
 		price: 1200,
 		image: ISP1.src,
-		category: "industrial-safety",
-		inStock: true,
-		features: [
+		category: "industrial-safety",		features: [
 			{
 				title: "Impact Resistant",
 				description:
@@ -83,9 +81,7 @@ const products = [
 			"This comprehensive industrial safety kit provides complete protection for workers in hazardous environments. The combo includes an orange safety helmet, protective safety glasses, industrial gloves, and noise-cancelling headset. Each component is carefully selected to work together, providing head, eye, hand, and hearing protection. Perfect for construction sites, factories, and industrial facilities where multiple safety hazards exist.",
 		price: 4500,
 		image: ISP2.src,
-		category: "industrial-safety",
-		inStock: true,
-		featured: true,
+		category: "industrial-safety",		featured: true,
 		features: [
 			{
 				title: "Complete Protection",
@@ -120,9 +116,7 @@ const products = [
 			"The yellow safety helmet is designed for maximum visibility and protection in industrial environments. Its bright yellow color makes workers easily identifiable, enhancing safety in busy work areas. Constructed from impact-resistant materials with a comfortable interior suspension system, this helmet provides reliable protection while ensuring worker comfort throughout long shifts.",
 		price: 1150,
 		image: ISP3.src,
-		category: "industrial-safety",
-		inStock: true,
-		features: [
+		category: "industrial-safety",		features: [
 			{
 				title: "High Visibility",
 				description:
@@ -156,9 +150,7 @@ const products = [
 			"This reflective safety jacket is essential for workers who need to be visible in low-light conditions or high-traffic areas. Made from lightweight, breathable fabric with strategically placed reflective strips, it provides 360-degree visibility while allowing freedom of movement. The jacket features multiple pockets for tools and personal items, making it practical for various work environments.",
 		price: 800,
 		image: ISP4.src,
-		category: "industrial-safety",
-		inStock: true,
-		features: [
+		category: "industrial-safety",		features: [
 			{
 				title: "360-Degree Visibility",
 				description:
@@ -192,9 +184,7 @@ const products = [
 			"This professional-grade fire extinguisher is designed to handle various types of fires in industrial and commercial settings. Filled with dry chemical powder, it's effective against Class A, B, and C fires. The extinguisher features a durable steel cylinder with corrosion-resistant coating, ergonomic handle, and clear pressure gauge. Regular maintenance and inspection ensure reliable performance when needed most.",
 		price: 2800,
 		image: ISP5.src,
-		category: "fire-safety",
-		inStock: true,
-		features: [
+		category: "fire-safety",		features: [
 			{
 				title: "Multi-Class Protection",
 				description:
@@ -229,9 +219,7 @@ const products = [
 			"This protective face mask provides superior respiratory protection against dust, particles, and airborne contaminants. Featuring multiple filtration layers and a comfortable fit, it's ideal for industrial environments, construction sites, and areas with poor air quality. The mask includes adjustable ear loops and a flexible nose bridge for a secure, comfortable seal.",
 		price: 150,
 		image: PSP1.src,
-		category: "personal-safety",
-		inStock: true,
-		features: [
+		category: "personal-safety",		features: [
 			{
 				title: "Multi-Layer Filtration",
 				description:
@@ -264,9 +252,7 @@ const products = [
 			"This comprehensive first aid kit contains essential medical supplies for emergency situations. Designed for workplace, home, and vehicle use, it includes bandages, antiseptics, pain relievers, and other critical supplies. The kit comes in a durable, organized case that makes it easy to find and use supplies quickly during emergencies.",
 		price: 1800,
 		image: PSP2.src,
-		category: "first-aid",
-		inStock: true,
-		features: [
+		category: "first-aid",		features: [
 			{
 				title: "Comprehensive Contents",
 				description:
@@ -300,9 +286,7 @@ const products = [
 			"This safety combo combines a bright orange helmet with a high-visibility reflective jacket for maximum worker protection and visibility. The helmet provides impact protection while the jacket ensures 360-degree visibility in low-light conditions. This combination is perfect for construction sites, road work, and industrial facilities where both head protection and visibility are critical.",
 		price: 2000,
 		image: PSP3.src,
-		category: "personal-safety",
-		inStock: true,
-		featured: true,
+		category: "personal-safety",		featured: true,
 		features: [
 			{
 				title: "Maximum Visibility",
@@ -336,9 +320,7 @@ const products = [
 			"This Coast Guard approved life jacket provides reliable flotation and safety for water activities. Constructed with high-quality foam and durable fabric, it offers excellent buoyancy while maintaining comfort and freedom of movement. Features include adjustable straps, reflective trim, and multiple attachment points for safety accessories.",
 		price: 2500,
 		image: PSP4.src,
-		category: "water-safety",
-		inStock: true,
-		features: [
+		category: "water-safety",		features: [
 			{
 				title: "Coast Guard Approved",
 				description:
@@ -371,9 +353,7 @@ const products = [
 			"Quick Heal is a streamlined first aid kit designed for rapid response to minor injuries. This compact kit contains essential medical supplies in an easy-to-carry case, making it perfect for vehicles, small offices, and personal use. Despite its compact size, it includes all necessary items for treating cuts, burns, sprains, and other common injuries.",
 		price: 900,
 		image: PSP5.src,
-		category: "first-aid",
-		inStock: true,
-		features: [
+		category: "first-aid",		features: [
 			{
 				title: "Rapid Response",
 				description:
@@ -406,9 +386,7 @@ const products = [
 			"This specialized snake bite kit is designed for emergency treatment of venomous snake bites. Essential for outdoor workers, hikers, and rural areas where snake encounters are possible. The kit includes suction devices, antiseptics, pressure bandages, and detailed instructions for proper emergency response while awaiting professional medical care.",
 		price: 1200,
 		image: PSP6.src,
-		category: "emergency-kit",
-		inStock: true,
-		features: [
+		category: "emergency-kit",		features: [
 			{
 				title: "Specialized Treatment",
 				description:
@@ -442,9 +420,7 @@ const products = [
 			"This multi-purpose first aid kit in a distinctive green case is designed to handle a wide variety of emergency situations. It contains an extensive selection of medical supplies suitable for both minor and more serious injuries. The green color coding helps identify it quickly in emergency situations, and the organized interior makes finding specific supplies fast and efficient.",
 		price: 2200,
 		image: PSP7.src,
-		category: "first-aid",
-		inStock: true,
-		features: [
+		category: "first-aid",		features: [
 			{
 				title: "Versatile Contents",
 				description:
@@ -477,9 +453,7 @@ const products = [
 			"This multi-purpose first aid kit features a bright orange case for maximum visibility during emergencies. It contains comprehensive medical supplies for treating a wide range of injuries and medical situations. The high-visibility orange color makes it easy to spot in emergency situations, while the organized interior ensures quick access to needed supplies.",
 		price: 2200,
 		image: PSP8.src,
-		category: "first-aid",
-		inStock: true,
-		features: [
+		category: "first-aid",		features: [
 			{
 				title: "High Visibility",
 				description:
@@ -515,9 +489,7 @@ const products = [
 			"Q-Please Variant 1 is an advanced queue management system designed to streamline customer flow and reduce waiting times. This system helps businesses organize customer queues efficiently, providing a professional appearance while improving customer satisfaction. Perfect for banks, hospitals, retail stores, and service centers.",
 		price: 15000,
 		image: QPP1.src,
-		category: "queue-management",
-		inStock: true,
-		features: [
+		category: "queue-management",		features: [
 			{
 				title: "Digital Display",
 				description:
@@ -550,9 +522,7 @@ const products = [
 			"Q-Please Variant 2 offers enhanced queue management capabilities with additional features for complex business environments. This system includes advanced display options, multiple queue support, and improved customer interaction features. Ideal for large retail stores, government offices, and multi-service facilities.",
 		price: 18000,
 		image: QPP2.src,
-		category: "queue-management",
-		inStock: true,
-		features: [
+		category: "queue-management",		features: [
 			{
 				title: "Multiple Queue Support",
 				description:
@@ -584,9 +554,7 @@ const products = [
 			"Q-Please Variant 3 is designed for small to medium businesses requiring efficient queue management without complex features. This compact system provides essential queue management functions in a space-saving design. Perfect for small retail stores, clinics, and service counters with moderate customer traffic.",
 		price: 12000,
 		image: QPP3.src,
-		category: "queue-management",
-		inStock: true,
-		features: [
+		category: "queue-management",		features: [
 			{
 				title: "Compact Design",
 				description:
@@ -619,9 +587,7 @@ const products = [
 			"Q-Please Variant 4 features wireless connectivity and remote management capabilities. This advanced system allows managers to monitor and control queue operations from mobile devices or computers. Includes cloud-based reporting and real-time monitoring features for professional service environments.",
 		price: 22000,
 		image: QPP4.src,
-		category: "queue-management",
-		inStock: true,
-		features: [
+		category: "queue-management",		features: [
 			{
 				title: "Wireless Connectivity",
 				description:
@@ -654,9 +620,7 @@ const products = [
 			"Q-Please Variant 5 is an enterprise-grade queue management system designed for large facilities with high customer volumes. Features include advanced scheduling, priority queue management, and integration capabilities with existing business systems. Perfect for hospitals, large retail chains, and government facilities.",
 		price: 28000,
 		image: QPP5.src,
-		category: "queue-management",
-		inStock: true,
-		featured: true,
+		category: "queue-management",		featured: true,
 		features: [
 			{
 				title: "Enterprise Scale",
@@ -690,9 +654,7 @@ const products = [
 			"Q-Please Variant 6 features an interactive touchscreen interface with built-in customer feedback system. This advanced model allows customers to rate their service experience and provide feedback directly through the system. Includes multilingual support and accessibility features for diverse customer bases.",
 		price: 25000,
 		image: QPP6.src,
-		category: "queue-management",
-		inStock: true,
-		features: [
+		category: "queue-management",		features: [
 			{
 				title: "Touchscreen Interface",
 				description:
@@ -727,9 +689,7 @@ const products = [
 			"This comprehensive road safety combo includes both road barricades and warning signs for complete traffic control and safety. The combination provides visual barriers and clear messaging to guide traffic safely around work zones, construction areas, and temporary hazards. Made from durable materials with high-visibility colors and reflective elements.",
 		price: 3500,
 		image: RSP1.src,
-		category: "road-safety",
-		inStock: true,
-		features: [
+		category: "road-safety",		features: [
 			{
 				title: "Complete Solution",
 				description:
@@ -762,9 +722,7 @@ const products = [
 			"This convex traffic mirror enhances road safety by providing expanded visibility around blind corners, intersections, and parking areas. The durable acrylic mirror surface resists weather and impact while providing clear, distortion-free viewing. Includes mounting hardware for poles, walls, or overhead installation.",
 		price: 2800,
 		image: RSP2.src,
-		category: "road-safety",
-		inStock: true,
-		features: [
+		category: "road-safety",		features: [
 			{
 				title: "Wide Viewing Angle",
 				description:
@@ -797,9 +755,7 @@ const products = [
 			"These heavy-duty plastic safety chains are designed for traffic control and area marking applications. Made from UV-resistant plastic, they maintain their bright colors and strength in outdoor conditions. The interlocking design allows for easy connection and length adjustment, making them perfect for temporary barriers, crowd control, and hazard marking.",
 		price: 800,
 		image: RSP3.src,
-		category: "road-safety",
-		inStock: true,
-		features: [
+		category: "road-safety",		features: [
 			{
 				title: "UV Resistant",
 				description:
@@ -833,9 +789,7 @@ const products = [
 			"This plastic speed bump is designed to effectively control vehicle speeds in parking lots, residential areas, and low-speed zones. Made from durable, recycled plastic with high-visibility yellow coloring and reflective strips. The modular design allows for custom width installation, and the lightweight construction makes installation and removal simple.",
 		price: 1500,
 		image: RSP4.src,
-		category: "road-safety",
-		inStock: true,
-		features: [
+		category: "road-safety",		features: [
 			{
 				title: "Effective Speed Control",
 				description:
@@ -868,9 +822,7 @@ const products = [
 			"These yellow reflective road studs are designed for permanent lane marking and road delineation. Made from durable ABS plastic with embedded retroreflective elements, they provide excellent visibility from both directions. The studs are designed to withstand heavy traffic loads while maintaining their reflective properties over time.",
 		price: 200,
 		image: RSP5.src,
-		category: "road-safety",
-		inStock: true,
-		features: [
+		category: "road-safety",		features: [
 			{
 				title: "Two-Way Reflectivity",
 				description:
@@ -904,9 +856,7 @@ const products = [
 			"These professional-grade traffic cones feature impact-resistant construction with high-visibility reflective strip collars. Designed for heavy-duty use in construction zones, emergency situations, and traffic control applications. The weighted base provides stability in windy conditions, while the bright orange color and reflective strips ensure maximum visibility.",
 		price: 450,
 		image: RSP6.src,
-		category: "road-safety",
-		inStock: true,
-		featured: true,
+		category: "road-safety",		featured: true,
 		features: [
 			{
 				title: "Impact Resistant",
@@ -943,9 +893,7 @@ const products = [
 			"This barrier ahead cautionary sign is essential for alerting drivers to upcoming obstacles, construction zones, or road barriers. Made from durable aluminum with weather-resistant graphics, it provides clear, long-distance visibility of potential hazards. The sign meets traffic control standards and includes mounting hardware for quick installation.",
 		price: 800,
 		image: SBP1.src,
-		category: "signage",
-		inStock: true,
-		featured: true,
+		category: "signage",		featured: true,
 		features: [
 			{
 				title: "High Visibility Graphics",
@@ -979,9 +927,7 @@ const products = [
 			"This official STOP SIGNALS sign is designed for traffic control at intersections, construction zones, and temporary traffic control situations. Made from reflective aluminum with bold, easy-to-read lettering, it provides clear direction to drivers and helps maintain safe traffic flow. Suitable for both permanent and temporary installations.",
 		price: 750,
 		image: SBP2.src,
-		category: "signage",
-		inStock: true,
-		features: [
+		category: "signage",		features: [
 			{
 				title: "Reflective Surface",
 				description:
@@ -1015,9 +961,7 @@ const products = [
 			"This professional airport sign provides clear directional information and facility identification for airport environments. Made from durable materials with high-contrast graphics, it helps passengers and vehicles navigate airport grounds safely. The sign meets aviation authority standards for airport signage and wayfinding systems.",
 		price: 1200,
 		image: SBP3.src,
-		category: "signage",
-		inStock: true,
-		features: [
+		category: "signage",		features: [
 			{
 				title: "Aviation Standard",
 				description:
@@ -1050,9 +994,7 @@ const products = [
 			"This No Entry sign clearly prohibits access to restricted areas, ensuring security and safety compliance. Made from durable aluminum with bold, internationally recognized symbols and text. Perfect for private property, construction sites, secure facilities, and areas where access must be controlled for safety or security reasons.",
 		price: 600,
 		image: SBP4.src,
-		category: "signage",
-		inStock: true,
-		features: [
+		category: "signage",		features: [
 			{
 				title: "Universal Symbol",
 				description:
@@ -1086,9 +1028,7 @@ const products = [
 			"This specialized traffic sign prohibits bullock carts from using specific roadways or areas. Common in rural and semi-urban areas where traditional animal-drawn vehicles must be restricted from certain roads for safety reasons. Made from reflective aluminum with clear pictographic symbols that are easily understood regardless of literacy level.",
 		price: 700,
 		image: SBP5.src,
-		category: "signage",
-		inStock: true,
-		features: [
+		category: "signage",		features: [
 			{
 				title: "Clear Pictographs",
 				description:
