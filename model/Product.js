@@ -24,6 +24,7 @@ const ProductSchema = new mongoose.Schema(
                 languages: [{ type: String }],
                 sizes: [{ type: String }],
                 materials: [{ type: String }],
+                layouts: [{ type: String }],
                 materialSpecification: { type: String },
                 subcategory: { type: String },
 
