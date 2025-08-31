@@ -71,7 +71,7 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                         try {
                                 const params = new URLSearchParams({
 
-                                        productType: product.productType,
+                                        product: product._id || product.id,
 
                                         layout: selectedLayout,
                                         size: selectedSize,

@@ -2,6 +2,13 @@ import mongoose from "mongoose";
 
 const PriceSchema = new mongoose.Schema(
         {
+
+                product: {
+                        type: mongoose.Schema.Types.ObjectId,
+                        ref: "Product",
+                        required: true,
+                },
+
                 productType: { type: String, enum: ["poster", "sign"], required: true },
                 layout: { type: String, required: true },
                 size: { type: String, required: true },

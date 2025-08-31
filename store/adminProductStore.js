@@ -121,6 +121,10 @@ export const useAdminProductStore = create((set, get) => ({
                                 "languageImages",
                                 JSON.stringify(productData.languageImages || [])
                         );
+                        formData.append(
+                                "pricing",
+                                JSON.stringify(productData.pricing || [])
+                        );
 
 			// Handle base64 images - convert them to Blob objects
 			if (productData.images && productData.images.length > 0) {
