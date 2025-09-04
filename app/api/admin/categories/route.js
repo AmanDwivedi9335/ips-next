@@ -10,7 +10,8 @@ export async function GET(request) {
 
 		const search = searchParams.get("search");
                 const published = searchParams.get("published");
-                const productFamily = searchParams.get("productFamily");
+                const productType = searchParams.get("productType");
+
 		const page = Number.parseInt(searchParams.get("page") || "1");
 		const limit = Number.parseInt(searchParams.get("limit") || "10");
 		const sort = searchParams.get("sort") || "createdAt";
@@ -30,8 +31,9 @@ export async function GET(request) {
                         query.published = published === "true";
                 }
 
-                if (productFamily) {
-                        query.productFamily = productFamily;
+                if (productType) {
+                        query.productType = productType;
+
                 }
 
 		// Build sort object
@@ -84,12 +86,14 @@ export async function POST(request) {
 	await dbConnect();
 
 	try {
-                const { name, description, icon, published, sortOrder, parent, productFamily } =
+
+                const { name, description, icon, published, sortOrder, parent, productType } =
                         await request.json();
 
-                if (!name || !description || !productFamily) {
+                if (!name || !description || !productType) {
                         return Response.json(
-                                { success: false, message: "Name, description and product family are required" },
+                                { success: false, message: "Name, description and product type are required" },
+
                                 { status: 400 }
                         );
                 }
@@ -101,7 +105,8 @@ export async function POST(request) {
                         published: published !== undefined ? published : true,
                         sortOrder: sortOrder || 0,
                         parent: parent || null,
-                        productFamily,
+                        productType,
+
                 });
 
 		await category.save();

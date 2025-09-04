@@ -23,11 +23,12 @@ import {
         SelectValue,
 } from "@/components/ui/select";
 import { useAdminCategoryStore } from "@/store/adminCategoryStore.js";
-import { useAdminProductFamilyStore } from "@/store/adminProductFamilyStore.js";
+import { useAdminProductTypeStore } from "@/store/adminProductTypeStore.js";
 
 export function AddCategoryPopup({ open, onOpenChange }) {
         const { addCategory, categories } = useAdminCategoryStore();
-        const { productFamilies, fetchProductFamilies } = useAdminProductFamilyStore();
+        const { productTypes, fetchProductTypes } = useAdminProductTypeStore();
+
         const [isSubmitting, setIsSubmitting] = useState(false);
 
 	const [formData, setFormData] = useState({
@@ -37,7 +38,9 @@ export function AddCategoryPopup({ open, onOpenChange }) {
                 published: true,
                 sortOrder: 0,
                 parent: "",
-                productFamily: "",
+
+                productType: "",
+
         });
 
 	const handleSubmit = async (e) => {
@@ -47,7 +50,9 @@ export function AddCategoryPopup({ open, onOpenChange }) {
                 const success = await addCategory({
                         ...formData,
                         parent: formData.parent || null,
-                        productFamily: formData.productFamily,
+
+                        productType: formData.productType,
+
                 });
 		if (success) {
 			onOpenChange(false);
@@ -64,13 +69,17 @@ export function AddCategoryPopup({ open, onOpenChange }) {
                         published: true,
                         sortOrder: 0,
                         parent: "",
-                        productFamily: "",
+
+                        productType: "",
+
                 });
         };
 
         useEffect(() => {
-                fetchProductFamilies();
-        }, [fetchProductFamilies]);
+
+                fetchProductTypes();
+        }, [fetchProductTypes]);
+
 
         return (
                 <Dialog open={open} onOpenChange={onOpenChange}>
@@ -136,29 +145,29 @@ export function AddCategoryPopup({ open, onOpenChange }) {
                                                 </div>
 
                                                 <div>
-                                                        <Label>Product Family *</Label>
+
+                                                        <Label>Product Type *</Label>
                                                        <Select
-                                                               value={formData.productFamily}
+                                                               value={formData.productType}
                                                                onValueChange={(value) =>
                                                                        setFormData({
                                                                                ...formData,
-                                                                               productFamily: value,
+                                                                               productType: value,
                                                                        })
-                                                              }
-                                                      >
-                                                               <SelectTrigger className="mt-1">
-                                                                        <SelectValue placeholder="Select product family" />
-                                                               </SelectTrigger>
+                                                               }
+                                                       >
+                                                                <SelectTrigger className="mt-1">
+                                                                        <SelectValue placeholder="Select product type" />
+                                                                </SelectTrigger>
                                                                <SelectContent>
-                                                                       {productFamilies
-                                                                               .filter((family) => family && family._id)
-                                                                               .map((family) => (
-                                                                                       <SelectItem key={family._id} value={family._id}>
-                                                                                               {family.name}
-                                                                                       </SelectItem>
-                                                                               ))}
+                                                                       {productTypes.map((type) => (
+                                                                               <SelectItem key={type._id} value={type._id}>
+                                                                                       {type.name}
+                                                                               </SelectItem>
+                                                                       ))}
                                                                </SelectContent>
-                                                     </Select>
+                                                       </Select>
+
                                                 </div>
 
                                                 <div>

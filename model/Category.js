@@ -27,9 +27,11 @@ const CategorySchema = new mongoose.Schema(
                         type: String, // URL to icon image
                         default: "",
                 },
-                productFamily: {
+
+                productType: {
                         type: mongoose.Schema.Types.ObjectId,
-                        ref: "ProductFamily",
+                        ref: "ProductType",
+
                         required: true,
                 },
                 published: {

@@ -29,7 +29,9 @@ import { useAdminLanguageStore } from "@/store/adminLanguageStore.js";
 import { useAdminMaterialStore } from "@/store/adminMaterialStore.js";
 import { useAdminSizeStore } from "@/store/adminSizeStore.js";
 import { useAdminCategoryStore } from "@/store/adminCategoryStore.js";
-import { useAdminProductFamilyStore } from "@/store/adminProductFamilyStore.js";
+
+import { useAdminProductTypeStore } from "@/store/adminProductTypeStore.js";
+
 import { ImageUpload } from "@/components/AdminPanel/ImageUpload.jsx";
 const productTags = [
         { value: "featured", label: "Featured" },
@@ -38,6 +40,7 @@ const productTags = [
         { value: "discounted", label: "Discounted" },
 ];
 
+
 export function AddProductPopup({ open, onOpenChange }) {
         const { addProduct } = useAdminProductStore();
         const { languages, fetchLanguages } = useAdminLanguageStore();
@@ -45,8 +48,10 @@ export function AddProductPopup({ open, onOpenChange }) {
         const { sizes, fetchSizes } = useAdminSizeStore();
         const { categories: categoryList, fetchCategories } =
                 useAdminCategoryStore();
-        const { productFamilies, fetchProductFamilies } =
-                useAdminProductFamilyStore();
+
+        const { productTypes, fetchProductTypes } =
+                useAdminProductTypeStore();
+
         const [isSubmitting, setIsSubmitting] = useState(false);
         const [formData, setFormData] = useState({
                 title: "",
@@ -75,29 +80,37 @@ export function AddProductPopup({ open, onOpenChange }) {
         ]);
         const [selectedCategoryId, setSelectedCategoryId] = useState(null);
 
-        const selectedFamily = productFamilies.find(
-                (pf) => pf._id === formData.productFamily
-        );
-        const selectedSlug = selectedFamily?.slug;
+        const [formData, setFormData] = useState({
+                title: "",
+                description: "",
+                longDescription: "",
+                category: "",
+                subcategory: "",
+                discount: "",
+                type: "featured",
+                productType: "",
+                published: true,
+        });
+
 
         const showLayout = [
                 "safety-signs",
                 "identification-signs",
-        ].includes(selectedSlug);
+        ].includes(formData.productType);
 
         const showQR = [
                 "safety-posters",
                 "iso-compliance-series",
                 "industrial-safety-packs",
-        ].includes(selectedSlug);
+        ].includes(formData.productType);
 
         const showBasicFields = ![
                 "monthly-poster-subscription",
                 "iso-wall-kraft",
-        ].includes(selectedSlug);
+        ].includes(formData.productType);
 
         const sizeOptions =
-                selectedSlug === "industrial-safety-packs"
+                formData.productType === "industrial-safety-packs"
                         ? [
                                   { _id: "compact", name: "Compact" },
                                   { _id: "classic", name: "Classic" },
@@ -107,19 +120,13 @@ export function AddProductPopup({ open, onOpenChange }) {
                         : sizes;
 
         const parentCategories = categoryList.filter(
-                (cat) =>
-                        !cat.parent &&
-
-                        cat.productFamily === formData.productFamily
-
+                (cat) => !cat.parent && cat.productType === formData.productType
         );
         const subCategories = selectedCategoryId
                 ? categoryList.filter(
                           (cat) =>
                                   cat.parent === selectedCategoryId &&
-
-                                  cat.productFamily === formData.productFamily
-
+                                  cat.productType === formData.productType
                   )
                 : [];
 
@@ -128,14 +135,24 @@ export function AddProductPopup({ open, onOpenChange }) {
                 fetchMaterials();
                 fetchSizes();
                 fetchCategories();
-                fetchProductFamilies();
+                fetchProductTypes();
         }, [
                 fetchLanguages,
                 fetchMaterials,
                 fetchSizes,
                 fetchCategories,
-                fetchProductFamilies,
+                fetchProductTypes,
         ]);
+
+        useEffect(() => {
+                if (productTypes.length) {
+                        setFormData((prev) => ({
+                                ...prev,
+                                productType:
+                                        prev.productType || productTypes[0].slug,
+                        }));
+                }
+        }, [productTypes]);
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
@@ -158,7 +175,9 @@ export function AddProductPopup({ open, onOpenChange }) {
                         const requiresLayout = [
                                 "safety-signs",
                                 "identification-signs",
-                        ].includes(selectedSlug);
+
+                        ].includes(formData.productType);
+
 
                         const priceData = prices
                                 .filter(
@@ -191,8 +210,9 @@ export function AddProductPopup({ open, onOpenChange }) {
                                 materials: showBasicFields ? selectedMaterials : [],
                                 sizes: showBasicFields ? selectedSizes : [],
                                 layouts: showLayout ? selectedLayouts : [],
-                                productFamily: formData.productFamily,
-                                productType: selectedSlug,
+
+                                productType: formData.productType,
+
 
                                 pricing: priceData,
 
@@ -215,7 +235,7 @@ export function AddProductPopup({ open, onOpenChange }) {
 		}
 	};
 
-	const resetForm = () => {
+        const resetForm = () => {
                 setFormData({
                         title: "",
                         description: "",
@@ -224,7 +244,9 @@ export function AddProductPopup({ open, onOpenChange }) {
                         subcategory: "",
                         discount: "",
                         type: "featured",
-                        productFamily: "",
+
+                        productType: productTypes[0]?.slug || "",
+
                         published: true,
                 });
                 setFeatures([{ title: "", description: "" }]);
@@ -477,16 +499,13 @@ export function AddProductPopup({ open, onOpenChange }) {
                                                                                                 <SelectValue placeholder="Select category" />
                                                                                         </SelectTrigger>
                                                                                         <SelectContent>
-                                                                                                {parentCategories
-                                                                                                        .filter(
-                                                                                                                (category) =>
-                                                                                                                        category && category._id && category.slug
-                                                                                                        )
-                                                                                                        .map((category) => (
-                                                                                                                <SelectItem key={category._id} value={category.slug}>
-                                                                                                                        {category.name}
-                                                                                                                </SelectItem>
-                                                                                                        ))}
+
+                                                                                                {parentCategories.map((category) => (
+                                                                                                        <SelectItem key={category._id} value={category.slug}>
+                                                                                                                {category.name}
+                                                                                                        </SelectItem>
+                                                                                                ))}
+
                                                                                         </SelectContent>
                                                                                 </Select>
                                                                         </div>
@@ -507,12 +526,9 @@ export function AddProductPopup({ open, onOpenChange }) {
                                                                                                         <SelectValue placeholder="Select subcategory" />
                                                                                                 </SelectTrigger>
                                                                                                 <SelectContent>
-                                                                                                {subCategories
-                                                                                                        .filter(
-                                                                                                                (sub) =>
-                                                                                                                        sub && sub._id && sub.slug
-                                                                                                        )
-                                                                                                        .map((sub) => (
+
+                                                                                                        {subCategories.map((sub) => (
+
                                                                                                                 <SelectItem key={sub._id} value={sub.slug}>
                                                                                                                         {sub.name}
                                                                                                                 </SelectItem>
@@ -523,6 +539,35 @@ export function AddProductPopup({ open, onOpenChange }) {
                                                                         )}
                                                                 </>
                                                         )}
+
+
+                                                        <div>
+                                                                <Label>Product Family *</Label>
+                                                                <Select
+                                                                        value={formData.productType}
+                                                                        onValueChange={(value) =>
+                                                                                setFormData({
+                                                                                        ...formData,
+                                                                                        productType: value,
+                                                                                })
+                                                                        }
+                                                                >
+                                                                        <SelectTrigger className="mt-1">
+                                                                                <SelectValue placeholder="Select family" />
+                                                                        </SelectTrigger>
+                                                                        <SelectContent>
+                                                                                {productTypes.map((type) => (
+                                                                                        <SelectItem
+                                                                                                key={type._id}
+                                                                                                value={type.slug}
+                                                                                        >
+                                                                                                {type.name}
+                                                                                        </SelectItem>
+                                                                                ))}
+                                                                        </SelectContent>
+                                                                </Select>
+                                                       </div>
+
 
                                                         <div>
                                                                 <Label>Product Tag</Label>

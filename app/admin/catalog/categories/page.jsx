@@ -38,7 +38,8 @@ import {
 	Package,
 } from "lucide-react";
 import { useAdminCategoryStore } from "@/store/adminCategoryStore.js";
-import { useAdminProductFamilyStore } from "@/store/adminProductFamilyStore.js";
+import { useAdminProductTypeStore } from "@/store/adminProductTypeStore.js";
+
 import { DeletePopup } from "@/components/AdminPanel/Popups/DeletePopup.jsx";
 import { AddCategoryPopup } from "@/components/AdminPanel/Popups/AddCategoryPopup.jsx";
 import { UpdateCategoryPopup } from "@/components/AdminPanel/Popups/UpdateCategoryPopup.jsx";
@@ -66,7 +67,8 @@ export default function AdminCategoriesPage() {
                 exportToJSON,
         } = useAdminCategoryStore();
 
-        const { productFamilies, fetchProductFamilies } = useAdminProductFamilyStore();
+        const { productTypes, fetchProductTypes } = useAdminProductTypeStore();
+
 
 	const [popups, setPopups] = useState({
 		delete: { open: false, category: null },
@@ -76,8 +78,10 @@ export default function AdminCategoriesPage() {
 
         useEffect(() => {
                 fetchCategories();
-                fetchProductFamilies();
-        }, [fetchCategories, fetchProductFamilies]);
+
+                fetchProductTypes();
+        }, [fetchCategories, fetchProductTypes]);
+
 
 	const handleSearch = (value) => {
 		setFilters({ search: value });
@@ -232,26 +236,27 @@ export default function AdminCategoriesPage() {
                                                                         </SelectContent>
                                                                 </Select>
 
-<Select
-value={filters.productFamily || "all"}
-onValueChange={(value) =>
-handleFilterChange("productFamily", value === "all" ? "" : value)
-}
->
-<SelectTrigger className="w-40">
-<SelectValue placeholder="Product Family" />
-</SelectTrigger>
-<SelectContent>
-<SelectItem value="all">All Product Families</SelectItem>
-{productFamilies
-.filter((family) => family && family._id)
-.map((family) => (
-<SelectItem key={family._id} value={family._id}>
-{family.name}
-</SelectItem>
-))}
-</SelectContent>
-</Select>
+                                                                <Select
+                                                                        value={filters.productType || ""}
+                                                                        onValueChange={(value) =>
+                                                                                handleFilterChange("productType", value)
+                                                                        }
+                                                                >
+                                                                        <SelectTrigger className="w-40">
+                                                                                <SelectValue placeholder="Product Type" />
+                                                                        </SelectTrigger>
+                                                                        <SelectContent>
+                                                                                <SelectItem value="">
+                                                                                        All Product Types
+                                                                                </SelectItem>
+                                                                                {productTypes.map((type) => (
+                                                                                        <SelectItem key={type._id} value={type._id}>
+                                                                                                {type.name}
+                                                                                        </SelectItem>
+                                                                                ))}
+                                                                        </SelectContent>
+                                                                </Select>
+
 
 								<Button
 									onClick={handleApplyFilters}
@@ -300,7 +305,9 @@ handleFilterChange("productFamily", value === "all" ? "" : value)
 												</Button>
 											</TableHead>
                                                                                         <TableHead>Description</TableHead>
-                                                                                        <TableHead>Product Family</TableHead>
+
+                                                                                        <TableHead>Product Type</TableHead>
+
                                                                                         <TableHead>Products</TableHead>
 											<TableHead>Published</TableHead>
 											<TableHead>
@@ -361,7 +368,9 @@ handleFilterChange("productFamily", value === "all" ? "" : value)
                                                                                                        </div>
                                                                                                </TableCell>
                                                                                                 <TableCell>
-{productFamilies.find((pf) => pf._id === category.productFamily)?.name || "-"}
+
+                                                                                                        {productTypes.find((pt) => pt._id === category.productType)?.name || "-"}
+
                                                                                                 </TableCell>
                                                                                                 <TableCell>
                                                                                                         <div className="flex items-center gap-2">
