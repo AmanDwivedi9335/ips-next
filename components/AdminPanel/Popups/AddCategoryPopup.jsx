@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
 	Dialog,
@@ -23,19 +23,22 @@ import {
         SelectValue,
 } from "@/components/ui/select";
 import { useAdminCategoryStore } from "@/store/adminCategoryStore.js";
+import { useAdminProductTypeStore } from "@/store/adminProductTypeStore.js";
 
 export function AddCategoryPopup({ open, onOpenChange }) {
         const { addCategory, categories } = useAdminCategoryStore();
-	const [isSubmitting, setIsSubmitting] = useState(false);
+        const { productTypes, fetchProductTypes } = useAdminProductTypeStore();
+        const [isSubmitting, setIsSubmitting] = useState(false);
 
 	const [formData, setFormData] = useState({
 		name: "",
 		description: "",
-		icon: "",
-		published: true,
+                icon: "",
+                published: true,
                 sortOrder: 0,
                 parent: "",
-	});
+                productType: "",
+        });
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
@@ -44,6 +47,7 @@ export function AddCategoryPopup({ open, onOpenChange }) {
                 const success = await addCategory({
                         ...formData,
                         parent: formData.parent || null,
+                        productType: formData.productType,
                 });
 		if (success) {
 			onOpenChange(false);
@@ -60,11 +64,16 @@ export function AddCategoryPopup({ open, onOpenChange }) {
                         published: true,
                         sortOrder: 0,
                         parent: "",
+                        productType: "",
                 });
-	};
+        };
 
-	return (
-		<Dialog open={open} onOpenChange={onOpenChange}>
+        useEffect(() => {
+                fetchProductTypes();
+        }, [fetchProductTypes]);
+
+        return (
+                <Dialog open={open} onOpenChange={onOpenChange}>
 			<DialogContent className="sm:max-w-md">
 				<motion.div
 					initial={{ scale: 0.95, opacity: 0 }}
@@ -110,9 +119,9 @@ export function AddCategoryPopup({ open, onOpenChange }) {
 							/>
 						</div>
 
-						<div>
-							<Label htmlFor="icon">Icon URL</Label>
-							<Input
+                                                <div>
+                                                        <Label htmlFor="icon">Icon URL</Label>
+                                                        <Input
 								id="icon"
 								placeholder="https://example.com/icon.png"
 								value={formData.icon}
@@ -124,7 +133,31 @@ export function AddCategoryPopup({ open, onOpenChange }) {
 							<p className="text-xs text-gray-500 mt-1">
 								Optional: URL to category icon image
 							</p>
-						</div>
+                                                </div>
+
+                                                <div>
+                                                        <Label>Product Type *</Label>
+                                                       <Select
+                                                               value={formData.productType}
+                                                               onValueChange={(value) =>
+                                                                       setFormData({
+                                                                               ...formData,
+                                                                               productType: value,
+                                                                       })
+                                                               }
+                                                       >
+                                                                <SelectTrigger className="mt-1">
+                                                                        <SelectValue placeholder="Select product type" />
+                                                                </SelectTrigger>
+                                                               <SelectContent>
+                                                                       {productTypes.map((type) => (
+                                                                               <SelectItem key={type._id} value={type._id}>
+                                                                                       {type.name}
+                                                                               </SelectItem>
+                                                                       ))}
+                                                               </SelectContent>
+                                                       </Select>
+                                                </div>
 
                                                 <div>
                                                         <Label htmlFor="sortOrder">Sort Order</Label>
