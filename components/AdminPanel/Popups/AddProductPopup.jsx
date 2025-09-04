@@ -471,11 +471,16 @@ export function AddProductPopup({ open, onOpenChange }) {
                                                                                                 <SelectValue placeholder="Select category" />
                                                                                         </SelectTrigger>
                                                                                         <SelectContent>
-                                                                                                {parentCategories.map((category) => (
-                                                                                                        <SelectItem key={category._id} value={category.slug}>
-                                                                                                                {category.name}
-                                                                                                        </SelectItem>
-                                                                                                ))}
+                                                                                                {parentCategories
+                                                                                                        .filter(
+                                                                                                                (category) =>
+                                                                                                                        category && category._id && category.slug
+                                                                                                        )
+                                                                                                        .map((category) => (
+                                                                                                                <SelectItem key={category._id} value={category.slug}>
+                                                                                                                        {category.name}
+                                                                                                                </SelectItem>
+                                                                                                        ))}
                                                                                         </SelectContent>
                                                                                 </Select>
                                                                         </div>
@@ -496,7 +501,12 @@ export function AddProductPopup({ open, onOpenChange }) {
                                                                                                         <SelectValue placeholder="Select subcategory" />
                                                                                                 </SelectTrigger>
                                                                                                 <SelectContent>
-                                                                                                        {subCategories.map((sub) => (
+                                                                                                {subCategories
+                                                                                                        .filter(
+                                                                                                                (sub) =>
+                                                                                                                        sub && sub._id && sub.slug
+                                                                                                        )
+                                                                                                        .map((sub) => (
                                                                                                                 <SelectItem key={sub._id} value={sub.slug}>
                                                                                                                         {sub.name}
                                                                                                                 </SelectItem>

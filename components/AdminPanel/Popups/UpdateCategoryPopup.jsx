@@ -153,13 +153,15 @@ export function UpdateCategoryPopup({ open, onOpenChange, category }) {
                                                                         <SelectValue placeholder="Select product type" />
                                                                 </SelectTrigger>
                                                                <SelectContent>
-                                                                       {productTypes.map((type) => (
-                                                                               <SelectItem key={type._id} value={type._id}>
-                                                                                       {type.name}
-                                                                               </SelectItem>
-                                                                       ))}
+                                                                       {productTypes
+                                                                               .filter((type) => type && type._id)
+                                                                               .map((type) => (
+                                                                                       <SelectItem key={type._id} value={type._id}>
+                                                                                               {type.name}
+                                                                                       </SelectItem>
+                                                                               ))}
                                                                </SelectContent>
-                                                       </Select>
+                                                      </Select>
                                                 </div>
 
                                                 <div>
@@ -199,7 +201,7 @@ export function UpdateCategoryPopup({ open, onOpenChange, category }) {
                                                                <SelectContent>
                                                                        <SelectItem value="none">None</SelectItem>
                                                                        {categories
-                                                                               .filter((c) => c._id !== category?._id)
+                                                                               .filter((c) => c && c._id && c._id !== category?._id)
                                                                                .map((cat) => (
                                                                                        <SelectItem
                                                                                                key={cat._id}
@@ -209,8 +211,8 @@ export function UpdateCategoryPopup({ open, onOpenChange, category }) {
                                                                                        </SelectItem>
                                                                                ))}
                                                                </SelectContent>
-                                                       </Select>
-                                               </div>
+                                                      </Select>
+                                                </div>
 
 						<div className="flex items-center justify-between">
 							<div>
