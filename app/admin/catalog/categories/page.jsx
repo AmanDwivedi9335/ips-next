@@ -232,26 +232,26 @@ export default function AdminCategoriesPage() {
                                                                         </SelectContent>
                                                                 </Select>
 
-                                                                <Select
-                                                                        value={filters.productType || ""}
-                                                                        onValueChange={(value) =>
-                                                                                handleFilterChange("productType", value)
-                                                                        }
-                                                                >
-                                                                        <SelectTrigger className="w-40">
-                                                                                <SelectValue placeholder="Product Type" />
-                                                                        </SelectTrigger>
-                                                                        <SelectContent>
-                                                                                <SelectItem value="">
-                                                                                        All Product Types
-                                                                                </SelectItem>
-                                                                                {productTypes.map((type) => (
-                                                                                        <SelectItem key={type._id} value={type._id}>
-                                                                                                {type.name}
-                                                                                        </SelectItem>
-                                                                                ))}
-                                                                        </SelectContent>
-                                                                </Select>
+<Select
+value={filters.productType || "all"}
+onValueChange={(value) =>
+handleFilterChange("productType", value === "all" ? "" : value)
+}
+>
+<SelectTrigger className="w-40">
+<SelectValue placeholder="Product Type" />
+</SelectTrigger>
+<SelectContent>
+<SelectItem value="all">All Product Types</SelectItem>
+{productTypes
+.filter((type) => type && type._id)
+.map((type) => (
+<SelectItem key={type._id} value={type._id}>
+{type.name}
+</SelectItem>
+))}
+</SelectContent>
+</Select>
 
 								<Button
 									onClick={handleApplyFilters}
