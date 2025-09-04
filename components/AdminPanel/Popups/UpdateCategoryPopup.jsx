@@ -24,11 +24,11 @@ import {
 } from "@/components/ui/select";
 import { useAdminCategoryStore } from "@/store/adminCategoryStore.js";
 
-import { useAdminProductTypeStore } from "@/store/adminProductTypeStore.js";
+import { useAdminProductFamilyStore } from "@/store/adminProductFamilyStore.js";
 
 export function UpdateCategoryPopup({ open, onOpenChange, category }) {
         const { updateCategory, categories } = useAdminCategoryStore();
-        const { productTypes, fetchProductTypes } = useAdminProductTypeStore();
+        const { productFamilies, fetchProductFamilies } = useAdminProductFamilyStore();
 
         const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -40,11 +40,11 @@ export function UpdateCategoryPopup({ open, onOpenChange, category }) {
                 sortOrder: 0,
                 parent: "",
 
-                productType: "",
+                productFamily: "",
         });
 
         useEffect(() => {
-                fetchProductTypes();
+                fetchProductFamilies();
 
                 if (category) {
                         setFormData({
@@ -58,10 +58,10 @@ export function UpdateCategoryPopup({ open, onOpenChange, category }) {
                                 sortOrder: category.sortOrder || 0,
                                 parent: category.parent ? category.parent.toString() : "",
 
-                                productType: category.productType?.toString() || "",
+                                productFamily: category.productType?.toString() || "",
                         });
                 }
-        }, [category, fetchProductTypes]);
+        }, [category, fetchProductFamilies]);
 
 
 	const handleSubmit = async (e) => {
@@ -73,7 +73,7 @@ export function UpdateCategoryPopup({ open, onOpenChange, category }) {
                 const success = await updateCategory(category._id, {
                         ...formData,
                         parent: formData.parent || null,
-                        productType: formData.productType,
+                        productType: formData.productFamily,
 
                 });
 		if (success) {
@@ -147,23 +147,23 @@ export function UpdateCategoryPopup({ open, onOpenChange, category }) {
 
                                                 <div>
 
-                                                        <Label>Product Type *</Label>
+                                                        <Label>Product Family *</Label>
                                                        <Select
-                                                               value={formData.productType}
+                                                               value={formData.productFamily}
                                                                onValueChange={(value) =>
                                                                        setFormData({
                                                                                ...formData,
-                                                                               productType: value,
+                                                                               productFamily: value,
                                                                        })
                                                                }
                                                        >
                                                                 <SelectTrigger className="mt-1">
-                                                                        <SelectValue placeholder="Select product type" />
+                                                                        <SelectValue placeholder="Select product family" />
                                                                 </SelectTrigger>
                                                                <SelectContent>
-                                                                       {productTypes.map((type) => (
-                                                                               <SelectItem key={type._id} value={type._id}>
-                                                                                       {type.name}
+                                                                       {productFamilies.map((family) => (
+                                                                               <SelectItem key={family._id} value={family._id}>
+                                                                                       {family.name}
                                                                                </SelectItem>
                                                                        ))}
                                                                </SelectContent>

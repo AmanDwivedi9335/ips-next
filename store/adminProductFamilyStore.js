@@ -2,9 +2,10 @@
 
 import { create } from "zustand";
 import { toast } from "sonner";
+import { DEFAULT_PRODUCT_FAMILIES } from "@/constants/productFamilies.js";
 
 export const useAdminProductFamilyStore = create((set, get) => ({
-        productFamilies: [],
+        productFamilies: DEFAULT_PRODUCT_FAMILIES,
         isLoading: false,
         error: null,
 
@@ -14,12 +15,19 @@ export const useAdminProductFamilyStore = create((set, get) => ({
                         const response = await fetch("/api/admin/product-families");
                         const data = await response.json();
                         if (data.success) {
-                                set({ productFamilies: data.productFamilies, isLoading: false });
+                                const fetched = data.productFamilies || [];
+                                const merged = [...fetched];
+                                DEFAULT_PRODUCT_FAMILIES.forEach((df) => {
+                                        if (!merged.some((f) => f.slug === df.slug)) {
+                                                merged.push(df);
+                                        }
+                                });
+                                set({ productFamilies: merged, isLoading: false });
                         } else {
-                                set({ error: data.message, isLoading: false });
+                                set({ productFamilies: DEFAULT_PRODUCT_FAMILIES, error: data.message, isLoading: false });
                         }
                 } catch (error) {
-                        set({ error: "Failed to fetch product families", isLoading: false });
+                        set({ productFamilies: DEFAULT_PRODUCT_FAMILIES, error: "Failed to fetch product families", isLoading: false });
                 }
         },
 
