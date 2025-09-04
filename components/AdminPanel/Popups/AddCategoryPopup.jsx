@@ -150,13 +150,15 @@ export function AddCategoryPopup({ open, onOpenChange }) {
                                                                         <SelectValue placeholder="Select product type" />
                                                                 </SelectTrigger>
                                                                <SelectContent>
-                                                                       {productTypes.map((type) => (
-                                                                               <SelectItem key={type._id} value={type._id}>
-                                                                                       {type.name}
-                                                                               </SelectItem>
-                                                                       ))}
+                                                                       {productTypes
+                                                                               .filter((type) => type && type._id)
+                                                                               .map((type) => (
+                                                                                       <SelectItem key={type._id} value={type._id}>
+                                                                                               {type.name}
+                                                                                       </SelectItem>
+                                                                               ))}
                                                                </SelectContent>
-                                                       </Select>
+                                                      </Select>
                                                 </div>
 
                                                 <div>
@@ -200,16 +202,18 @@ export function AddCategoryPopup({ open, onOpenChange }) {
                                                                        <SelectItem value="none">
                                                                                None
                                                                        </SelectItem>
-                                                                       {categories.map((cat) => (
-                                                                               <SelectItem
-                                                                                       key={cat._id}
-                                                                                       value={cat._id}
-                                                                               >
-                                                                                       {cat.name}
-                                                                               </SelectItem>
-                                                                       ))}
+                                                                       {categories
+                                                                               .filter((cat) => cat && cat._id)
+                                                                               .map((cat) => (
+                                                                                       <SelectItem
+                                                                                               key={cat._id}
+                                                                                               value={cat._id}
+                                                                                       >
+                                                                                               {cat.name}
+                                                                                       </SelectItem>
+                                                                               ))}
                                                                </SelectContent>
-                                                       </Select>
+                                                      </Select>
                                                </div>
 
 						<div className="flex items-center justify-between">
