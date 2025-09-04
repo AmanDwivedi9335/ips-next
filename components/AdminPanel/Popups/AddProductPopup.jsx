@@ -309,8 +309,38 @@ export function AddProductPopup({ open, onOpenChange }) {
 					</DialogHeader>
 
 					<form onSubmit={handleSubmit} className="space-y-6 mt-6">
-						<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-							<div className="md:col-span-2">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                        <div className="md:col-span-2">
+                                                                <Label>Product Family *</Label>
+                                                                <Select
+                                                                        value={formData.productType}
+                                                                        onValueChange={(value) => {
+                                                                                setFormData({
+                                                                                        ...formData,
+                                                                                        productType: value,
+                                                                                        category: "",
+                                                                                        subcategory: "",
+                                                                                });
+                                                                                setSelectedCategoryId(null);
+                                                                        }}
+                                                                >
+                                                                        <SelectTrigger className="mt-1">
+                                                                                <SelectValue placeholder="Select family" />
+                                                                        </SelectTrigger>
+                                                                        <SelectContent>
+                                                                                {productFamilies.map((pf) => (
+                                                                                        <SelectItem
+                                                                                                key={pf.value}
+                                                                                                value={pf.value}
+                                                                                        >
+                                                                                                {pf.label}
+                                                                                        </SelectItem>
+                                                                                ))}
+                                                                        </SelectContent>
+                                                                </Select>
+                                                        </div>
+
+                                                        <div className="md:col-span-2">
 								<Label htmlFor="title">Product Title *</Label>
 								<Input
 									id="title"
@@ -477,33 +507,6 @@ export function AddProductPopup({ open, onOpenChange }) {
                                                                         )}
                                                                 </>
                                                         )}
-
-                                                        <div>
-                                                                <Label>Product Family *</Label>
-                                                                <Select
-                                                                        value={formData.productType}
-                                                                        onValueChange={(value) =>
-                                                                                setFormData({
-                                                                                        ...formData,
-                                                                                        productType: value,
-                                                                                })
-                                                                        }
-                                                                >
-                                                                        <SelectTrigger className="mt-1">
-                                                                                <SelectValue placeholder="Select family" />
-                                                                        </SelectTrigger>
-                                                                        <SelectContent>
-                                                                                {productFamilies.map((pf) => (
-                                                                                        <SelectItem
-                                                                                                key={pf.value}
-                                                                                                value={pf.value}
-                                                                                        >
-                                                                                                {pf.label}
-                                                                                        </SelectItem>
-                                                                                ))}
-                                                                        </SelectContent>
-                                                                </Select>
-                                                        </div>
 
                                                         <div>
                                                                 <Label>Product Tag</Label>
