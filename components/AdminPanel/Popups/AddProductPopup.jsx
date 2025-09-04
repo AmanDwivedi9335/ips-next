@@ -109,13 +109,17 @@ export function AddProductPopup({ open, onOpenChange }) {
         const parentCategories = categoryList.filter(
                 (cat) =>
                         !cat.parent &&
+
                         cat.productFamily === formData.productFamily
+
         );
         const subCategories = selectedCategoryId
                 ? categoryList.filter(
                           (cat) =>
                                   cat.parent === selectedCategoryId &&
+
                                   cat.productFamily === formData.productFamily
+
                   )
                 : [];
 
