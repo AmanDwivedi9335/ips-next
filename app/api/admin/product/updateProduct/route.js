@@ -33,7 +33,7 @@ export async function PUT(request) {
 		const description = formData.get("description");
 		const longDescription = formData.get("longDescription");
                 const category = formData.get("category");
-                const productType = formData.get("productType") || "poster";
+                const productFamily = formData.get("productFamily");
                 const discount = formData.get("discount")
                         ? parseFloat(formData.get("discount"))
                         : 0;
@@ -125,7 +125,7 @@ export async function PUT(request) {
 		product.description = description;
 		product.longDescription = longDescription || description;
                 product.category = category;
-                product.productType = productType;
+                product.productFamily = productFamily;
                 product.discount = discount;
                 product.type = type;
                 product.published = published;

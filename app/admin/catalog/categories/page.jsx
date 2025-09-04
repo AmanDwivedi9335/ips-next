@@ -38,7 +38,7 @@ import {
 	Package,
 } from "lucide-react";
 import { useAdminCategoryStore } from "@/store/adminCategoryStore.js";
-import { useAdminProductTypeStore } from "@/store/adminProductTypeStore.js";
+import { useAdminProductFamilyStore } from "@/store/adminProductFamilyStore.js";
 import { DeletePopup } from "@/components/AdminPanel/Popups/DeletePopup.jsx";
 import { AddCategoryPopup } from "@/components/AdminPanel/Popups/AddCategoryPopup.jsx";
 import { UpdateCategoryPopup } from "@/components/AdminPanel/Popups/UpdateCategoryPopup.jsx";
@@ -66,7 +66,7 @@ export default function AdminCategoriesPage() {
                 exportToJSON,
         } = useAdminCategoryStore();
 
-        const { productTypes, fetchProductTypes } = useAdminProductTypeStore();
+        const { productFamilies, fetchProductFamilies } = useAdminProductFamilyStore();
 
 	const [popups, setPopups] = useState({
 		delete: { open: false, category: null },
@@ -76,22 +76,22 @@ export default function AdminCategoriesPage() {
 
         useEffect(() => {
                 fetchCategories();
-                fetchProductTypes();
-        }, [fetchCategories, fetchProductTypes]);
+                fetchProductFamilies();
+        }, [fetchCategories, fetchProductFamilies]);
 
 	const handleSearch = (value) => {
 		setFilters({ search: value });
 	};
 
-	const handleFilterChange = (key, value) => {
-		setFilters({ [key]: value });
-	};
+        const handleFilterChange = (key, value) => {
+                setFilters({ [key]: value });
+        };
 
 	const handleApplyFilters = () => {
-		fetchCategories();
-	};
+                fetchCategories();
+        };
 
-	const handleSelectAll = (checked) => {
+        const handleSelectAll = (checked) => {
 		if (checked) {
 			selectAllCategories();
 		} else {
@@ -233,21 +233,21 @@ export default function AdminCategoriesPage() {
                                                                 </Select>
 
 <Select
-value={filters.productType || "all"}
+value={filters.productFamily || "all"}
 onValueChange={(value) =>
-handleFilterChange("productType", value === "all" ? "" : value)
+handleFilterChange("productFamily", value === "all" ? "" : value)
 }
 >
 <SelectTrigger className="w-40">
-<SelectValue placeholder="Product Type" />
+<SelectValue placeholder="Product Family" />
 </SelectTrigger>
 <SelectContent>
-<SelectItem value="all">All Product Types</SelectItem>
-{productTypes
-.filter((type) => type && type._id)
-.map((type) => (
-<SelectItem key={type._id} value={type._id}>
-{type.name}
+<SelectItem value="all">All Product Families</SelectItem>
+{productFamilies
+.filter((family) => family && family._id)
+.map((family) => (
+<SelectItem key={family._id} value={family._id}>
+{family.name}
 </SelectItem>
 ))}
 </SelectContent>
@@ -300,7 +300,7 @@ handleFilterChange("productType", value === "all" ? "" : value)
 												</Button>
 											</TableHead>
                                                                                         <TableHead>Description</TableHead>
-                                                                                        <TableHead>Product Type</TableHead>
+                                                                                        <TableHead>Product Family</TableHead>
                                                                                         <TableHead>Products</TableHead>
 											<TableHead>Published</TableHead>
 											<TableHead>
@@ -361,7 +361,7 @@ handleFilterChange("productType", value === "all" ? "" : value)
                                                                                                        </div>
                                                                                                </TableCell>
                                                                                                 <TableCell>
-                                                                                                        {productTypes.find((pt) => pt._id === category.productType)?.name || "-"}
+{productFamilies.find((pf) => pf._id === category.productFamily)?.name || "-"}
                                                                                                 </TableCell>
                                                                                                 <TableCell>
                                                                                                         <div className="flex items-center gap-2">

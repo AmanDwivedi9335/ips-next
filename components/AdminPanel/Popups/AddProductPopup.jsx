@@ -29,26 +29,13 @@ import { useAdminLanguageStore } from "@/store/adminLanguageStore.js";
 import { useAdminMaterialStore } from "@/store/adminMaterialStore.js";
 import { useAdminSizeStore } from "@/store/adminSizeStore.js";
 import { useAdminCategoryStore } from "@/store/adminCategoryStore.js";
+import { useAdminProductFamilyStore } from "@/store/adminProductFamilyStore.js";
 import { ImageUpload } from "@/components/AdminPanel/ImageUpload.jsx";
 const productTags = [
         { value: "featured", label: "Featured" },
         { value: "top-selling", label: "Top Selling" },
         { value: "best-selling", label: "Best Selling" },
         { value: "discounted", label: "Discounted" },
-];
-
-// Available product families
-const productFamilies = [
-        { value: "safety-posters", label: "Safety Posters" },
-        { value: "safety-signs", label: "Safety Signs" },
-        { value: "identification-signs", label: "Identification Signs" },
-        { value: "industrial-safety-packs", label: "Industrial Safety Packs" },
-        {
-                value: "monthly-poster-subscription",
-                label: "Monthly Poster Subscription",
-        },
-        { value: "iso-compliance-series", label: "ISO Compliance Series" },
-        { value: "iso-wall-kraft", label: "ISO Wall Kraft" },
 ];
 
 export function AddProductPopup({ open, onOpenChange }) {
@@ -58,6 +45,8 @@ export function AddProductPopup({ open, onOpenChange }) {
         const { sizes, fetchSizes } = useAdminSizeStore();
         const { categories: categoryList, fetchCategories } =
                 useAdminCategoryStore();
+        const { productFamilies, fetchProductFamilies } =
+                useAdminProductFamilyStore();
         const [isSubmitting, setIsSubmitting] = useState(false);
         const [formData, setFormData] = useState({
                 title: "",
@@ -67,7 +56,7 @@ export function AddProductPopup({ open, onOpenChange }) {
                 subcategory: "",
                 discount: "",
                 type: "featured",
-                productType: "safety-posters",
+                productFamily: "",
                 published: true,
         });
         const [features, setFeatures] = useState([{ title: "", description: "" }]);
@@ -86,24 +75,29 @@ export function AddProductPopup({ open, onOpenChange }) {
         ]);
         const [selectedCategoryId, setSelectedCategoryId] = useState(null);
 
+        const selectedFamily = productFamilies.find(
+                (pf) => pf._id === formData.productFamily
+        );
+        const selectedSlug = selectedFamily?.slug;
+
         const showLayout = [
                 "safety-signs",
                 "identification-signs",
-        ].includes(formData.productType);
+        ].includes(selectedSlug);
 
         const showQR = [
                 "safety-posters",
                 "iso-compliance-series",
                 "industrial-safety-packs",
-        ].includes(formData.productType);
+        ].includes(selectedSlug);
 
         const showBasicFields = ![
                 "monthly-poster-subscription",
                 "iso-wall-kraft",
-        ].includes(formData.productType);
+        ].includes(selectedSlug);
 
         const sizeOptions =
-                formData.productType === "industrial-safety-packs"
+                selectedSlug === "industrial-safety-packs"
                         ? [
                                   { _id: "compact", name: "Compact" },
                                   { _id: "classic", name: "Classic" },
@@ -115,13 +109,13 @@ export function AddProductPopup({ open, onOpenChange }) {
         const parentCategories = categoryList.filter(
                 (cat) =>
                         !cat.parent &&
-                        cat.productType === formData.productType
+                        cat.productFamily === formData.productFamily
         );
         const subCategories = selectedCategoryId
                 ? categoryList.filter(
                           (cat) =>
                                   cat.parent === selectedCategoryId &&
-                                  cat.productType === formData.productType
+                                  cat.productFamily === formData.productFamily
                   )
                 : [];
 
@@ -130,7 +124,14 @@ export function AddProductPopup({ open, onOpenChange }) {
                 fetchMaterials();
                 fetchSizes();
                 fetchCategories();
-        }, [fetchLanguages, fetchMaterials, fetchSizes, fetchCategories]);
+                fetchProductFamilies();
+        }, [
+                fetchLanguages,
+                fetchMaterials,
+                fetchSizes,
+                fetchCategories,
+                fetchProductFamilies,
+        ]);
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
@@ -153,7 +154,7 @@ export function AddProductPopup({ open, onOpenChange }) {
                         const requiresLayout = [
                                 "safety-signs",
                                 "identification-signs",
-                        ].includes(formData.productType);
+                        ].includes(selectedSlug);
 
                         const priceData = prices
                                 .filter(
@@ -186,7 +187,8 @@ export function AddProductPopup({ open, onOpenChange }) {
                                 materials: showBasicFields ? selectedMaterials : [],
                                 sizes: showBasicFields ? selectedSizes : [],
                                 layouts: showLayout ? selectedLayouts : [],
-                                productType: formData.productType,
+                                productFamily: formData.productFamily,
+                                productType: selectedSlug,
 
                                 pricing: priceData,
 
@@ -218,7 +220,7 @@ export function AddProductPopup({ open, onOpenChange }) {
                         subcategory: "",
                         discount: "",
                         type: "featured",
-                        productType: "safety-posters",
+                        productFamily: "",
                         published: true,
                 });
                 setFeatures([{ title: "", description: "" }]);
@@ -313,11 +315,11 @@ export function AddProductPopup({ open, onOpenChange }) {
                                                         <div className="md:col-span-2">
                                                                 <Label>Product Family *</Label>
                                                                 <Select
-                                                                        value={formData.productType}
+                                                                        value={formData.productFamily}
                                                                         onValueChange={(value) => {
                                                                                 setFormData({
                                                                                         ...formData,
-                                                                                        productType: value,
+                                                                                        productFamily: value,
                                                                                         category: "",
                                                                                         subcategory: "",
                                                                                 });
@@ -330,10 +332,10 @@ export function AddProductPopup({ open, onOpenChange }) {
                                                                         <SelectContent>
                                                                                 {productFamilies.map((pf) => (
                                                                                         <SelectItem
-                                                                                                key={pf.value}
-                                                                                                value={pf.value}
+                                                                                                key={pf._id}
+                                                                                                value={pf._id}
                                                                                         >
-                                                                                                {pf.label}
+                                                                                                {pf.name}
                                                                                         </SelectItem>
                                                                                 ))}
                                                                         </SelectContent>

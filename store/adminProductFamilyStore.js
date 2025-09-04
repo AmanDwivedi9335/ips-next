@@ -3,110 +3,110 @@
 import { create } from "zustand";
 import { toast } from "sonner";
 
-export const useAdminProductTypeStore = create((set, get) => ({
-        productTypes: [],
+export const useAdminProductFamilyStore = create((set, get) => ({
+        productFamilies: [],
         isLoading: false,
         error: null,
 
-        fetchProductTypes: async () => {
+        fetchProductFamilies: async () => {
                 set({ isLoading: true, error: null });
                 try {
-                        const response = await fetch("/api/admin/product-types");
+                        const response = await fetch("/api/admin/product-families");
                         const data = await response.json();
                         if (data.success) {
-                                set({ productTypes: data.productTypes, isLoading: false });
+                                set({ productFamilies: data.productFamilies, isLoading: false });
                         } else {
                                 set({ error: data.message, isLoading: false });
                         }
                 } catch (error) {
-                        set({ error: "Failed to fetch product types", isLoading: false });
+                        set({ error: "Failed to fetch product families", isLoading: false });
                 }
         },
 
-        addProductType: async (productTypeData) => {
+        addProductFamily: async (productFamilyData) => {
                 try {
-                        const response = await fetch("/api/admin/product-types", {
+                        const response = await fetch("/api/admin/product-families", {
                                 method: "POST",
                                 headers: { "Content-Type": "application/json" },
-                                body: JSON.stringify(productTypeData),
+                                body: JSON.stringify(productFamilyData),
                         });
                         const data = await response.json();
                         if (data.success) {
-                                toast.success("Product type added successfully");
-                                get().fetchProductTypes();
+                                toast.success("Product family added successfully");
+                                get().fetchProductFamilies();
                                 return true;
                         } else {
                                 toast.error(data.message);
                                 return false;
                         }
                 } catch (error) {
-                        toast.error("Failed to add product type");
+                        toast.error("Failed to add product family");
                         return false;
                 }
         },
 
-        updateProductType: async (productTypeId, updateData) => {
+        updateProductFamily: async (productFamilyId, updateData) => {
                 try {
-                        const response = await fetch("/api/admin/product-types", {
+                        const response = await fetch("/api/admin/product-families", {
                                 method: "PUT",
                                 headers: { "Content-Type": "application/json" },
-                                body: JSON.stringify({ productTypeId, ...updateData }),
+                                body: JSON.stringify({ productFamilyId, ...updateData }),
                         });
                         const data = await response.json();
                         if (data.success) {
-                                toast.success("Product type updated successfully");
-                                get().fetchProductTypes();
+                                toast.success("Product family updated successfully");
+                                get().fetchProductFamilies();
                                 return true;
                         } else {
                                 toast.error(data.message);
                                 return false;
                         }
                 } catch (error) {
-                        toast.error("Failed to update product type");
+                        toast.error("Failed to update product family");
                         return false;
                 }
         },
 
-        deleteProductType: async (productTypeId) => {
+        deleteProductFamily: async (productFamilyId) => {
                 try {
-                        const response = await fetch("/api/admin/product-types", {
+                        const response = await fetch("/api/admin/product-families", {
                                 method: "DELETE",
                                 headers: { "Content-Type": "application/json" },
-                                body: JSON.stringify({ productTypeId }),
+                                body: JSON.stringify({ productFamilyId }),
                         });
                         const data = await response.json();
                         if (data.success) {
-                                toast.success("Product type deleted successfully");
-                                get().fetchProductTypes();
+                                toast.success("Product family deleted successfully");
+                                get().fetchProductFamilies();
                                 return true;
                         } else {
                                 toast.error(data.message);
                                 return false;
                         }
                 } catch (error) {
-                        toast.error("Failed to delete product type");
+                        toast.error("Failed to delete product family");
                         return false;
                 }
         },
 
-        deleteMultipleProductTypes: async (productTypeIds) => {
+        deleteMultipleProductFamilies: async (productFamilyIds) => {
                 try {
-                        const response = await fetch("/api/admin/product-types", {
+                        const response = await fetch("/api/admin/product-families", {
                                 method: "DELETE",
                                 headers: { "Content-Type": "application/json" },
-                                body: JSON.stringify({ productTypeIds }),
+                                body: JSON.stringify({ productFamilyIds }),
                         });
                         const data = await response.json();
                         if (data.success) {
                                 toast.success(data.message);
-                                get().fetchProductTypes();
+                                get().fetchProductFamilies();
                                 return true;
                         } else {
                                 toast.error(data.message);
                                 return false;
                         }
                 } catch (error) {
-                        toast.error("Failed to delete product types");
+                        toast.error("Failed to delete product families");
                         return false;
                 }
         },

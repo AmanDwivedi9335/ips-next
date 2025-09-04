@@ -13,35 +13,35 @@ import {
 } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Plus, Edit, Trash2 } from "lucide-react";
-import { useAdminProductTypeStore } from "@/store/adminProductTypeStore.js";
+import { useAdminProductFamilyStore } from "@/store/adminProductFamilyStore.js";
 import { DeletePopup } from "@/components/AdminPanel/Popups/DeletePopup.jsx";
-import { AddProductTypePopup } from "@/components/AdminPanel/Popups/AddProductTypePopup.jsx";
-import { UpdateProductTypePopup } from "@/components/AdminPanel/Popups/UpdateProductTypePopup.jsx";
+import { AddProductFamilyPopup } from "@/components/AdminPanel/Popups/AddProductFamilyPopup.jsx";
+import { UpdateProductFamilyPopup } from "@/components/AdminPanel/Popups/UpdateProductFamilyPopup.jsx";
 
-export default function AdminProductTypesPage() {
+export default function AdminProductFamiliesPage() {
   const {
-    productTypes,
+    productFamilies,
     isLoading,
     error,
-    fetchProductTypes,
-    deleteProductType,
-    deleteMultipleProductTypes,
-  } = useAdminProductTypeStore();
+    fetchProductFamilies,
+    deleteProductFamily,
+    deleteMultipleProductFamilies,
+  } = useAdminProductFamilyStore();
 
   const [selected, setSelected] = useState([]);
   const [popups, setPopups] = useState({
-    delete: { open: false, productType: null },
+    delete: { open: false, productFamily: null },
     add: false,
-    update: { open: false, productType: null },
+    update: { open: false, productFamily: null },
   });
 
   useEffect(() => {
-    fetchProductTypes();
-  }, [fetchProductTypes]);
+    fetchProductFamilies();
+  }, [fetchProductFamilies]);
 
   const handleSelectAll = (checked) => {
     if (checked) {
-      setSelected(productTypes.map((p) => p._id));
+      setSelected(productFamilies.map((p) => p._id));
     } else {
       setSelected([]);
     }
@@ -53,19 +53,19 @@ export default function AdminProductTypesPage() {
     );
   };
 
-  const handleDelete = (productType) => {
-    setPopups((prev) => ({ ...prev, delete: { open: true, productType } }));
+  const handleDelete = (productFamily) => {
+    setPopups((prev) => ({ ...prev, delete: { open: true, productFamily } }));
   };
 
   const confirmDelete = async () => {
-    if (popups.delete.productType) {
-      await deleteProductType(popups.delete.productType._id);
+    if (popups.delete.productFamily) {
+      await deleteProductFamily(popups.delete.productFamily._id);
     }
   };
 
   const handleBulkDelete = async () => {
     if (selected.length > 0) {
-      await deleteMultipleProductTypes(selected);
+      await deleteMultipleProductFamilies(selected);
       setSelected([]);
     }
   };
@@ -76,7 +76,7 @@ export default function AdminProductTypesPage() {
         <div className="text-center">
           <h3 className="text-lg font-semibold text-red-600 mb-2">Error</h3>
           <p className="text-gray-600 mb-4">{error}</p>
-          <Button onClick={fetchProductTypes}>Try Again</Button>
+          <Button onClick={fetchProductFamilies}>Try Again</Button>
         </div>
       </div>
     );
@@ -90,9 +90,9 @@ export default function AdminProductTypesPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
         >
-          <h1 className="text-3xl font-bold text-gray-900">Product Types</h1>
+          <h1 className="text-3xl font-bold text-gray-900">Product Families</h1>
           <p className="text-gray-600 mt-1">
-            Manage different product types for independent catalogs
+            Manage different product families for independent catalogs
           </p>
         </motion.div>
 
@@ -108,7 +108,7 @@ export default function AdminProductTypesPage() {
             onClick={() => setPopups((prev) => ({ ...prev, add: true }))}
             className="bg-green-600 hover:bg-green-700"
           >
-            <Plus className="w-4 h-4 mr-2" /> Add Product Type
+            <Plus className="w-4 h-4 mr-2" /> Add Product Family
           </Button>
         </div>
 
@@ -118,7 +118,7 @@ export default function AdminProductTypesPage() {
               <TableRow>
                 <TableHead className="w-12">
                   <Checkbox
-                    checked={selected.length === productTypes.length && productTypes.length > 0}
+                    checked={selected.length === productFamilies.length && productFamilies.length > 0}
                     onCheckedChange={handleSelectAll}
                   />
                 </TableHead>
@@ -129,23 +129,23 @@ export default function AdminProductTypesPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {productTypes.map((type) => (
+              {productFamilies.map((family) => (
                 <TableRow key={type._id}>
                   <TableCell>
                     <Checkbox
-                      checked={selected.includes(type._id)}
-                      onCheckedChange={() => handleSelect(type._id)}
+                      checked={selected.includes(family._id)}
+                      onCheckedChange={() => handleSelect(family._id)}
                     />
                   </TableCell>
-                  <TableCell className="font-medium">{type.name}</TableCell>
-                  <TableCell>{type.description}</TableCell>
-                  <TableCell>{type.slug}</TableCell>
+                  <TableCell className="font-medium">{family.name}</TableCell>
+                  <TableCell>{family.description}</TableCell>
+                  <TableCell>{family.slug}</TableCell>
                   <TableCell className="flex gap-2">
                     <Button
                       variant="ghost"
                       size="icon"
                       onClick={() =>
-                        setPopups((prev) => ({ ...prev, update: { open: true, productType: type } }))
+                        setPopups((prev) => ({ ...prev, update: { open: true, productFamily: family } }))
                       }
                     >
                       <Edit className="w-4 h-4" />
@@ -153,17 +153,17 @@ export default function AdminProductTypesPage() {
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={() => handleDelete(type)}
+                      onClick={() => handleDelete(family)}
                     >
                       <Trash2 className="w-4 h-4" />
                     </Button>
                   </TableCell>
                 </TableRow>
               ))}
-              {!isLoading && productTypes.length === 0 && (
+              {!isLoading && productFamilies.length === 0 && (
                 <TableRow>
                   <TableCell colSpan={5} className="text-center text-gray-500">
-                    No product types found
+                    No product families found
                   </TableCell>
                 </TableRow>
               )}
@@ -172,21 +172,21 @@ export default function AdminProductTypesPage() {
         </div>
       </div>
 
-      <AddProductTypePopup
+      <AddProductFamilyPopup
         open={popups.add}
         onOpenChange={(open) => setPopups((prev) => ({ ...prev, add: open }))}
       />
-      <UpdateProductTypePopup
+      <UpdateProductFamilyPopup
         open={popups.update.open}
-        onOpenChange={(open) => setPopups((prev) => ({ ...prev, update: { open, productType: null } }))}
-        productType={popups.update.productType}
+        onOpenChange={(open) => setPopups((prev) => ({ ...prev, update: { open, productFamily: null } }))}
+        productFamily={popups.update.productFamily}
       />
       <DeletePopup
         open={popups.delete.open}
-        onOpenChange={(open) => setPopups((prev) => ({ ...prev, delete: { open, productType: null } }))}
+        onOpenChange={(open) => setPopups((prev) => ({ ...prev, delete: { open, productFamily: null } }))}
         onConfirm={confirmDelete}
-        title="Delete Product Type"
-        description="Are you sure you want to delete this product type?"
+        title="Delete Product Family"
+        description="Are you sure you want to delete this product family?"
       />
     </>
   );

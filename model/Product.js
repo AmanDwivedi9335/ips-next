@@ -7,8 +7,9 @@ const ProductSchema = new mongoose.Schema(
 		longDescription: { type: String, required: true },
 		images: [{ type: String }],
                 category: { type: String, required: true },
-                productType: {
-                        type: String,
+                productFamily: {
+                        type: mongoose.Schema.Types.ObjectId,
+                        ref: "ProductFamily",
                         required: true,
                 },
                 published: { type: Boolean, default: true },
