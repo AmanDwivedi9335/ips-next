@@ -59,6 +59,17 @@ export function AddProductPopup({ open, onOpenChange }) {
         const { categories: categoryList, fetchCategories } =
                 useAdminCategoryStore();
         const [isSubmitting, setIsSubmitting] = useState(false);
+        const [formData, setFormData] = useState({
+                title: "",
+                description: "",
+                longDescription: "",
+                category: "",
+                subcategory: "",
+                discount: "",
+                type: "featured",
+                productType: "safety-posters",
+                published: true,
+        });
         const [features, setFeatures] = useState([{ title: "", description: "" }]);
         const [selectedLanguages, setSelectedLanguages] = useState([
                 "English",
@@ -120,18 +131,6 @@ export function AddProductPopup({ open, onOpenChange }) {
                 fetchSizes();
                 fetchCategories();
         }, [fetchLanguages, fetchMaterials, fetchSizes, fetchCategories]);
-
-        const [formData, setFormData] = useState({
-                title: "",
-                description: "",
-                longDescription: "",
-                category: "",
-                subcategory: "",
-                discount: "",
-                type: "featured",
-                productType: "safety-posters",
-                published: true,
-        });
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
