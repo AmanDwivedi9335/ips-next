@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const ProductTypeSchema = new mongoose.Schema(
+const ProductFamilySchema = new mongoose.Schema(
         {
                 name: {
                         type: String,
@@ -23,7 +23,7 @@ const ProductTypeSchema = new mongoose.Schema(
 );
 
 // Generate slug from name before saving
-ProductTypeSchema.pre("save", function (next) {
+ProductFamilySchema.pre("save", function (next) {
         if (this.isModified("name")) {
                 this.slug = this.name
                         .toLowerCase()
@@ -34,5 +34,5 @@ ProductTypeSchema.pre("save", function (next) {
         next();
 });
 
-export default mongoose.models.ProductType ||
-        mongoose.model("ProductType", ProductTypeSchema);
+export default mongoose.models.ProductFamily ||
+        mongoose.model("ProductFamily", ProductFamilySchema);
