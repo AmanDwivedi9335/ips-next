@@ -182,16 +182,17 @@ export const useAdminCategoryStore = create((set, get) => ({
 		}));
 	},
 
-	resetFilters: () => {
-		set({
-			filters: {
-				search: "",
-				published: null,
-			},
-			pagination: { ...get().pagination, currentPage: 1 },
-		});
-		get().fetchCategories();
-	},
+        resetFilters: () => {
+                set({
+                        filters: {
+                                search: "",
+                                published: null,
+                                productType: "",
+                        },
+                        pagination: { ...get().pagination, currentPage: 1 },
+                });
+                get().fetchCategories();
+        },
 
 	setPage: (page) => {
 		set((state) => ({

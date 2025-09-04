@@ -38,32 +38,35 @@ import {
 	Package,
 } from "lucide-react";
 import { useAdminCategoryStore } from "@/store/adminCategoryStore.js";
+import { useAdminProductTypeStore } from "@/store/adminProductTypeStore.js";
 import { DeletePopup } from "@/components/AdminPanel/Popups/DeletePopup.jsx";
 import { AddCategoryPopup } from "@/components/AdminPanel/Popups/AddCategoryPopup.jsx";
 import { UpdateCategoryPopup } from "@/components/AdminPanel/Popups/UpdateCategoryPopup.jsx";
 
 export default function AdminCategoriesPage() {
-	const {
-		categories,
-		isLoading,
-		error,
-		filters,
-		pagination,
-		selectedCategories,
-		fetchCategories,
-		setFilters,
-		resetFilters,
-		setPage,
-		setSorting,
-		selectAllCategories,
-		clearSelection,
-		toggleCategorySelection,
-		deleteCategory,
-		deleteMultipleCategories,
-		updateCategory,
-		exportToCSV,
-		exportToJSON,
-	} = useAdminCategoryStore();
+        const {
+                categories,
+                isLoading,
+                error,
+                filters,
+                pagination,
+                selectedCategories,
+                fetchCategories,
+                setFilters,
+                resetFilters,
+                setPage,
+                setSorting,
+                selectAllCategories,
+                clearSelection,
+                toggleCategorySelection,
+                deleteCategory,
+                deleteMultipleCategories,
+                updateCategory,
+                exportToCSV,
+                exportToJSON,
+        } = useAdminCategoryStore();
+
+        const { productTypes, fetchProductTypes } = useAdminProductTypeStore();
 
 	const [popups, setPopups] = useState({
 		delete: { open: false, category: null },
@@ -71,9 +74,10 @@ export default function AdminCategoriesPage() {
 		update: { open: false, category: null },
 	});
 
-	useEffect(() => {
-		fetchCategories();
-	}, [fetchCategories]);
+        useEffect(() => {
+                fetchCategories();
+                fetchProductTypes();
+        }, [fetchCategories, fetchProductTypes]);
 
 	const handleSearch = (value) => {
 		setFilters({ search: value });
@@ -209,15 +213,15 @@ export default function AdminCategoriesPage() {
 									/>
 								</div>
 
-								<Select
-									value={filters.published?.toString() || "all"}
-									onValueChange={(value) =>
-										handleFilterChange(
-											"published",
-											value === "all" ? null : value === "true"
-										)
-									}
-								>
+                                                                <Select
+                                                                        value={filters.published?.toString() || "all"}
+                                                                        onValueChange={(value) =>
+                                                                                handleFilterChange(
+                                                                                        "published",
+                                                                                        value === "all" ? null : value === "true"
+                                                                                )
+                                                                        }
+                                                                >
 									<SelectTrigger className="w-32">
 										<SelectValue placeholder="Status" />
 									</SelectTrigger>
@@ -225,8 +229,29 @@ export default function AdminCategoriesPage() {
 										<SelectItem value="all">All Status</SelectItem>
 										<SelectItem value="true">Published</SelectItem>
 										<SelectItem value="false">Draft</SelectItem>
-									</SelectContent>
-								</Select>
+                                                                        </SelectContent>
+                                                                </Select>
+
+                                                                <Select
+                                                                        value={filters.productType || ""}
+                                                                        onValueChange={(value) =>
+                                                                                handleFilterChange("productType", value)
+                                                                        }
+                                                                >
+                                                                        <SelectTrigger className="w-40">
+                                                                                <SelectValue placeholder="Product Type" />
+                                                                        </SelectTrigger>
+                                                                        <SelectContent>
+                                                                                <SelectItem value="">
+                                                                                        All Product Types
+                                                                                </SelectItem>
+                                                                                {productTypes.map((type) => (
+                                                                                        <SelectItem key={type._id} value={type._id}>
+                                                                                                {type.name}
+                                                                                        </SelectItem>
+                                                                                ))}
+                                                                        </SelectContent>
+                                                                </Select>
 
 								<Button
 									onClick={handleApplyFilters}
@@ -274,8 +299,9 @@ export default function AdminCategoriesPage() {
 													<ArrowUpDown className="ml-2 h-4 w-4" />
 												</Button>
 											</TableHead>
-											<TableHead>Description</TableHead>
-											<TableHead>Products</TableHead>
+                                                                                        <TableHead>Description</TableHead>
+                                                                                        <TableHead>Product Type</TableHead>
+                                                                                        <TableHead>Products</TableHead>
 											<TableHead>Published</TableHead>
 											<TableHead>
 												<Button
@@ -332,18 +358,21 @@ export default function AdminCategoriesPage() {
 														<p className="text-sm text-gray-600 line-clamp-2">
 															{category.description}
 														</p>
-													</div>
-												</TableCell>
-												<TableCell>
-													<div className="flex items-center gap-2">
-														<Badge
-															variant="outline"
-															className="bg-blue-50 text-blue-700"
-														>
-															{category.productCount || 0} products
-														</Badge>
-													</div>
-												</TableCell>
+                                                                                                       </div>
+                                                                                               </TableCell>
+                                                                                                <TableCell>
+                                                                                                        {productTypes.find((pt) => pt._id === category.productType)?.name || "-"}
+                                                                                                </TableCell>
+                                                                                                <TableCell>
+                                                                                                        <div className="flex items-center gap-2">
+                                                                                                                <Badge
+                                                                                                                        variant="outline"
+                                                                                                                        className="bg-blue-50 text-blue-700"
+                                                                                                                >
+                                                                                                                        {category.productCount || 0} products
+                                                                                                                </Badge>
+                                                                                                        </div>
+                                                                                                </TableCell>
 												<TableCell>
 													<Switch
 														checked={category.published}
