@@ -29,15 +29,15 @@ import { useAdminLanguageStore } from "@/store/adminLanguageStore.js";
 import { useAdminMaterialStore } from "@/store/adminMaterialStore.js";
 import { useAdminSizeStore } from "@/store/adminSizeStore.js";
 import { useAdminCategoryStore } from "@/store/adminCategoryStore.js";
+import { useAdminProductTypeStore } from "@/store/adminProductTypeStore.js";
 import { ImageUpload } from "@/components/AdminPanel/ImageUpload.jsx";
-
-
-const productTypes = [
-	{ value: "featured", label: "Featured" },
-	{ value: "top-selling", label: "Top Selling" },
-	{ value: "best-selling", label: "Best Selling" },
-	{ value: "discounted", label: "Discounted" },
+const productTags = [
+        { value: "featured", label: "Featured" },
+        { value: "top-selling", label: "Top Selling" },
+        { value: "best-selling", label: "Best Selling" },
+        { value: "discounted", label: "Discounted" },
 ];
+
 
 export function AddProductPopup({ open, onOpenChange }) {
         const { addProduct } = useAdminProductStore();
@@ -46,6 +46,8 @@ export function AddProductPopup({ open, onOpenChange }) {
         const { sizes, fetchSizes } = useAdminSizeStore();
         const { categories: categoryList, fetchCategories } =
                 useAdminCategoryStore();
+        const { productTypes, fetchProductTypes } =
+                useAdminProductTypeStore();
         const [isSubmitting, setIsSubmitting] = useState(false);
         const [features, setFeatures] = useState([{ title: "", description: "" }]);
         const [selectedLanguages, setSelectedLanguages] = useState([
@@ -62,19 +64,6 @@ export function AddProductPopup({ open, onOpenChange }) {
                 { layout: "", material: "", size: "", qr: false, price: "" },
         ]);
         const [selectedCategoryId, setSelectedCategoryId] = useState(null);
-
-        const parentCategories = categoryList.filter((cat) => !cat.parent);
-        const subCategories = selectedCategoryId
-                ? categoryList.filter((cat) => cat.parent === selectedCategoryId)
-                : [];
-
-        useEffect(() => {
-                fetchLanguages();
-                fetchMaterials();
-                fetchSizes();
-                fetchCategories();
-        }, [fetchLanguages, fetchMaterials, fetchSizes, fetchCategories]);
-
         const [formData, setFormData] = useState({
                 title: "",
                 description: "",
@@ -83,9 +72,70 @@ export function AddProductPopup({ open, onOpenChange }) {
                 subcategory: "",
                 discount: "",
                 type: "featured",
-                productType: "poster",
+                productType: "",
                 published: true,
         });
+
+        const showLayout = [
+                "safety-signs",
+                "identification-signs",
+        ].includes(formData.productType);
+
+        const showQR = [
+                "safety-posters",
+                "iso-compliance-series",
+                "industrial-safety-packs",
+        ].includes(formData.productType);
+
+        const showBasicFields = ![
+                "monthly-poster-subscription",
+                "iso-wall-kraft",
+        ].includes(formData.productType);
+
+        const sizeOptions =
+                formData.productType === "industrial-safety-packs"
+                        ? [
+                                  { _id: "compact", name: "Compact" },
+                                  { _id: "classic", name: "Classic" },
+                                  { _id: "standard", name: "Standard" },
+                                  { _id: "wide", name: "Wide" },
+                          ]
+                        : sizes;
+
+        const parentCategories = categoryList.filter(
+                (cat) => !cat.parent && cat.productType === formData.productType
+        );
+        const subCategories = selectedCategoryId
+                ? categoryList.filter(
+                          (cat) =>
+                                  cat.parent === selectedCategoryId &&
+                                  cat.productType === formData.productType
+                  )
+                : [];
+
+        useEffect(() => {
+                fetchLanguages();
+                fetchMaterials();
+                fetchSizes();
+                fetchCategories();
+                fetchProductTypes();
+        }, [
+                fetchLanguages,
+                fetchMaterials,
+                fetchSizes,
+                fetchCategories,
+                fetchProductTypes,
+        ]);
+
+        useEffect(() => {
+                if (productTypes.length) {
+                        setFormData((prev) => ({
+                                ...prev,
+                                productType:
+                                        prev.productType || productTypes[0].slug,
+                        }));
+                }
+        }, [productTypes]);
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
@@ -95,20 +145,27 @@ export function AddProductPopup({ open, onOpenChange }) {
                         const languageImagesData = languageImages.filter(
                                 (li) => li.language && li.image
                         );
-                        const allLanguages = Array.from(
-                                new Set([
-                                        ...selectedLanguages,
-                                        ...languageImagesData.map((li) => li.language),
-                                ])
-                        );
+                        const allLanguages = showBasicFields
+                                ? Array.from(
+                                          new Set([
+                                                  ...selectedLanguages,
+                                                  ...languageImagesData.map((li) => li.language),
+                                          ])
+                                  )
+                                : [];
 
                         // Prepare product data with proper types
+                        const requiresLayout = [
+                                "safety-signs",
+                                "identification-signs",
+                        ].includes(formData.productType);
+
                         const priceData = prices
                                 .filter(
                                         (p) =>
-                                                p.layout &&
                                                 p.material &&
                                                 p.size &&
+                                                (!requiresLayout || p.layout) &&
                                                 p.price !== ""
                                 )
                                 .map((p) => ({
@@ -131,9 +188,9 @@ export function AddProductPopup({ open, onOpenChange }) {
                                 features: features.filter((f) => f.title && f.description),
                                 languageImages: languageImagesData,
                                 languages: allLanguages,
-                                materials: selectedMaterials,
-                                sizes: selectedSizes,
-                                layouts: selectedLayouts,
+                                materials: showBasicFields ? selectedMaterials : [],
+                                sizes: showBasicFields ? selectedSizes : [],
+                                layouts: showLayout ? selectedLayouts : [],
                                 productType: formData.productType,
 
                                 pricing: priceData,
@@ -157,7 +214,7 @@ export function AddProductPopup({ open, onOpenChange }) {
 		}
 	};
 
-	const resetForm = () => {
+        const resetForm = () => {
                 setFormData({
                         title: "",
                         description: "",
@@ -166,6 +223,7 @@ export function AddProductPopup({ open, onOpenChange }) {
                         subcategory: "",
                         discount: "",
                         type: "featured",
+                        productType: productTypes[0]?.slug || "",
                         published: true,
                 });
                 setFeatures([{ title: "", description: "" }]);
@@ -303,124 +361,130 @@ export function AddProductPopup({ open, onOpenChange }) {
 								/>
 							</div>
 
-                                                        <div className="md:col-span-2">
-                                                                <Label>Language Specific Images</Label>
-                                                                {languageImages.map((li, index) => (
-                                                                        <div
-                                                                                key={index}
-                                                                                className="flex flex-col md:flex-row md:items-end gap-4 mt-2"
+                                                        {showBasicFields && (
+                                                                <div className="md:col-span-2">
+                                                                        <Label>Language Specific Images</Label>
+                                                                        {languageImages.map((li, index) => (
+                                                                                <div
+                                                                                        key={index}
+                                                                                        className="flex flex-col md:flex-row md:items-end gap-4 mt-2"
+                                                                                >
+                                                                                        <div className="md:w-40">
+                                                                                                <Select
+                                                                                                        value={li.language}
+                                                                                                        onValueChange={(value) =>
+                                                                                                                updateLanguageImage(index, "language", value)
+                                                                                                        }
+                                                                                                >
+                                                                                                        <SelectTrigger>
+                                                                                                                <SelectValue placeholder="Language" />
+                                                                                                        </SelectTrigger>
+                                                                                                        <SelectContent>
+                                                                                                                {languages.map((lang) => (
+                                                                                                                        <SelectItem
+                                                                                                                                key={lang._id}
+                                                                                                                                value={lang.name}
+                                                                                                                        >
+                                                                                                                                {lang.name}
+                                                                                                                        </SelectItem>
+                                                                                                                ))}
+                                                                                                        </SelectContent>
+                                                                                                </Select>
+                                                                                        </div>
+                                                                                        <div className="flex-1">
+                                                                                                <ImageUpload
+                                                                                                        images={li.image ? [li.image] : []}
+                                                                                                        onImagesChange={(images) =>
+                                                                                                                updateLanguageImage(index, "image", images[0] || "")
+                                                                                                        }
+                                                                                                        maxImages={1}
+                                                                                                        label="Image"
+                                                                                                        required={true}
+                                                                                                />
+                                                                                        </div>
+                                                                                        {languageImages.length > 1 && (
+                                                                                                <Button
+                                                                                                        type="button"
+                                                                                                        variant="ghost"
+                                                                                                        onClick={() => removeLanguageImage(index)}
+                                                                                                >
+                                                                                                        <X className="h-4 w-4" />
+                                                                                                </Button>
+                                                                                        )}
+                                                                                </div>
+                                                                        ))}
+                                                                        <Button
+                                                                                type="button"
+                                                                                variant="outline"
+                                                                                className="mt-2"
+                                                                                onClick={addLanguageImage}
                                                                         >
-                                                                                <div className="md:w-40">
+                                                                                <Plus className="h-4 w-4 mr-2" /> Add Language Image
+                                                                        </Button>
+                                                                </div>
+                                                        )}
+
+                                                        {showBasicFields && (
+                                                                <>
+                                                                        <div>
+                                                                                <Label>Category *</Label>
+                                                                                <Select
+                                                                                        value={formData.category}
+                                                                                        onValueChange={(value) => {
+                                                                                                const selected = parentCategories.find(
+                                                                                                        (cat) => cat.slug === value
+                                                                                                );
+                                                                                                setSelectedCategoryId(selected?._id || null);
+                                                                                                setFormData({
+                                                                                                        ...formData,
+                                                                                                        category: value,
+                                                                                                        subcategory: "",
+                                                                                                });
+                                                                                        }}
+                                                                                >
+                                                                                        <SelectTrigger className="mt-1">
+                                                                                                <SelectValue placeholder="Select category" />
+                                                                                        </SelectTrigger>
+                                                                                        <SelectContent>
+                                                                                                {parentCategories.map((category) => (
+                                                                                                        <SelectItem key={category._id} value={category.slug}>
+                                                                                                                {category.name}
+                                                                                                        </SelectItem>
+                                                                                                ))}
+                                                                                        </SelectContent>
+                                                                                </Select>
+                                                                        </div>
+
+                                                                        {subCategories.length > 0 && (
+                                                                                <div>
+                                                                                        <Label>Subcategory</Label>
                                                                                         <Select
-                                                                                                value={li.language}
+                                                                                                value={formData.subcategory}
                                                                                                 onValueChange={(value) =>
-                                                                                                        updateLanguageImage(index, "language", value)
+                                                                                                        setFormData({
+                                                                                                                ...formData,
+                                                                                                                subcategory: value,
+                                                                                                        })
                                                                                                 }
                                                                                         >
-                                                                                                <SelectTrigger>
-                                                                                                        <SelectValue placeholder="Language" />
+                                                                                                <SelectTrigger className="mt-1">
+                                                                                                        <SelectValue placeholder="Select subcategory" />
                                                                                                 </SelectTrigger>
                                                                                                 <SelectContent>
-                                                                                                        {languages.map((lang) => (
-                                                                                                                <SelectItem
-                                                                                                                        key={lang._id}
-                                                                                                                        value={lang.name}
-                                                                                                                >
-                                                                                                                        {lang.name}
+                                                                                                        {subCategories.map((sub) => (
+                                                                                                                <SelectItem key={sub._id} value={sub.slug}>
+                                                                                                                        {sub.name}
                                                                                                                 </SelectItem>
                                                                                                         ))}
                                                                                                 </SelectContent>
                                                                                         </Select>
                                                                                 </div>
-                                                                                <div className="flex-1">
-                                                                                        <ImageUpload
-                                                                                                images={li.image ? [li.image] : []}
-                                                                                                onImagesChange={(images) =>
-                                                                                                        updateLanguageImage(index, "image", images[0] || "")
-                                                                                                }
-                                                                                                maxImages={1}
-                                                                                                label="Image"
-                                                                                                required={true}
-                                                                                        />
-                                                                                </div>
-                                                                                {languageImages.length > 1 && (
-                                                                                        <Button
-                                                                                                type="button"
-                                                                                                variant="ghost"
-                                                                                                onClick={() => removeLanguageImage(index)}
-                                                                                        >
-                                                                                                <X className="h-4 w-4" />
-                                                                                        </Button>
-                                                                                )}
-                                                                        </div>
-                                                                ))}
-                                                                <Button
-                                                                        type="button"
-                                                                        variant="outline"
-                                                                        className="mt-2"
-                                                                        onClick={addLanguageImage}
-                                                                >
-                                                                        <Plus className="h-4 w-4 mr-2" /> Add Language Image
-                                                                </Button>
-                                                        </div>
-
-                                                        <div>
-                                                                <Label>Category *</Label>
-                                                                <Select
-                                                                        value={formData.category}
-                                                                        onValueChange={(value) => {
-                                                                                const selected = parentCategories.find(
-                                                                                        (cat) => cat.slug === value
-                                                                                );
-                                                                                setSelectedCategoryId(selected?._id || null);
-                                                                                setFormData({
-                                                                                        ...formData,
-                                                                                        category: value,
-                                                                                        subcategory: "",
-                                                                                });
-                                                                        }}
-                                                                >
-                                                                        <SelectTrigger className="mt-1">
-                                                                                <SelectValue placeholder="Select category" />
-                                                                        </SelectTrigger>
-                                                                        <SelectContent>
-                                                                                {parentCategories.map((category) => (
-                                                                                        <SelectItem key={category._id} value={category.slug}>
-                                                                                                {category.name}
-                                                                                        </SelectItem>
-                                                                                ))}
-                                                                        </SelectContent>
-                                                                </Select>
-                                                        </div>
-
-                                                        {subCategories.length > 0 && (
-                                                                <div>
-                                                                        <Label>Subcategory</Label>
-                                                                        <Select
-                                                                                value={formData.subcategory}
-                                                                                onValueChange={(value) =>
-                                                                                        setFormData({
-                                                                                                ...formData,
-                                                                                                subcategory: value,
-                                                                                        })
-                                                                                }
-                                                                        >
-                                                                                <SelectTrigger className="mt-1">
-                                                                                        <SelectValue placeholder="Select subcategory" />
-                                                                                </SelectTrigger>
-                                                                                <SelectContent>
-                                                                                        {subCategories.map((sub) => (
-                                                                                                <SelectItem key={sub._id} value={sub.slug}>
-                                                                                                        {sub.name}
-                                                                                                </SelectItem>
-                                                                                        ))}
-                                                                                </SelectContent>
-                                                                        </Select>
-                                                                </div>
+                                                                        )}
+                                                                </>
                                                         )}
 
                                                         <div>
-                                                                <Label>Product Kind *</Label>
+                                                                <Label>Product Family *</Label>
                                                                 <Select
                                                                         value={formData.productType}
                                                                         onValueChange={(value) =>
@@ -431,35 +495,41 @@ export function AddProductPopup({ open, onOpenChange }) {
                                                                         }
                                                                 >
                                                                         <SelectTrigger className="mt-1">
-                                                                                <SelectValue placeholder="Select kind" />
+                                                                                <SelectValue placeholder="Select family" />
                                                                         </SelectTrigger>
                                                                         <SelectContent>
-                                                                                <SelectItem value="poster">Poster</SelectItem>
-                                                                                <SelectItem value="sign">Sign</SelectItem>
+                                                                                {productTypes.map((type) => (
+                                                                                        <SelectItem
+                                                                                                key={type._id}
+                                                                                                value={type.slug}
+                                                                                        >
+                                                                                                {type.name}
+                                                                                        </SelectItem>
+                                                                                ))}
+                                                                        </SelectContent>
+                                                                </Select>
+                                                       </div>
+
+                                                        <div>
+                                                                <Label>Product Tag</Label>
+                                                                <Select
+                                                                        value={formData.type}
+                                                                        onValueChange={(value) =>
+                                                                                setFormData({ ...formData, type: value })
+                                                                        }
+                                                                >
+                                                                        <SelectTrigger className="mt-1">
+                                                                                <SelectValue placeholder="Select tag" />
+                                                                        </SelectTrigger>
+                                                                        <SelectContent>
+                                                                                {productTags.map((type) => (
+                                                                                        <SelectItem key={type.value} value={type.value}>
+                                                                                                {type.label}
+                                                                                        </SelectItem>
+                                                                                ))}
                                                                         </SelectContent>
                                                                 </Select>
                                                         </div>
-
-                                                        <div>
-                                                                <Label>Product Type</Label>
-								<Select
-									value={formData.type}
-									onValueChange={(value) =>
-										setFormData({ ...formData, type: value })
-									}
-								>
-									<SelectTrigger className="mt-1">
-										<SelectValue placeholder="Select type" />
-									</SelectTrigger>
-									<SelectContent>
-										{productTypes.map((type) => (
-											<SelectItem key={type.value} value={type.value}>
-												{type.label}
-											</SelectItem>
-										))}
-									</SelectContent>
-								</Select>
-							</div>
 
                                                         <div>
                                                                 <Label htmlFor="discount">Discount (%)</Label>
@@ -476,150 +546,154 @@ export function AddProductPopup({ open, onOpenChange }) {
 								/>
 							</div>
 						</div>
-                                                {/* Languages */}
-                                                <div className="mt-4">
-                                                        <Label>Languages</Label>
-                                                        <div className="flex flex-wrap gap-2 mt-2">
-                                                                {languages.map((lang) => (
-                                                                        <div
-                                                                                key={lang._id}
-                                                                                className="flex items-center space-x-2"
-                                                                        >
-                                                                                <Checkbox
-                                                                                        id={`lang-${lang._id}`}
-                                                                                        checked={selectedLanguages.includes(
-                                                                                                lang.name
-                                                                                        )}
-                                                                                        onCheckedChange={(checked) => {
-                                                                                                setSelectedLanguages(
-                                                                                                        checked
-                                                                                                                ? [
-                                                                                                                          ...selectedLanguages,
-                                                                                                                          lang.name,
-                                                                                                                  ]
-                                                                                                                : selectedLanguages.filter(
-                                                                                                                          (l) =>
-                                                                                                                                  l !==
-                                                                                                                                  lang.name
-                                                                                                                  )
-                                                                                                );
-                                                                                        }}
-                                                                                />
-                                                                                <Label htmlFor={`lang-${lang._id}`}>
-                                                                                        {lang.name}
-                                                                                </Label>
-                                                                        </div>
-                                                                ))}
+                                                {showBasicFields && (
+                                                        <div className="mt-4">
+                                                                <Label>Languages</Label>
+                                                                <div className="flex flex-wrap gap-2 mt-2">
+                                                                        {languages.map((lang) => (
+                                                                                <div
+                                                                                        key={lang._id}
+                                                                                        className="flex items-center space-x-2"
+                                                                                >
+                                                                                        <Checkbox
+                                                                                                id={`lang-${lang._id}`}
+                                                                                                checked={selectedLanguages.includes(
+                                                                                                        lang.name
+                                                                                                )}
+                                                                                                onCheckedChange={(checked) => {
+                                                                                                        setSelectedLanguages(
+                                                                                                                checked
+                                                                                                                        ? [
+                                                                                                                                ...selectedLanguages,
+                                                                                                                                lang.name,
+                                                                                                                        ]
+                                                                                                                        : selectedLanguages.filter(
+                                                                                                                                (l) =>
+                                                                                                                                        l !==
+                                                                                                                                        lang.name
+                                                                                                                        )
+                                                                                                        );
+                                                                                                }}
+                                                                                        />
+                                                                                        <Label htmlFor={`lang-${lang._id}`}>
+                                                                                                {lang.name}
+                                                                                        </Label>
+                                                                                </div>
+                                                                        ))}
+                                                                </div>
                                                         </div>
-                                                </div>
+                                                )}
 
-                                                {/* Materials */}
-                                                <div className="mt-4">
-                                                        <Label>Materials</Label>
-                                                        <div className="flex flex-wrap gap-2 mt-2">
-                                                                {materials.map((mat) => (
-                                                                        <div
-                                                                                key={mat._id}
-                                                                                className="flex items-center space-x-2"
-                                                                        >
-                                                                                <Checkbox
-                                                                                        id={`mat-${mat._id}`}
-                                                                                        checked={selectedMaterials.includes(
-                                                                                                mat.name
-                                                                                        )}
-                                                                                        onCheckedChange={(checked) => {
-                                                                                                setSelectedMaterials(
-                                                                                                        checked
-                                                                                                                ? [
-                                                                                                                          ...selectedMaterials,
-                                                                                                                          mat.name,
-                                                                                                                  ]
-                                                                                                                : selectedMaterials.filter(
-                                                                                                                          (m) =>
-                                                                                                                                  m !==
-                                                                                                                                  mat.name
-                                                                                                                  )
-                                                                                                );
-                                                                                        }}
-                                                                                />
-                                                                                <Label htmlFor={`mat-${mat._id}`}>
-                                                                                        {mat.name}
-                                                                                </Label>
-                                                                        </div>
-                                                                ))}
+                                                {showBasicFields && (
+                                                        <div className="mt-4">
+                                                                <Label>Materials</Label>
+                                                                <div className="flex flex-wrap gap-2 mt-2">
+                                                                        {materials.map((mat) => (
+                                                                                <div
+                                                                                        key={mat._id}
+                                                                                        className="flex items-center space-x-2"
+                                                                                >
+                                                                                        <Checkbox
+                                                                                                id={`mat-${mat._id}`}
+                                                                                                checked={selectedMaterials.includes(
+                                                                                                        mat.name
+                                                                                                )}
+                                                                                                onCheckedChange={(checked) => {
+                                                                                                        setSelectedMaterials(
+                                                                                                                checked
+                                                                                                                        ? [
+                                                                                                                                ...selectedMaterials,
+                                                                                                                                mat.name,
+                                                                                                                        ]
+                                                                                                                        : selectedMaterials.filter(
+                                                                                                                                (m) =>
+                                                                                                                                        m !==
+                                                                                                                                        mat.name
+                                                                                                                        )
+                                                                                                        );
+                                                                                                }}
+                                                                                        />
+                                                                                        <Label htmlFor={`mat-${mat._id}`}>
+                                                                                                {mat.name}
+                                                                                        </Label>
+                                                                                </div>
+                                                                        ))}
+                                                                </div>
                                                         </div>
-                                                </div>
+                                                )}
 
                 
-                                                {/* Sizes */}
-                                                <div className="mt-4">
-                                                        <Label>Sizes</Label>
-                                                        <div className="flex flex-wrap gap-2 mt-2">
-                                                                {sizes.map((s) => (
-                                                                        <div
-                                                                                key={s._id}
-                                                                                className="flex items-center space-x-2"
-                                                                        >
-                                                                                <Checkbox
-                                                                                        id={`size-${s._id}`}
-                                                                                        checked={selectedSizes.includes(s.name)}
-                                                                                        onCheckedChange={(checked) => {
-                                                                                                setSelectedSizes(
-                                                                                                        checked
-                                                                                                                ? [
-                                                                                                                          ...selectedSizes,
-                                                                                                                          s.name,
-                                                                                                                  ]
-                                                                                                                : selectedSizes.filter(
-                                                                                                                          (sz) =>
-                                                                                                                                  sz !==
-                                                                                                                                  s.name
-                                                                                                                  )
-                                                                                                );
-                                                                                        }}
-                                                                                />
-                                                                                <Label htmlFor={`size-${s._id}`}>
-                                                                                        {s.name}
-                                                                                </Label>
-                                                                        </div>
-                                                                ))}
+                                                {showBasicFields && (
+                                                        <div className="mt-4">
+                                                                <Label>Sizes</Label>
+                                                                <div className="flex flex-wrap gap-2 mt-2">
+                                                                        {sizeOptions.map((s) => (
+                                                                                <div
+                                                                                        key={s._id}
+                                                                                        className="flex items-center space-x-2"
+                                                                                >
+                                                                                        <Checkbox
+                                                                                                id={`size-${s._id}`}
+                                                                                                checked={selectedSizes.includes(s.name)}
+                                                                                                onCheckedChange={(checked) => {
+                                                                                                        setSelectedSizes(
+                                                                                                                checked
+                                                                                                                        ? [
+                                                                                                                                ...selectedSizes,
+                                                                                                                                s.name,
+                                                                                                                        ]
+                                                                                                                        : selectedSizes.filter(
+                                                                                                                                (sz) =>
+                                                                                                                                        sz !==
+                                                                                                                                        s.name
+                                                                                                                        )
+                                                                                                        );
+                                                                                                }}
+                                                                                        />
+                                                                                        <Label htmlFor={`size-${s._id}`}>
+                                                                                                {s.name}
+                                                                                        </Label>
+                                                                                </div>
+                                                                        ))}
+                                                                </div>
                                                         </div>
-                                                </div>
+                                                )}
 
-                                                {/* Layouts */}
-                                                <div className="mt-4">
-                                                        <Label>Layouts</Label>
-                                                        <div className="flex space-x-2 mt-2">
-                                                                <Input
-                                                                        placeholder="Add layout"
-                                                                        value={layoutInput}
-                                                                        onChange={(e) => setLayoutInput(e.target.value)}
-                                                                />
-                                                                <Button
-                                                                        type="button"
-                                                                        variant="outline"
-                                                                        onClick={addLayout}
-                                                                >
-                                                                        <Plus className="h-4 w-4 mr-2" /> Add Layout
-                                                                </Button>
-                                                        </div>
-                                                        <div className="flex flex-wrap gap-2 mt-2">
-                                                                {selectedLayouts.map((layout) => (
-                                                                        <div
-                                                                                key={layout}
-                                                                                className="flex items-center space-x-1 bg-gray-200 rounded px-2 py-1 text-sm"
+                                                {showLayout && (
+                                                        <div className="mt-4">
+                                                                <Label>Layouts</Label>
+                                                                <div className="flex space-x-2 mt-2">
+                                                                        <Input
+                                                                                placeholder="Add layout"
+                                                                                value={layoutInput}
+                                                                                onChange={(e) => setLayoutInput(e.target.value)}
+                                                                        />
+                                                                        <Button
+                                                                                type="button"
+                                                                                variant="outline"
+                                                                                onClick={addLayout}
                                                                         >
-                                                                                <span>{layout}</span>
-                                                                                <X
-                                                                                        className="h-3 w-3 cursor-pointer"
-                                                                                        onClick={() => removeLayout(layout)}
-                                                                                />
-                                                                        </div>
-                                                                ))}
+                                                                                <Plus className="h-4 w-4 mr-2" /> Add Layout
+                                                                        </Button>
+                                                                </div>
+                                                                <div className="flex flex-wrap gap-2 mt-2">
+                                                                        {selectedLayouts.map((layout) => (
+                                                                                <div
+                                                                                        key={layout}
+                                                                                        className="flex items-center space-x-1 bg-gray-200 rounded px-2 py-1 text-sm"
+                                                                                >
+                                                                                        <span>{layout}</span>
+                                                                                        <X
+                                                                                                className="h-3 w-3 cursor-pointer"
+                                                                                                onClick={() => removeLayout(layout)}
+                                                                                        />
+                                                                                </div>
+                                                                        ))}
+                                                                </div>
                                                         </div>
-                                                </div>
+                                                )}
 
-                                                {formData.productType === "poster" && (
+                                                {showBasicFields && (
                                                         <div className="mt-6">
                                                                 <Label>Pricing</Label>
                                                                 {prices.map((p, index) => (
@@ -671,52 +745,56 @@ export function AddProductPopup({ open, onOpenChange }) {
                                                                                                 ))}
                                                                                         </SelectContent>
                                                                                 </Select>
-                                                                                <Select
-                                                                                        value={p.layout}
-                                                                                        onValueChange={(value) =>
-                                                                                                updatePriceRow(
-                                                                                                        index,
-                                                                                                        "layout",
-                                                                                                        value
-                                                                                                )
-                                                                                        }
-                                                                                >
-                                                                                        <SelectTrigger>
-                                                                                                <SelectValue placeholder="Layout" />
-                                                                                        </SelectTrigger>
-                                                                                        <SelectContent>
-                                                                                                {selectedLayouts.map((l) => (
-                                                                                                        <SelectItem
-                                                                                                                key={l}
-                                                                                                                value={l}
-                                                                                                        >
-                                                                                                                {l}
+                                                                                {showLayout && (
+                                                                                        <Select
+                                                                                                value={p.layout}
+                                                                                                onValueChange={(value) =>
+                                                                                                        updatePriceRow(
+                                                                                                                index,
+                                                                                                                "layout",
+                                                                                                                value
+                                                                                                        )
+                                                                                                }
+                                                                                        >
+                                                                                                <SelectTrigger>
+                                                                                                        <SelectValue placeholder="Layout" />
+                                                                                                </SelectTrigger>
+                                                                                                <SelectContent>
+                                                                                                        {selectedLayouts.map((l) => (
+                                                                                                                <SelectItem
+                                                                                                                        key={l}
+                                                                                                                        value={l}
+                                                                                                                >
+                                                                                                                        {l}
+                                                                                                                </SelectItem>
+                                                                                                        ))}
+                                                                                                </SelectContent>
+                                                                                        </Select>
+                                                                                )}
+                                                                                {showQR && (
+                                                                                        <Select
+                                                                                                value={p.qr ? "true" : "false"}
+                                                                                                onValueChange={(value) =>
+                                                                                                        updatePriceRow(
+                                                                                                                index,
+                                                                                                                "qr",
+                                                                                                                value === "true"
+                                                                                                        )
+                                                                                                }
+                                                                                        >
+                                                                                                <SelectTrigger>
+                                                                                                        <SelectValue placeholder="QR" />
+                                                                                                </SelectTrigger>
+                                                                                                <SelectContent>
+                                                                                                        <SelectItem value="false">
+                                                                                                                Without QR
                                                                                                         </SelectItem>
-                                                                                                ))}
-                                                                                        </SelectContent>
-                                                                                </Select>
-                                                                                <Select
-                                                                                        value={p.qr ? "true" : "false"}
-                                                                                        onValueChange={(value) =>
-                                                                                                updatePriceRow(
-                                                                                                        index,
-                                                                                                        "qr",
-                                                                                                        value === "true"
-                                                                                                )
-                                                                                        }
-                                                                                >
-                                                                                        <SelectTrigger>
-                                                                                                <SelectValue placeholder="QR" />
-                                                                                        </SelectTrigger>
-                                                                                        <SelectContent>
-                                                                                                <SelectItem value="false">
-                                                                                                        Without QR
-                                                                                                </SelectItem>
-                                                                                                <SelectItem value="true">
-                                                                                                        With QR
-                                                                                                </SelectItem>
-                                                                                        </SelectContent>
-                                                                                </Select>
+                                                                                                        <SelectItem value="true">
+                                                                                                                With QR
+                                                                                                        </SelectItem>
+                                                                                                </SelectContent>
+                                                                                        </Select>
+                                                                                )}
                                                                                 <div className="flex items-center gap-2">
                                                                                         <Input
                                                                                                 type="number"
