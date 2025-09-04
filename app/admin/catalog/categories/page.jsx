@@ -38,7 +38,7 @@ import {
 	Package,
 } from "lucide-react";
 import { useAdminCategoryStore } from "@/store/adminCategoryStore.js";
-import { useAdminProductTypeStore } from "@/store/adminProductTypeStore.js";
+import { useAdminProductFamilyStore } from "@/store/adminProductFamilyStore.js";
 
 import { DeletePopup } from "@/components/AdminPanel/Popups/DeletePopup.jsx";
 import { AddCategoryPopup } from "@/components/AdminPanel/Popups/AddCategoryPopup.jsx";
@@ -67,7 +67,7 @@ export default function AdminCategoriesPage() {
                 exportToJSON,
         } = useAdminCategoryStore();
 
-        const { productTypes, fetchProductTypes } = useAdminProductTypeStore();
+        const { productFamilies, fetchProductFamilies } = useAdminProductFamilyStore();
 
 
 	const [popups, setPopups] = useState({
@@ -79,8 +79,8 @@ export default function AdminCategoriesPage() {
         useEffect(() => {
                 fetchCategories();
 
-                fetchProductTypes();
-        }, [fetchCategories, fetchProductTypes]);
+                fetchProductFamilies();
+        }, [fetchCategories, fetchProductFamilies]);
 
 
 	const handleSearch = (value) => {
@@ -243,15 +243,15 @@ export default function AdminCategoriesPage() {
                                                                         }
                                                                 >
                                                                         <SelectTrigger className="w-40">
-                                                                                <SelectValue placeholder="Product Type" />
+                                                                                <SelectValue placeholder="Product Family" />
                                                                         </SelectTrigger>
                                                                         <SelectContent>
                                                                                 <SelectItem value="">
-                                                                                        All Product Types
+                                                                                        All Product Families
                                                                                 </SelectItem>
-                                                                                {productTypes.map((type) => (
-                                                                                        <SelectItem key={type._id} value={type._id}>
-                                                                                                {type.name}
+                                                                                {productFamilies.map((family) => (
+                                                                                        <SelectItem key={family._id} value={family._id}>
+                                                                                                {family.name}
                                                                                         </SelectItem>
                                                                                 ))}
                                                                         </SelectContent>
@@ -306,7 +306,7 @@ export default function AdminCategoriesPage() {
 											</TableHead>
                                                                                         <TableHead>Description</TableHead>
 
-                                                                                        <TableHead>Product Type</TableHead>
+                                                                                        <TableHead>Product Family</TableHead>
 
                                                                                         <TableHead>Products</TableHead>
 											<TableHead>Published</TableHead>
@@ -369,7 +369,7 @@ export default function AdminCategoriesPage() {
                                                                                                </TableCell>
                                                                                                 <TableCell>
 
-                                                                                                        {productTypes.find((pt) => pt._id === category.productType)?.name || "-"}
+                                                                                                {productFamilies.find((pf) => pf._id === category.productType)?.name || "-"}
 
                                                                                                 </TableCell>
                                                                                                 <TableCell>

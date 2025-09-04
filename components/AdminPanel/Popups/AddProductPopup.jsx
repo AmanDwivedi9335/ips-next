@@ -30,7 +30,7 @@ import { useAdminMaterialStore } from "@/store/adminMaterialStore.js";
 import { useAdminSizeStore } from "@/store/adminSizeStore.js";
 import { useAdminCategoryStore } from "@/store/adminCategoryStore.js";
 
-import { useAdminProductTypeStore } from "@/store/adminProductTypeStore.js";
+import { useAdminProductFamilyStore } from "@/store/adminProductFamilyStore.js";
 
 import { ImageUpload } from "@/components/AdminPanel/ImageUpload.jsx";
 const productTags = [
@@ -47,7 +47,7 @@ export function AddProductPopup({ open, onOpenChange }) {
   const { sizes, fetchSizes } = useAdminSizeStore();
   const { categories: categoryList, fetchCategories } = useAdminCategoryStore();
 
-  const { productTypes, fetchProductTypes } = useAdminProductTypeStore();
+  const { productFamilies, fetchProductFamilies } = useAdminProductFamilyStore();
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [features, setFeatures] = useState([{ title: "", description: "" }]);
@@ -72,27 +72,27 @@ export function AddProductPopup({ open, onOpenChange }) {
     subcategory: "",
     discount: "",
     type: "featured",
-    productType: "",
+    productFamily: "",
     published: true,
   });
 
   const showLayout = ["safety-signs", "identification-signs"].includes(
-    formData.productType,
+    formData.productFamily,
   );
 
   const showQR = [
     "safety-posters",
     "iso-compliance-series",
     "industrial-safety-packs",
-  ].includes(formData.productType);
+  ].includes(formData.productFamily);
 
   const showBasicFields = ![
     "monthly-poster-subscription",
     "iso-wall-kraft",
-  ].includes(formData.productType);
+  ].includes(formData.productFamily);
 
   const sizeOptions =
-    formData.productType === "industrial-safety-packs"
+    formData.productFamily === "industrial-safety-packs"
       ? [
           { _id: "compact", name: "Compact" },
           { _id: "classic", name: "Classic" },
@@ -101,14 +101,17 @@ export function AddProductPopup({ open, onOpenChange }) {
         ]
       : sizes;
 
+  const selectedFamilyId = productFamilies.find(
+    (f) => f.slug === formData.productFamily,
+  )?._id;
   const parentCategories = categoryList.filter(
-    (cat) => !cat.parent && cat.productType === formData.productType,
+    (cat) => !cat.parent && cat.productType === selectedFamilyId,
   );
   const subCategories = selectedCategoryId
     ? categoryList.filter(
         (cat) =>
           cat.parent === selectedCategoryId &&
-          cat.productType === formData.productType,
+          cat.productType === selectedFamilyId,
       )
     : [];
 
@@ -117,23 +120,23 @@ export function AddProductPopup({ open, onOpenChange }) {
     fetchMaterials();
     fetchSizes();
     fetchCategories();
-    fetchProductTypes();
+    fetchProductFamilies();
   }, [
     fetchLanguages,
     fetchMaterials,
     fetchSizes,
     fetchCategories,
-    fetchProductTypes,
+    fetchProductFamilies,
   ]);
 
   useEffect(() => {
-    if (productTypes.length) {
+    if (productFamilies.length) {
       setFormData((prev) => ({
         ...prev,
-        productType: prev.productType || productTypes[0].slug,
+        productFamily: prev.productFamily || productFamilies[0].slug,
       }));
     }
-  }, [productTypes]);
+  }, [productFamilies]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -154,7 +157,7 @@ export function AddProductPopup({ open, onOpenChange }) {
 
       // Prepare product data with proper types
       const requiresLayout = ["safety-signs", "identification-signs"].includes(
-        formData.productType,
+        formData.productFamily,
       );
 
       const priceData = prices
@@ -186,7 +189,8 @@ export function AddProductPopup({ open, onOpenChange }) {
         sizes: showBasicFields ? selectedSizes : [],
         layouts: showLayout ? selectedLayouts : [],
 
-        productType: formData.productType,
+        productType: formData.productFamily,
+        productFamily: formData.productFamily,
 
         pricing: priceData,
       };
@@ -218,7 +222,7 @@ export function AddProductPopup({ open, onOpenChange }) {
       discount: "",
       type: "featured",
 
-      productType: productTypes[0]?.slug || "",
+      productFamily: productFamilies[0]?.slug || "",
 
       published: true,
     });
@@ -338,7 +342,7 @@ export function AddProductPopup({ open, onOpenChange }) {
 
               <div className="md:col-span-2">
                 <Label htmlFor="longDescription">Detailed Description</Label>
-                <Textarea
+              <Textarea
                   id="longDescription"
                   placeholder="Detailed product description"
                   value={formData.longDescription}
@@ -351,6 +355,33 @@ export function AddProductPopup({ open, onOpenChange }) {
                   className="mt-1"
                   rows={4}
                 />
+              </div>
+
+              <div className="md:col-span-2">
+                <Label>Product Family *</Label>
+                <Select
+                  value={formData.productFamily}
+                  onValueChange={(value) => {
+                    setFormData({
+                      ...formData,
+                      productFamily: value,
+                      category: "",
+                      subcategory: "",
+                    });
+                    setSelectedCategoryId(null);
+                  }}
+                >
+                  <SelectTrigger className="mt-1">
+                    <SelectValue placeholder="Select family" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {productFamilies.map((family) => (
+                      <SelectItem key={family._id} value={family.slug}>
+                        {family.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
               {showBasicFields && (
@@ -471,30 +502,6 @@ export function AddProductPopup({ open, onOpenChange }) {
                   )}
                 </>
               )}
-
-              <div>
-                <Label>Product Type *</Label>
-                <Select
-                  value={formData.productType}
-                  onValueChange={(value) =>
-                    setFormData({
-                      ...formData,
-                      productType: value,
-                    })
-                  }
-                >
-                  <SelectTrigger className="mt-1">
-                    <SelectValue placeholder="Select type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {productTypes.map((type) => (
-                      <SelectItem key={type._id} value={type.slug}>
-                        {type.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
 
               <div>
                 <Label>Product Tag</Label>
