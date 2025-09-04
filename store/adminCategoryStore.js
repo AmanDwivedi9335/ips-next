@@ -8,10 +8,11 @@ export const useAdminCategoryStore = create((set, get) => ({
 	categories: [],
 	isLoading: false,
 	error: null,
-	filters: {
-		search: "",
-		published: null,
-	},
+        filters: {
+                search: "",
+                published: null,
+                productType: "",
+        },
 	pagination: {
 		currentPage: 1,
 		totalPages: 1,
@@ -27,7 +28,7 @@ export const useAdminCategoryStore = create((set, get) => ({
 		set({ isLoading: true, error: null });
 
 		try {
-			const { filters, pagination, sortBy, sortOrder } = get();
+                        const { filters, pagination, sortBy, sortOrder } = get();
 
 			const params = new URLSearchParams({
 				page: pagination.currentPage.toString(),
@@ -38,10 +39,15 @@ export const useAdminCategoryStore = create((set, get) => ({
 
 			// Add filters to params
 			Object.entries(filters).forEach(([key, value]) => {
-				if (value !== null && value !== undefined && value !== "") {
-					params.append(key, value.toString());
-				}
-			});
+                                if (
+                                        value !== null &&
+                                        value !== undefined &&
+                                        value !== "" &&
+                                        value !== "all"
+                                ) {
+                                        params.append(key, value.toString());
+                                }
+                        });
 
 			const response = await fetch(`/api/admin/categories?${params}`);
 			const data = await response.json();
@@ -63,15 +69,15 @@ export const useAdminCategoryStore = create((set, get) => ({
 		}
 	},
 
-	addCategory: async (categoryData) => {
-		try {
-			const response = await fetch("/api/admin/categories", {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify(categoryData),
-			});
+        addCategory: async (categoryData) => {
+                try {
+                        const response = await fetch("/api/admin/categories", {
+                                method: "POST",
+                                headers: {
+                                        "Content-Type": "application/json",
+                                },
+                                body: JSON.stringify(categoryData),
+                        });
 
 			const data = await response.json();
 
@@ -89,15 +95,15 @@ export const useAdminCategoryStore = create((set, get) => ({
 		}
 	},
 
-	updateCategory: async (categoryId, updateData) => {
-		try {
-			const response = await fetch("/api/admin/categories", {
-				method: "PUT",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify({ categoryId, ...updateData }),
-			});
+        updateCategory: async (categoryId, updateData) => {
+                try {
+                        const response = await fetch("/api/admin/categories", {
+                                method: "PUT",
+                                headers: {
+                                        "Content-Type": "application/json",
+                                },
+                                body: JSON.stringify({ categoryId, ...updateData }),
+                        });
 
 			const data = await response.json();
 
