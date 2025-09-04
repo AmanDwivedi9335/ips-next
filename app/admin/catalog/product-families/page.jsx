@@ -130,7 +130,7 @@ export default function AdminProductFamiliesPage() {
             </TableHeader>
             <TableBody>
               {productFamilies.map((family) => (
-                <TableRow key={type._id}>
+                <TableRow key={family._id}>
                   <TableCell>
                     <Checkbox
                       checked={selected.includes(family._id)}
