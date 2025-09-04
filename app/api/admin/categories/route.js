@@ -9,7 +9,8 @@ export async function GET(request) {
 		const { searchParams } = new URL(request.url);
 
 		const search = searchParams.get("search");
-		const published = searchParams.get("published");
+                const published = searchParams.get("published");
+                const productType = searchParams.get("productType");
 		const page = Number.parseInt(searchParams.get("page") || "1");
 		const limit = Number.parseInt(searchParams.get("limit") || "10");
 		const sort = searchParams.get("sort") || "createdAt";
@@ -25,9 +26,13 @@ export async function GET(request) {
 			];
 		}
 
-		if (published !== null && published !== undefined) {
-			query.published = published === "true";
-		}
+                if (published !== null && published !== undefined) {
+                        query.published = published === "true";
+                }
+
+                if (productType) {
+                        query.productType = productType;
+                }
 
 		// Build sort object
 		const sortObj = {};
@@ -79,23 +84,24 @@ export async function POST(request) {
 	await dbConnect();
 
 	try {
-                const { name, description, icon, published, sortOrder, parent } =
+                const { name, description, icon, published, sortOrder, parent, productType } =
                         await request.json();
 
-		if (!name || !description) {
-			return Response.json(
-				{ success: false, message: "Name and description are required" },
-				{ status: 400 }
-			);
-		}
+                if (!name || !description || !productType) {
+                        return Response.json(
+                                { success: false, message: "Name, description and product type are required" },
+                                { status: 400 }
+                        );
+                }
 
-		const category = new Category({
-			name,
-			description,
+                const category = new Category({
+                        name,
+                        description,
                         icon: icon || "",
                         published: published !== undefined ? published : true,
                         sortOrder: sortOrder || 0,
                         parent: parent || null,
+                        productType,
                 });
 
 		await category.save();
