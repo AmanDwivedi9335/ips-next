@@ -23,11 +23,11 @@ import {
         SelectValue,
 } from "@/components/ui/select";
 import { useAdminCategoryStore } from "@/store/adminCategoryStore.js";
-import { useAdminProductTypeStore } from "@/store/adminProductTypeStore.js";
+import { useAdminProductFamilyStore } from "@/store/adminProductFamilyStore.js";
 
 export function AddCategoryPopup({ open, onOpenChange }) {
         const { addCategory, categories } = useAdminCategoryStore();
-        const { productTypes, fetchProductTypes } = useAdminProductTypeStore();
+        const { productFamilies, fetchProductFamilies } = useAdminProductFamilyStore();
 
         const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -39,7 +39,7 @@ export function AddCategoryPopup({ open, onOpenChange }) {
                 sortOrder: 0,
                 parent: "",
 
-                productType: "",
+                productFamily: "",
 
         });
 
@@ -51,7 +51,7 @@ export function AddCategoryPopup({ open, onOpenChange }) {
                         ...formData,
                         parent: formData.parent || null,
 
-                        productType: formData.productType,
+                        productType: formData.productFamily,
 
                 });
 		if (success) {
@@ -70,15 +70,15 @@ export function AddCategoryPopup({ open, onOpenChange }) {
                         sortOrder: 0,
                         parent: "",
 
-                        productType: "",
+                        productFamily: "",
 
                 });
         };
 
         useEffect(() => {
 
-                fetchProductTypes();
-        }, [fetchProductTypes]);
+                fetchProductFamilies();
+        }, [fetchProductFamilies]);
 
 
         return (
@@ -146,23 +146,23 @@ export function AddCategoryPopup({ open, onOpenChange }) {
 
                                                 <div>
 
-                                                        <Label>Product Type *</Label>
+                                                        <Label>Product Family *</Label>
                                                        <Select
-                                                               value={formData.productType}
+                                                               value={formData.productFamily}
                                                                onValueChange={(value) =>
                                                                        setFormData({
                                                                                ...formData,
-                                                                               productType: value,
+                                                                               productFamily: value,
                                                                        })
                                                                }
                                                        >
                                                                 <SelectTrigger className="mt-1">
-                                                                        <SelectValue placeholder="Select product type" />
+                                                                        <SelectValue placeholder="Select product family" />
                                                                 </SelectTrigger>
                                                                <SelectContent>
-                                                                       {productTypes.map((type) => (
-                                                                               <SelectItem key={type._id} value={type._id}>
-                                                                                       {type.name}
+                                                                       {productFamilies.map((family) => (
+                                                                               <SelectItem key={family._id} value={family._id}>
+                                                                                       {family.name}
                                                                                </SelectItem>
                                                                        ))}
                                                                </SelectContent>
