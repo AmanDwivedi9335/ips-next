@@ -27,10 +27,15 @@ const CategorySchema = new mongoose.Schema(
                         type: String, // URL to icon image
                         default: "",
                 },
-		published: {
-			type: Boolean,
-			default: true,
-		},
+                productType: {
+                        type: mongoose.Schema.Types.ObjectId,
+                        ref: "ProductType",
+                        required: true,
+                },
+                published: {
+                        type: Boolean,
+                        default: true,
+                },
 		sortOrder: {
 			type: Number,
 			default: 0,

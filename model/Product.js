@@ -9,7 +9,6 @@ const ProductSchema = new mongoose.Schema(
                 category: { type: String, required: true },
                 productType: {
                         type: String,
-                        enum: ["poster", "sign"],
                         required: true,
                 },
                 published: { type: Boolean, default: true },
