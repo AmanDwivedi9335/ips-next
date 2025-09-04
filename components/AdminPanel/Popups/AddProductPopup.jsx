@@ -29,7 +29,9 @@ import { useAdminLanguageStore } from "@/store/adminLanguageStore.js";
 import { useAdminMaterialStore } from "@/store/adminMaterialStore.js";
 import { useAdminSizeStore } from "@/store/adminSizeStore.js";
 import { useAdminCategoryStore } from "@/store/adminCategoryStore.js";
+
 import { useAdminProductTypeStore } from "@/store/adminProductTypeStore.js";
+
 import { ImageUpload } from "@/components/AdminPanel/ImageUpload.jsx";
 const productTags = [
         { value: "featured", label: "Featured" },
@@ -46,9 +48,22 @@ export function AddProductPopup({ open, onOpenChange }) {
         const { sizes, fetchSizes } = useAdminSizeStore();
         const { categories: categoryList, fetchCategories } =
                 useAdminCategoryStore();
+
         const { productTypes, fetchProductTypes } =
                 useAdminProductTypeStore();
+
         const [isSubmitting, setIsSubmitting] = useState(false);
+        const [formData, setFormData] = useState({
+                title: "",
+                description: "",
+                longDescription: "",
+                category: "",
+                subcategory: "",
+                discount: "",
+                type: "featured",
+                productFamily: "",
+                published: true,
+        });
         const [features, setFeatures] = useState([{ title: "", description: "" }]);
         const [selectedLanguages, setSelectedLanguages] = useState([
                 "English",
@@ -64,6 +79,7 @@ export function AddProductPopup({ open, onOpenChange }) {
                 { layout: "", material: "", size: "", qr: false, price: "" },
         ]);
         const [selectedCategoryId, setSelectedCategoryId] = useState(null);
+
         const [formData, setFormData] = useState({
                 title: "",
                 description: "",
@@ -75,6 +91,7 @@ export function AddProductPopup({ open, onOpenChange }) {
                 productType: "",
                 published: true,
         });
+
 
         const showLayout = [
                 "safety-signs",
@@ -158,7 +175,9 @@ export function AddProductPopup({ open, onOpenChange }) {
                         const requiresLayout = [
                                 "safety-signs",
                                 "identification-signs",
+
                         ].includes(formData.productType);
+
 
                         const priceData = prices
                                 .filter(
@@ -191,7 +210,9 @@ export function AddProductPopup({ open, onOpenChange }) {
                                 materials: showBasicFields ? selectedMaterials : [],
                                 sizes: showBasicFields ? selectedSizes : [],
                                 layouts: showLayout ? selectedLayouts : [],
+
                                 productType: formData.productType,
+
 
                                 pricing: priceData,
 
@@ -223,7 +244,9 @@ export function AddProductPopup({ open, onOpenChange }) {
                         subcategory: "",
                         discount: "",
                         type: "featured",
+
                         productType: productTypes[0]?.slug || "",
+
                         published: true,
                 });
                 setFeatures([{ title: "", description: "" }]);
@@ -314,8 +337,38 @@ export function AddProductPopup({ open, onOpenChange }) {
 					</DialogHeader>
 
 					<form onSubmit={handleSubmit} className="space-y-6 mt-6">
-						<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-							<div className="md:col-span-2">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                        <div className="md:col-span-2">
+                                                                <Label>Product Family *</Label>
+                                                                <Select
+                                                                        value={formData.productFamily}
+                                                                        onValueChange={(value) => {
+                                                                                setFormData({
+                                                                                        ...formData,
+                                                                                        productFamily: value,
+                                                                                        category: "",
+                                                                                        subcategory: "",
+                                                                                });
+                                                                                setSelectedCategoryId(null);
+                                                                        }}
+                                                                >
+                                                                        <SelectTrigger className="mt-1">
+                                                                                <SelectValue placeholder="Select family" />
+                                                                        </SelectTrigger>
+                                                                        <SelectContent>
+                                                                                {productFamilies.map((pf) => (
+                                                                                        <SelectItem
+                                                                                                key={pf._id}
+                                                                                                value={pf._id}
+                                                                                        >
+                                                                                                {pf.name}
+                                                                                        </SelectItem>
+                                                                                ))}
+                                                                        </SelectContent>
+                                                                </Select>
+                                                        </div>
+
+                                                        <div className="md:col-span-2">
 								<Label htmlFor="title">Product Title *</Label>
 								<Input
 									id="title"
@@ -446,11 +499,13 @@ export function AddProductPopup({ open, onOpenChange }) {
                                                                                                 <SelectValue placeholder="Select category" />
                                                                                         </SelectTrigger>
                                                                                         <SelectContent>
+
                                                                                                 {parentCategories.map((category) => (
                                                                                                         <SelectItem key={category._id} value={category.slug}>
                                                                                                                 {category.name}
                                                                                                         </SelectItem>
                                                                                                 ))}
+
                                                                                         </SelectContent>
                                                                                 </Select>
                                                                         </div>
@@ -471,7 +526,9 @@ export function AddProductPopup({ open, onOpenChange }) {
                                                                                                         <SelectValue placeholder="Select subcategory" />
                                                                                                 </SelectTrigger>
                                                                                                 <SelectContent>
+
                                                                                                         {subCategories.map((sub) => (
+
                                                                                                                 <SelectItem key={sub._id} value={sub.slug}>
                                                                                                                         {sub.name}
                                                                                                                 </SelectItem>
@@ -482,6 +539,7 @@ export function AddProductPopup({ open, onOpenChange }) {
                                                                         )}
                                                                 </>
                                                         )}
+
 
                                                         <div>
                                                                 <Label>Product Family *</Label>
@@ -509,6 +567,7 @@ export function AddProductPopup({ open, onOpenChange }) {
                                                                         </SelectContent>
                                                                 </Select>
                                                        </div>
+
 
                                                         <div>
                                                                 <Label>Product Tag</Label>

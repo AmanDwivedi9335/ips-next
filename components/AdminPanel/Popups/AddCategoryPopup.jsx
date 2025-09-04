@@ -28,6 +28,7 @@ import { useAdminProductTypeStore } from "@/store/adminProductTypeStore.js";
 export function AddCategoryPopup({ open, onOpenChange }) {
         const { addCategory, categories } = useAdminCategoryStore();
         const { productTypes, fetchProductTypes } = useAdminProductTypeStore();
+
         const [isSubmitting, setIsSubmitting] = useState(false);
 
 	const [formData, setFormData] = useState({
@@ -37,7 +38,9 @@ export function AddCategoryPopup({ open, onOpenChange }) {
                 published: true,
                 sortOrder: 0,
                 parent: "",
+
                 productType: "",
+
         });
 
 	const handleSubmit = async (e) => {
@@ -47,7 +50,9 @@ export function AddCategoryPopup({ open, onOpenChange }) {
                 const success = await addCategory({
                         ...formData,
                         parent: formData.parent || null,
+
                         productType: formData.productType,
+
                 });
 		if (success) {
 			onOpenChange(false);
@@ -64,13 +69,17 @@ export function AddCategoryPopup({ open, onOpenChange }) {
                         published: true,
                         sortOrder: 0,
                         parent: "",
+
                         productType: "",
+
                 });
         };
 
         useEffect(() => {
+
                 fetchProductTypes();
         }, [fetchProductTypes]);
+
 
         return (
                 <Dialog open={open} onOpenChange={onOpenChange}>
@@ -136,6 +145,7 @@ export function AddCategoryPopup({ open, onOpenChange }) {
                                                 </div>
 
                                                 <div>
+
                                                         <Label>Product Type *</Label>
                                                        <Select
                                                                value={formData.productType}
@@ -157,6 +167,7 @@ export function AddCategoryPopup({ open, onOpenChange }) {
                                                                        ))}
                                                                </SelectContent>
                                                        </Select>
+
                                                 </div>
 
                                                 <div>
@@ -200,16 +211,18 @@ export function AddCategoryPopup({ open, onOpenChange }) {
                                                                        <SelectItem value="none">
                                                                                None
                                                                        </SelectItem>
-                                                                       {categories.map((cat) => (
-                                                                               <SelectItem
-                                                                                       key={cat._id}
-                                                                                       value={cat._id}
-                                                                               >
-                                                                                       {cat.name}
-                                                                               </SelectItem>
-                                                                       ))}
+                                                                       {categories
+                                                                               .filter((cat) => cat && cat._id)
+                                                                               .map((cat) => (
+                                                                                       <SelectItem
+                                                                                               key={cat._id}
+                                                                                               value={cat._id}
+                                                                                       >
+                                                                                               {cat.name}
+                                                                                       </SelectItem>
+                                                                               ))}
                                                                </SelectContent>
-                                                       </Select>
+                                                      </Select>
                                                </div>
 
 						<div className="flex items-center justify-between">

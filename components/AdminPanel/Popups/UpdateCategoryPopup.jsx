@@ -23,11 +23,13 @@ import {
         SelectValue,
 } from "@/components/ui/select";
 import { useAdminCategoryStore } from "@/store/adminCategoryStore.js";
+
 import { useAdminProductTypeStore } from "@/store/adminProductTypeStore.js";
 
 export function UpdateCategoryPopup({ open, onOpenChange, category }) {
         const { updateCategory, categories } = useAdminCategoryStore();
         const { productTypes, fetchProductTypes } = useAdminProductTypeStore();
+
         const [isSubmitting, setIsSubmitting] = useState(false);
 
 	const [formData, setFormData] = useState({
@@ -37,11 +39,13 @@ export function UpdateCategoryPopup({ open, onOpenChange, category }) {
                 published: true,
                 sortOrder: 0,
                 parent: "",
+
                 productType: "",
         });
 
         useEffect(() => {
                 fetchProductTypes();
+
                 if (category) {
                         setFormData({
                                 name: category.name || "",
@@ -53,10 +57,12 @@ export function UpdateCategoryPopup({ open, onOpenChange, category }) {
                                                 : true,
                                 sortOrder: category.sortOrder || 0,
                                 parent: category.parent ? category.parent.toString() : "",
+
                                 productType: category.productType?.toString() || "",
                         });
                 }
         }, [category, fetchProductTypes]);
+
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
@@ -68,6 +74,7 @@ export function UpdateCategoryPopup({ open, onOpenChange, category }) {
                         ...formData,
                         parent: formData.parent || null,
                         productType: formData.productType,
+
                 });
 		if (success) {
 			onOpenChange(false);
@@ -139,6 +146,7 @@ export function UpdateCategoryPopup({ open, onOpenChange, category }) {
                                                 </div>
 
                                                 <div>
+
                                                         <Label>Product Type *</Label>
                                                        <Select
                                                                value={formData.productType}
@@ -160,6 +168,7 @@ export function UpdateCategoryPopup({ open, onOpenChange, category }) {
                                                                        ))}
                                                                </SelectContent>
                                                        </Select>
+
                                                 </div>
 
                                                 <div>
@@ -199,7 +208,7 @@ export function UpdateCategoryPopup({ open, onOpenChange, category }) {
                                                                <SelectContent>
                                                                        <SelectItem value="none">None</SelectItem>
                                                                        {categories
-                                                                               .filter((c) => c._id !== category?._id)
+                                                                               .filter((c) => c && c._id && c._id !== category?._id)
                                                                                .map((cat) => (
                                                                                        <SelectItem
                                                                                                key={cat._id}
@@ -209,8 +218,8 @@ export function UpdateCategoryPopup({ open, onOpenChange, category }) {
                                                                                        </SelectItem>
                                                                                ))}
                                                                </SelectContent>
-                                                       </Select>
-                                               </div>
+                                                      </Select>
+                                                </div>
 
 						<div className="flex items-center justify-between">
 							<div>

@@ -14,7 +14,8 @@ export async function POST(request) {
 		const description = formData.get("description");
                 const category = formData.get("category");
                 const subcategory = formData.get("subcategory");
-                const productType = formData.get("productType") || "poster";
+                const productFamily = formData.get("productFamily");
+                const productType = formData.get("productType") || "";
 
                 console.log("Received data:", {
                         title,
@@ -27,7 +28,8 @@ export async function POST(request) {
                 if (
                         !title ||
                         !description ||
-                        !category
+                        !category ||
+                        !productFamily
                 ) {
                         return Response.json(
                                 {
@@ -37,6 +39,7 @@ export async function POST(request) {
                                                 title: !!title,
                                                 description: !!description,
                                                 category: !!category,
+                                                productFamily: !!productFamily,
                                         },
                                 },
                                 { status: 400 }
@@ -135,7 +138,7 @@ export async function POST(request) {
                         languageImages: filteredLanguageImages,
                         category,
                         subcategory,
-                        productType,
+                        productFamily,
                         published: formData.get("published") === "true",
                         price: basePrice,
                         salePrice: basePrice,

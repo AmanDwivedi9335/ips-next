@@ -12,6 +12,7 @@ export const useAdminCategoryStore = create((set, get) => ({
                 search: "",
                 published: null,
                 productType: "",
+
         },
 	pagination: {
 		currentPage: 1,
@@ -188,6 +189,7 @@ export const useAdminCategoryStore = create((set, get) => ({
                                 search: "",
                                 published: null,
                                 productType: "",
+
                         },
                         pagination: { ...get().pagination, currentPage: 1 },
                 });

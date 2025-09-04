@@ -39,6 +39,7 @@ import {
 } from "lucide-react";
 import { useAdminCategoryStore } from "@/store/adminCategoryStore.js";
 import { useAdminProductTypeStore } from "@/store/adminProductTypeStore.js";
+
 import { DeletePopup } from "@/components/AdminPanel/Popups/DeletePopup.jsx";
 import { AddCategoryPopup } from "@/components/AdminPanel/Popups/AddCategoryPopup.jsx";
 import { UpdateCategoryPopup } from "@/components/AdminPanel/Popups/UpdateCategoryPopup.jsx";
@@ -68,6 +69,7 @@ export default function AdminCategoriesPage() {
 
         const { productTypes, fetchProductTypes } = useAdminProductTypeStore();
 
+
 	const [popups, setPopups] = useState({
 		delete: { open: false, category: null },
 		add: false,
@@ -76,22 +78,24 @@ export default function AdminCategoriesPage() {
 
         useEffect(() => {
                 fetchCategories();
+
                 fetchProductTypes();
         }, [fetchCategories, fetchProductTypes]);
+
 
 	const handleSearch = (value) => {
 		setFilters({ search: value });
 	};
 
-	const handleFilterChange = (key, value) => {
-		setFilters({ [key]: value });
-	};
+        const handleFilterChange = (key, value) => {
+                setFilters({ [key]: value });
+        };
 
 	const handleApplyFilters = () => {
-		fetchCategories();
-	};
+                fetchCategories();
+        };
 
-	const handleSelectAll = (checked) => {
+        const handleSelectAll = (checked) => {
 		if (checked) {
 			selectAllCategories();
 		} else {
@@ -253,6 +257,7 @@ export default function AdminCategoriesPage() {
                                                                         </SelectContent>
                                                                 </Select>
 
+
 								<Button
 									onClick={handleApplyFilters}
 									className="bg-green-600 hover:bg-green-700"
@@ -300,7 +305,9 @@ export default function AdminCategoriesPage() {
 												</Button>
 											</TableHead>
                                                                                         <TableHead>Description</TableHead>
+
                                                                                         <TableHead>Product Type</TableHead>
+
                                                                                         <TableHead>Products</TableHead>
 											<TableHead>Published</TableHead>
 											<TableHead>
@@ -361,7 +368,9 @@ export default function AdminCategoriesPage() {
                                                                                                        </div>
                                                                                                </TableCell>
                                                                                                 <TableCell>
+
                                                                                                         {productTypes.find((pt) => pt._id === category.productType)?.name || "-"}
+
                                                                                                 </TableCell>
                                                                                                 <TableCell>
                                                                                                         <div className="flex items-center gap-2">
