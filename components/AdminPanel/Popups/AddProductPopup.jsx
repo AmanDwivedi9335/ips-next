@@ -312,6 +312,33 @@ export function AddProductPopup({ open, onOpenChange }) {
           <form onSubmit={handleSubmit} className="space-y-6 mt-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="md:col-span-2">
+                <Label>Product Family *</Label>
+                <Select
+                  value={formData.productFamily}
+                  onValueChange={(value) => {
+                    setFormData({
+                      ...formData,
+                      productFamily: value,
+                      category: "",
+                      subcategory: "",
+                    });
+                    setSelectedCategoryId(null);
+                  }}
+                >
+                  <SelectTrigger className="mt-1">
+                    <SelectValue placeholder="Select family" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {productFamilies.map((family) => (
+                      <SelectItem key={family._id} value={family.slug}>
+                        {family.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="md:col-span-2">
                 <Label htmlFor="title">Product Title *</Label>
                 <Input
                   id="title"
@@ -342,7 +369,7 @@ export function AddProductPopup({ open, onOpenChange }) {
 
               <div className="md:col-span-2">
                 <Label htmlFor="longDescription">Detailed Description</Label>
-              <Textarea
+                <Textarea
                   id="longDescription"
                   placeholder="Detailed product description"
                   value={formData.longDescription}
@@ -355,33 +382,6 @@ export function AddProductPopup({ open, onOpenChange }) {
                   className="mt-1"
                   rows={4}
                 />
-              </div>
-
-              <div className="md:col-span-2">
-                <Label>Product Family *</Label>
-                <Select
-                  value={formData.productFamily}
-                  onValueChange={(value) => {
-                    setFormData({
-                      ...formData,
-                      productFamily: value,
-                      category: "",
-                      subcategory: "",
-                    });
-                    setSelectedCategoryId(null);
-                  }}
-                >
-                  <SelectTrigger className="mt-1">
-                    <SelectValue placeholder="Select family" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {productFamilies.map((family) => (
-                      <SelectItem key={family._id} value={family.slug}>
-                        {family.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
               </div>
 
               {showBasicFields && (
