@@ -71,15 +71,16 @@ export async function POST(request) {
 					published:
 						productData.published !== undefined ? productData.published : true,
 					price: Number.parseFloat(price),
-					salePrice: productData.salePrice
-						? Number.parseFloat(productData.salePrice)
-						: 0,
-					discount: productData.discount
-						? Number.parseFloat(productData.discount)
-						: 0,
-					type: productData.type || "featured",
-					features: productData.features || [],
-				});
+                                        salePrice: productData.salePrice
+                                                ? Number.parseFloat(productData.salePrice)
+                                                : 0,
+                                        discount: productData.discount
+                                                ? Number.parseFloat(productData.discount)
+                                                : 0,
+                                        type: productData.type || "featured",
+                                        productType: productData.type || "featured",
+                                        features: productData.features || [],
+                                });
 
 				await product.save();
 				results.success.push(product);

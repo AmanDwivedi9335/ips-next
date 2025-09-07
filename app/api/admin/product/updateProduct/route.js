@@ -128,6 +128,7 @@ export async function PUT(request) {
                 product.productFamily = productFamily;
                 product.discount = discount;
                 product.type = type;
+                product.productType = type;
                 product.published = published;
                 product.features = features;
                 product.layouts = layouts;

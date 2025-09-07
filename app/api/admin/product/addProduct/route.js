@@ -145,6 +145,7 @@ export async function POST(request) {
                                 ? parseFloat(formData.get("discount"))
                                 : 0,
                         type: formData.get("type") || "featured",
+                        productType: formData.get("type") || "featured",
                         features: features,
                         languages: allLanguages,
                         materials,
