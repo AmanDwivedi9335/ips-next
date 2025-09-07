@@ -9,8 +9,10 @@ const PriceSchema = new mongoose.Schema(
                         required: true,
                 },
 
-                productType: { type: String },
-                layout: { type: String },
+
+                productType: { type: String, required: false },
+                layout: { type: String, required: false },
+
                 size: { type: String, required: true },
                 material: { type: String, required: true },
                 qr: { type: Boolean, default: false },
@@ -19,5 +21,8 @@ const PriceSchema = new mongoose.Schema(
         { timestamps: true }
 );
 
-export default mongoose.models.Price ||
-        mongoose.model("Price", PriceSchema);
+if (mongoose.models.Price) {
+        delete mongoose.models.Price;
+}
+
+export default mongoose.model("Price", PriceSchema);
