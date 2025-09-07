@@ -1,4 +1,5 @@
 import "./globals.css";
+import Script from "next/script";
 
 export const metadata = {
 	title: "Safety Equipment Store - Professional Safety Gear",
@@ -16,6 +17,7 @@ export default function RootLayout({ children }) {
                                         }}
                                 />
                         </head>
+
                         <body className="antialiased" suppressHydrationWarning>{children}</body>
                 </html>
         );
