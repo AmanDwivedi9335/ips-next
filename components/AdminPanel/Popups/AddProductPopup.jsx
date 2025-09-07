@@ -29,6 +29,7 @@ import { useAdminLanguageStore } from "@/store/adminLanguageStore.js";
 import { useAdminMaterialStore } from "@/store/adminMaterialStore.js";
 import { useAdminSizeStore } from "@/store/adminSizeStore.js";
 import { useAdminCategoryStore } from "@/store/adminCategoryStore.js";
+import { useAdminLayoutStore } from "@/store/adminLayoutStore.js";
 
 import { useAdminProductFamilyStore } from "@/store/adminProductFamilyStore.js";
 
@@ -46,6 +47,7 @@ export function AddProductPopup({ open, onOpenChange }) {
   const { materials, fetchMaterials } = useAdminMaterialStore();
   const { sizes, fetchSizes } = useAdminSizeStore();
   const { categories: categoryList, fetchCategories } = useAdminCategoryStore();
+  const { layouts, fetchLayouts } = useAdminLayoutStore();
 
   const { productFamilies, fetchProductFamilies } = useAdminProductFamilyStore();
 
@@ -55,7 +57,6 @@ export function AddProductPopup({ open, onOpenChange }) {
   const [selectedMaterials, setSelectedMaterials] = useState([]);
   const [selectedSizes, setSelectedSizes] = useState([]);
   const [selectedLayouts, setSelectedLayouts] = useState([]);
-  const [layoutInput, setLayoutInput] = useState("");
   const [languageImages, setLanguageImages] = useState([
     { language: "English", image: "" },
   ]);
@@ -120,12 +121,14 @@ export function AddProductPopup({ open, onOpenChange }) {
     fetchMaterials();
     fetchSizes();
     fetchCategories();
+    fetchLayouts();
     fetchProductFamilies();
   }, [
     fetchLanguages,
     fetchMaterials,
     fetchSizes,
     fetchCategories,
+    fetchLayouts,
     fetchProductFamilies,
   ]);
 
@@ -262,17 +265,6 @@ export function AddProductPopup({ open, onOpenChange }) {
     const updated = [...languageImages];
     updated[index][field] = value;
     setLanguageImages(updated);
-  };
-
-  const addLayout = () => {
-    if (layoutInput.trim()) {
-      setSelectedLayouts([...selectedLayouts, layoutInput.trim()]);
-      setLayoutInput("");
-    }
-  };
-
-  const removeLayout = (layout) => {
-    setSelectedLayouts(selectedLayouts.filter((l) => l !== layout));
   };
 
   const addPriceRow = () => {
@@ -616,27 +608,24 @@ export function AddProductPopup({ open, onOpenChange }) {
             {showLayout && (
               <div className="mt-4">
                 <Label>Layouts</Label>
-                <div className="flex space-x-2 mt-2">
-                  <Input
-                    placeholder="Add layout"
-                    value={layoutInput}
-                    onChange={(e) => setLayoutInput(e.target.value)}
-                  />
-                  <Button type="button" variant="outline" onClick={addLayout}>
-                    <Plus className="h-4 w-4 mr-2" /> Add Layout
-                  </Button>
-                </div>
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {selectedLayouts.map((layout) => (
-                    <div
-                      key={layout}
-                      className="flex items-center space-x-1 bg-gray-200 rounded px-2 py-1 text-sm"
-                    >
-                      <span>{layout}</span>
-                      <X
-                        className="h-3 w-3 cursor-pointer"
-                        onClick={() => removeLayout(layout)}
+                <div className="flex flex-wrap gap-4 mt-2">
+                  {layouts.map((lay) => (
+                    <div key={lay._id} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={`layout-${lay._id}`}
+                        checked={selectedLayouts.includes(lay.name)}
+                        onCheckedChange={(checked) => {
+                          setSelectedLayouts(
+                            checked
+                              ? [...selectedLayouts, lay.name]
+                              : selectedLayouts.filter((l) => l !== lay.name)
+                          );
+                        }}
                       />
+                      <Label htmlFor={`layout-${lay._id}`}>
+                        {lay.name}
+                        {lay.aspectRatio ? ` (${lay.aspectRatio})` : ""}
+                      </Label>
                     </div>
                   ))}
                 </div>
