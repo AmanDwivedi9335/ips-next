@@ -246,7 +246,7 @@ export default function AdminCategoriesPage() {
                                                                                 <SelectValue placeholder="Product Family" />
                                                                         </SelectTrigger>
                                                                         <SelectContent>
-                                                                                <SelectItem value="">
+                                                                                <SelectItem value="all">
                                                                                         All Product Families
                                                                                 </SelectItem>
                                                                                 {productFamilies.map((family) => (
