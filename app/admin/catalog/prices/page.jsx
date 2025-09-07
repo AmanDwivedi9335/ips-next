@@ -5,14 +5,24 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
+import {
+        Select,
+        SelectTrigger,
+        SelectContent,
+        SelectItem,
+        SelectValue,
+} from "@/components/ui/select";
 import { useAdminPriceStore } from "@/store/adminPriceStore";
 import { useAdminLayoutStore } from "@/store/adminLayoutStore.js";
+import { useAdminMaterialStore } from "@/store/adminMaterialStore.js";
+import { useAdminSizeStore } from "@/store/adminSizeStore.js";
 
 export default function PricesPage() {
         const { prices, fetchPrices, addPrice, updatePrice, deletePrice } =
                 useAdminPriceStore();
         const { layouts, fetchLayouts } = useAdminLayoutStore();
+        const { materials, fetchMaterials } = useAdminMaterialStore();
+        const { sizes, fetchSizes } = useAdminSizeStore();
         const [form, setForm] = useState({
                 productType: "poster",
                 layout: "",
@@ -25,7 +35,9 @@ export default function PricesPage() {
         useEffect(() => {
                 fetchPrices();
                 fetchLayouts();
-        }, [fetchPrices, fetchLayouts]);
+                fetchMaterials();
+                fetchSizes();
+        }, [fetchPrices, fetchLayouts, fetchMaterials, fetchSizes]);
 
         const handleAdd = async () => {
                 const payload = { ...form, price: Number(form.price) };
@@ -81,20 +93,40 @@ export default function PricesPage() {
                                                                 ))}
                                                         </SelectContent>
                                                 </Select>
-                                                <Input
-                                                        placeholder="Size"
+                                                <Select
                                                         value={form.size}
-                                                        onChange={(e) =>
-                                                                setForm((f) => ({ ...f, size: e.target.value }))
+                                                        onValueChange={(v) =>
+                                                                setForm((f) => ({ ...f, size: v }))
                                                         }
-                                                />
-                                                <Input
-                                                        placeholder="Material"
+                                                >
+                                                        <SelectTrigger>
+                                                                <SelectValue placeholder="Size" />
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                                {sizes.map((s) => (
+                                                                        <SelectItem key={s._id} value={s.name}>
+                                                                                {s.name}
+                                                                        </SelectItem>
+                                                                ))}
+                                                        </SelectContent>
+                                                </Select>
+                                                <Select
                                                         value={form.material}
-                                                        onChange={(e) =>
-                                                                setForm((f) => ({ ...f, material: e.target.value }))
+                                                        onValueChange={(v) =>
+                                                                setForm((f) => ({ ...f, material: v }))
                                                         }
-                                                />
+                                                >
+                                                        <SelectTrigger>
+                                                                <SelectValue placeholder="Material" />
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                                {materials.map((m) => (
+                                                                        <SelectItem key={m._id} value={m.name}>
+                                                                                {m.name}
+                                                                        </SelectItem>
+                                                                ))}
+                                                        </SelectContent>
+                                                </Select>
                                                 <div className="flex items-center space-x-2">
                                                         <Checkbox
                                                                 checked={form.qr}
@@ -120,8 +152,9 @@ export default function PricesPage() {
                                                 {prices.map((p) => (
                                                         <li
                                                                 key={p._id}
-                                                                className="grid grid-cols-7 gap-2 items-center"
+                                                                className="grid grid-cols-8 gap-2 items-center"
                                                         >
+                                                                <span>{p.product?.title || ""}</span>
                                                                 <span>{p.productType}</span>
                                                                 <Select
                                                                         value={p.layout}
@@ -142,22 +175,40 @@ export default function PricesPage() {
                                                                                 ))}
                                                                         </SelectContent>
                                                                 </Select>
-                                                                <Input
+                                                                <Select
                                                                         value={p.size}
-                                                                        onChange={(e) =>
-                                                                                updatePrice(p._id, {
-                                                                                        size: e.target.value,
-                                                                                })
+                                                                        onValueChange={(v) =>
+                                                                                updatePrice(p._id, { size: v })
                                                                         }
-                                                                />
-                                                                <Input
+                                                                >
+                                                                        <SelectTrigger>
+                                                                                <SelectValue placeholder="Size" />
+                                                                        </SelectTrigger>
+                                                                        <SelectContent>
+                                                                                {sizes.map((s) => (
+                                                                                        <SelectItem key={s._id} value={s.name}>
+                                                                                                {s.name}
+                                                                                        </SelectItem>
+                                                                                ))}
+                                                                        </SelectContent>
+                                                                </Select>
+                                                                <Select
                                                                         value={p.material}
-                                                                        onChange={(e) =>
-                                                                                updatePrice(p._id, {
-                                                                                        material: e.target.value,
-                                                                                })
+                                                                        onValueChange={(v) =>
+                                                                                updatePrice(p._id, { material: v })
                                                                         }
-                                                                />
+                                                                >
+                                                                        <SelectTrigger>
+                                                                                <SelectValue placeholder="Material" />
+                                                                        </SelectTrigger>
+                                                                        <SelectContent>
+                                                                                {materials.map((m) => (
+                                                                                        <SelectItem key={m._id} value={m.name}>
+                                                                                                {m.name}
+                                                                                        </SelectItem>
+                                                                                ))}
+                                                                        </SelectContent>
+                                                                </Select>
                                                                 <Checkbox
                                                                         checked={p.qr}
                                                                         onCheckedChange={(v) =>
