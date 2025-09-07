@@ -9,8 +9,10 @@ const PriceSchema = new mongoose.Schema(
                         required: true,
                 },
 
+
                 productType: { type: String, required: false },
                 layout: { type: String, required: false },
+
                 size: { type: String, required: true },
                 material: { type: String, required: true },
                 qr: { type: Boolean, default: false },
