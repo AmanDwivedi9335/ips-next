@@ -23,7 +23,9 @@ export async function GET(request) {
         if (material) query.material = material;
         if (qr !== null && qr !== "null") query.qr = qr === "true";
 
-        const prices = await Price.find(query).lean();
+        const prices = await Price.find(query)
+                .populate("product", "title")
+                .lean();
         return NextResponse.json({ prices });
 }
 
