@@ -23,12 +23,12 @@ import {
         SelectValue,
 } from "@/components/ui/select";
 import { useAdminCategoryStore } from "@/store/adminCategoryStore.js";
-
 import { useAdminProductFamilyStore } from "@/store/adminProductFamilyStore.js";
 
 export function UpdateCategoryPopup({ open, onOpenChange, category }) {
         const { updateCategory, categories } = useAdminCategoryStore();
-        const { productFamilies, fetchProductFamilies } = useAdminProductFamilyStore();
+        const { productFamilies, fetchProductFamilies } =
+                useAdminProductFamilyStore();
 
         const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -58,7 +58,7 @@ export function UpdateCategoryPopup({ open, onOpenChange, category }) {
                                 sortOrder: category.sortOrder || 0,
                                 parent: category.parent ? category.parent.toString() : "",
 
-                                productFamily: category.productType?.toString() || "",
+                                productFamily: category.productFamily?.toString() || "",
                         });
                 }
         }, [category, fetchProductFamilies]);
@@ -73,8 +73,6 @@ export function UpdateCategoryPopup({ open, onOpenChange, category }) {
                 const success = await updateCategory(category._id, {
                         ...formData,
                         parent: formData.parent || null,
-                        productType: formData.productFamily,
-
                 });
 		if (success) {
 			onOpenChange(false);

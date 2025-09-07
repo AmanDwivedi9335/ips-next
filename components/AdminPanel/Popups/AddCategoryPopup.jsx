@@ -27,7 +27,8 @@ import { useAdminProductFamilyStore } from "@/store/adminProductFamilyStore.js";
 
 export function AddCategoryPopup({ open, onOpenChange }) {
         const { addCategory, categories } = useAdminCategoryStore();
-        const { productFamilies, fetchProductFamilies } = useAdminProductFamilyStore();
+        const { productFamilies, fetchProductFamilies } =
+                useAdminProductFamilyStore();
 
         const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -50,9 +51,6 @@ export function AddCategoryPopup({ open, onOpenChange }) {
                 const success = await addCategory({
                         ...formData,
                         parent: formData.parent || null,
-
-                        productType: formData.productFamily,
-
                 });
 		if (success) {
 			onOpenChange(false);
@@ -69,9 +67,7 @@ export function AddCategoryPopup({ open, onOpenChange }) {
                         published: true,
                         sortOrder: 0,
                         parent: "",
-
                         productFamily: "",
-
                 });
         };
 

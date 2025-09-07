@@ -185,7 +185,7 @@ const categories = [
 	{ value: "emergency-kit", label: "Emergency Kit" },
 ];
 
-const productTypes = [
+const productTags = [
 	{ value: "featured", label: "Featured" },
 	{ value: "top-selling", label: "Top Selling" },
 	{ value: "best-selling", label: "Best Selling" },
@@ -304,7 +304,7 @@ export function BulkUpdateProductsPopup({
 										<SelectValue placeholder="Select type (optional)" />
 									</SelectTrigger>
 									<SelectContent>
-										{productTypes.map((type) => (
+                                                                            {productTags.map((type) => (
 											<SelectItem key={type.value} value={type.value}>
 												{type.label}
 											</SelectItem>

@@ -7,9 +7,8 @@ const ProductSchema = new mongoose.Schema(
 		longDescription: { type: String, required: true },
 		images: [{ type: String }],
                 category: { type: String, required: true },
-                productType: {
+                productFamily: {
                         type: String,
-
                         required: true,
                 },
                 published: { type: Boolean, default: true },

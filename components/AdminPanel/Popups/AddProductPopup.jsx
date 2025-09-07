@@ -106,13 +106,13 @@ export function AddProductPopup({ open, onOpenChange }) {
     (f) => f.slug === formData.productFamily,
   )?._id;
   const parentCategories = categoryList.filter(
-    (cat) => !cat.parent && cat.productType === selectedFamilyId,
+    (cat) => !cat.parent && cat.productFamily === selectedFamilyId,
   );
   const subCategories = selectedCategoryId
     ? categoryList.filter(
         (cat) =>
           cat.parent === selectedCategoryId &&
-          cat.productType === selectedFamilyId,
+          cat.productFamily === selectedFamilyId,
       )
     : [];
 
@@ -192,7 +192,6 @@ export function AddProductPopup({ open, onOpenChange }) {
         sizes: showBasicFields ? selectedSizes : [],
         layouts: showLayout ? selectedLayouts : [],
 
-        productType: formData.productFamily,
         productFamily: formData.productFamily,
 
         pricing: priceData,

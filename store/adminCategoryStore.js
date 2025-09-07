@@ -11,8 +11,7 @@ export const useAdminCategoryStore = create((set, get) => ({
         filters: {
                 search: "",
                 published: null,
-                productType: "",
-
+                productFamily: "",
         },
 	pagination: {
 		currentPage: 1,
@@ -188,8 +187,7 @@ export const useAdminCategoryStore = create((set, get) => ({
                         filters: {
                                 search: "",
                                 published: null,
-                                productType: "",
-
+                                productFamily: "",
                         },
                         pagination: { ...get().pagination, currentPage: 1 },
                 });

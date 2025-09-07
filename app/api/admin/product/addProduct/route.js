@@ -15,14 +15,12 @@ export async function POST(request) {
                 const category = formData.get("category");
                 const subcategory = formData.get("subcategory");
                 const productFamily = formData.get("productFamily");
-                const productType = formData.get("productType") || "";
 
                 console.log("Received data:", {
                         title,
                         description,
                         category,
                         subcategory,
-                        productType,
                 });
 
 		// Validate required fields
@@ -30,8 +28,7 @@ export async function POST(request) {
                         !title ||
                         !description ||
                         !category ||
-                        !productFamily ||
-                        !productType
+                        !productFamily
                 ) {
                         return Response.json(
                                 {
@@ -42,7 +39,6 @@ export async function POST(request) {
                                                 description: !!description,
                                                 category: !!category,
                                                 productFamily: !!productFamily,
-                                                productType: !!productType,
                                         },
                                 },
                                 { status: 400 }
@@ -142,7 +138,6 @@ export async function POST(request) {
                         category,
                         subcategory,
                         productFamily,
-                        productType,
                         published: formData.get("published") === "true",
                         price: basePrice,
                         salePrice: basePrice,
@@ -165,7 +160,6 @@ export async function POST(request) {
                         const priceDocs = pricing.map((p) => ({
                                 ...p,
                                 product: product._id,
-                                productType,
                         }));
                         await Price.insertMany(priceDocs);
                 }
