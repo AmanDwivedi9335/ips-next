@@ -46,7 +46,8 @@ export function AddProductPopup({ open, onOpenChange }) {
   const { languages, fetchLanguages } = useAdminLanguageStore();
   const { materials, fetchMaterials } = useAdminMaterialStore();
   const { sizes, fetchSizes } = useAdminSizeStore();
-  const { categories: categoryList, fetchCategories } = useAdminCategoryStore();
+  const { allCategories: categoryList, fetchAllCategories } =
+    useAdminCategoryStore();
   const { layouts, fetchLayouts } = useAdminLayoutStore();
 
   const { productFamilies, fetchProductFamilies } = useAdminProductFamilyStore();
@@ -102,17 +103,18 @@ export function AddProductPopup({ open, onOpenChange }) {
         ]
       : sizes;
 
-  const selectedFamilyId = productFamilies.find(
+  const selectedFamily = productFamilies.find(
     (f) => f.slug === formData.productFamily,
-  )?._id;
+  );
+  const matchFamily = (pf) =>
+    pf === selectedFamily?._id || pf === selectedFamily?.slug;
   const parentCategories = categoryList.filter(
-    (cat) => !cat.parent && cat.productFamily === selectedFamilyId,
+    (cat) => !cat.parent && matchFamily(cat.productFamily),
   );
   const subCategories = selectedCategoryId
     ? categoryList.filter(
         (cat) =>
-          cat.parent === selectedCategoryId &&
-          cat.productFamily === selectedFamilyId,
+          cat.parent === selectedCategoryId && matchFamily(cat.productFamily),
       )
     : [];
 
@@ -120,17 +122,23 @@ export function AddProductPopup({ open, onOpenChange }) {
     fetchLanguages();
     fetchMaterials();
     fetchSizes();
-    fetchCategories();
+    fetchAllCategories();
     fetchLayouts();
     fetchProductFamilies();
   }, [
     fetchLanguages,
     fetchMaterials,
     fetchSizes,
-    fetchCategories,
+    fetchAllCategories,
     fetchLayouts,
     fetchProductFamilies,
   ]);
+
+  useEffect(() => {
+    if (open) {
+      fetchAllCategories();
+    }
+  }, [open, fetchAllCategories]);
 
   useEffect(() => {
     if (productFamilies.length) {
