@@ -55,8 +55,6 @@ const menuItems = [
                 icon: Package,
                 items: [
                         { title: "Products", href: "/admin/catalog/products", icon: FolderOpen },
-                        { title: "Product Types", href: "/admin/catalog/product-types", icon: PackageIcon },
-
                         { title: "Categories", href: "/admin/catalog/categories", icon: Tags },
                         { title: "Materials", href: "/admin/catalog/materials", icon: Layers },
                         { title: "Sizes", href: "/admin/catalog/sizes", icon: Package },

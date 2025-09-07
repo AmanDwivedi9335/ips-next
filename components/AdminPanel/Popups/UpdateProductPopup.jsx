@@ -38,7 +38,7 @@ const categories = [
 	{ value: "emergency-kit", label: "Emergency Kit" },
 ];
 
-const productTypes = [
+const productTags = [
 	{ value: "featured", label: "Featured" },
 	{ value: "top-selling", label: "Top Selling" },
 	{ value: "best-selling", label: "Best Selling" },
@@ -278,7 +278,7 @@ export function UpdateProductPopup({ open, onOpenChange, product }) {
 										<SelectValue placeholder="Select type" />
 									</SelectTrigger>
 									<SelectContent>
-										{productTypes.map((type) => (
+                                                                            {productTags.map((type) => (
 											<SelectItem key={type.value} value={type.value}>
 												{type.label}
 											</SelectItem>

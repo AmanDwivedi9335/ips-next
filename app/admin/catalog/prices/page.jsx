@@ -24,7 +24,6 @@ export default function PricesPage() {
         const { materials, fetchMaterials } = useAdminMaterialStore();
         const { sizes, fetchSizes } = useAdminSizeStore();
         const [form, setForm] = useState({
-                productType: "poster",
                 layout: "",
                 size: "",
                 material: "",
@@ -44,7 +43,6 @@ export default function PricesPage() {
                 const success = await addPrice(payload);
                 if (success) {
                         setForm({
-                                productType: "poster",
                                 layout: "",
                                 size: "",
                                 material: "",
@@ -62,20 +60,6 @@ export default function PricesPage() {
                                 </CardHeader>
                                 <CardContent className="space-y-4">
                                         <div className="grid grid-cols-6 gap-2 items-end">
-                                                <Select
-                                                        value={form.productType}
-                                                        onValueChange={(v) =>
-                                                                setForm((f) => ({ ...f, productType: v }))
-                                                        }
-                                                >
-                                                        <SelectTrigger>
-                                                                <SelectValue placeholder="Type" />
-                                                        </SelectTrigger>
-                                                        <SelectContent>
-                                                                <SelectItem value="poster">Poster</SelectItem>
-                                                                <SelectItem value="sign">Sign</SelectItem>
-                                                        </SelectContent>
-                                                </Select>
                                                 <Select
                                                         value={form.layout}
                                                         onValueChange={(v) =>
@@ -152,10 +136,9 @@ export default function PricesPage() {
                                                 {prices.map((p) => (
                                                         <li
                                                                 key={p._id}
-                                                                className="grid grid-cols-8 gap-2 items-center"
+                                                                className="grid grid-cols-7 gap-2 items-center"
                                                         >
                                                                 <span>{p.product?.title || ""}</span>
-                                                                <span>{p.productType}</span>
                                                                 <Select
                                                                         value={p.layout}
                                                                         onValueChange={(v) =>

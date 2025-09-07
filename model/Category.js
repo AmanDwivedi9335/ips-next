@@ -28,10 +28,9 @@ const CategorySchema = new mongoose.Schema(
                         default: "",
                 },
 
-                productType: {
+                productFamily: {
                         type: mongoose.Schema.Types.ObjectId,
-                        ref: "ProductType",
-
+                        ref: "ProductFamily",
                         required: true,
                 },
                 published: {

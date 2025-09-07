@@ -237,9 +237,9 @@ export default function AdminCategoriesPage() {
                                                                 </Select>
 
                                                                 <Select
-                                                                        value={filters.productType || ""}
+                                                                        value={filters.productFamily || ""}
                                                                         onValueChange={(value) =>
-                                                                                handleFilterChange("productType", value)
+                                                                                handleFilterChange("productFamily", value)
                                                                         }
                                                                 >
                                                                         <SelectTrigger className="w-40">
@@ -369,7 +369,10 @@ export default function AdminCategoriesPage() {
                                                                                                </TableCell>
                                                                                                 <TableCell>
 
-                                                                                                {productFamilies.find((pf) => pf._id === category.productType)?.name || "-"}
+                                                                                                {productFamilies.find((pf) =>
+                                                                                                        pf._id ===
+                                                                                                        category.productFamily
+                                                                                                )?.name || "-"}
 
                                                                                                 </TableCell>
                                                                                                 <TableCell>
