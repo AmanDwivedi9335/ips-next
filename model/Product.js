@@ -32,18 +32,23 @@ const ProductSchema = new mongoose.Schema(
                 subcategory: { type: String },
 
 
-		// Product type for categorization
-		type: {
-			type: String,
-			enum: ["featured", "top-selling", "best-selling", "discounted"],
-			default: function () {
-				// Auto-assign discounted if there's a discount
-				if (this.discount > 0 || this.salePrice > 0) {
-					return "discounted";
-				}
-				return "featured"; // Default fallback
-			},
-		},
+                // Product type for categorization
+                type: {
+                        type: String,
+                        enum: ["featured", "top-selling", "best-selling", "discounted"],
+                        default: function () {
+                                // Auto-assign discounted if there's a discount
+                                if (this.discount > 0 || this.salePrice > 0) {
+                                        return "discounted";
+                                }
+                                return "featured"; // Default fallback
+                        },
+                },
+
+                // Legacy field - no validation enforced
+                productType: {
+                        type: String,
+                },
 
 		// reviews: [{ type: mongoose.Schema.Types.ObjectId, ref: "Review" }],
 
@@ -82,6 +87,9 @@ ProductSchema.pre("save", function (next) {
                         this.type = "discounted";
                 }
         }
+
+        // Keep legacy productType in sync when type changes
+        this.productType = this.type;
 
         next();
 });
