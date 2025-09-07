@@ -106,6 +106,7 @@ export function AddProductPopup({ open, onOpenChange }) {
   const parentCategories = categoryList.filter((cat) => !cat.parent);
   const subCategories = selectedCategoryId
     ? categoryList.filter((cat) => cat.parent === selectedCategoryId)
+
     : [];
 
   useEffect(() => {
