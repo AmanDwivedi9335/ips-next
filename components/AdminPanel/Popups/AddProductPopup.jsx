@@ -46,7 +46,8 @@ export function AddProductPopup({ open, onOpenChange }) {
   const { languages, fetchLanguages } = useAdminLanguageStore();
   const { materials, fetchMaterials } = useAdminMaterialStore();
   const { sizes, fetchSizes } = useAdminSizeStore();
-  const { categories: categoryList, fetchCategories } = useAdminCategoryStore();
+  const { allCategories: categoryList, fetchAllCategories } =
+    useAdminCategoryStore();
   const { layouts, fetchLayouts } = useAdminLayoutStore();
 
   const { productFamilies, fetchProductFamilies } = useAdminProductFamilyStore();
@@ -120,14 +121,14 @@ export function AddProductPopup({ open, onOpenChange }) {
     fetchLanguages();
     fetchMaterials();
     fetchSizes();
-    fetchCategories();
+    fetchAllCategories();
     fetchLayouts();
     fetchProductFamilies();
   }, [
     fetchLanguages,
     fetchMaterials,
     fetchSizes,
-    fetchCategories,
+    fetchAllCategories,
     fetchLayouts,
     fetchProductFamilies,
   ]);

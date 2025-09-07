@@ -5,9 +5,10 @@ import { toast } from "sonner";
 
 export const useAdminCategoryStore = create((set, get) => ({
 	// State
-	categories: [],
-	isLoading: false,
-	error: null,
+        categories: [],
+        allCategories: [],
+        isLoading: false,
+        error: null,
         filters: {
                 search: "",
                 published: null,
@@ -67,7 +68,23 @@ export const useAdminCategoryStore = create((set, get) => ({
 				isLoading: false,
 			});
 		}
-	},
+        },
+
+        fetchAllCategories: async () => {
+                try {
+                        const params = new URLSearchParams({ page: "1", limit: "1000" });
+                        const response = await fetch(`/api/admin/categories?${params}`);
+                        const data = await response.json();
+
+                        if (data.success) {
+                                set({ allCategories: data.categories });
+                        } else {
+                                set({ error: data.message });
+                        }
+                } catch (error) {
+                        set({ error: "Failed to fetch categories" });
+                }
+        },
 
         addCategory: async (categoryData) => {
                 try {
