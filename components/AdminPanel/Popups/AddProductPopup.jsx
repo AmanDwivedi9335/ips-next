@@ -103,19 +103,10 @@ export function AddProductPopup({ open, onOpenChange }) {
         ]
       : sizes;
 
-  const selectedFamily = productFamilies.find(
-    (f) => f.slug === formData.productFamily,
-  );
-  const matchFamily = (pf) =>
-    pf === selectedFamily?._id || pf === selectedFamily?.slug;
-  const parentCategories = categoryList.filter(
-    (cat) => !cat.parent && matchFamily(cat.productFamily),
-  );
+  const parentCategories = categoryList.filter((cat) => !cat.parent);
   const subCategories = selectedCategoryId
-    ? categoryList.filter(
-        (cat) =>
-          cat.parent === selectedCategoryId && matchFamily(cat.productFamily),
-      )
+    ? categoryList.filter((cat) => cat.parent === selectedCategoryId)
+
     : [];
 
   useEffect(() => {
