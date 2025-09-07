@@ -16,18 +16,30 @@ export const useAdminProductFamilyStore = create((set, get) => ({
                         const data = await response.json();
                         if (data.success) {
                                 const fetched = data.productFamilies || [];
-                                const merged = [...fetched];
+                                // Merge defaults with fetched families using slug as key.
+                                // Fetched families override defaults when slugs match.
+                                const familiesMap = new Map();
                                 DEFAULT_PRODUCT_FAMILIES.forEach((df) => {
-                                        if (!merged.some((f) => f.slug === df.slug)) {
-                                                merged.push(df);
+                                        familiesMap.set(df.slug, df);
+                                });
+                                fetched.forEach((f) => {
+                                        if (f.slug) {
+                                                familiesMap.set(f.slug, f);
                                         }
                                 });
+                                const merged = Array.from(familiesMap.values()).sort((a, b) =>
+                                        a.name.localeCompare(b.name)
+                                );
                                 set({ productFamilies: merged, isLoading: false });
                         } else {
                                 set({ productFamilies: DEFAULT_PRODUCT_FAMILIES, error: data.message, isLoading: false });
                         }
                 } catch (error) {
-                        set({ productFamilies: DEFAULT_PRODUCT_FAMILIES, error: "Failed to fetch product families", isLoading: false });
+                        set({
+                                productFamilies: DEFAULT_PRODUCT_FAMILIES,
+                                error: "Failed to fetch product families",
+                                isLoading: false,
+                        });
                 }
         },
 
