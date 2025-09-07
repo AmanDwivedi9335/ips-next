@@ -11,11 +11,11 @@ export default function RootLayout({ children }) {
         return (
                 <html lang="en" suppressHydrationWarning>
                         <head>
-                                <Script id="fdprocessedid-cleanup" strategy="beforeInteractive">
-                                        {
-                                                `(function(){const remove=()=>document.querySelectorAll('[fdprocessedid]').forEach(el=>el.removeAttribute('fdprocessedid'));remove();new MutationObserver(remove).observe(document.documentElement,{subtree:true,childList:true});})();`
-                                        }
-                                </Script>
+                                <script
+                                        dangerouslySetInnerHTML={{
+                                                __html: `(function(){const o=Element.prototype.setAttribute;Element.prototype.setAttribute=function(n,v){if(n==='fdprocessedid')return;o.call(this,n,v);};const r=()=>document.querySelectorAll('[fdprocessedid]').forEach(e=>e.removeAttribute('fdprocessedid'));r();new MutationObserver(r).observe(document.documentElement,{subtree:true,childList:true,attributes:true});})();`,
+                                        }}
+                                />
                         </head>
 
                         <body className="antialiased" suppressHydrationWarning>{children}</body>
