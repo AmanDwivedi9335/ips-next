@@ -1,4 +1,5 @@
 import "./globals.css";
+import Script from "next/script";
 
 export const metadata = {
 	title: "Safety Equipment Store - Professional Safety Gear",
@@ -8,8 +9,15 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
         return (
-                <html lang="en">
-                        <body className="antialiased">{children}</body>
+                <html lang="en" suppressHydrationWarning>
+                        <head>
+                                <Script id="fdprocessedid-cleanup" strategy="beforeInteractive">
+                                        {
+                                                `(function(){const remove=()=>document.querySelectorAll('[fdprocessedid]').forEach(el=>el.removeAttribute('fdprocessedid'));remove();new MutationObserver(remove).observe(document.documentElement,{subtree:true,childList:true});})();`
+                                        }
+                                </Script>
+                        </head>
+                        <body className="antialiased" suppressHydrationWarning>{children}</body>
                 </html>
         );
 }
