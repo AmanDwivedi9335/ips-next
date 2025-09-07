@@ -7,10 +7,12 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
 import { useAdminPriceStore } from "@/store/adminPriceStore";
+import { useAdminLayoutStore } from "@/store/adminLayoutStore.js";
 
 export default function PricesPage() {
         const { prices, fetchPrices, addPrice, updatePrice, deletePrice } =
                 useAdminPriceStore();
+        const { layouts, fetchLayouts } = useAdminLayoutStore();
         const [form, setForm] = useState({
                 productType: "poster",
                 layout: "",
@@ -22,7 +24,8 @@ export default function PricesPage() {
 
         useEffect(() => {
                 fetchPrices();
-        }, [fetchPrices]);
+                fetchLayouts();
+        }, [fetchPrices, fetchLayouts]);
 
         const handleAdd = async () => {
                 const payload = { ...form, price: Number(form.price) };
@@ -61,13 +64,23 @@ export default function PricesPage() {
                                                                 <SelectItem value="sign">Sign</SelectItem>
                                                         </SelectContent>
                                                 </Select>
-                                                <Input
-                                                        placeholder="Layout"
+                                                <Select
                                                         value={form.layout}
-                                                        onChange={(e) =>
-                                                                setForm((f) => ({ ...f, layout: e.target.value }))
+                                                        onValueChange={(v) =>
+                                                                setForm((f) => ({ ...f, layout: v }))
                                                         }
-                                                />
+                                                >
+                                                        <SelectTrigger>
+                                                                <SelectValue placeholder="Layout" />
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                                {layouts.map((l) => (
+                                                                        <SelectItem key={l._id} value={l.name}>
+                                                                                {l.name}
+                                                                        </SelectItem>
+                                                                ))}
+                                                        </SelectContent>
+                                                </Select>
                                                 <Input
                                                         placeholder="Size"
                                                         value={form.size}
@@ -110,14 +123,25 @@ export default function PricesPage() {
                                                                 className="grid grid-cols-7 gap-2 items-center"
                                                         >
                                                                 <span>{p.productType}</span>
-                                                                <Input
+                                                                <Select
                                                                         value={p.layout}
-                                                                        onChange={(e) =>
+                                                                        onValueChange={(v) =>
                                                                                 updatePrice(p._id, {
-                                                                                        layout: e.target.value,
+                                                                                        layout: v,
                                                                                 })
                                                                         }
-                                                                />
+                                                                >
+                                                                        <SelectTrigger>
+                                                                                <SelectValue placeholder="Layout" />
+                                                                        </SelectTrigger>
+                                                                        <SelectContent>
+                                                                                {layouts.map((l) => (
+                                                                                        <SelectItem key={l._id} value={l.name}>
+                                                                                                {l.name}
+                                                                                        </SelectItem>
+                                                                                ))}
+                                                                        </SelectContent>
+                                                                </Select>
                                                                 <Input
                                                                         value={p.size}
                                                                         onChange={(e) =>
