@@ -22,6 +22,7 @@ export async function POST(request) {
                         description,
                         category,
                         subcategory,
+                        productType,
                 });
 
 		// Validate required fields
@@ -29,7 +30,8 @@ export async function POST(request) {
                         !title ||
                         !description ||
                         !category ||
-                        !productFamily
+                        !productFamily ||
+                        !productType
                 ) {
                         return Response.json(
                                 {
@@ -40,6 +42,7 @@ export async function POST(request) {
                                                 description: !!description,
                                                 category: !!category,
                                                 productFamily: !!productFamily,
+                                                productType: !!productType,
                                         },
                                 },
                                 { status: 400 }
@@ -139,6 +142,7 @@ export async function POST(request) {
                         category,
                         subcategory,
                         productFamily,
+                        productType,
                         published: formData.get("published") === "true",
                         price: basePrice,
                         salePrice: basePrice,
