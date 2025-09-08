@@ -23,18 +23,40 @@ export default function Header({ onMenuToggle, isMenuOpen }) {
 
 	// console.log("isAuthenticated", isAuthenticated);
 
-	const { getTotalItems, openCart } = useCartStore();
-	const totalItems = getTotalItems();
+        const { getTotalItems, openCart } = useCartStore();
+        const totalItems = getTotalItems();
 
-	const handleCartClick = () => {
-		openCart();
-	};
+        const handleCartClick = () => {
+                openCart();
+        };
+
+        const categories = [
+                { name: "Smart QR vs Standard Posters", href: "/smart-qr-vs-standard-posters" },
+                { name: "All Safety Posters", href: "/all-safety-posters" },
+                { name: "ISO Posters", href: "/iso-posters" },
+                { name: "Industry Bundles", href: "/industry-bundles" },
+                { name: "Signs & Labels", href: "/signs-labels" },
+                { name: "Monthly Poster Subscriptions", href: "/monthly-poster-subscriptions" },
+                { name: "Custom Printed Office Stationary", href: "/custom-printed-office-stationary" },
+                {
+                        name: "New Arrivals",
+                        href: "/new-arrivals",
+                        poster: "/images/home/Img1.png",
+                        isNew: true
+                },
+                {
+                        name: "Corporate Bulk/Custom Orders",
+                        href: "/corporate-bulk-orders",
+                        highlight: true
+                },
+                { name: "Contact Us", href: "/contact" }
+        ];
 
 	return (
 		<>
-			<header className="bg-white shadow-sm sticky top-0 z-40">
-				<div className="px-4 lg:px-10">
-					{/* Top Bar */}
+                        <header className="bg-white shadow-sm sticky top-0 z-40">
+                                <div className="px-4 lg:px-10">
+                                        {/* Top Bar */}
                                         <div className="flex items-center py-5">
                                                 {/* Logo */}
                                                 <div className="flex items-center flex-1 space-x-2 md:space-x-4">
@@ -116,9 +138,41 @@ export default function Header({ onMenuToggle, isMenuOpen }) {
                                                         )}
                                                 </div>
                                         </div>
-				</div>
-			</header>
-			<MiniCart />
-		</>
-	);
+                                </div>
+                                <nav className="bg-gray-50 border-t">
+                                        <div className="px-4 lg:px-10">
+                                                <ul className="flex flex-wrap items-center justify-center gap-4 py-2 text-sm font-medium">
+                                                        {categories.map((cat) => (
+                                                                <li key={cat.name}>
+                                                                        <Link
+                                                                                href={cat.href}
+                                                                                className={`flex items-center gap-2 hover:text-primary ${
+                                                                                        cat.highlight ? "text-red-600 font-semibold animate-blink-slow" : ""
+                                                                                }`}
+                                                                        >
+                                                                                {cat.poster && (
+                                                                                        <Image
+                                                                                                src={cat.poster}
+                                                                                                alt={cat.name}
+                                                                                                width={40}
+                                                                                                height={40}
+                                                                                                className="h-10 w-10 object-cover rounded"
+                                                                                        />
+                                                                                )}
+                                                                                <span>{cat.name}</span>
+                                                                                {cat.isNew && (
+                                                                                        <span className="ml-1 text-red-600 font-bold animate-blink">
+                                                                                                New
+                                                                                        </span>
+                                                                                )}
+                                                                        </Link>
+                                                                </li>
+                                                        ))}
+                                                </ul>
+                                        </div>
+                                </nav>
+                        </header>
+                        <MiniCart />
+                </>
+        );
 }
