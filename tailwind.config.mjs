@@ -65,29 +65,35 @@ export default {
   			md: 'calc(var(--radius) - 2px)',
   			sm: 'calc(var(--radius) - 4px)'
   		},
-  		keyframes: {
-  			'accordion-down': {
-  				from: {
-  					height: '0'
-  				},
-  				to: {
-  					height: 'var(--radix-accordion-content-height)'
-  				}
-  			},
-  			'accordion-up': {
-  				from: {
-  					height: 'var(--radix-accordion-content-height)'
-  				},
-  				to: {
-  					height: '0'
-  				}
-  			}
-  		},
-  		animation: {
-  			'accordion-down': 'accordion-down 0.2s ease-out',
-  			'accordion-up': 'accordion-up 0.2s ease-out'
-  		}
-  	}
+                keyframes: {
+                        'accordion-down': {
+                                from: {
+                                        height: '0'
+                                },
+                                to: {
+                                        height: 'var(--radix-accordion-content-height)'
+                                }
+                        },
+                        'accordion-up': {
+                                from: {
+                                        height: 'var(--radix-accordion-content-height)'
+                                },
+                                to: {
+                                        height: '0'
+                                }
+                        },
+                        blink: {
+                                '0%, 50%, 100%': { opacity: '1' },
+                                '25%, 75%': { opacity: '0' }
+                        }
+                },
+                animation: {
+                        'accordion-down': 'accordion-down 0.2s ease-out',
+                        'accordion-up': 'accordion-up 0.2s ease-out',
+                        blink: 'blink 1s step-start infinite',
+                        'blink-slow': 'blink 3s step-start infinite'
+                }
+        }
   },
   plugins: [require("tailwindcss-animate")],
 };
