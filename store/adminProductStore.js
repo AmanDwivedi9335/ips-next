@@ -77,12 +77,14 @@ export const useAdminProductStore = create((set, get) => ({
        // Upload language images to Cloudinary and submit product
        addProduct: async (productData) => {
                try {
+
                        const cloudName =
                                process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ||
                                process.env.CLOUDINARY_CLOUD_NAME;
                        const uploadPreset =
                                process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET ||
                                process.env.CLOUDINARY_UPLOAD_PRESET;
+
 
                        // Upload each language image to Cloudinary and replace with URL
                        const uploadedLanguageImages = await Promise.all(
@@ -91,17 +93,21 @@ export const useAdminProductStore = create((set, get) => ({
 
                                        const data = new FormData();
                                        data.append("file", li.image);
+
                                        if (uploadPreset) data.append("upload_preset", uploadPreset);
 
                                        const res = await fetch(
                                                `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+
                                                {
                                                        method: "POST",
                                                        body: data,
                                                }
                                        );
                                        const json = await res.json();
+
                                        if (!json.secure_url) return null;
+
                                        return { language: li.language, image: json.secure_url };
                                })
                        );

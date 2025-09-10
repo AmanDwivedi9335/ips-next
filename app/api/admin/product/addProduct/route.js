@@ -104,8 +104,10 @@ export async function POST(request) {
 
                 // Create new product
                 const basePrice =
+
                         pricing.find((p) => typeof p?.price === "number" && !isNaN(p.price))
                                 ?.price || 0;
+
 
                 const product = new Product({
                         title,
@@ -137,11 +139,13 @@ export async function POST(request) {
 
                 if (pricing.length > 0) {
                         const validPricing = pricing.filter(
+
                                 (p) =>
                                         p.size &&
                                         p.material &&
                                         typeof p.price === "number" &&
                                         !isNaN(p.price)
+
                         );
 
                         if (validPricing.length > 0) {

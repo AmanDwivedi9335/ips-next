@@ -17,7 +17,10 @@ export default function CategoriesGrid() {
                                 );
                                 const data = await res.json();
                                 if (data.success) {
-                                        setCategories(data.categories);
+                                        const topLevel = data.categories.filter(
+                                                (cat) => !cat.parent
+                                        );
+                                        setCategories(topLevel);
                                 }
                         } catch (err) {
                                 console.error("Failed to load categories:", err);
