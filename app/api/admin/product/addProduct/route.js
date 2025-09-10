@@ -49,7 +49,12 @@ export async function POST(request) {
                 try {
                         const featuresString = formData.get("features");
                         if (featuresString) {
-                                features = JSON.parse(featuresString);
+                                const parsedFeatures = JSON.parse(featuresString);
+                                features = Array.isArray(parsedFeatures)
+                                        ? parsedFeatures.filter(
+                                                  (f) => f.title && f.description
+                                          )
+                                        : [];
                         }
                 } catch (error) {
                         console.error("Error parsing features:", error);
@@ -75,7 +80,11 @@ export async function POST(request) {
                         if (sizeStr) sizes = JSON.parse(sizeStr);
                         if (layoutStr) layouts = JSON.parse(layoutStr);
                         if (langImgStr) languageImages = JSON.parse(langImgStr);
-                        if (priceStr) pricing = JSON.parse(priceStr);
+                        if (priceStr)
+                                pricing = JSON.parse(priceStr).map((p) => ({
+                                        ...p,
+                                        price: p.price ? parseFloat(p.price) : undefined,
+                                }));
                 } catch (error) {
                         console.error("Error parsing arrays:", error);
                 }
@@ -95,7 +104,10 @@ export async function POST(request) {
 
                 // Create new product
                 const basePrice =
-                        pricing.find((p) => typeof p?.price === "number")?.price || 0;
+
+                        pricing.find((p) => typeof p?.price === "number" && !isNaN(p.price))
+                                ?.price || 0;
+
 
                 const product = new Product({
                         title,
@@ -127,7 +139,13 @@ export async function POST(request) {
 
                 if (pricing.length > 0) {
                         const validPricing = pricing.filter(
-                                (p) => p.size && p.material && typeof p.price === "number"
+
+                                (p) =>
+                                        p.size &&
+                                        p.material &&
+                                        typeof p.price === "number" &&
+                                        !isNaN(p.price)
+
                         );
 
                         if (validPricing.length > 0) {
