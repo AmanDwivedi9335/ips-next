@@ -77,7 +77,46 @@ export const useAdminProductStore = create((set, get) => ({
        // Upload language images to Cloudinary and submit product
        addProduct: async (productData) => {
                try {
-                       // Create FormData for submitting product details and images
+
+
+                       const cloudName =
+                               process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ||
+                               process.env.CLOUDINARY_CLOUD_NAME;
+                       const uploadPreset =
+                               process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET ||
+                               process.env.CLOUDINARY_UPLOAD_PRESET;
+
+
+                       // Upload each language image to Cloudinary and replace with URL
+                       const uploadedLanguageImages = await Promise.all(
+                               (productData.languageImages || []).map(async (li) => {
+                                       if (!li.image) return null;
+
+                                       const data = new FormData();
+                                       data.append("file", li.image);
+
+                                       if (uploadPreset) data.append("upload_preset", uploadPreset);
+
+                                       const res = await fetch(
+                                               `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+
+                                               {
+                                                       method: "POST",
+                                                       body: data,
+                                               }
+                                       );
+                                       const json = await res.json();
+
+                                       if (!json.secure_url) return null;
+
+                                       return { language: li.language, image: json.secure_url };
+                               })
+                       );
+
+                       const validLanguageImages = uploadedLanguageImages.filter(Boolean);
+
+                       // Create FormData for submitting product details
+
                        const formData = new FormData();
 
                        // Add all text fields
@@ -119,9 +158,16 @@ export const useAdminProductStore = create((set, get) => ({
                                JSON.stringify(productData.layouts || [])
                        );
                        formData.append(
+
+                               "languageImages",
+                               JSON.stringify(validLanguageImages)
+                       );
+                       formData.append(
+
                                "pricing",
                                JSON.stringify(productData.pricing || [])
                        );
+
 
                        // Append language images as files
                        (productData.languageImages || []).forEach((li) => {
@@ -136,6 +182,7 @@ export const useAdminProductStore = create((set, get) => ({
                        const response = await fetch("/api/admin/product/addProduct", {
                                method: "POST",
                                body: formData, // Let the browser set Content-Type for FormData
+
                        });
 
                        const data = await response.json();

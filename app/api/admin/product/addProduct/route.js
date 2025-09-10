@@ -1,8 +1,10 @@
 import { dbConnect } from "@/lib/dbConnect.js";
 import Product from "@/model/Product.js";
 import Price from "@/model/Price.js";
+
 import cloudinary from "@/lib/cloudnary.js";
 import { Readable } from "stream";
+
 
 export async function POST(request) {
 	await dbConnect();
@@ -79,6 +81,9 @@ export async function POST(request) {
                         if (matStr) materials = JSON.parse(matStr);
                         if (sizeStr) sizes = JSON.parse(sizeStr);
                         if (layoutStr) layouts = JSON.parse(layoutStr);
+
+                        if (langImgStr) languageImages = JSON.parse(langImgStr);
+
                         if (priceStr)
                                 pricing = JSON.parse(priceStr).map((p) => ({
                                         ...p,
@@ -87,6 +92,7 @@ export async function POST(request) {
                 } catch (error) {
                         console.error("Error parsing arrays:", error);
                 }
+
 
                // Upload language images to Cloudinary
                const languageImageFiles = formData.getAll("languageImages");
@@ -114,6 +120,13 @@ export async function POST(request) {
 
                const filteredLanguageImages = uploadedLanguageImages.filter(Boolean);
 
+
+               // Filter language images that contain both language and image URL
+               const filteredLanguageImages = languageImages.filter(
+                       (li) => li.language && li.image
+               );
+
+
                const imageUrls = filteredLanguageImages.map((li) => li.image);
                const allLanguages = Array.from(
                        new Set([
@@ -124,8 +137,14 @@ export async function POST(request) {
 
                 // Create new product
                 const basePrice =
+
                         pricing.find((p) => typeof p?.price === "number" && !isNaN(p.price))
                                 ?.price || 0;
+
+
+                        pricing.find((p) => typeof p?.price === "number" && !isNaN(p.price))
+                                ?.price || 0;
+
 
                 const product = new Product({
                         title,
@@ -157,11 +176,13 @@ export async function POST(request) {
 
                 if (pricing.length > 0) {
                         const validPricing = pricing.filter(
+
                                 (p) =>
                                         p.size &&
                                         p.material &&
                                         typeof p.price === "number" &&
                                         !isNaN(p.price)
+
                         );
 
                         if (validPricing.length > 0) {

@@ -15,7 +15,8 @@ export async function GET(request) {
 		const discount = searchParams.get("discount");
 		const category = searchParams.get("category");
 		const search = searchParams.get("search");
-		const type = searchParams.get("type");
+                const type = searchParams.get("type");
+                const subcategories = searchParams.get("subcategories");
 		const page = Number.parseInt(searchParams.get("page") || "1");
 		const limit = Number.parseInt(searchParams.get("limit") || "12");
 		const sort = searchParams.get("sort") || "createdAt";
@@ -24,10 +25,18 @@ export async function GET(request) {
 		// Build query
 		const query = { published: true };
 
-		// Category filter
-		if (category && category !== "all") {
-			query.category = category;
-		}
+                // Category filter
+                if (category && category !== "all") {
+                        query.category = category;
+                }
+
+                // Subcategory filter
+                if (subcategories) {
+                        const subcategoryList = subcategories.split(",").filter(Boolean);
+                        if (subcategoryList.length > 0) {
+                                query.subcategory = { $in: subcategoryList };
+                        }
+                }
 
 		// Search filter
 		if (search) {
