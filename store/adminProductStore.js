@@ -74,108 +74,111 @@ export const useAdminProductStore = create((set, get) => ({
 		}
 	},
 
-	// Updated addProduct to handle base64 images correctly
-	addProduct: async (productData) => {
-		try {
-			// Create FormData for file uploads
-			const formData = new FormData();
+       // Upload language images to Cloudinary and submit product
+       addProduct: async (productData) => {
+               try {
+                       const cloudName =
+                               process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ||
+                               process.env.CLOUDINARY_CLOUD_NAME;
+                       const uploadPreset =
+                               process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET ||
+                               process.env.CLOUDINARY_UPLOAD_PRESET;
 
-			// Add all text fields
-			formData.append("title", productData.title);
-			formData.append("description", productData.description);
-			formData.append(
-				"longDescription",
-				productData.longDescription || productData.description
-			);
-                        formData.append("category", productData.category);
-                        formData.append(
-                                "subcategory",
-                                productData.subcategory || ""
-                        );
-                        if (productData.productFamily)
-                                formData.append("productFamily", productData.productFamily);
-                        formData.append("discount", (productData.discount || 0).toString());
-                        formData.append("type", productData.type);
-                        formData.append("published", productData.published);
+                       // Upload each language image to Cloudinary and replace with URL
+                       const uploadedLanguageImages = await Promise.all(
+                               (productData.languageImages || []).map(async (li) => {
+                                       if (!li.image) return null;
 
-                        // Add features as JSON string
-                        formData.append("features", JSON.stringify(productData.features || []));
+                                       const data = new FormData();
+                                       data.append("file", li.image);
+                                       if (uploadPreset) data.append("upload_preset", uploadPreset);
 
-                        // Add arrays as JSON strings
-                        formData.append(
-                                "languages",
-                                JSON.stringify(productData.languages || [])
-                        );
-                        formData.append(
-                                "materials",
-                                JSON.stringify(productData.materials || [])
-                        );
-                        formData.append(
-                                "sizes",
-                                JSON.stringify(productData.sizes || [])
-                        );
-                        formData.append(
-                                "layouts",
-                                JSON.stringify(productData.layouts || [])
-                        );
-                        formData.append(
-                                "languageImages",
-                                JSON.stringify(productData.languageImages || [])
-                        );
-                        formData.append(
-                                "pricing",
-                                JSON.stringify(productData.pricing || [])
-                        );
+                                       const res = await fetch(
+                                               `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+                                               {
+                                                       method: "POST",
+                                                       body: data,
+                                               }
+                                       );
+                                       const json = await res.json();
+                                       if (!json.secure_url) return null;
+                                       return { language: li.language, image: json.secure_url };
+                               })
+                       );
 
-			// Handle base64 images - convert them to Blob objects
-			if (productData.images && productData.images.length > 0) {
-				productData.images.forEach((base64Image, index) => {
-					// Convert base64 to blob
-					const base64Data = base64Image.split(",")[1]; // Remove data:image/type;base64, prefix
-					const mimeType = base64Image
-						.split(",")[0]
-						.split(":")[1]
-						.split(";")[0]; // Extract MIME type
+                       const validLanguageImages = uploadedLanguageImages.filter(Boolean);
 
-					// Convert base64 to binary
-					const byteCharacters = atob(base64Data);
-					const byteNumbers = new Array(byteCharacters.length);
-					for (let i = 0; i < byteCharacters.length; i++) {
-						byteNumbers[i] = byteCharacters.charCodeAt(i);
-					}
-					const byteArray = new Uint8Array(byteNumbers);
+                       // Create FormData for submitting product details
+                       const formData = new FormData();
 
-					// Create blob and append to FormData
-					const blob = new Blob([byteArray], { type: mimeType });
-					formData.append(
-						"images",
-						blob,
-						`image_${index}.${mimeType.split("/")[1]}`
-					);
-				});
-			}
+                       // Add all text fields
+                       formData.append("title", productData.title);
+                       formData.append("description", productData.description);
+                       formData.append(
+                               "longDescription",
+                               productData.longDescription || productData.description
+                       );
+                       formData.append("category", productData.category);
+                       formData.append(
+                               "subcategory",
+                               productData.subcategory || ""
+                       );
+                       if (productData.productFamily)
+                               formData.append("productFamily", productData.productFamily);
+                       formData.append("discount", (productData.discount || 0).toString());
+                       formData.append("type", productData.type);
+                       formData.append("published", productData.published);
 
-			const response = await fetch("/api/admin/product/addProduct", {
-				method: "POST",
-				body: formData, // Don't set Content-Type header - browser handles it for FormData
-			});
+                       // Add features as JSON string
+                       formData.append("features", JSON.stringify(productData.features || []));
 
-			const data = await response.json();
+                       // Add arrays as JSON strings
+                       formData.append(
+                               "languages",
+                               JSON.stringify(productData.languages || [])
+                       );
+                       formData.append(
+                               "materials",
+                               JSON.stringify(productData.materials || [])
+                       );
+                       formData.append(
+                               "sizes",
+                               JSON.stringify(productData.sizes || [])
+                       );
+                       formData.append(
+                               "layouts",
+                               JSON.stringify(productData.layouts || [])
+                       );
+                       formData.append(
+                               "languageImages",
+                               JSON.stringify(validLanguageImages)
+                       );
+                       formData.append(
+                               "pricing",
+                               JSON.stringify(productData.pricing || [])
+                       );
 
-			if (data.success) {
-				toast.success("Product added successfully");
-				get().fetchProducts(); // Refresh the list
-				return true;
-			} else {
-				toast.error(data.message);
-				return false;
-			}
-		} catch (error) {
-			console.error("Add product error:", error);
-			toast.error("Failed to add product");
-			return false;
-		}
-	},
+                       const response = await fetch("/api/admin/product/addProduct", {
+                               method: "POST",
+                               body: formData, // Don't set Content-Type header - browser handles it for FormData
+                       });
+
+                       const data = await response.json();
+
+                       if (data.success) {
+                               toast.success("Product added successfully");
+                               get().fetchProducts(); // Refresh the list
+                               return true;
+                       } else {
+                               toast.error(data.message);
+                               return false;
+                       }
+               } catch (error) {
+                       console.error("Add product error:", error);
+                       toast.error("Failed to add product");
+                       return false;
+               }
+       },
 
 	updateProduct: async (productId, updateData) => {
 		try {

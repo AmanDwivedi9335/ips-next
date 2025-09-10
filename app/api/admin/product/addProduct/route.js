@@ -1,7 +1,6 @@
 import { dbConnect } from "@/lib/dbConnect.js";
 import Product from "@/model/Product.js";
 import Price from "@/model/Price.js";
-import cloudinary from "@/lib/cloudnary.js";
 
 export async function POST(request) {
 	await dbConnect();
@@ -50,7 +49,12 @@ export async function POST(request) {
                 try {
                         const featuresString = formData.get("features");
                         if (featuresString) {
-                                features = JSON.parse(featuresString);
+                                const parsedFeatures = JSON.parse(featuresString);
+                                features = Array.isArray(parsedFeatures)
+                                        ? parsedFeatures.filter(
+                                                  (f) => f.title && f.description
+                                          )
+                                        : [];
                         }
                 } catch (error) {
                         console.error("Error parsing features:", error);
@@ -76,58 +80,32 @@ export async function POST(request) {
                         if (sizeStr) sizes = JSON.parse(sizeStr);
                         if (layoutStr) layouts = JSON.parse(layoutStr);
                         if (langImgStr) languageImages = JSON.parse(langImgStr);
-                        if (priceStr) pricing = JSON.parse(priceStr);
+                        if (priceStr)
+                                pricing = JSON.parse(priceStr).map((p) => ({
+                                        ...p,
+                                        price: p.price ? parseFloat(p.price) : undefined,
+                                }));
                 } catch (error) {
                         console.error("Error parsing arrays:", error);
                 }
 
-                // Upload language-specific images
-                const languageImageUrls = await Promise.all(
-                        languageImages.map(async ({ language, image }) => {
-                                if (!image) return null;
-                                try {
-                                        const base64Data = image.split(",")[1];
-                                        const buffer = Buffer.from(base64Data, "base64");
+               // Filter language images that contain both language and image URL
+               const filteredLanguageImages = languageImages.filter(
+                       (li) => li.language && li.image
+               );
 
-                                        const url = await new Promise((resolve, reject) => {
-                                                cloudinary.uploader
-                                                        .upload_stream(
-                                                                {
-                                                                        resource_type: "image",
-                                                                        folder: "safety_products_images",
-                                                                        quality: "auto",
-                                                                        format: "webp",
-                                                                },
-                                                                (error, result) => {
-                                                                        if (error) {
-                                                                                reject(error);
-                                                                        } else {
-                                                                                resolve(result.secure_url);
-                                                                        }
-                                                                }
-                                                        )
-                                                        .end(buffer);
-                                        });
-
-                                        return { language, image: url };
-                                } catch (error) {
-                                        console.error("Language image upload error:", error);
-                                        return null;
-                                }
-                        })
-                );
-
-                const filteredLanguageImages = languageImageUrls.filter(Boolean);
-                const imageUrls = filteredLanguageImages.map((li) => li.image);
-                const allLanguages = Array.from(
-                        new Set([
-                                ...languages,
-                                ...filteredLanguageImages.map((li) => li.language),
-                        ])
-                );
+               const imageUrls = filteredLanguageImages.map((li) => li.image);
+               const allLanguages = Array.from(
+                       new Set([
+                               ...languages,
+                               ...filteredLanguageImages.map((li) => li.language),
+                       ])
+               );
 
                 // Create new product
-                const basePrice = pricing[0]?.price || 0;
+                const basePrice =
+                        pricing.find((p) => typeof p?.price === "number" && !isNaN(p.price))
+                                ?.price || 0;
 
                 const product = new Product({
                         title,
@@ -158,11 +136,21 @@ export async function POST(request) {
                 console.log("Product saved successfully:", product._id);
 
                 if (pricing.length > 0) {
-                        const priceDocs = pricing.map((p) => ({
-                                ...p,
-                                product: product._id,
-                        }));
-                        await Price.insertMany(priceDocs);
+                        const validPricing = pricing.filter(
+                                (p) =>
+                                        p.size &&
+                                        p.material &&
+                                        typeof p.price === "number" &&
+                                        !isNaN(p.price)
+                        );
+
+                        if (validPricing.length > 0) {
+                                const priceDocs = validPricing.map((p) => ({
+                                        ...p,
+                                        product: product._id,
+                                }));
+                                await Price.insertMany(priceDocs);
+                        }
                 }
 
                 return Response.json({
