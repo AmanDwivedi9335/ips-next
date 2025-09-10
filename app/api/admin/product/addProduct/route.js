@@ -127,7 +127,8 @@ export async function POST(request) {
                 );
 
                 // Create new product
-                const basePrice = pricing[0]?.price || 0;
+                const basePrice =
+                        pricing.find((p) => typeof p?.price === "number")?.price || 0;
 
                 const product = new Product({
                         title,
@@ -158,11 +159,17 @@ export async function POST(request) {
                 console.log("Product saved successfully:", product._id);
 
                 if (pricing.length > 0) {
-                        const priceDocs = pricing.map((p) => ({
-                                ...p,
-                                product: product._id,
-                        }));
-                        await Price.insertMany(priceDocs);
+                        const validPricing = pricing.filter(
+                                (p) => p.size && p.material && typeof p.price === "number"
+                        );
+
+                        if (validPricing.length > 0) {
+                                const priceDocs = validPricing.map((p) => ({
+                                        ...p,
+                                        product: product._id,
+                                }));
+                                await Price.insertMany(priceDocs);
+                        }
                 }
 
                 return Response.json({
