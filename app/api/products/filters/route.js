@@ -1,5 +1,6 @@
 import { dbConnect } from "@/lib/dbConnect.js";
 import Product from "@/model/Product.js";
+import Price from "@/model/Price.js";
 
 const categories = [
         "personal-safety",
@@ -126,6 +127,25 @@ export async function GET(request) {
                 // Get available types
                 const types = await Product.distinct("type", matchStage);
 
+                // Get languages and materials
+                const languages = (
+                        await Product.distinct("languages", matchStage)
+                ).filter(Boolean);
+                const materials = (
+                        await Product.distinct("materials", matchStage)
+                ).filter(Boolean);
+
+                // Get QR options
+                const productIds = await Product.find(matchStage).distinct("_id");
+                const qrDistinct = await Price.distinct("qr", { product: { $in: productIds } });
+                const qr = [];
+                if (qrDistinct.includes(true)) {
+                        qr.push({ id: "true", label: "With QR" });
+                }
+                if (qrDistinct.includes(false)) {
+                        qr.push({ id: "false", label: "Without QR" });
+                }
+
                 return Response.json({
                         success: true,
                         filters: {
@@ -145,6 +165,9 @@ export async function GET(request) {
                                                 .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
                                                 .join(" "),
                                 })),
+                                languages,
+                                materials,
+                                qr,
                         },
                 });
         } catch (error) {
