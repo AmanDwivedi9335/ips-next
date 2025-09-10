@@ -74,108 +74,86 @@ export const useAdminProductStore = create((set, get) => ({
 		}
 	},
 
-	// Updated addProduct to handle base64 images correctly
-	addProduct: async (productData) => {
-		try {
-			// Create FormData for file uploads
-			const formData = new FormData();
+       // Upload language images to Cloudinary and submit product
+       addProduct: async (productData) => {
+               try {
+                       // Create FormData for submitting product details and images
+                       const formData = new FormData();
 
-			// Add all text fields
-			formData.append("title", productData.title);
-			formData.append("description", productData.description);
-			formData.append(
-				"longDescription",
-				productData.longDescription || productData.description
-			);
-                        formData.append("category", productData.category);
-                        formData.append(
-                                "subcategory",
-                                productData.subcategory || ""
-                        );
-                        if (productData.productFamily)
-                                formData.append("productFamily", productData.productFamily);
-                        formData.append("discount", (productData.discount || 0).toString());
-                        formData.append("type", productData.type);
-                        formData.append("published", productData.published);
+                       // Add all text fields
+                       formData.append("title", productData.title);
+                       formData.append("description", productData.description);
+                       formData.append(
+                               "longDescription",
+                               productData.longDescription || productData.description
+                       );
+                       formData.append("category", productData.category);
+                       formData.append(
+                               "subcategory",
+                               productData.subcategory || ""
+                       );
+                       if (productData.productFamily)
+                               formData.append("productFamily", productData.productFamily);
+                       formData.append("discount", (productData.discount || 0).toString());
+                       formData.append("type", productData.type);
+                       formData.append("published", productData.published);
 
-                        // Add features as JSON string
-                        formData.append("features", JSON.stringify(productData.features || []));
+                       // Add features as JSON string
+                       formData.append("features", JSON.stringify(productData.features || []));
 
-                        // Add arrays as JSON strings
-                        formData.append(
-                                "languages",
-                                JSON.stringify(productData.languages || [])
-                        );
-                        formData.append(
-                                "materials",
-                                JSON.stringify(productData.materials || [])
-                        );
-                        formData.append(
-                                "sizes",
-                                JSON.stringify(productData.sizes || [])
-                        );
-                        formData.append(
-                                "layouts",
-                                JSON.stringify(productData.layouts || [])
-                        );
-                        formData.append(
-                                "languageImages",
-                                JSON.stringify(productData.languageImages || [])
-                        );
-                        formData.append(
-                                "pricing",
-                                JSON.stringify(productData.pricing || [])
-                        );
+                       // Add arrays as JSON strings
+                       formData.append(
+                               "languages",
+                               JSON.stringify(productData.languages || [])
+                       );
+                       formData.append(
+                               "materials",
+                               JSON.stringify(productData.materials || [])
+                       );
+                       formData.append(
+                               "sizes",
+                               JSON.stringify(productData.sizes || [])
+                       );
+                       formData.append(
+                               "layouts",
+                               JSON.stringify(productData.layouts || [])
+                       );
+                       formData.append(
+                               "pricing",
+                               JSON.stringify(productData.pricing || [])
+                       );
 
-			// Handle base64 images - convert them to Blob objects
-			if (productData.images && productData.images.length > 0) {
-				productData.images.forEach((base64Image, index) => {
-					// Convert base64 to blob
-					const base64Data = base64Image.split(",")[1]; // Remove data:image/type;base64, prefix
-					const mimeType = base64Image
-						.split(",")[0]
-						.split(":")[1]
-						.split(";")[0]; // Extract MIME type
+                       // Append language images as files
+                       (productData.languageImages || []).forEach((li) => {
+                               if (li.image)
+                                       formData.append(
+                                               "languageImages",
+                                               li.image,
+                                               li.language
+                                       );
+                       });
 
-					// Convert base64 to binary
-					const byteCharacters = atob(base64Data);
-					const byteNumbers = new Array(byteCharacters.length);
-					for (let i = 0; i < byteCharacters.length; i++) {
-						byteNumbers[i] = byteCharacters.charCodeAt(i);
-					}
-					const byteArray = new Uint8Array(byteNumbers);
+                       const response = await fetch("/api/admin/product/addProduct", {
+                               method: "POST",
+                               body: formData, // Let the browser set Content-Type for FormData
+                       });
 
-					// Create blob and append to FormData
-					const blob = new Blob([byteArray], { type: mimeType });
-					formData.append(
-						"images",
-						blob,
-						`image_${index}.${mimeType.split("/")[1]}`
-					);
-				});
-			}
+                       const data = await response.json();
 
-			const response = await fetch("/api/admin/product/addProduct", {
-				method: "POST",
-				body: formData, // Don't set Content-Type header - browser handles it for FormData
-			});
-
-			const data = await response.json();
-
-			if (data.success) {
-				toast.success("Product added successfully");
-				get().fetchProducts(); // Refresh the list
-				return true;
-			} else {
-				toast.error(data.message);
-				return false;
-			}
-		} catch (error) {
-			console.error("Add product error:", error);
-			toast.error("Failed to add product");
-			return false;
-		}
-	},
+                       if (data.success) {
+                               toast.success("Product added successfully");
+                               get().fetchProducts(); // Refresh the list
+                               return true;
+                       } else {
+                               toast.error(data.message);
+                               return false;
+                       }
+               } catch (error) {
+                       console.error("Add product error:", error);
+                       toast.error("Failed to add product");
+                       return false;
+               }
+       },
 
 	updateProduct: async (productId, updateData) => {
 		try {
