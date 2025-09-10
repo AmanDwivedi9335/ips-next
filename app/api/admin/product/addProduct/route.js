@@ -1,7 +1,6 @@
 import { dbConnect } from "@/lib/dbConnect.js";
 import Product from "@/model/Product.js";
 import Price from "@/model/Price.js";
-import cloudinary from "@/lib/cloudnary.js";
 
 export async function POST(request) {
 	await dbConnect();
@@ -81,50 +80,18 @@ export async function POST(request) {
                         console.error("Error parsing arrays:", error);
                 }
 
-                // Upload language-specific images
-                const languageImageUrls = await Promise.all(
-                        languageImages.map(async ({ language, image }) => {
-                                if (!image) return null;
-                                try {
-                                        const base64Data = image.split(",")[1];
-                                        const buffer = Buffer.from(base64Data, "base64");
+               // Filter language images that contain both language and image URL
+               const filteredLanguageImages = languageImages.filter(
+                       (li) => li.language && li.image
+               );
 
-                                        const url = await new Promise((resolve, reject) => {
-                                                cloudinary.uploader
-                                                        .upload_stream(
-                                                                {
-                                                                        resource_type: "image",
-                                                                        folder: "safety_products_images",
-                                                                        quality: "auto",
-                                                                        format: "webp",
-                                                                },
-                                                                (error, result) => {
-                                                                        if (error) {
-                                                                                reject(error);
-                                                                        } else {
-                                                                                resolve(result.secure_url);
-                                                                        }
-                                                                }
-                                                        )
-                                                        .end(buffer);
-                                        });
-
-                                        return { language, image: url };
-                                } catch (error) {
-                                        console.error("Language image upload error:", error);
-                                        return null;
-                                }
-                        })
-                );
-
-                const filteredLanguageImages = languageImageUrls.filter(Boolean);
-                const imageUrls = filteredLanguageImages.map((li) => li.image);
-                const allLanguages = Array.from(
-                        new Set([
-                                ...languages,
-                                ...filteredLanguageImages.map((li) => li.language),
-                        ])
-                );
+               const imageUrls = filteredLanguageImages.map((li) => li.image);
+               const allLanguages = Array.from(
+                       new Set([
+                               ...languages,
+                               ...filteredLanguageImages.map((li) => li.language),
+                       ])
+               );
 
                 // Create new product
                 const basePrice =
