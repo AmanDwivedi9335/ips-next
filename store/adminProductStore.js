@@ -78,6 +78,7 @@ export const useAdminProductStore = create((set, get) => ({
        addProduct: async (productData) => {
                try {
 
+
                        const cloudName =
                                process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ||
                                process.env.CLOUDINARY_CLOUD_NAME;
@@ -115,6 +116,7 @@ export const useAdminProductStore = create((set, get) => ({
                        const validLanguageImages = uploadedLanguageImages.filter(Boolean);
 
                        // Create FormData for submitting product details
+
                        const formData = new FormData();
 
                        // Add all text fields
@@ -156,17 +158,31 @@ export const useAdminProductStore = create((set, get) => ({
                                JSON.stringify(productData.layouts || [])
                        );
                        formData.append(
+
                                "languageImages",
                                JSON.stringify(validLanguageImages)
                        );
                        formData.append(
+
                                "pricing",
                                JSON.stringify(productData.pricing || [])
                        );
 
+
+                       // Append language images as files
+                       (productData.languageImages || []).forEach((li) => {
+                               if (li.image)
+                                       formData.append(
+                                               "languageImages",
+                                               li.image,
+                                               li.language
+                                       );
+                       });
+
                        const response = await fetch("/api/admin/product/addProduct", {
                                method: "POST",
-                               body: formData, // Don't set Content-Type header - browser handles it for FormData
+                               body: formData, // Let the browser set Content-Type for FormData
+
                        });
 
                        const data = await response.json();

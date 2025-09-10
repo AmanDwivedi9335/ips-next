@@ -2,6 +2,10 @@ import { dbConnect } from "@/lib/dbConnect.js";
 import Product from "@/model/Product.js";
 import Price from "@/model/Price.js";
 
+import cloudinary from "@/lib/cloudnary.js";
+import { Readable } from "stream";
+
+
 export async function POST(request) {
 	await dbConnect();
 
@@ -66,20 +70,20 @@ export async function POST(request) {
                 let materials = [];
                 let sizes = [];
                 let layouts = [];
-                let languageImages = [];
                 let pricing = [];
                 try {
                         const langStr = formData.get("languages");
                         const matStr = formData.get("materials");
                         const sizeStr = formData.get("sizes");
                         const layoutStr = formData.get("layouts");
-                        const langImgStr = formData.get("languageImages");
                         const priceStr = formData.get("pricing");
                         if (langStr) languages = JSON.parse(langStr);
                         if (matStr) materials = JSON.parse(matStr);
                         if (sizeStr) sizes = JSON.parse(sizeStr);
                         if (layoutStr) layouts = JSON.parse(layoutStr);
+
                         if (langImgStr) languageImages = JSON.parse(langImgStr);
+
                         if (priceStr)
                                 pricing = JSON.parse(priceStr).map((p) => ({
                                         ...p,
@@ -89,10 +93,39 @@ export async function POST(request) {
                         console.error("Error parsing arrays:", error);
                 }
 
+
+               // Upload language images to Cloudinary
+               const languageImageFiles = formData.getAll("languageImages");
+               const uploadedLanguageImages = await Promise.all(
+                       languageImageFiles.map(async (file) => {
+                               try {
+                                       const buffer = Buffer.from(await file.arrayBuffer());
+                                       const result = await new Promise((resolve, reject) => {
+                                               const upload = cloudinary.uploader.upload_stream(
+                                                       (err, res) => {
+                                                               if (err) reject(err);
+                                                               else resolve(res);
+                                                       }
+                                               );
+                                               Readable.from(buffer).pipe(upload);
+                                       });
+                                       if (result?.secure_url)
+                                               return { language: file.name, image: result.secure_url };
+                               } catch (err) {
+                                       console.error("Cloudinary upload error:", err);
+                               }
+                               return null;
+                       })
+               );
+
+               const filteredLanguageImages = uploadedLanguageImages.filter(Boolean);
+
+
                // Filter language images that contain both language and image URL
                const filteredLanguageImages = languageImages.filter(
                        (li) => li.language && li.image
                );
+
 
                const imageUrls = filteredLanguageImages.map((li) => li.image);
                const allLanguages = Array.from(
@@ -104,6 +137,10 @@ export async function POST(request) {
 
                 // Create new product
                 const basePrice =
+
+                        pricing.find((p) => typeof p?.price === "number" && !isNaN(p.price))
+                                ?.price || 0;
+
 
                         pricing.find((p) => typeof p?.price === "number" && !isNaN(p.price))
                                 ?.price || 0;
