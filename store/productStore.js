@@ -10,12 +10,15 @@ export const useProductStore = create(
 				// Initial State
 				products: [],
 				filteredProducts: [],
-				filters: {
-					categories: [],
-					priceRange: [0, 10000],
-                                        discount: 0,
-                                        type: "",
-				},
+                               filters: {
+                                       categories: [],
+                                       priceRange: [0, 10000],
+                                       discount: 0,
+                                       type: "",
+                                       languages: [],
+                                       materials: [],
+                                       qr: "",
+                               },
 				availableFilters: null,
 				currentCategory: "all",
 				currentPage: 1,
@@ -74,23 +77,57 @@ export const useProductStore = create(
                                                         params.append("discount", filters.discount.toString());
                                                 }
 
-						if (filters.type) {
-							params.append("type", filters.type);
-						}
+                                                if (filters.type) {
+                                                        params.append("type", filters.type);
+                                                }
 
-						const response = await fetch(`/api/products?${params}`);
-						const data = await response.json();
+                                                if (filters.languages.length > 0) {
+                                                        params.append(
+                                                                "languages",
+                                                                filters.languages.join(",")
+                                                        );
+                                                }
 
-						if (data.success) {
-							set({
-								products: data.products,
-								filteredProducts: data.products,
-								totalPages: data.pagination.totalPages,
-								isLoading: false,
-							});
-						} else {
-							set({ error: data.message, isLoading: false });
-						}
+                                                if (filters.materials.length > 0) {
+                                                        params.append(
+                                                                "materials",
+                                                                filters.materials.join(",")
+                                                        );
+                                                }
+
+                                                if (filters.qr) {
+                                                        params.append("qr", filters.qr);
+                                                }
+
+                                                const response = await fetch(
+                                                        `/api/products?${params.toString()}`
+                                                );
+
+                                                if (!response.ok) {
+                                                        const errorData = await response
+                                                                .json()
+                                                                .catch(() => null);
+                                                        set({
+                                                                error:
+                                                                        errorData?.message ||
+                                                                        "Failed to fetch products",
+                                                                isLoading: false,
+                                                        });
+                                                        return;
+                                                }
+
+                                                const data = await response.json();
+
+                                                if (data.success) {
+                                                        set({
+                                                                products: data.products,
+                                                                filteredProducts: data.products,
+                                                                totalPages: data.pagination.totalPages,
+                                                                isLoading: false,
+                                                        });
+                                                } else {
+                                                        set({ error: data.message, isLoading: false });
+                                                }
 					} catch (error) {
 						set({
 							error: "Failed to fetch products",
