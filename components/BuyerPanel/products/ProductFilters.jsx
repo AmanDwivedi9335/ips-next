@@ -23,12 +23,18 @@ import { useProductStore } from "@/store/productStore.js";
 
 export default function ProductFilters() {
 	const [isOpen, setIsOpen] = useState(false);
-	const { filters, availableFilters, setFilters, applyFilters, fetchFilters } =
-		useProductStore();
+        const {
+                filters,
+                availableFilters,
+                setFilters,
+                applyFilters,
+                fetchFilters,
+                currentCategory,
+        } = useProductStore();
 
-	useEffect(() => {
-		fetchFilters();
-	}, [fetchFilters]);
+        useEffect(() => {
+                fetchFilters();
+        }, [fetchFilters, currentCategory]);
 
 	const handleCategoryChange = (categoryId, checked) => {
 		const newCategories = checked
@@ -173,10 +179,10 @@ function FilterContent({
 }) {
 	return (
 		<div className="space-y-6">
-			{/* Categories */}
-			<Accordion type="single" collapsible defaultValue="categories">
-				<AccordionItem value="categories">
-					<AccordionTrigger>Categories</AccordionTrigger>
+                        {/* Subcategories */}
+                        <Accordion type="single" collapsible defaultValue="categories">
+                                <AccordionItem value="categories">
+                                        <AccordionTrigger>Subcategories</AccordionTrigger>
 					<AccordionContent>
 						<div className="space-y-3 pt-2">
 							{availableFilters.categories.map((category) => (
