@@ -59,14 +59,20 @@ export const useProductStore = create(
 							params.append("minPrice", filters.priceRange[0].toString());
 						}
 
-						if (filters.priceRange[1] < 10000) {
-							params.append("maxPrice", filters.priceRange[1].toString());
-						}
+                                                if (filters.priceRange[1] < 10000) {
+                                                        params.append("maxPrice", filters.priceRange[1].toString());
+                                                }
 
+                                                if (filters.categories.length > 0) {
+                                                        params.append(
+                                                                "subcategories",
+                                                                filters.categories.join(",")
+                                                        );
+                                                }
 
-						if (filters.discount > 0) {
-							params.append("discount", filters.discount.toString());
-						}
+                                                if (filters.discount > 0) {
+                                                        params.append("discount", filters.discount.toString());
+                                                }
 
 						if (filters.type) {
 							params.append("type", filters.type);
@@ -93,10 +99,17 @@ export const useProductStore = create(
 					}
 				},
 
-				fetchFilters: async () => {
-					try {
-						const response = await fetch("/api/products/filters");
-						const data = await response.json();
+                                fetchFilters: async () => {
+                                        try {
+                                                const { currentCategory } = get();
+                                                const params = new URLSearchParams();
+                                                if (currentCategory) {
+                                                        params.append("category", currentCategory);
+                                                }
+                                                const response = await fetch(
+                                                        `/api/products/filters?${params.toString()}`
+                                                );
+                                                const data = await response.json();
 
 						if (data.success) {
 							set({
@@ -115,13 +128,14 @@ export const useProductStore = create(
 					}
 				},
 
-				setCurrentCategory: (category) => {
-					set({
-						currentCategory: category,
-						currentPage: 1,
-					});
-					get().fetchProducts();
-				},
+                                setCurrentCategory: (category) => {
+                                        set({
+                                                currentCategory: category,
+                                                currentPage: 1,
+                                                filters: { ...get().filters, categories: [] },
+                                        });
+                                        get().fetchProducts();
+                                },
 
 				setCurrentPage: (page) => {
 					set({ currentPage: page });
