@@ -74,48 +74,10 @@ export const useAdminProductStore = create((set, get) => ({
 		}
 	},
 
-       // Upload language images to Cloudinary and submit product
-       addProduct: async (productData) => {
+// Submit product
+addProduct: async (productData) => {
                try {
-
-
-                       const cloudName =
-                               process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ||
-                               process.env.CLOUDINARY_CLOUD_NAME;
-                       const uploadPreset =
-                               process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET ||
-                               process.env.CLOUDINARY_UPLOAD_PRESET;
-
-
-                       // Upload each language image to Cloudinary and replace with URL
-                       const uploadedLanguageImages = await Promise.all(
-                               (productData.languageImages || []).map(async (li) => {
-                                       if (!li.image) return null;
-
-                                       const data = new FormData();
-                                       data.append("file", li.image);
-
-                                       if (uploadPreset) data.append("upload_preset", uploadPreset);
-
-                                       const res = await fetch(
-                                               `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
-
-                                               {
-                                                       method: "POST",
-                                                       body: data,
-                                               }
-                                       );
-                                       const json = await res.json();
-
-                                       if (!json.secure_url) return null;
-
-                                       return { language: li.language, image: json.secure_url };
-                               })
-                       );
-
-                       const validLanguageImages = uploadedLanguageImages.filter(Boolean);
-
-                       // Create FormData for submitting product details
+		// Create FormData for submitting product details
 
                        const formData = new FormData();
 
@@ -159,11 +121,6 @@ export const useAdminProductStore = create((set, get) => ({
                        );
                        formData.append(
 
-                               "languageImages",
-                               JSON.stringify(validLanguageImages)
-                       );
-                       formData.append(
-
                                "pricing",
                                JSON.stringify(productData.pricing || [])
                        );
@@ -171,12 +128,18 @@ export const useAdminProductStore = create((set, get) => ({
 
                        // Append language images as files
                        (productData.languageImages || []).forEach((li) => {
-                               if (li.image)
-                                       formData.append(
-                                               "languageImages",
-                                               li.image,
-                                               li.language
-                                       );
+                               if (li.image && typeof li.image === "string" && li.image.startsWith("data:")) {
+                                       const base64Data = li.image.split(",")[1];
+                                       const mimeType = li.image.split(",")[0].split(":")[1].split(";")[0];
+                                       const byteCharacters = atob(base64Data);
+                                       const byteNumbers = new Array(byteCharacters.length);
+                                       for (let i = 0; i < byteCharacters.length; i++) {
+                                               byteNumbers[i] = byteCharacters.charCodeAt(i);
+                                       }
+                                       const byteArray = new Uint8Array(byteNumbers);
+                                       const blob = new Blob([byteArray], { type: mimeType });
+                                       formData.append("languageImages", blob, li.language);
+                               }
                        });
 
                        const response = await fetch("/api/admin/product/addProduct", {
