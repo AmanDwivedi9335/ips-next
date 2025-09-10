@@ -81,6 +81,7 @@ export const useProductStore = create(
                                                         params.append("type", filters.type);
                                                 }
 
+
                                                 if (filters.languages.length > 0) {
                                                         params.append(
                                                                 "languages",
@@ -99,19 +100,35 @@ export const useProductStore = create(
                                                         params.append("qr", filters.qr);
                                                 }
 
-						const response = await fetch(`/api/products?${params}`);
-						const data = await response.json();
+                                                const response = await fetch(
+                                                        `/api/products?${params.toString()}`
+                                                );
 
-						if (data.success) {
-							set({
-								products: data.products,
-								filteredProducts: data.products,
-								totalPages: data.pagination.totalPages,
-								isLoading: false,
-							});
-						} else {
-							set({ error: data.message, isLoading: false });
-						}
+                                                if (!response.ok) {
+                                                        const errorData = await response
+                                                                .json()
+                                                                .catch(() => null);
+                                                        set({
+                                                                error:
+                                                                        errorData?.message ||
+                                                                        "Failed to fetch products",
+                                                                isLoading: false,
+                                                        });
+                                                        return;
+                                                }
+
+                                                const data = await response.json();
+
+                                                if (data.success) {
+                                                        set({
+                                                                products: data.products,
+                                                                filteredProducts: data.products,
+                                                                totalPages: data.pagination.totalPages,
+                                                                isLoading: false,
+                                                        });
+                                                } else {
+                                                        set({ error: data.message, isLoading: false });
+                                                }
 					} catch (error) {
 						set({
 							error: "Failed to fetch products",

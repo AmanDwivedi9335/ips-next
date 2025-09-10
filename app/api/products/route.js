@@ -69,9 +69,11 @@ export async function GET(request) {
 
                 // QR filter
                 if (qr === "true" || qr === "false") {
-                        const productIds = await Price.find({ qr: qr === "true" }).distinct(
-                                "product"
-                        );
+
+                        const productIds = await Price.distinct("product", {
+                                qr: qr === "true",
+                        });
+
                         query._id = { $in: productIds };
                 }
 

@@ -136,8 +136,12 @@ export async function GET(request) {
                 ).filter(Boolean);
 
                 // Get QR options
-                const productIds = await Product.find(matchStage).distinct("_id");
-                const qrDistinct = await Price.distinct("qr", { product: { $in: productIds } });
+
+                const productIds = await Product.distinct("_id", matchStage);
+                const qrDistinct = await Price.distinct("qr", {
+                        product: { $in: productIds },
+                });
+
                 const qr = [];
                 if (qrDistinct.includes(true)) {
                         qr.push({ id: "true", label: "With QR" });
