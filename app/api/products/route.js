@@ -2,6 +2,7 @@
 
 import { dbConnect } from "@/lib/dbConnect.js";
 import Product from "@/model/Product.js";
+import Price from "@/model/Price.js";
 
 export async function GET(request) {
 	await dbConnect();
@@ -13,11 +14,14 @@ export async function GET(request) {
 		const minPrice = searchParams.get("minPrice");
 		const maxPrice = searchParams.get("maxPrice");
 		const discount = searchParams.get("discount");
-		const category = searchParams.get("category");
-		const search = searchParams.get("search");
+                const category = searchParams.get("category");
+                const search = searchParams.get("search");
                 const type = searchParams.get("type");
                 const subcategories = searchParams.get("subcategories");
-		const page = Number.parseInt(searchParams.get("page") || "1");
+                const languages = searchParams.get("languages");
+                const materials = searchParams.get("materials");
+                const qr = searchParams.get("qr");
+                const page = Number.parseInt(searchParams.get("page") || "1");
 		const limit = Number.parseInt(searchParams.get("limit") || "12");
 		const sort = searchParams.get("sort") || "createdAt";
 		const order = searchParams.get("order") || "desc";
@@ -38,14 +42,38 @@ export async function GET(request) {
                         }
                 }
 
-		// Search filter
-		if (search) {
-			query.$or = [
-				{ title: { $regex: search, $options: "i" } },
-				{ description: { $regex: search, $options: "i" } },
-				{ longDescription: { $regex: search, $options: "i" } },
-			];
-		}
+                // Search filter
+                if (search) {
+                        query.$or = [
+                                { title: { $regex: search, $options: "i" } },
+                                { description: { $regex: search, $options: "i" } },
+                                { longDescription: { $regex: search, $options: "i" } },
+                        ];
+                }
+
+                // Language filter
+                if (languages) {
+                        const languageList = languages.split(",").filter(Boolean);
+                        if (languageList.length > 0) {
+                                query.languages = { $in: languageList };
+                        }
+                }
+
+                // Material filter
+                if (materials) {
+                        const materialList = materials.split(",").filter(Boolean);
+                        if (materialList.length > 0) {
+                                query.materials = { $in: materialList };
+                        }
+                }
+
+                // QR filter
+                if (qr === "true" || qr === "false") {
+                        const productIds = await Price.find({ qr: qr === "true" }).distinct(
+                                "product"
+                        );
+                        query._id = { $in: productIds };
+                }
 
 		// Price range filter
 		if (minPrice || maxPrice) {

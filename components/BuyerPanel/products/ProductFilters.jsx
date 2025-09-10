@@ -53,9 +53,27 @@ export default function ProductFilters() {
 		setFilters({ discount: Number.parseInt(value) || 0 });
 	};
 
-	const handleTypeChange = (value) => {
-		setFilters({ type: value === "all" ? "" : value });
-	};
+        const handleTypeChange = (value) => {
+                setFilters({ type: value === "all" ? "" : value });
+        };
+
+        const handleLanguageChange = (language, checked) => {
+                const newLanguages = checked
+                        ? [...filters.languages, language]
+                        : filters.languages.filter((l) => l !== language);
+                setFilters({ languages: newLanguages });
+        };
+
+        const handleMaterialChange = (material, checked) => {
+                const newMaterials = checked
+                        ? [...filters.materials, material]
+                        : filters.materials.filter((m) => m !== material);
+                setFilters({ materials: newMaterials });
+        };
+
+        const handleQRChange = (value) => {
+                setFilters({ qr: value === "all" ? "" : value });
+        };
 
 	const handleApplyFilters = () => {
 		applyFilters();
@@ -63,16 +81,19 @@ export default function ProductFilters() {
 	};
 
 	const clearFilters = () => {
-		setFilters({
-			categories: [],
-			priceRange: availableFilters
-				? [availableFilters.priceRange.min, availableFilters.priceRange.max]
-				: [0, 10000],
+                setFilters({
+                        categories: [],
+                        priceRange: availableFilters
+                                ? [availableFilters.priceRange.min, availableFilters.priceRange.max]
+                                : [0, 10000],
                         discount: 0,
                         type: "",
-		});
-		applyFilters();
-	};
+                        languages: [],
+                        materials: [],
+                        qr: "",
+                });
+                applyFilters();
+        };
 
 	if (!availableFilters) {
 		return (
@@ -112,15 +133,18 @@ export default function ProductFilters() {
 					</Button>
 				</div>
 
-				<FilterContent
-					availableFilters={availableFilters}
-					filters={filters}
-					onCategoryChange={handleCategoryChange}
-					onPriceChange={handlePriceChange}
-					onDiscountChange={handleDiscountChange}
-					onTypeChange={handleTypeChange}
-					onApply={handleApplyFilters}
-				/>
+                                <FilterContent
+                                        availableFilters={availableFilters}
+                                        filters={filters}
+                                        onCategoryChange={handleCategoryChange}
+                                        onPriceChange={handlePriceChange}
+                                        onDiscountChange={handleDiscountChange}
+                                        onTypeChange={handleTypeChange}
+                                        onLanguageChange={handleLanguageChange}
+                                        onMaterialChange={handleMaterialChange}
+                                        onQRChange={handleQRChange}
+                                        onApply={handleApplyFilters}
+                                />
 			</div>
 
 			{/* Mobile Filter Modal */}
@@ -151,15 +175,18 @@ export default function ProductFilters() {
 								</Button>
 							</div>
 
-							<FilterContent
-								availableFilters={availableFilters}
-								filters={filters}
-								onCategoryChange={handleCategoryChange}
-								onPriceChange={handlePriceChange}
+                                                        <FilterContent
+                                                                availableFilters={availableFilters}
+                                                                filters={filters}
+                                                                onCategoryChange={handleCategoryChange}
+                                                                onPriceChange={handlePriceChange}
                                                                 onDiscountChange={handleDiscountChange}
                                                                 onTypeChange={handleTypeChange}
+                                                                onLanguageChange={handleLanguageChange}
+                                                                onMaterialChange={handleMaterialChange}
+                                                                onQRChange={handleQRChange}
                                                                 onApply={handleApplyFilters}
-							/>
+                                                        />
 						</motion.div>
 					</motion.div>
 				)}
@@ -175,10 +202,13 @@ function FilterContent({
         onPriceChange,
         onDiscountChange,
         onTypeChange,
+        onLanguageChange,
+        onMaterialChange,
+        onQRChange,
         onApply,
 }) {
-	return (
-		<div className="space-y-6">
+        return (
+                <div className="space-y-6">
                         {/* Subcategories */}
                         <Accordion type="single" collapsible defaultValue="categories">
                                 <AccordionItem value="categories">
@@ -228,11 +258,11 @@ function FilterContent({
 						</div>
 					</AccordionContent>
 				</AccordionItem>
-			</Accordion>
+                        </Accordion>
 
-			{/* Product Type */}
-			<Accordion type="single" collapsible defaultValue="type">
-				<AccordionItem value="type">
+                        {/* Product Type */}
+                        <Accordion type="single" collapsible defaultValue="type">
+                                <AccordionItem value="type">
 					<AccordionTrigger>Product Type</AccordionTrigger>
 					<AccordionContent>
 						<div className="pt-4">
@@ -254,8 +284,97 @@ function FilterContent({
 							</Select>
 						</div>
 					</AccordionContent>
-				</AccordionItem>
-			</Accordion>
+                                </AccordionItem>
+                        </Accordion>
+
+                        {/* Languages */}
+                        {availableFilters.languages && availableFilters.languages.length > 0 && (
+                                <Accordion type="single" collapsible defaultValue="languages">
+                                        <AccordionItem value="languages">
+                                                <AccordionTrigger>Languages</AccordionTrigger>
+                                                <AccordionContent>
+                                                        <div className="space-y-3 pt-2">
+                                                                {availableFilters.languages.map((lang) => (
+                                                                        <div key={lang} className="flex items-center space-x-2">
+                                                                                <Checkbox
+                                                                                        id={`lang-${lang}`}
+                                                                                        checked={filters.languages.includes(lang)}
+                                                                                        onCheckedChange={(checked) =>
+                                                                                                onLanguageChange(lang, checked)
+                                                                                        }
+                                                                                />
+                                                                                <label
+                                                                                        htmlFor={`lang-${lang}`}
+                                                                                        className="text-sm font-medium leading-none cursor-pointer flex-1"
+                                                                                >
+                                                                                        {lang}
+                                                                                </label>
+                                                                        </div>
+                                                                ))}
+                                                        </div>
+                                                </AccordionContent>
+                                        </AccordionItem>
+                                </Accordion>
+                        )}
+
+                        {/* QR */}
+                        {availableFilters.qr && availableFilters.qr.length > 0 && (
+                                <Accordion type="single" collapsible defaultValue="qr">
+                                        <AccordionItem value="qr">
+                                                <AccordionTrigger>QR</AccordionTrigger>
+                                                <AccordionContent>
+                                                        <div className="pt-4">
+                                                                <Select value={filters.qr || "all"} onValueChange={onQRChange}>
+                                                                        <SelectTrigger>
+                                                                                <SelectValue placeholder="Select QR" />
+                                                                        </SelectTrigger>
+                                                                        <SelectContent>
+                                                                                <SelectItem value="all">All</SelectItem>
+                                                                                {availableFilters.qr.map((option) => (
+                                                                                        <SelectItem
+                                                                                                key={option.id}
+                                                                                                value={option.id}
+                                                                                        >
+                                                                                                {option.label}
+                                                                                        </SelectItem>
+                                                                                ))}
+                                                                        </SelectContent>
+                                                                </Select>
+                                                        </div>
+                                                </AccordionContent>
+                                        </AccordionItem>
+                                </Accordion>
+                        )}
+
+                        {/* Materials */}
+                        {availableFilters.materials && availableFilters.materials.length > 0 && (
+                                <Accordion type="single" collapsible defaultValue="materials">
+                                        <AccordionItem value="materials">
+                                                <AccordionTrigger>Materials</AccordionTrigger>
+                                                <AccordionContent>
+                                                        <div className="space-y-3 pt-2">
+                                                                {availableFilters.materials.map((mat) => (
+                                                                        <div key={mat} className="flex items-center space-x-2">
+                                                                                <Checkbox
+                                                                                        id={`mat-${mat}`}
+                                                                                        checked={filters.materials.includes(mat)}
+                                                                                        onCheckedChange={(checked) =>
+                                                                                                onMaterialChange(mat, checked)
+                                                                                        }
+                                                                                />
+                                                                                <label
+                                                                                        htmlFor={`mat-${mat}`}
+                                                                                        className="text-sm font-medium leading-none cursor-pointer flex-1"
+                                                                                >
+                                                                                        {mat}
+                                                                                </label>
+                                                                        </div>
+                                                                ))}
+                                                        </div>
+                                                </AccordionContent>
+                                        </AccordionItem>
+                                </Accordion>
+                        )}
 
 			{/* Discount */}
 			<Accordion type="single" collapsible defaultValue="discount">
