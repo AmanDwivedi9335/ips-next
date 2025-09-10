@@ -81,6 +81,7 @@ export const useProductStore = create(
                                                         params.append("type", filters.type);
                                                 }
 
+
                                                 if (filters.languages.length > 0) {
                                                         params.append(
                                                                 "languages",
