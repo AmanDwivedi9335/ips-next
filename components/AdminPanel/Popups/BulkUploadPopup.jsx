@@ -52,7 +52,7 @@ export function BulkUploadPopup({ open, onOpenChange }) {
 				discount: 20,
 				type: "featured",
 				published: true,
-				images: [], // Array of base64 image data will be here
+                                images: [], // Array of Cloudinary image URLs will be here
 				features: [
 					{
 						title: "High Quality",
@@ -74,7 +74,7 @@ export function BulkUploadPopup({ open, onOpenChange }) {
 				discount: 0,
 				type: "top-selling",
 				published: true,
-				images: [], // Array of base64 image data will be here
+                                images: [], // Array of Cloudinary image URLs will be here
 				features: [],
 			},
 		];
@@ -194,7 +194,7 @@ export function BulkUploadPopup({ open, onOpenChange }) {
                                                                 <p className="text-xs text-gray-500 mt-1">
                                                                         Paste your JSON array of products here. Required fields:
                                                                         title, description, category, price. Images should be
-                                                                        base64 encoded strings in the images array.
+                                                                        Cloudinary URLs in the images array.
                                                                 </p>
 							</div>
 
