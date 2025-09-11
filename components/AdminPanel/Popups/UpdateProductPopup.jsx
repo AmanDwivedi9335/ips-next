@@ -23,14 +23,6 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { X, Plus } from "lucide-react";
 import { useAdminProductStore } from "@/store/adminProductStore.js";
 import { useAdminLanguageStore } from "@/store/adminLanguageStore.js";
@@ -89,8 +81,6 @@ export function UpdateProductPopup({ open, onOpenChange, product }) {
         }))
       : [{ layout: "", material: "", size: "", qr: false, price: "" }],
   );
-  const [editingPriceIndex, setEditingPriceIndex] = useState(null);
-  const [priceBackup, setPriceBackup] = useState(null);
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
 
   const [formData, setFormData] = useState({
@@ -323,18 +313,10 @@ export function UpdateProductPopup({ open, onOpenChange, product }) {
       ...prices,
       { layout: "", material: "", size: "", qr: false, price: "" },
     ]);
-    setEditingPriceIndex(prices.length);
-    setPriceBackup(null);
   };
 
   const removePriceRow = (index) => {
     setPrices(prices.filter((_, i) => i !== index));
-    if (editingPriceIndex === index) {
-      setEditingPriceIndex(null);
-      setPriceBackup(null);
-    } else if (editingPriceIndex > index) {
-      setEditingPriceIndex(editingPriceIndex - 1);
-    }
   };
 
   const updatePriceRow = (index, field, value) => {
@@ -694,191 +676,101 @@ export function UpdateProductPopup({ open, onOpenChange, product }) {
             {showBasicFields && (
               <div className="mt-6">
                 <Label>Pricing</Label>
-                <Table className="mt-2">
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Material</TableHead>
-                      <TableHead>Size</TableHead>
-                      {showLayout && <TableHead>Layout</TableHead>}
-                      {showQR && <TableHead>QR</TableHead>}
-                      <TableHead>Price</TableHead>
-                      <TableHead>Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {prices.map((p, index) => (
-                      <TableRow key={index}>
-                        <TableCell>
-                          {editingPriceIndex === index ? (
-                            <Select
-                              value={p.material}
-                              onValueChange={(value) =>
-                                updatePriceRow(index, "material", value)
-                              }
-                            >
-                              <SelectTrigger>
-                                <SelectValue placeholder="Material" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {selectedMaterials.map((m) => (
-                                  <SelectItem key={m} value={m}>
-                                    {m}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          ) : (
-                            p.material
-                          )}
-                        </TableCell>
-                        <TableCell>
-                          {editingPriceIndex === index ? (
-                            <Select
-                              value={p.size}
-                              onValueChange={(value) =>
-                                updatePriceRow(index, "size", value)
-                              }
-                            >
-                              <SelectTrigger>
-                                <SelectValue placeholder="Size" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {selectedSizes.map((s) => (
-                                  <SelectItem key={s} value={s}>
-                                    {s}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          ) : (
-                            p.size
-                          )}
-                        </TableCell>
-                        {showLayout && (
-                          <TableCell>
-                            {editingPriceIndex === index ? (
-                              <Select
-                                value={p.layout}
-                                onValueChange={(value) =>
-                                  updatePriceRow(index, "layout", value)
-                                }
-                              >
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Layout" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {selectedLayouts.map((l) => (
-                                    <SelectItem key={l} value={l}>
-                                      {l}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            ) : (
-                              p.layout
-                            )}
-                          </TableCell>
-                        )}
-                        {showQR && (
-                          <TableCell>
-                            {editingPriceIndex === index ? (
-                              <Select
-                                value={p.qr ? "true" : "false"}
-                                onValueChange={(value) =>
-                                  updatePriceRow(index, "qr", value === "true")
-                                }
-                              >
-                                <SelectTrigger>
-                                  <SelectValue placeholder="QR" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="false">Without QR</SelectItem>
-                                  <SelectItem value="true">With QR</SelectItem>
-                                </SelectContent>
-                              </Select>
-                            ) : p.qr ? (
-                              "With QR"
-                            ) : (
-                              "Without QR"
-                            )}
-                          </TableCell>
-                        )}
-                        <TableCell>
-                          {editingPriceIndex === index ? (
-                            <Input
-                              type="number"
-                              placeholder="Price"
-                              value={p.price}
-                              onChange={(e) =>
-                                updatePriceRow(index, "price", e.target.value)
-                              }
-                            />
-                          ) : (
-                            p.price
-                          )}
-                        </TableCell>
-                        <TableCell>
-                          {editingPriceIndex === index ? (
-                            <div className="flex gap-2">
-                              <Button
-                                type="button"
-                                size="sm"
-                                onClick={() => {
-                                  setEditingPriceIndex(null);
-                                  setPriceBackup(null);
-                                }}
-                              >
-                                Save
-                              </Button>
-                              <Button
-                                type="button"
-                                size="sm"
-                                variant="ghost"
-                                onClick={() => {
-                                  if (priceBackup) {
-                                    setPrices((prev) =>
-                                      prev.map((item, i) =>
-                                        i === index ? priceBackup : item,
-                                      ),
-                                    );
-                                  }
-                                  setEditingPriceIndex(null);
-                                  setPriceBackup(null);
-                                }}
-                              >
-                                Cancel
-                              </Button>
-                            </div>
-                          ) : (
-                            <div className="flex gap-2">
-                              <Button
-                                type="button"
-                                size="sm"
-                                variant="outline"
-                                onClick={() => {
-                                  setPriceBackup({ ...p });
-                                  setEditingPriceIndex(index);
-                                }}
-                              >
-                                Edit
-                              </Button>
-                              {prices.length > 1 && (
-                                <Button
-                                  type="button"
-                                  size="sm"
-                                  variant="ghost"
-                                  onClick={() => removePriceRow(index)}
-                                >
-                                  Delete
-                                </Button>
-                              )}
-                            </div>
-                          )}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                {prices.map((p, index) => (
+                  <div
+                    key={index}
+                    className="grid grid-cols-5 gap-2 items-center mt-2"
+                  >
+                    <Select
+                      value={p.material}
+                      onValueChange={(value) =>
+                        updatePriceRow(index, "material", value)
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Material" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {selectedMaterials.map((m) => (
+                          <SelectItem key={m} value={m}>
+                            {m}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <Select
+                      value={p.size}
+                      onValueChange={(value) =>
+                        updatePriceRow(index, "size", value)
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Size" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {selectedSizes.map((s) => (
+                          <SelectItem key={s} value={s}>
+                            {s}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    {showLayout && (
+                      <Select
+                        value={p.layout}
+                        onValueChange={(value) =>
+                          updatePriceRow(index, "layout", value)
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Layout" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {selectedLayouts.map((l) => (
+                            <SelectItem key={l} value={l}>
+                              {l}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    )}
+                    {showQR && (
+                      <Select
+                        value={p.qr ? "true" : "false"}
+                        onValueChange={(value) =>
+                          updatePriceRow(index, "qr", value === "true")
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="QR" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="false">Without QR</SelectItem>
+                          <SelectItem value="true">With QR</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    )}
+                    <div className="flex items-center gap-2">
+                      <Input
+                        type="number"
+                        placeholder="Price"
+                        value={p.price}
+                        onChange={(e) =>
+                          updatePriceRow(index, "price", e.target.value)
+                        }
+                      />
+                      {prices.length > 1 && (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          onClick={() => removePriceRow(index)}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                ))}
                 <Button
                   type="button"
                   variant="outline"

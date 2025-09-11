@@ -224,6 +224,10 @@ export const useAdminProductStore = create((set, get) => ({
                                 "images",
                                 JSON.stringify(updateData.images || [])
                         );
+                        formData.append(
+                                "pricing",
+                                JSON.stringify(updateData.pricing || [])
+                        );
 
                         const response = await fetch("/api/admin/product/updateProduct", {
                                 method: "PUT",

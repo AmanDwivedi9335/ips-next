@@ -1,5 +1,6 @@
 import { dbConnect } from "@/lib/dbConnect";
 import Product from "@/model/Product";
+import Price from "@/model/Price.js";
 
 export async function PUT(request) {
 	await dbConnect();
@@ -29,9 +30,10 @@ export async function PUT(request) {
 
 		// Extract product data from formData
 		const title = formData.get("title");
-		const description = formData.get("description");
-		const longDescription = formData.get("longDescription");
+                const description = formData.get("description");
+                const longDescription = formData.get("longDescription");
                 const category = formData.get("category");
+                const subcategory = formData.get("subcategory");
                 const productFamily = formData.get("productFamily");
                 const discount = formData.get("discount")
                         ? parseFloat(formData.get("discount"))
@@ -39,36 +41,45 @@ export async function PUT(request) {
                 const type = formData.get("type");
                 const published = formData.get("published") === "true";
 
-		// Parse features
+                // Parse array fields
                 let features = [];
                 let layouts = [];
-                try {
-                        const featuresString = formData.get("features");
-                        if (featuresString) {
-                                features = JSON.parse(featuresString);
-                        }
-                        const layoutsStr = formData.get("layouts");
-                        if (layoutsStr) layouts = JSON.parse(layoutsStr);
-                } catch (error) {
-                        console.error("Error parsing features/layouts:", error);
-                        features = [];
-                        layouts = [];
-                }
-
-                // Parse images
+                let languages = [];
+                let materials = [];
+                let sizes = [];
+                let pricing = [];
+                let languageImages = [];
                 let imageUrls = [];
                 try {
+                        const featuresString = formData.get("features");
+                        if (featuresString) features = JSON.parse(featuresString);
+                        const layoutsStr = formData.get("layouts");
+                        if (layoutsStr) layouts = JSON.parse(layoutsStr);
+                        const langStr = formData.get("languages");
+                        if (langStr) languages = JSON.parse(langStr);
+                        const matStr = formData.get("materials");
+                        if (matStr) materials = JSON.parse(matStr);
+                        const sizeStr = formData.get("sizes");
+                        if (sizeStr) sizes = JSON.parse(sizeStr);
+                        const priceStr = formData.get("pricing");
+                        if (priceStr) pricing = JSON.parse(priceStr).map((p) => ({
+                                ...p,
+                                price: p.price ? parseFloat(p.price) : undefined,
+                        }));
                         const imagesStr = formData.get("images");
                         if (imagesStr) imageUrls = JSON.parse(imagesStr);
+                        const langImgStr = formData.get("languageImages");
+                        if (langImgStr) languageImages = JSON.parse(langImgStr);
                 } catch (error) {
-                        console.error("Error parsing images:", error);
+                        console.error("Error parsing form data:", error);
                 }
 
-		// Update product fields
-		product.title = title;
-		product.description = description;
-		product.longDescription = longDescription || description;
+                // Update product fields
+                product.title = title;
+                product.description = description;
+                product.longDescription = longDescription || description;
                 product.category = category;
+                product.subcategory = subcategory || "";
                 product.productFamily = productFamily;
                 product.discount = discount;
                 product.type = type;
@@ -76,17 +87,47 @@ export async function PUT(request) {
                 product.published = published;
                 product.features = features;
                 product.layouts = layouts;
+                product.languages = languages;
+                product.materials = materials;
+                product.sizes = sizes;
                 product.images = imageUrls;
+                product.languageImages = languageImages;
 
-		await product.save();
+                const basePrice =
+                        pricing.find(
+                                (p) => typeof p?.price === "number" && !isNaN(p.price)
+                        )?.price || 0;
+                product.price = basePrice;
+                product.salePrice = basePrice;
 
-		console.log("Product updated successfully:", product._id);
+                await product.save();
 
-		return Response.json({
-			success: true,
-			message: "Product updated successfully",
-			product,
-		});
+                // Update pricing documents
+                await Price.deleteMany({ product: product._id });
+                if (pricing.length > 0) {
+                        const validPricing = pricing.filter(
+                                (p) =>
+                                        p.size &&
+                                        p.material &&
+                                        typeof p.price === "number" &&
+                                        !isNaN(p.price)
+                        );
+                        if (validPricing.length > 0) {
+                                const priceDocs = validPricing.map((p) => ({
+                                        ...p,
+                                        product: product._id,
+                                }));
+                                await Price.insertMany(priceDocs);
+                        }
+                }
+
+                console.log("Product updated successfully:", product._id);
+
+                return Response.json({
+                        success: true,
+                        message: "Product updated successfully",
+                        product,
+                });
 	} catch (error) {
 		console.error("Update product error:", error);
 		return Response.json(
