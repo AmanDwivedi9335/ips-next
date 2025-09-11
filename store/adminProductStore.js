@@ -89,12 +89,14 @@ export const useAdminProductStore = create((set, get) => ({
                                return json?.url;
                        };
 
+
                        const uploadedLanguageImages = await Promise.all(
                                (productData.languageImages || []).map(async (li) => {
                                        if (!li.image) return null;
                                        const url = await uploadImage(li.image);
                                        if (!url) return null;
                                        return { language: li.language, image: url };
+
                                })
                        );
 

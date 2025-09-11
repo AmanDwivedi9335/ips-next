@@ -16,6 +16,7 @@ export function ImageUpload({
         const [imageMetadata, setImageMetadata] = useState([]); // Store metadata separately
         const fileInputRef = useRef(null);
 
+
         const MAX_IMAGES = maxImages;
 	const MAX_SIZE = 5 * 1024 * 1024; // 5MB
 	const VALID_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
@@ -34,6 +35,7 @@ export function ImageUpload({
                 const formData = new FormData();
                 formData.append("file", file);
 
+
                 const res = await fetch("/api/admin/uploadImage", {
                         method: "POST",
                         body: formData,
@@ -43,6 +45,7 @@ export function ImageUpload({
                 if (!json?.url) throw new Error("Upload failed");
                 return {
                         url: json.url,
+
                         metadata: {
                                 name: file.name,
                                 size: file.size,
