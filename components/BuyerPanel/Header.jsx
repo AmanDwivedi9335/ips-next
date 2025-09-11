@@ -31,25 +31,34 @@ export default function Header({ onMenuToggle, isMenuOpen }) {
         };
 
         const categories = [
-                { name: "Smart QR vs Standard Posters", href: "/smart-qr-vs-standard-posters" },
-                { name: "All Safety Posters", href: "/all-safety-posters" },
-                { name: "ISO Posters", href: "/iso-posters" },
-                { name: "Industry Bundles", href: "/industry-bundles" },
-                { name: "Signs & Labels", href: "/signs-labels" },
-                { name: "Monthly Poster Subscriptions", href: "/monthly-poster-subscriptions" },
-                { name: "Custom Printed Office Stationary", href: "/custom-printed-office-stationary" },
+                {
+                        name: "Smart QR vs Standard Posters",
+                        href: "/products?category=smart-qr-vs-standard-posters",
+                },
+                { name: "All Safety Posters", href: "/products?category=all-safety-posters" },
+                { name: "ISO Posters", href: "/products?category=iso-posters" },
+                { name: "Industry Bundles", href: "/products?category=industry-bundles" },
+                { name: "Signs & Labels", href: "/products?category=signs-labels" },
+                {
+                        name: "Monthly Poster Subscriptions",
+                        href: "/products?category=monthly-poster-subscriptions",
+                },
+                {
+                        name: "Custom Printed Office Stationary",
+                        href: "/products?category=custom-printed-office-stationary",
+                },
                 {
                         name: "New Arrivals",
-                        href: "/new-arrivals",
+                        href: "/products?category=new-arrivals",
                         poster: "/images/home/Img1.png",
-                        isNew: true
+                        isNew: true,
                 },
                 {
                         name: "Corporate Bulk/Custom Orders",
-                        href: "/corporate-bulk-orders",
-                        highlight: true
+                        href: "/products?category=corporate-bulk-orders",
+                        highlight: true,
                 },
-                { name: "Contact Us", href: "/contact" }
+                { name: "Contact Us", href: "/contact" },
         ];
 
 	return (
