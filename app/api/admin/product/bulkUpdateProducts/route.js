@@ -17,32 +17,52 @@ export async function PUT(request) {
 
 		const processedUpdateData = { ...updateData };
 
-		// Handle image uploads if provided
-		if (updateData.images && updateData.images.length > 0) {
-			try {
-				// Extract base64 data from images
-				const base64Images = updateData.images
-					.map((img) => img.base64)
-					.filter(Boolean);
+                // Handle image uploads if provided
+                if (updateData.images && updateData.images.length > 0) {
+                        try {
+                                const base64Images = [];
+                                const urlImages = [];
 
-				if (base64Images.length > 0) {
-					const imageUrls = await uploadMultipleImagesToCloudinary(
-						base64Images,
-						"products"
-					);
-					processedUpdateData.images = imageUrls;
-				}
-			} catch (error) {
-				console.error("Image upload error:", error);
-				return Response.json(
-					{
-						success: false,
-						message: "Failed to upload images",
-					},
-					{ status: 500 }
-				);
-			}
-		}
+                                updateData.images.forEach((img) => {
+                                        if (
+                                                typeof img === "string" &&
+                                                img.startsWith("data:")
+                                        ) {
+                                                base64Images.push(img);
+                                        } else if (
+                                                typeof img === "string" &&
+                                                img.startsWith("http")
+                                        ) {
+                                                urlImages.push(img);
+                                        } else if (img?.base64) {
+                                                base64Images.push(img.base64);
+                                        }
+                                });
+
+                                if (base64Images.length > 0) {
+                                        const uploaded =
+                                                await uploadMultipleImagesToCloudinary(
+                                                        base64Images,
+                                                        "products"
+                                                );
+                                        processedUpdateData.images = [
+                                                ...urlImages,
+                                                ...uploaded,
+                                        ];
+                                } else {
+                                        processedUpdateData.images = urlImages;
+                                }
+                        } catch (error) {
+                                console.error("Image upload error:", error);
+                                return Response.json(
+                                        {
+                                                success: false,
+                                                message: "Failed to upload images",
+                                        },
+                                        { status: 500 }
+                                );
+                        }
+                }
 
 		// Update multiple products
 		const result = await Product.updateMany(

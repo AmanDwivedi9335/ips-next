@@ -2,19 +2,19 @@
 
 import { useState, useRef } from "react";
 import { Label } from "@/components/ui/label";
-import { Upload, X, ImageIcon } from "lucide-react";
+import { Upload, X } from "lucide-react";
 
 export function ImageUpload({
-        images = [], // Array of base64 strings
+        images = [], // Array of Cloudinary URLs
         onImagesChange,
         label = "Product Images",
         required = true,
         maxImages = 5,
 }) {
-	const [isDragging, setIsDragging] = useState(false);
-	const [errors, setErrors] = useState([]);
-	const [imageMetadata, setImageMetadata] = useState([]); // Store metadata separately
-	const fileInputRef = useRef(null);
+        const [isDragging, setIsDragging] = useState(false);
+        const [errors, setErrors] = useState([]);
+        const [imageMetadata, setImageMetadata] = useState([]); // Store metadata separately
+        const fileInputRef = useRef(null);
 
         const MAX_IMAGES = maxImages;
 	const MAX_SIZE = 5 * 1024 * 1024; // 5MB
@@ -30,14 +30,26 @@ export function ImageUpload({
 		return null;
 	};
 
-	const convertToBase64 = (file) => {
-		return new Promise((resolve, reject) => {
-			const reader = new FileReader();
-			reader.onload = () => resolve(reader.result);
-			reader.onerror = reject;
-			reader.readAsDataURL(file);
-		});
-	};
+        const uploadToCloudinary = async (file) => {
+                const formData = new FormData();
+                formData.append("file", file);
+
+                const res = await fetch("/api/admin/uploadImage", {
+                        method: "POST",
+                        body: formData,
+                });
+
+                const json = await res.json();
+                if (!json?.url) throw new Error("Upload failed");
+                return {
+                        url: json.url,
+                        metadata: {
+                                name: file.name,
+                                size: file.size,
+                                type: file.type,
+                        },
+                };
+        };
 
 	const handleFileSelect = async (files) => {
 		const fileArray = Array.from(files);
@@ -66,34 +78,24 @@ export function ImageUpload({
 			return;
 		}
 
-		// Convert valid files to base64
-		try {
-			const results = await Promise.all(
-				validFiles.map(async (file) => {
-					const base64 = await convertToBase64(file);
-					return {
-						base64,
-						metadata: {
-							name: file.name,
-							size: file.size,
-							type: file.type,
-						},
-					};
-				})
-			);
+                // Upload valid files to Cloudinary
+                try {
+                        const results = await Promise.all(
+                                validFiles.map((file) => uploadToCloudinary(file))
+                        );
 
-			const newBase64Images = results.map((r) => r.base64);
-			const newMetadata = results.map((r) => r.metadata);
+                        const newUrls = results.map((r) => r.url);
+                        const newMetadata = results.map((r) => r.metadata);
 
-			const updatedImages = [...images, ...newBase64Images];
-			const updatedMetadata = [...imageMetadata, ...newMetadata];
+                        const updatedImages = [...images, ...newUrls];
+                        const updatedMetadata = [...imageMetadata, ...newMetadata];
 
-			onImagesChange(updatedImages);
-			setImageMetadata(updatedMetadata);
-			setErrors([]);
-		} catch (error) {
-			setErrors(["Error processing images. Please try again."]);
-		}
+                        onImagesChange(updatedImages);
+                        setImageMetadata(updatedMetadata);
+                        setErrors([]);
+                } catch (error) {
+                        setErrors(["Error processing images. Please try again."]);
+                }
 	};
 
 	const handleDrop = (e) => {
@@ -203,14 +205,14 @@ export function ImageUpload({
 			{/* Image Previews */}
 			{images.length > 0 && (
 				<div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-					{images.map((base64, index) => (
+                                        {images.map((url, index) => (
 						<div key={index} className="relative group">
 							<div className="aspect-square bg-gray-100 rounded-lg overflow-hidden">
-								<img
-									src={base64}
-									alt={`Upload ${index + 1}`}
-									className="w-full h-full object-cover"
-								/>
+                                                                <img
+                                                                        src={url}
+                                                                        alt={`Upload ${index + 1}`}
+                                                                        className="w-full h-full object-cover"
+                                                                />
 							</div>
 							<button
 								type="button"

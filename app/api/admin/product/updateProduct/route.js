@@ -1,6 +1,5 @@
 import { dbConnect } from "@/lib/dbConnect";
 import Product from "@/model/Product";
-import cloudinary from "@/lib/cloudnary.js";
 
 export async function PUT(request) {
 	await dbConnect();
@@ -56,69 +55,14 @@ export async function PUT(request) {
                         layouts = [];
                 }
 
-		// Handle images
-		let imageUrls = [];
-
-		// Get existing images that should be kept
-		const existingImages = formData.getAll("existingImages");
-		imageUrls = [...existingImages];
-
-		// Get new image files to upload
-		const newImageFiles = formData.getAll("images");
-
-		if (newImageFiles.length > 0) {
-			try {
-				// Upload new images to Cloudinary
-				const uploadPromises = newImageFiles.map(async (file) => {
-					try {
-						// Check if file is a Blob/File object
-						if (!(file instanceof Blob)) {
-							throw new Error("Invalid file format");
-						}
-
-						const buffer = Buffer.from(await file.arrayBuffer());
-
-						return new Promise((resolve, reject) => {
-							cloudinary.uploader
-								.upload_stream(
-									{
-										resource_type: "image",
-										folder: "safety_products_images",
-										quality: "auto",
-										format: "webp",
-									},
-									(error, result) => {
-										if (error) {
-											console.error("Cloudinary upload error:", error);
-											reject(error);
-										} else {
-											resolve(result.secure_url);
-										}
-									}
-								)
-								.end(buffer);
-						});
-					} catch (error) {
-						console.error("File processing error:", error);
-						throw error;
-					}
-				});
-
-				const newImageUrls = await Promise.all(uploadPromises);
-				imageUrls = [...imageUrls, ...newImageUrls];
-
-				console.log("New images uploaded successfully:", newImageUrls.length);
-			} catch (error) {
-				console.error("Image upload error:", error);
-				return Response.json(
-					{
-						success: false,
-						message: "Failed to upload images",
-					},
-					{ status: 500 }
-				);
-			}
-		}
+                // Parse images
+                let imageUrls = [];
+                try {
+                        const imagesStr = formData.get("images");
+                        if (imagesStr) imageUrls = JSON.parse(imagesStr);
+                } catch (error) {
+                        console.error("Error parsing images:", error);
+                }
 
 		// Update product fields
 		product.title = title;

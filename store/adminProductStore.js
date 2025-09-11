@@ -77,60 +77,30 @@ export const useAdminProductStore = create((set, get) => ({
        // Upload language images to Cloudinary and submit product
        addProduct: async (productData) => {
                try {
+                       // Upload each language image via server-side Cloudinary route
+                       const uploadImage = async (file) => {
+                               const data = new FormData();
+                               data.append("file", file);
+                               const res = await fetch("/api/admin/uploadImage", {
+                                       method: "POST",
+                                       body: data,
+                               });
+                               const json = await res.json();
+                               return json?.url;
+                       };
 
-
-                       const cloudName =
-                               process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ||
-                               process.env.CLOUDINARY_CLOUD_NAME;
-                       const uploadPreset =
-                               process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET ||
-                               process.env.CLOUDINARY_UPLOAD_PRESET;
-
-
-                       // Upload each language image to Cloudinary and replace with URL
                        const uploadedLanguageImages = await Promise.all(
                                (productData.languageImages || []).map(async (li) => {
                                        if (!li.image) return null;
-
-                                       const data = new FormData();
-                                       data.append("file", li.image);
-
-                                       if (uploadPreset) data.append("upload_preset", uploadPreset);
-
-                                       const res = await fetch(
-                                               `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
-
-                                               {
-                                                       method: "POST",
-                                                       body: data,
-                                               }
-                                       );
-                                       const json = await res.json();
-
-                                       if (!json.secure_url) return null;
-
-                                       return { language: li.language, image: json.secure_url };
+                                       const url = await uploadImage(li.image);
+                                       if (!url) return null;
+                                       return { language: li.language, image: url };
                                })
                        );
 
                        const validLanguageImages = uploadedLanguageImages.filter(Boolean);
 
-                       // Helper to convert base64 strings to Blob objects
-                       const base64ToBlob = (base64) => {
-                               const [header, data] = base64.split(",");
-                               const mimeMatch = header.match(/:(.*?);/);
-                               const mime = mimeMatch ? mimeMatch[1] : "application/octet-stream";
-                               const byteCharacters = atob(data);
-                               const byteNumbers = new Array(byteCharacters.length);
-                               for (let i = 0; i < byteCharacters.length; i++) {
-                                       byteNumbers[i] = byteCharacters.charCodeAt(i);
-                               }
-                               const byteArray = new Uint8Array(byteNumbers);
-                               return new Blob([byteArray], { type: mime });
-                       };
-
                        // Create FormData for submitting product details
-
                        const formData = new FormData();
 
                        // Add all text fields
@@ -172,36 +142,21 @@ export const useAdminProductStore = create((set, get) => ({
                                JSON.stringify(productData.layouts || [])
                        );
                        formData.append(
-
+                               "images",
+                               JSON.stringify(productData.images || [])
+                       );
+                       formData.append(
                                "languageImages",
                                JSON.stringify(validLanguageImages)
                        );
                        formData.append(
-
                                "pricing",
                                JSON.stringify(productData.pricing || [])
                        );
 
-
-                       // Append language images as files
-                       (productData.languageImages || []).forEach((li) => {
-                               if (li.image) {
-                                       const imageBlob =
-                                               li.image instanceof Blob
-                                                       ? li.image
-                                                       : base64ToBlob(li.image);
-                                       formData.append(
-                                               "languageImages",
-                                               imageBlob,
-                                               li.language
-                                       );
-                               }
-                       });
-
                        const response = await fetch("/api/admin/product/addProduct", {
                                method: "POST",
-                               body: formData, // Let the browser set Content-Type for FormData
-
+                               body: formData,
                        });
 
                        const data = await response.json();
@@ -221,36 +176,28 @@ export const useAdminProductStore = create((set, get) => ({
                }
        },
 
-	updateProduct: async (productId, updateData) => {
-		try {
-			// Create FormData for file uploads (similar to addProduct)
-			const formData = new FormData();
+       updateProduct: async (productId, updateData) => {
+                try {
+                        const formData = new FormData();
 
-			// Add productId
-			formData.append("productId", productId);
+                        formData.append("productId", productId);
 
-			// Add all text fields
-			formData.append("title", updateData.title);
-			formData.append("description", updateData.description);
-			formData.append(
-				"longDescription",
-				updateData.longDescription || updateData.description
-			);
-                        formData.append("category", updateData.category);
+                        formData.append("title", updateData.title);
+                        formData.append("description", updateData.description);
                         formData.append(
-                                "subcategory",
-                                updateData.subcategory || ""
+                                "longDescription",
+                                updateData.longDescription || updateData.description
                         );
+                        formData.append("category", updateData.category);
+                        formData.append("subcategory", updateData.subcategory || "");
                         if (updateData.productFamily)
                                 formData.append("productFamily", updateData.productFamily);
                         formData.append("discount", (updateData.discount || 0).toString());
                         formData.append("type", updateData.type);
                         formData.append("published", updateData.published);
 
-                        // Add features as JSON string
                         formData.append("features", JSON.stringify(updateData.features || []));
 
-                        // Add arrays as JSON strings
                         formData.append(
                                 "languages",
                                 JSON.stringify(updateData.languages || [])
@@ -271,57 +218,32 @@ export const useAdminProductStore = create((set, get) => ({
                                 "languageImages",
                                 JSON.stringify(updateData.languageImages || [])
                         );
+                        formData.append(
+                                "images",
+                                JSON.stringify(updateData.images || [])
+                        );
 
-			// Handle images - convert base64 to blobs
-			if (updateData.images && updateData.images.length > 0) {
-				updateData.images.forEach((image, index) => {
-					// Check if it's a base64 string (new image) or URL (existing image)
-					if (typeof image === "string" && image.startsWith("data:")) {
-						// New base64 image - convert to blob
-						const base64Data = image.split(",")[1];
-						const mimeType = image.split(",")[0].split(":")[1].split(";")[0];
+                        const response = await fetch("/api/admin/product/updateProduct", {
+                                method: "PUT",
+                                body: formData,
+                        });
 
-						const byteCharacters = atob(base64Data);
-						const byteNumbers = new Array(byteCharacters.length);
-						for (let i = 0; i < byteCharacters.length; i++) {
-							byteNumbers[i] = byteCharacters.charCodeAt(i);
-						}
-						const byteArray = new Uint8Array(byteNumbers);
+                        const data = await response.json();
 
-						const blob = new Blob([byteArray], { type: mimeType });
-						formData.append(
-							"images",
-							blob,
-							`image_${index}.${mimeType.split("/")[1]}`
-						);
-					} else if (typeof image === "string" && image.startsWith("http")) {
-						// Existing image URL - append as text
-						formData.append("existingImages", image);
-					}
-				});
-			}
-
-			const response = await fetch("/api/admin/product/updateProduct", {
-				method: "PUT",
-				body: formData, // Use FormData instead of JSON
-			});
-
-			const data = await response.json();
-
-			if (data.success) {
-				toast.success("Product updated successfully");
-				get().fetchProducts(); // Refresh the list
-				return true;
-			} else {
-				toast.error(data.message);
-				return false;
-			}
-		} catch (error) {
-			console.error("Update product error:", error);
-			toast.error("Failed to update product");
-			return false;
-		}
-	},
+                        if (data.success) {
+                                toast.success("Product updated successfully");
+                                get().fetchProducts(); // Refresh the list
+                                return true;
+                        } else {
+                                toast.error(data.message);
+                                return false;
+                        }
+                } catch (error) {
+                        console.error("Update product error:", error);
+                        toast.error("Failed to update product");
+                        return false;
+                }
+        },
 
 	deleteProduct: async (productId) => {
 		try {
