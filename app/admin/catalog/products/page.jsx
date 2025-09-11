@@ -484,10 +484,11 @@ export default function AdminProductsPage() {
 														</Button>
 													</div>
 												</TableCell>
-											</motion.tr>
-										))}
-									</TableBody>
-								</Table>
+</motion.tr>
+);
+})}
+</TableBody>
+</Table>
 
 								{/* Pagination */}
 								<div className="flex items-center justify-between mt-6">
