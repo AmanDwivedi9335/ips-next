@@ -11,8 +11,17 @@ import { toast } from "react-hot-toast";
 import Image from "next/image";
 
 export default function ProductCard({ product, viewMode = "grid" }) {
-	const router = useRouter();
-	const { addItem, isLoading } = useCartStore();
+        const router = useRouter();
+        const { addItem, isLoading } = useCartStore();
+
+        const englishImage = product.languageImages?.find(
+                (l) => l.language === "English"
+        )?.image;
+        const defaultImage =
+                englishImage ||
+                product.images?.[0] ||
+                product.image ||
+                "https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png";
 
 	const handleViewProduct = () => {
 		router.push(`/products/${product.id || product._id}`);
@@ -28,9 +37,9 @@ export default function ProductCard({ product, viewMode = "grid" }) {
                         description: product.description,
                         price: product.salePrice || product.price,
                         originalPrice: product.price,
-                        image: product.images?.[0] || product.image,
+                        image: defaultImage,
                 });
-	};
+        };
 
 	const handleBuyNow = async (e) => {
 		e.stopPropagation();
@@ -48,17 +57,13 @@ export default function ProductCard({ product, viewMode = "grid" }) {
                                 <CardContent className="p-6">
                                         <div className="flex flex-col sm:flex-row gap-6">
 						<div className="relative w-full sm:w-48 h-48 bg-gray-50 rounded-lg overflow-hidden flex-shrink-0">
-							<Image
-								src={
-									product.images?.[0] ||
-									product.image ||
-									"https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png"
-								}
-								alt={product.title}
-								fill
-								className="object-contain p-4 group-hover:scale-105 transition-transform duration-300"
-								onClick={handleViewProduct}
-							/>
+                                                        <Image
+                                                                src={defaultImage}
+                                                                alt={product.title}
+                                                                fill
+                                                                className="object-contain p-4 group-hover:scale-105 transition-transform duration-300"
+                                                                onClick={handleViewProduct}
+                                                        />
 							{product.discountPercentage > 0 && (
 								<Badge className="absolute top-2 left-2 bg-red-500 text-white">
 									{product.discountPercentage}% OFF
@@ -153,17 +158,13 @@ export default function ProductCard({ product, viewMode = "grid" }) {
                                 <CardContent className="p-0 flex-1 flex flex-col">
 					<div className="relative overflow-hidden">
 						<div className="relative h-64 bg-gray-50 rounded-t-xl overflow-hidden">
-							<Image
-								src={
-									product.images?.[0] ||
-									product.image ||
-									"https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png"
-								}
-								alt={product.title}
-								fill
-								className="object-contain p-4 group-hover:scale-105 transition-transform duration-300"
-								onClick={handleViewProduct}
-							/>
+                                                        <Image
+                                                                src={defaultImage}
+                                                                alt={product.title}
+                                                                fill
+                                                                className="object-contain p-4 group-hover:scale-105 transition-transform duration-300"
+                                                                onClick={handleViewProduct}
+                                                        />
 
 							{/* Badges */}
 							<div className="absolute top-2 left-2 flex flex-col gap-1">
