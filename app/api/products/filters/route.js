@@ -2,18 +2,6 @@ import { dbConnect } from "@/lib/dbConnect.js";
 import Product from "@/model/Product.js";
 import Price from "@/model/Price.js";
 
-const categories = [
-        "personal-safety",
-        "road-safety",
-        "signage",
-        "industrial-safety",
-        "queue-management",
-        "fire-safety",
-        "first-aid",
-        "water-safety",
-        "emergency-kit",
-];
-
 export async function GET(request) {
         await dbConnect();
 
@@ -53,35 +41,44 @@ export async function GET(request) {
                         ]);
 
                         categoryList = subcategoryCounts
-                                .filter((item) => item._id)
-                                .map((item) => ({
-                                        id: item._id,
-                                        label: item._id
-                                                .split("-")
-                                                .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-                                                .join(" "),
-                                        count: item.count,
-                                }));
+                                .map((item) => {
+                                        const id = typeof item._id === "string" ? item._id.trim() : "";
+                                        if (!id) return null;
+                                        return {
+                                                id,
+                                                label: id
+                                                        .split("-")
+                                                        .map((word) =>
+                                                                word.charAt(0).toUpperCase() + word.slice(1)
+                                                        )
+                                                        .join(" "),
+                                                count: item.count,
+                                        };
+                                })
+                                .filter(Boolean);
                 } else {
-                        // Get category counts
                         const categoryCounts = await Product.aggregate([
                                 { $match: matchStage },
                                 { $group: { _id: "$category", count: { $sum: 1 } } },
+                                { $sort: { _id: 1 } },
                         ]);
 
-                        const categoryMap = categoryCounts.reduce((acc, item) => {
-                                acc[item._id] = item.count;
-                                return acc;
-                        }, {});
-
-                        categoryList = categories.map((cat) => ({
-                                id: cat,
-                                label: cat
-                                        .split("-")
-                                        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-                                        .join(" "),
-                                count: categoryMap[cat] || 0,
-                        }));
+                        categoryList = categoryCounts
+                                .map((item) => {
+                                        const id = typeof item._id === "string" ? item._id.trim() : "";
+                                        if (!id) return null;
+                                        return {
+                                                id,
+                                                label: id
+                                                        .split("-")
+                                                        .map((word) =>
+                                                                word.charAt(0).toUpperCase() + word.slice(1)
+                                                        )
+                                                        .join(" "),
+                                                count: item.count,
+                                        };
+                                })
+                                .filter(Boolean);
                 }
 
                 // Get discount range
