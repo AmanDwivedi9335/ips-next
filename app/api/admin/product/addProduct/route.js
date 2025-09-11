@@ -82,8 +82,6 @@ export async function POST(request) {
                         if (sizeStr) sizes = JSON.parse(sizeStr);
                         if (layoutStr) layouts = JSON.parse(layoutStr);
 
-                        if (langImgStr) languageImages = JSON.parse(langImgStr);
-
                         if (priceStr)
                                 pricing = JSON.parse(priceStr).map((p) => ({
                                         ...p,
@@ -118,40 +116,29 @@ export async function POST(request) {
                        })
                );
 
-               const filteredLanguageImages = uploadedLanguageImages.filter(Boolean);
-
-
-               // Filter language images that contain both language and image URL
-               const filteredLanguageImages = languageImages.filter(
-                       (li) => li.language && li.image
+               const languageImages = uploadedLanguageImages.filter(
+                       (li) => li && li.language && li.image
                );
 
-
-               const imageUrls = filteredLanguageImages.map((li) => li.image);
+               const imageUrls = languageImages.map((li) => li.image);
                const allLanguages = Array.from(
                        new Set([
                                ...languages,
-                               ...filteredLanguageImages.map((li) => li.language),
+                               ...languageImages.map((li) => li.language),
                        ])
                );
 
-                // Create new product
-                const basePrice =
+                 // Create new product
+                 const basePrice =
+                         pricing.find((p) => typeof p?.price === "number" && !isNaN(p.price))
+                                 ?.price || 0;
 
-                        pricing.find((p) => typeof p?.price === "number" && !isNaN(p.price))
-                                ?.price || 0;
-
-
-                        pricing.find((p) => typeof p?.price === "number" && !isNaN(p.price))
-                                ?.price || 0;
-
-
-                const product = new Product({
+                 const product = new Product({
                         title,
                         description,
                         longDescription: formData.get("longDescription") || description,
                         images: imageUrls,
-                        languageImages: filteredLanguageImages,
+                        languageImages,
                         category,
                         subcategory,
                         productFamily,
