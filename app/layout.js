@@ -2,9 +2,9 @@ import "./globals.css";
 import Script from "next/script";
 
 export const metadata = {
-	title: "Safety Equipment Store - Professional Safety Gear",
+	title: " Industrial Print Solutions",
 	description:
-		"Your trusted source for professional safety equipment, protective gear, and industrial safety solutions.",
+		"Order best quality poster and sign for industrial purpose",
 };
 
 export default function RootLayout({ children }) {
