@@ -2,8 +2,6 @@ import { dbConnect } from "@/lib/dbConnect.js";
 import Product from "@/model/Product.js";
 import Price from "@/model/Price.js";
 
-import cloudinary from "@/lib/cloudnary.js";
-import { Readable } from "stream";
 
 
 export async function POST(request) {
@@ -92,35 +90,19 @@ export async function POST(request) {
                 }
 
 
-               // Upload language images to Cloudinary
-               const languageImageFiles = formData.getAll("languageImages");
-               const uploadedLanguageImages = await Promise.all(
-                       languageImageFiles.map(async (file) => {
-                               try {
-                                       const buffer = Buffer.from(await file.arrayBuffer());
-                                       const result = await new Promise((resolve, reject) => {
-                                               const upload = cloudinary.uploader.upload_stream(
-                                                       (err, res) => {
-                                                               if (err) reject(err);
-                                                               else resolve(res);
-                                                       }
-                                               );
-                                               Readable.from(buffer).pipe(upload);
-                                       });
-                                       if (result?.secure_url)
-                                               return { language: file.name, image: result.secure_url };
-                               } catch (err) {
-                                       console.error("Cloudinary upload error:", err);
-                               }
-                               return null;
-                       })
-               );
+               // Parse images and languageImages
+               let images = [];
+               let languageImages = [];
+               try {
+                       const imagesStr = formData.get("images");
+                       if (imagesStr) images = JSON.parse(imagesStr);
+                       const langImgStr = formData.get("languageImages");
+                       if (langImgStr) languageImages = JSON.parse(langImgStr);
+               } catch (err) {
+                       console.error("Error parsing images:", err);
+               }
 
-               const languageImages = uploadedLanguageImages.filter(
-                       (li) => li && li.language && li.image
-               );
-
-               const imageUrls = languageImages.map((li) => li.image);
+               const imageUrls = images;
                const allLanguages = Array.from(
                        new Set([
                                ...languages,
