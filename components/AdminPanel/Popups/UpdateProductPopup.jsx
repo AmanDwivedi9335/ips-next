@@ -59,6 +59,11 @@ export function UpdateProductPopup({ open, onOpenChange, product }) {
 
   const { productFamilies, fetchProductFamilies } = useAdminProductFamilyStore();
 
+  const sortLanguageImages = (images) =>
+    [...images].sort((a, b) =>
+      a.language === "English" ? -1 : b.language === "English" ? 1 : 0,
+    );
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [features, setFeatures] = useState(
     product?.features?.length ? product.features : [{ title: "", description: "" }],
@@ -75,7 +80,7 @@ export function UpdateProductPopup({ open, onOpenChange, product }) {
   );
   const [languageImages, setLanguageImages] = useState(
     product?.languageImages?.length
-      ? product.languageImages
+      ? sortLanguageImages(product.languageImages)
       : [{ language: "English", image: "" }],
   );
   const [prices, setPrices] = useState(
@@ -195,7 +200,7 @@ export function UpdateProductPopup({ open, onOpenChange, product }) {
       setSelectedLayouts(product.layouts || []);
       setLanguageImages(
         product.languageImages?.length
-          ? product.languageImages
+          ? sortLanguageImages(product.languageImages)
           : [{ language: "English", image: "" }],
       );
       setPrices(

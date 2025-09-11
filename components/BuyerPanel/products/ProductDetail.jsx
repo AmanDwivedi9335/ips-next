@@ -47,8 +47,11 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                 product.languages && product.languages.length > 0
                         ? product.languages
                         : product.languageImages?.map((li) => li.language) || [];
+        const englishImage = product.languageImages?.find(
+                (l) => l.language === "English"
+        )?.image;
         const [selectedLanguage, setSelectedLanguage] = useState(
-                languages[0] || ""
+                languages.includes("English") ? "English" : languages[0] || ""
         );
         const [selectedSize, setSelectedSize] = useState(
                 product.sizes?.[0] || ""
@@ -88,9 +91,10 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                 fetchPrice();
         }, [selectedLayout, selectedSize, selectedMaterial, hasQr, product]);
 
-        const languageImage = product.languageImages?.find(
-                (l) => l.language === selectedLanguage
-        )?.image;
+        const languageImage =
+                product.languageImages?.find(
+                        (l) => l.language === selectedLanguage
+                )?.image || englishImage;
         const categoryName = product.category?.replace("-", " ");
         const subcategoryName = product.subcategory?.replace("-", " ");
 
@@ -159,9 +163,13 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
 			description: product.description,
                         price: calculatedPrice,
                         originalPrice: calculatedPrice,
-                        image: product.images?.[0] || product.image,
+                        image:
+                                languageImage ||
+                                englishImage ||
+                                product.images?.[0] ||
+                                product.image,
                 });
-	};
+        };
 
 	const handleBuyNow = async (e) => {
 		e.stopPropagation();

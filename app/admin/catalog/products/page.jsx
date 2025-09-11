@@ -394,47 +394,58 @@ export default function AdminProductsPage() {
                                                                                </TableRow>
                                                                        </TableHeader>
                                                                        <TableBody>
-                                                                               {products.map((product, index) => (
-                                                                                       <motion.tr
-												key={product._id}
-												initial={{ opacity: 0, y: 10 }}
-												animate={{ opacity: 1, y: 0 }}
-												transition={{ duration: 0.2, delay: index * 0.05 }}
-											>
-												<TableCell>
-													<Checkbox
-														checked={selectedProducts.includes(product._id)}
-														onCheckedChange={() =>
-															toggleProductSelection(product._id)
-														}
-													/>
-												</TableCell>
-												<TableCell className="font-medium">
-													<div className="flex items-center gap-3">
-														<div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-															{product.images?.[0] ? (
-																<img
-																	src={product.images[0] || "https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png"}
-																	alt={product.title}
-																	className="w-full h-full object-cover rounded-lg"
-																/>
-															) : (
-																<div className="text-xs text-gray-400">IMG</div>
-															)}
-														</div>
-														<div>
-															<div className="font-medium">{product.title}</div>
-															<div className="text-sm text-gray-500 line-clamp-1">
-																{product.description}
-															</div>
-														</div>
-													</div>
-												</TableCell>
-												<TableCell>
-													<Badge variant="outline" className="capitalize">
-														{product.category.replace("-", " ")}
-													</Badge>
-												</TableCell>
+                                                                               {products.map((product, index) => {
+                                                                                       const englishImage = product.languageImages?.find(
+                                                                                               (li) => li.language === "English"
+                                                                                       )?.image;
+                                                                                       const defaultImage =
+                                                                                               englishImage ||
+                                                                                               product.images?.[0] ||
+                                                                                               product.image;
+                                                                                       return (
+                                                                                               <motion.tr
+                                                                                                       key={product._id}
+                                                                                                       initial={{ opacity: 0, y: 10 }}
+                                                                                                       animate={{ opacity: 1, y: 0 }}
+                                                                                                       transition={{ duration: 0.2, delay: index * 0.05 }}
+                                                                                               >
+                                                                                                       <TableCell>
+                                                                                                               <Checkbox
+                                                                                                                       checked={selectedProducts.includes(product._id)}
+                                                                                                                       onCheckedChange={() =>
+                                                                                                                               toggleProductSelection(product._id)
+                                                                                                                       }
+                                                                                                               />
+                                                                                                       </TableCell>
+                                                                                                       <TableCell className="font-medium">
+                                                                                                               <div className="flex items-center gap-3">
+                                                                                                                       <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+                                                                                                                               {defaultImage ? (
+                                                                                                                                       <img
+                                                                                                                                               src={
+                                                                                                                                                       defaultImage ||
+                                                                                                                                                       "https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png"
+                                                                                                                                               }
+                                                                                                                                               alt={product.title}
+                                                                                                                                               className="w-full h-full object-cover rounded-lg"
+                                                                                                                                       />
+                                                                                                                               ) : (
+                                                                                                                                       <div className="text-xs text-gray-400">IMG</div>
+                                                                                                                               )}
+                                                                                                                       </div>
+                                                                                                                       <div>
+                                                                                                                               <div className="font-medium">{product.title}</div>
+                                                                                                                               <div className="text-sm text-gray-500 line-clamp-1">
+                                                                                                                                       {product.description}
+                                                                                                                               </div>
+                                                                                                                       </div>
+                                                                                                               </div>
+                                                                                                       </TableCell>
+                                                                                                <TableCell>
+                                                                                                        <Badge variant="outline" className="capitalize">
+                                                                                                                {product.category.replace("-", " ")}
+                                                                                                        </Badge>
+                                                                                               </TableCell>
 												<TableCell className="font-medium">
 													₹{product.price.toLocaleString()}
 												</TableCell>
@@ -473,10 +484,11 @@ export default function AdminProductsPage() {
 														</Button>
 													</div>
 												</TableCell>
-											</motion.tr>
-										))}
-									</TableBody>
-								</Table>
+</motion.tr>
+);
+})}
+</TableBody>
+</Table>
 
 								{/* Pagination */}
 								<div className="flex items-center justify-between mt-6">
