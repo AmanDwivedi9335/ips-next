@@ -115,6 +115,20 @@ export const useAdminProductStore = create((set, get) => ({
 
                        const validLanguageImages = uploadedLanguageImages.filter(Boolean);
 
+                       // Helper to convert base64 strings to Blob objects
+                       const base64ToBlob = (base64) => {
+                               const [header, data] = base64.split(",");
+                               const mimeMatch = header.match(/:(.*?);/);
+                               const mime = mimeMatch ? mimeMatch[1] : "application/octet-stream";
+                               const byteCharacters = atob(data);
+                               const byteNumbers = new Array(byteCharacters.length);
+                               for (let i = 0; i < byteCharacters.length; i++) {
+                                       byteNumbers[i] = byteCharacters.charCodeAt(i);
+                               }
+                               const byteArray = new Uint8Array(byteNumbers);
+                               return new Blob([byteArray], { type: mime });
+                       };
+
                        // Create FormData for submitting product details
 
                        const formData = new FormData();
@@ -171,12 +185,17 @@ export const useAdminProductStore = create((set, get) => ({
 
                        // Append language images as files
                        (productData.languageImages || []).forEach((li) => {
-                               if (li.image)
+                               if (li.image) {
+                                       const imageBlob =
+                                               li.image instanceof Blob
+                                                       ? li.image
+                                                       : base64ToBlob(li.image);
                                        formData.append(
                                                "languageImages",
-                                               li.image,
+                                               imageBlob,
                                                li.language
                                        );
+                               }
                        });
 
                        const response = await fetch("/api/admin/product/addProduct", {
