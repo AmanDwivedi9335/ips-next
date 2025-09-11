@@ -77,12 +77,10 @@ export const useAdminProductStore = create((set, get) => ({
        // Upload language images to Cloudinary and submit product
        addProduct: async (productData) => {
                try {
-                       const cloudName =
-                               process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ||
-                               process.env.CLOUDINARY_CLOUD_NAME;
-                       const uploadPreset =
-                               process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET ||
-                               process.env.CLOUDINARY_UPLOAD_PRESET;
+
+                      const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
+                      const uploadPreset = process.env.CLOUDINARY_UPLOAD_PRESET;
+
 
                        // Upload each language image to Cloudinary and replace with URL
                        const uploadedLanguageImages = await Promise.all(

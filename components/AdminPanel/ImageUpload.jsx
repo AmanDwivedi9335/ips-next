@@ -16,12 +16,10 @@ export function ImageUpload({
         const [imageMetadata, setImageMetadata] = useState([]); // Store metadata separately
         const fileInputRef = useRef(null);
 
-        const cloudName =
-                process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ||
-                process.env.CLOUDINARY_CLOUD_NAME;
-        const uploadPreset =
-                process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET ||
-                process.env.CLOUDINARY_UPLOAD_PRESET;
+
+       const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
+       const uploadPreset = process.env.CLOUDINARY_UPLOAD_PRESET;
+
 
         const MAX_IMAGES = maxImages;
 	const MAX_SIZE = 5 * 1024 * 1024; // 5MB
