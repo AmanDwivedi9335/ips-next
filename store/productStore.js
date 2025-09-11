@@ -10,12 +10,10 @@ export const useProductStore = create(
 				// Initial State
 				products: [],
 				filteredProducts: [],
-				filters: {
-					categories: [],
-					priceRange: [0, 10000],
-                                        discount: 0,
-                                        type: "",
-				},
+                                filters: {
+                                        categories: [],
+                                        priceRange: [0, 10000],
+                                },
 				availableFilters: null,
 				currentCategory: "all",
 				currentPage: 1,
@@ -70,13 +68,6 @@ export const useProductStore = create(
                                                         );
                                                 }
 
-                                                if (filters.discount > 0) {
-                                                        params.append("discount", filters.discount.toString());
-                                                }
-
-						if (filters.type) {
-							params.append("type", filters.type);
-						}
 
 						const response = await fetch(`/api/products?${params}`);
 						const data = await response.json();

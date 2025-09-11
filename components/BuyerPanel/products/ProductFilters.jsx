@@ -6,17 +6,10 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
 import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "@/components/ui/select";
-import {
-	Accordion,
-	AccordionContent,
-	AccordionItem,
-	AccordionTrigger,
+        Accordion,
+        AccordionContent,
+        AccordionItem,
+        AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Filter, X } from "lucide-react";
 import { useProductStore } from "@/store/productStore.js";
@@ -49,30 +42,20 @@ export default function ProductFilters() {
 	};
 
 
-	const handleDiscountChange = (value) => {
-		setFilters({ discount: Number.parseInt(value) || 0 });
-	};
-
-	const handleTypeChange = (value) => {
-		setFilters({ type: value === "all" ? "" : value });
-	};
-
-	const handleApplyFilters = () => {
-		applyFilters();
-		setIsOpen(false);
-	};
+        const handleApplyFilters = () => {
+                applyFilters();
+                setIsOpen(false);
+        };
 
 	const clearFilters = () => {
 		setFilters({
 			categories: [],
-			priceRange: availableFilters
-				? [availableFilters.priceRange.min, availableFilters.priceRange.max]
-				: [0, 10000],
-                        discount: 0,
-                        type: "",
-		});
-		applyFilters();
-	};
+                        priceRange: availableFilters
+                                ? [availableFilters.priceRange.min, availableFilters.priceRange.max]
+                                : [0, 10000],
+                });
+                applyFilters();
+        };
 
 	if (!availableFilters) {
 		return (
@@ -112,15 +95,13 @@ export default function ProductFilters() {
 					</Button>
 				</div>
 
-				<FilterContent
-					availableFilters={availableFilters}
-					filters={filters}
-					onCategoryChange={handleCategoryChange}
-					onPriceChange={handlePriceChange}
-					onDiscountChange={handleDiscountChange}
-					onTypeChange={handleTypeChange}
-					onApply={handleApplyFilters}
-				/>
+                                <FilterContent
+                                        availableFilters={availableFilters}
+                                        filters={filters}
+                                        onCategoryChange={handleCategoryChange}
+                                        onPriceChange={handlePriceChange}
+                                        onApply={handleApplyFilters}
+                                />
 			</div>
 
 			{/* Mobile Filter Modal */}
@@ -151,21 +132,19 @@ export default function ProductFilters() {
 								</Button>
 							</div>
 
-							<FilterContent
-								availableFilters={availableFilters}
-								filters={filters}
-								onCategoryChange={handleCategoryChange}
-								onPriceChange={handlePriceChange}
-                                                                onDiscountChange={handleDiscountChange}
-                                                                onTypeChange={handleTypeChange}
+                                                        <FilterContent
+                                                                availableFilters={availableFilters}
+                                                                filters={filters}
+                                                                onCategoryChange={handleCategoryChange}
+                                                                onPriceChange={handlePriceChange}
                                                                 onApply={handleApplyFilters}
-							/>
-						</motion.div>
-					</motion.div>
-				)}
-			</AnimatePresence>
-		</>
-	);
+                                                        />
+                                                </motion.div>
+                                        </motion.div>
+                                )}
+                        </AnimatePresence>
+                </>
+        );
 }
 
 function FilterContent({
@@ -173,12 +152,10 @@ function FilterContent({
         filters,
         onCategoryChange,
         onPriceChange,
-        onDiscountChange,
-        onTypeChange,
         onApply,
 }) {
-	return (
-		<div className="space-y-6">
+        return (
+                <div className="space-y-6">
                         {/* Subcategories */}
                         <Accordion type="single" collapsible defaultValue="categories">
                                 <AccordionItem value="categories">
@@ -230,65 +207,12 @@ function FilterContent({
 				</AccordionItem>
 			</Accordion>
 
-			{/* Product Type */}
-			<Accordion type="single" collapsible defaultValue="type">
-				<AccordionItem value="type">
-					<AccordionTrigger>Product Type</AccordionTrigger>
-					<AccordionContent>
-						<div className="pt-4">
-							<Select
-								value={filters.type || "all"}
-								onValueChange={onTypeChange}
-							>
-								<SelectTrigger>
-									<SelectValue placeholder="Select type" />
-								</SelectTrigger>
-								<SelectContent>
-									<SelectItem value="all">All Types</SelectItem>
-									{availableFilters.types.map((type) => (
-										<SelectItem key={type.id} value={type.id}>
-											{type.label}
-										</SelectItem>
-									))}
-								</SelectContent>
-							</Select>
-						</div>
-					</AccordionContent>
-				</AccordionItem>
-			</Accordion>
-
-			{/* Discount */}
-			<Accordion type="single" collapsible defaultValue="discount">
-				<AccordionItem value="discount">
-					<AccordionTrigger>Minimum Discount</AccordionTrigger>
-					<AccordionContent>
-						<div className="pt-4">
-							<Select
-								value={filters.discount.toString()}
-								onValueChange={onDiscountChange}
-							>
-								<SelectTrigger>
-									<SelectValue placeholder="Select discount" />
-								</SelectTrigger>
-								<SelectContent>
-									<SelectItem value="0">No minimum</SelectItem>
-									<SelectItem value="10">10% or more</SelectItem>
-									<SelectItem value="20">20% or more</SelectItem>
-									<SelectItem value="30">30% or more</SelectItem>
-									<SelectItem value="50">50% or more</SelectItem>
-								</SelectContent>
-							</Select>
-						</div>
-					</AccordionContent>
-				</AccordionItem>
-			</Accordion>
-
                         {/* Apply Button */}
                         <Button
                                 onClick={onApply}
                                 className="w-full bg-black text-white hover:bg-gray-800"
                         >
-				Apply Filters
+                                Apply Filters
 			</Button>
 		</div>
 	);
