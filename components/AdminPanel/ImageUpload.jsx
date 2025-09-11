@@ -17,10 +17,6 @@ export function ImageUpload({
         const fileInputRef = useRef(null);
 
 
-       const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
-       const uploadPreset = process.env.CLOUDINARY_UPLOAD_PRESET;
-
-
         const MAX_IMAGES = maxImages;
 	const MAX_SIZE = 5 * 1024 * 1024; // 5MB
 	const VALID_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
@@ -38,19 +34,18 @@ export function ImageUpload({
         const uploadToCloudinary = async (file) => {
                 const formData = new FormData();
                 formData.append("file", file);
-                if (uploadPreset) formData.append("upload_preset", uploadPreset);
 
-                const res = await fetch(
-                        `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
-                        {
-                                method: "POST",
-                                body: formData,
-                        }
-                );
+
+                const res = await fetch("/api/admin/uploadImage", {
+                        method: "POST",
+                        body: formData,
+                });
+
                 const json = await res.json();
-                if (!json.secure_url) throw new Error("Upload failed");
+                if (!json?.url) throw new Error("Upload failed");
                 return {
-                        url: json.secure_url,
+                        url: json.url,
+
                         metadata: {
                                 name: file.name,
                                 size: file.size,

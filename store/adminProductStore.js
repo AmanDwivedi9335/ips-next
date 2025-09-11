@@ -77,33 +77,26 @@ export const useAdminProductStore = create((set, get) => ({
        // Upload language images to Cloudinary and submit product
        addProduct: async (productData) => {
                try {
+                       // Upload each language image via server-side Cloudinary route
+                       const uploadImage = async (file) => {
+                               const data = new FormData();
+                               data.append("file", file);
+                               const res = await fetch("/api/admin/uploadImage", {
+                                       method: "POST",
+                                       body: data,
+                               });
+                               const json = await res.json();
+                               return json?.url;
+                       };
 
-                      const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
-                      const uploadPreset = process.env.CLOUDINARY_UPLOAD_PRESET;
 
-
-                       // Upload each language image to Cloudinary and replace with URL
                        const uploadedLanguageImages = await Promise.all(
                                (productData.languageImages || []).map(async (li) => {
                                        if (!li.image) return null;
+                                       const url = await uploadImage(li.image);
+                                       if (!url) return null;
+                                       return { language: li.language, image: url };
 
-                                       const data = new FormData();
-                                       data.append("file", li.image);
-
-                                       if (uploadPreset) data.append("upload_preset", uploadPreset);
-
-                                       const res = await fetch(
-                                               `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
-                                               {
-                                                       method: "POST",
-                                                       body: data,
-                                               }
-                                       );
-                                       const json = await res.json();
-
-                                       if (!json.secure_url) return null;
-
-                                       return { language: li.language, image: json.secure_url };
                                })
                        );
 
