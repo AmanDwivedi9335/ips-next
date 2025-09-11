@@ -35,31 +35,49 @@ export async function POST(request) {
 					continue;
 				}
 
-				let imageUrls = [];
+                                let imageUrls = [];
 
-				// Handle image uploads if provided
-				if (productData.images && productData.images.length > 0) {
-					try {
-						// Extract base64 data from images
-						const base64Images = productData.images
-							.map((img) =>
-								typeof img === "string" && img.startsWith("data:")
-									? img
-									: img.base64
-							)
-							.filter(Boolean);
+                                // Handle image uploads if provided
+                                if (productData.images && productData.images.length > 0) {
+                                        try {
+                                                const base64Images = [];
+                                                const urlImages = [];
 
-						if (base64Images.length > 0) {
-							imageUrls = await uploadMultipleImagesToCloudinary(
-								base64Images,
-								"products"
-							);
-						}
-					} catch (error) {
-						console.error("Image upload error for product:", title, error);
-						// Continue without images rather than failing the entire product
-					}
-				}
+                                                productData.images.forEach((img) => {
+                                                        if (
+                                                                typeof img === "string" &&
+                                                                img.startsWith("data:")
+                                                        ) {
+                                                                base64Images.push(img);
+                                                        } else if (
+                                                                typeof img === "string" &&
+                                                                img.startsWith("http")
+                                                        ) {
+                                                                urlImages.push(img);
+                                                        } else if (img?.base64) {
+                                                                base64Images.push(img.base64);
+                                                        }
+                                                });
+
+                                                if (base64Images.length > 0) {
+                                                        const uploaded =
+                                                                await uploadMultipleImagesToCloudinary(
+                                                                        base64Images,
+                                                                        "products"
+                                                                );
+                                                        imageUrls = [...urlImages, ...uploaded];
+                                                } else {
+                                                        imageUrls = urlImages;
+                                                }
+                                        } catch (error) {
+                                                console.error(
+                                                        "Image upload error for product:",
+                                                        title,
+                                                        error
+                                                );
+                                                // Continue without images rather than failing the entire product
+                                        }
+                                }
 
 				// Create new product
 				const product = new Product({
