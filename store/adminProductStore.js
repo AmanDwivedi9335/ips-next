@@ -168,17 +168,6 @@ export const useAdminProductStore = create((set, get) => ({
                                JSON.stringify(productData.pricing || [])
                        );
 
-
-                       // Append language images as files
-                       (productData.languageImages || []).forEach((li) => {
-                               if (li.image)
-                                       formData.append(
-                                               "languageImages",
-                                               li.image,
-                                               li.language
-                                       );
-                       });
-
                        const response = await fetch("/api/admin/product/addProduct", {
                                method: "POST",
                                body: formData, // Let the browser set Content-Type for FormData
