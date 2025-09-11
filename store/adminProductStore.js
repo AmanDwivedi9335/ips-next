@@ -77,30 +77,9 @@ export const useAdminProductStore = create((set, get) => ({
        // Upload language images to Cloudinary and submit product
        addProduct: async (productData) => {
                try {
-                       // Upload each language image via server-side Cloudinary route
-                       const uploadImage = async (file) => {
-                               const data = new FormData();
-                               data.append("file", file);
-                               const res = await fetch("/api/admin/uploadImage", {
-                                       method: "POST",
-                                       body: data,
-                               });
-                               const json = await res.json();
-                               return json?.url;
-                       };
-
-
-                       const uploadedLanguageImages = await Promise.all(
-                               (productData.languageImages || []).map(async (li) => {
-                                       if (!li.image) return null;
-                                       const url = await uploadImage(li.image);
-                                       if (!url) return null;
-                                       return { language: li.language, image: url };
-
-                               })
-                       );
-
-                       const validLanguageImages = uploadedLanguageImages.filter(Boolean);
+                       // Language images are already uploaded in the form component
+                       // and provided here as Cloudinary URLs. Simply pass them through.
+                       const validLanguageImages = productData.languageImages || [];
 
                        // Create FormData for submitting product details
                        const formData = new FormData();
