@@ -64,6 +64,7 @@ export async function GET(request) {
                         ]);
 
                         categoryList = categoryCounts
+
                                 .map((item) => {
                                         const id = typeof item._id === "string" ? item._id.trim() : "";
                                         if (!id) return null;
@@ -79,6 +80,7 @@ export async function GET(request) {
                                         };
                                 })
                                 .filter(Boolean);
+
                 }
 
                 // Get discount range
