@@ -25,9 +25,9 @@ export default function ProductCard({ product, viewMode = "grid" }) {
                 product.image ||
                 "https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png";
 
-	const handleViewProduct = () => {
-		router.push(`/products/${product.id || product._id}`);
-	};
+        const handleViewProduct = () => {
+                router.push(`/products/${product._id || product.id}`);
+        };
 
         const handleAddToCart = async (e) => {
                 e.stopPropagation();
