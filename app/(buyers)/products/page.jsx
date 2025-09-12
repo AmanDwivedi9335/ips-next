@@ -9,24 +9,29 @@ import { useSearchParams } from "next/navigation";
 export default function ProductsPage() {
 	const searchParams = useSearchParams();
 
-	const { error, fetchProducts, setCurrentCategory, setSearchQuery } =
-		useProductStore();
+        const { error, fetchProducts, setCurrentCategory, setSearchQuery, setFilters } =
+                useProductStore();
 
 	// Handle URL parameters
 	useEffect(() => {
-		const category = searchParams.get("category");
-		const search = searchParams.get("search");
+                const category = searchParams.get("category");
+                const search = searchParams.get("search");
+                const subcategories = searchParams.get("subcategories");
 
-		if (category) {
-			setCurrentCategory(category);
-		}
+                if (category) {
+                        setCurrentCategory(category, false);
+                }
 
-		if (search) {
-			setSearchQuery(search);
-		}
+                if (search) {
+                        setSearchQuery(search, false);
+                }
 
-		fetchProducts();
-	}, [searchParams, fetchProducts, setCurrentCategory, setSearchQuery]);
+                if (subcategories) {
+                        setFilters({ categories: subcategories.split(",") });
+                }
+
+                fetchProducts();
+        }, [searchParams, fetchProducts, setCurrentCategory, setSearchQuery, setFilters]);
 
 	if (error) {
 		return (

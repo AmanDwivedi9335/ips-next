@@ -55,7 +55,7 @@ export default function CategoryPage({ params }) {
         };
 
         const handleSubcategoryClick = (subSlug) => {
-                router.push(`/products?category=${subSlug}`);
+                router.push(`/products?category=${slug}&subcategories=${subSlug}`);
         };
 
         return (
