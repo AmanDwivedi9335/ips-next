@@ -12,10 +12,11 @@ export async function POST(request) {
 
 		// Extract product data from formData
 		const title = formData.get("title");
-		const description = formData.get("description");
+                const description = formData.get("description");
                 const category = formData.get("category");
                 const subcategory = formData.get("subcategory");
                 const productFamily = formData.get("productFamily");
+                const code = formData.get("code");
 
                 console.log("Received data:", {
                         title,
@@ -115,10 +116,11 @@ export async function POST(request) {
                          pricing.find((p) => typeof p?.price === "number" && !isNaN(p.price))
                                  ?.price || 0;
 
-                 const product = new Product({
+                const product = new Product({
                         title,
                         description,
                         longDescription: formData.get("longDescription") || description,
+                        code,
                         images: imageUrls,
                         languageImages,
                         category,

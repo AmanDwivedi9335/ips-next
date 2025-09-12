@@ -45,14 +45,17 @@ export default function ProductCard({ product, viewMode = "grid" }) {
 							)}
 						</div>
 
-						<div className="flex-1 space-y-4">
-							<div>
-								<h3 className="text-xl font-semibold hover:text-blue-600 transition-colors">
-									{product.title}
-								</h3>
-								<p className="text-gray-600 mt-2 line-clamp-2">
-									{product.description}
-								</p>
+                                                <div className="flex-1 space-y-4">
+                                                        <div>
+                                                                <h3 className="text-xl font-semibold hover:text-blue-600 transition-colors">
+                                                                        {product.title}
+                                                                </h3>
+                                                                {product.code && (
+                                                                        <p className="text-sm text-gray-500">Code: {product.code}</p>
+                                                                )}
+                                                                <p className="text-gray-600 mt-2 line-clamp-2">
+                                                                        {product.description}
+                                                                </p>
 								<div className="flex items-center gap-2 mt-2">
 									<div className="flex items-center">
 										{[...Array(5)].map((_, i) => (
@@ -160,13 +163,16 @@ export default function ProductCard({ product, viewMode = "grid" }) {
 					</div>
 
 					<div className="p-6 flex-1 flex flex-col">
-						<div className="flex-1">
-							<h3 className="font-semibold text-lg mb-2 line-clamp-2 hover:text-blue-600 transition-colors">
-								{product.title}
-							</h3>
-							<p className="text-gray-600 text-sm mb-3 line-clamp-2">
-								{product.description}
-							</p>
+                                                <div className="flex-1">
+                                                        <h3 className="font-semibold text-lg mb-2 line-clamp-2 hover:text-blue-600 transition-colors">
+                                                                {product.title}
+                                                        </h3>
+                                                        {product.code && (
+                                                                <p className="text-xs text-gray-500 mb-1">Code: {product.code}</p>
+                                                        )}
+                                                        <p className="text-gray-600 text-sm mb-3 line-clamp-2">
+                                                                {product.description}
+                                                        </p>
 
 							{/* Rating */}
 							<div className="flex items-center gap-2 mb-3">

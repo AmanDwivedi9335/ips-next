@@ -19,13 +19,16 @@ export default function ProductCard({ product }) {
                 >
                         <CardContent className="p-4 md:p-6 relative">
 				<div className="flex justify-between items-start mb-4">
-					<div>
-						<h3 className="font-bold text-base md:text-lg mb-1">
-							{product.title}
-						</h3>
-						{product.subtitle && (
-							<p className="text-gray-600 text-sm">{product.subtitle}</p>
-						)}
+                                        <div>
+                                                <h3 className="font-bold text-base md:text-lg mb-1">
+                                                        {product.title}
+                                                </h3>
+                                                {product.code && (
+                                                        <p className="text-gray-500 text-xs">Code: {product.code}</p>
+                                                )}
+                                                {product.subtitle && (
+                                                        <p className="text-gray-600 text-sm">{product.subtitle}</p>
+                                                )}
 						<p className="font-bold text-lg md:text-xl mt-2">{product.price}</p>
 					</div>
 					{product.colors && (

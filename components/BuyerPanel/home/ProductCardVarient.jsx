@@ -26,14 +26,17 @@ function ProductCardVarient({ product, variant = "vertical" }) {
 						<div>
 							<div className="flex justify-between items-start">
 								<div className="flex-1">
-									<h3 className="font-bold text-lg md:text-xl mb-2 line-clamp-2">
-										{product?.title}
-									</h3>
-									{product?.subtitle && (
-										<p className="text-gray-600 text-sm mb-2">
-											{product?.subtitle}
-										</p>
-									)}
+                                                                <h3 className="font-bold text-lg md:text-xl mb-2 line-clamp-2">
+                                                                        {product?.title}
+                                                                </h3>
+                                                                {product?.code && (
+                                                                        <p className="text-gray-500 text-sm mb-2">Code: {product?.code}</p>
+                                                                )}
+                                                                {product?.subtitle && (
+                                                                        <p className="text-gray-600 text-sm mb-2">
+                                                                                {product?.subtitle}
+                                                                        </p>
+                                                                )}
 									<p className="text-gray-600 text-sm mb-4 line-clamp-3">
 										{product?.description}
 									</p>
@@ -115,15 +118,18 @@ function ProductCardVarient({ product, variant = "vertical" }) {
                         <CardContent className="h-full relative p-0 flex flex-col">
 				{/* Product Info Header */}
 				<div className="flex justify-between items-start p-4 md:p-6 flex-shrink-0">
-					<div className="flex-1">
-						<h3 className="font-bold text-base md:text-lg mb-1 line-clamp-2">
-							{product?.title}
-						</h3>
-						{product?.subtitle && (
-							<p className="text-gray-600 text-sm line-clamp-1">
-								{product?.subtitle}
-							</p>
-						)}
+                                        <div className="flex-1">
+                                                <h3 className="font-bold text-base md:text-lg mb-1 line-clamp-2">
+                                                        {product?.title}
+                                                </h3>
+                                                {product?.code && (
+                                                        <p className="text-gray-500 text-xs">Code: {product?.code}</p>
+                                                )}
+                                                {product?.subtitle && (
+                                                        <p className="text-gray-600 text-sm line-clamp-1">
+                                                                {product?.subtitle}
+                                                        </p>
+                                                )}
 						<div className="flex items-center mt-2">
 							<p className="font-bold text-lg md:text-xl">{product?.price}</p>
 							{product?.originalPrice && (
