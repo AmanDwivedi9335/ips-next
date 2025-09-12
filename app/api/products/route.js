@@ -47,23 +47,44 @@ export async function GET(request) {
 			];
 		}
 
-		// Price range filter
-		if (minPrice || maxPrice) {
-			query.$and = query.$and || [];
-			const priceQuery = {};
+                // Price range filter
+                if (minPrice || maxPrice) {
+                        query.$and = query.$and || [];
+                        const priceQuery = {};
+                        const salePriceQuery = {};
 
-			if (minPrice) {
-				priceQuery.$gte = Number.parseInt(minPrice);
-			}
-			if (maxPrice) {
-				priceQuery.$lte = Number.parseInt(maxPrice);
-			}
+                        if (minPrice) {
+                                const min = Number(minPrice);
+                                if (!Number.isNaN(min)) {
+                                        priceQuery.$gte = min;
+                                        salePriceQuery.$gte = min;
+                                }
+                        }
+                        if (maxPrice) {
+                                const max = Number(maxPrice);
+                                if (!Number.isNaN(max)) {
+                                        priceQuery.$lte = max;
+                                        salePriceQuery.$lte = max;
+                                }
+                        }
 
-			// Check both regular price and sale price
-			query.$and.push({
-				$or: [{ price: priceQuery }, { salePrice: { ...priceQuery, $gt: 0 } }],
-			});
-		}
+                        // Only enforce salePrice to be positive when no minimum is provided
+                        if (!minPrice) {
+                                salePriceQuery.$gt = 0;
+                        }
+
+                        const orConditions = [];
+                        if (Object.keys(priceQuery).length > 0) {
+                                orConditions.push({ price: priceQuery });
+                        }
+                        if (Object.keys(salePriceQuery).length > 0) {
+                                orConditions.push({ salePrice: salePriceQuery });
+                        }
+
+                        if (orConditions.length > 0) {
+                                query.$and.push({ $or: orConditions });
+                        }
+                }
 
 
 		// Discount filter
