@@ -103,48 +103,64 @@ export async function GET(request) {
 
 		// Execute query with pagination
 		const skip = (page - 1) * limit;
-		const products = await Product.find(query)
-			.sort(sortObj)
-			.skip(skip)
-			.limit(limit)
-			.lean();
+                const products = await Product.find(query)
+                        .sort(sortObj)
+                        .skip(skip)
+                        .limit(limit)
+                        .populate("reviews")
+                        .lean();
 
 		const total = await Product.countDocuments(query);
 		const totalPages = Math.ceil(total / limit);
 
 		// Transform products for frontend
-                const transformedProducts = products.map((product) => ({
-                        id: product._id.toString(),
-                        name: product.title,
-                        description: product.description,
-                        longDescription: product.longDescription,
-                        price: product.salePrice > 0 ? product.salePrice : product.price,
-                        mrp: product.mrp || product.price,
-                        code: product.code,
-                        salePrice: product.salePrice,
-                        discount: product.discount,
-                        subcategory: product.subcategory,
-                        languageImages: product.languageImages || [],
-                        languages: product.languages || [],
-                        sizes: product.sizes || [],
-                        materials: product.materials || [],
-                        materialSpecification: product.materialSpecification || "",
-                        discountPercentage:
-                                product.salePrice > 0
-                                        ? Math.round(
-                                                        ((product.price - product.salePrice) / product.price) * 100
-                                          )
-                                        : product.discount,
-                        image:
-                                product.images?.[0] ||
-                                "https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png",
-                        images: product.images || [],
-                        category: product.category,
-			type: product.type,
-			features: product.features || [],
-			createdAt: product.createdAt,
-			updatedAt: product.updatedAt,
-		}));
+                const transformedProducts = products.map((product) => {
+                        const reviewCount = product.reviews?.length || 0;
+                        const averageRating =
+                                reviewCount > 0
+                                        ? product.reviews.reduce(
+                                                  (sum, r) => sum + r.rating,
+                                                  0
+                                          ) / reviewCount
+                                        : 0;
+
+                        return {
+                                id: product._id.toString(),
+                                name: product.title,
+                                description: product.description,
+                                longDescription: product.longDescription,
+                                price: product.salePrice > 0 ? product.salePrice : product.price,
+                                mrp: product.mrp || product.price,
+                                code: product.code,
+                                salePrice: product.salePrice,
+                                discount: product.discount,
+                                subcategory: product.subcategory,
+                                languageImages: product.languageImages || [],
+                                languages: product.languages || [],
+                                sizes: product.sizes || [],
+                                materials: product.materials || [],
+                                materialSpecification: product.materialSpecification || "",
+                                discountPercentage:
+                                        product.salePrice > 0
+                                                ? Math.round(
+                                                                  ((product.price - product.salePrice) /
+                                                                          product.price) *
+                                                                          100
+                                                          )
+                                                : product.discount,
+                                image:
+                                        product.images?.[0] ||
+                                        "https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png",
+                                images: product.images || [],
+                                category: product.category,
+                                type: product.type,
+                                features: product.features || [],
+                                rating: averageRating,
+                                reviewCount,
+                                createdAt: product.createdAt,
+                                updatedAt: product.updatedAt,
+                        };
+                });
 
 		return Response.json({
 			success: true,

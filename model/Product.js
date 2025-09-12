@@ -50,7 +50,8 @@ const ProductSchema = new mongoose.Schema(
                         type: String,
                 },
 
-		// reviews: [{ type: mongoose.Schema.Types.ObjectId, ref: "Review" }],
+                // Reviews for the product
+                reviews: [{ type: mongoose.Schema.Types.ObjectId, ref: "Review" }],
 
 		// Features array to handle product features
 		features: [

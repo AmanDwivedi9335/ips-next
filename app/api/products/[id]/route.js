@@ -9,8 +9,11 @@ export async function GET(req, { params }) {
 
 	console.log("Product ID:", id);
 
-	try {
-		const product = await Product.findById(id);
+        try {
+                const product = await Product.findById(id).populate({
+                        path: "reviews",
+                        populate: { path: "user", select: "firstName lastName" },
+                });
 
 		if (!product) {
 			return Response.json({ message: "Product not found" }, { status: 404 });
@@ -24,6 +27,27 @@ export async function GET(req, { params }) {
 		}).limit(4);
 
 		// Transform product data to match frontend expectations
+                const reviewCount = product.reviews?.length || 0;
+                const averageRating =
+                        reviewCount > 0
+                                ? product.reviews.reduce((sum, r) => sum + r.rating, 0) /
+                                  reviewCount
+                                : 0;
+
+                const transformedReviews = product.reviews.map((r) => ({
+                        id: r._id.toString(),
+                        rating: r.rating,
+                        comment: r.comment,
+                        user: r.user
+                                ? {
+                                        id: r.user._id.toString(),
+                                        firstName: r.user.firstName,
+                                        lastName: r.user.lastName,
+                                }
+                                : null,
+                        createdAt: r.createdAt,
+                }));
+
                 const transformedProduct = {
                         id: product._id.toString(),
                         name: product.title,
@@ -44,14 +68,15 @@ export async function GET(req, { params }) {
                         layouts: product.layouts || [],
                         materialSpecification: product.materialSpecification || "",
                         image: product.images?.[0] || "https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png",
-			type: product.type,
-			published: product.published,
-			features: product.features || [],
-			rating: 4.5,
-			reviews: product.reviews || [],
-			createdAt: product.createdAt,
-			updatedAt: product.updatedAt,
-		};
+                        type: product.type,
+                        published: product.published,
+                        features: product.features || [],
+                        rating: averageRating,
+                        reviewCount,
+                        reviews: transformedReviews,
+                        createdAt: product.createdAt,
+                        updatedAt: product.updatedAt,
+                };
 
 		// Transform related products
 		const transformedRelatedProducts = relatedProducts.map((p) => ({
