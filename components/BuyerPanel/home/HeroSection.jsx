@@ -12,12 +12,10 @@ import {
 import { HeroImg } from "@/public/images/home";
 
 export default function HeroSection() {
-	const sidebarCategories = [
-		"Safety First",
-		"ISO Posters",
-		"Industry Bundles",
-		"Signs & Labels",
-	];
+        const sidebarCategories = [
+                "Safety First",
+                "Industrial Safety Packs",
+        ];
 
 	return (
 		<section className="relative bg-gray-100 overflow-hidden max-h-fit lg:max-h-[calc(100vh-136px)] h-full px-10">
