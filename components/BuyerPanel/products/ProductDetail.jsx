@@ -49,6 +49,15 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
         const [selectedLanguage, setSelectedLanguage] = useState(
                 languages.includes("English") ? "English" : languages[0] || ""
         );
+        const [availableLayouts, setAvailableLayouts] = useState(
+                product.layouts || [],
+        );
+        const [availableSizes, setAvailableSizes] = useState(
+                product.sizes || [],
+        );
+        const [availableMaterials, setAvailableMaterials] = useState(
+                product.materials || [],
+        );
         const [selectedSize, setSelectedSize] = useState(
                 product.sizes?.[0] || ""
         );
@@ -59,9 +68,66 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                 product.layouts?.[0] || "",
         );
         const [hasQr, setHasQr] = useState(false);
+        const [hasQrOption, setHasQrOption] = useState(false);
         const [calculatedPrice, setCalculatedPrice] = useState(0);
         const router = useRouter();
         const { addItem, isLoading } = useCartStore();
+
+        useEffect(() => {
+                const checkQrOption = async () => {
+                        try {
+                                const res = await fetch(
+                                        `/api/prices?product=${product._id || product.id}`
+                                );
+                                const data = await res.json();
+                                if (data.prices) {
+                                        const qrValues = new Set(
+                                                data.prices.map((p) => p.qr)
+                                        );
+                                        if (qrValues.size > 1) {
+                                                setHasQrOption(true);
+                                                setHasQr(false);
+                                        } else if (qrValues.has(true)) {
+                                                setHasQr(true);
+                                        }
+
+                                        const layoutSet = new Set(
+                                                data.prices
+                                                        .map((p) => p.layout)
+                                                        .filter(Boolean)
+                                        );
+                                        const sizeSet = new Set(
+                                                data.prices
+                                                        .map((p) => p.size)
+                                                        .filter(Boolean)
+                                        );
+                                        const materialSet = new Set(
+                                                data.prices
+                                                        .map((p) => p.material)
+                                                        .filter(Boolean)
+                                        );
+                                        setAvailableLayouts(Array.from(layoutSet));
+                                        setAvailableSizes(Array.from(sizeSet));
+                                        setAvailableMaterials(Array.from(materialSet));
+                                        if (layoutSet.size > 0)
+                                                setSelectedLayout(
+                                                        Array.from(layoutSet)[0]
+                                                );
+                                        if (sizeSet.size > 0)
+                                                setSelectedSize(
+                                                        Array.from(sizeSet)[0]
+                                                );
+                                        if (materialSet.size > 0)
+                                                setSelectedMaterial(
+                                                        Array.from(materialSet)[0]
+                                                );
+                                }
+                        } catch (e) {
+                                // ignore
+                        }
+                };
+                checkQrOption();
+        }, [product]);
 
         useEffect(() => {
                 const fetchPrice = async () => {
@@ -356,7 +422,7 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                                                         </div>
                                                 )}
 
-                                                {product.layouts && product.layouts.length > 0 && (
+                                                {availableLayouts && availableLayouts.length > 0 && (
                                                         <div className="mt-4">
                                                                 <Select
                                                                         value={selectedLayout}
@@ -366,7 +432,7 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                                                                                 <SelectValue placeholder="Layout" />
                                                                         </SelectTrigger>
                                                                         <SelectContent>
-                                                                                {product.layouts.map((lay) => (
+                                                                                {availableLayouts.map((lay) => (
                                                                                         <SelectItem key={lay} value={lay}>
                                                                                                 {lay}
                                                                                         </SelectItem>
@@ -375,7 +441,7 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                                                                 </Select>
                                                         </div>
                                                 )}
-                                                {product.sizes && product.sizes.length > 0 && (
+                                                {availableSizes && availableSizes.length > 0 && (
                                                         <div className="mt-4">
                                                                 <Select
                                                                         value={selectedSize}
@@ -385,7 +451,7 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                                                                                 <SelectValue placeholder="Size" />
                                                                         </SelectTrigger>
                                                                         <SelectContent>
-                                                                                {product.sizes.map((size) => (
+                                                                                {availableSizes.map((size) => (
                                                                                         <SelectItem key={size} value={size}>
                                                                                                 {size}
                                                                                         </SelectItem>
@@ -395,7 +461,7 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                                                         </div>
                                                 )}
 
-                                                {product.materials && product.materials.length > 0 && (
+                                                {availableMaterials && availableMaterials.length > 0 && (
                                                         <div className="mt-4">
                                                                 <Select
                                                                         value={selectedMaterial}
@@ -405,7 +471,7 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                                                                                 <SelectValue placeholder="Material" />
                                                                         </SelectTrigger>
                                                                         <SelectContent>
-                                                                                {product.materials.map((mat) => (
+                                                                                {availableMaterials.map((mat) => (
                                                                                         <SelectItem key={mat} value={mat}>
                                                                                                 {mat}
                                                                                         </SelectItem>
@@ -414,7 +480,7 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                                                                 </Select>
                                                         </div>
                                                 )}
-                                                {product.category?.toLowerCase() === "poster" && (
+                                                {hasQrOption && (
                                                         <div className="mt-4 flex items-center space-x-2">
                                                                 <Switch checked={hasQr} onCheckedChange={setHasQr} />
                                                                 <span>QR Code</span>
