@@ -7,21 +7,24 @@ import { ShoppingCart, Heart, ArrowRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 function ProductCardVarient({ product, variant = "vertical" }) {
-        console.log("Product:", product);
         const router = useRouter();
 
         const handleViewProduct = () => {
                 router.push(`/products/${product?._id || product?.id}`);
         };
 
-        const englishImage = product.languageImages?.find(
+
+        const englishImage = product?.languageImages?.find(
+
                 (l) => l.language?.toLowerCase() === "english"
         )?.image;
         const defaultImage =
                 englishImage ||
-                product.languageImages?.[0]?.image ||
-                product.images?.[0] ||
-                product.image ||
+
+                product?.languageImages?.[0]?.image ||
+                product?.images?.[0] ||
+                product?.image ||
+
                 "https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png";
 
         if (variant === "horizontal") {
