@@ -13,14 +13,18 @@ function ProductCardVarient({ product, variant = "vertical" }) {
                 router.push(`/products/${product?._id || product?.id}`);
         };
 
+
         const englishImage = product?.languageImages?.find(
+
                 (l) => l.language?.toLowerCase() === "english"
         )?.image;
         const defaultImage =
                 englishImage ||
+
                 product?.languageImages?.[0]?.image ||
                 product?.images?.[0] ||
                 product?.image ||
+
                 "https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png";
 
         if (variant === "horizontal") {
