@@ -70,6 +70,7 @@ export function AddProductPopup({ open, onOpenChange }) {
     title: "",
     description: "",
     longDescription: "",
+    code: "",
     category: "",
     subcategory: "",
     discount: "",
@@ -177,6 +178,7 @@ export function AddProductPopup({ open, onOpenChange }) {
 
       const productData = {
         title: formData.title,
+        code: formData.code,
         description: formData.description,
         longDescription: formData.longDescription || formData.description,
         category: formData.category,
@@ -218,6 +220,7 @@ export function AddProductPopup({ open, onOpenChange }) {
       title: "",
       description: "",
       longDescription: "",
+      code: "",
       category: "",
       subcategory: "",
       discount: "",
@@ -339,6 +342,19 @@ export function AddProductPopup({ open, onOpenChange }) {
                   }
                   className="mt-1"
                   required
+                />
+              </div>
+
+              <div className="md:col-span-2">
+                <Label htmlFor="code">Product Code</Label>
+                <Input
+                  id="code"
+                  placeholder="Enter product code"
+                  value={formData.code}
+                  onChange={(e) =>
+                    setFormData({ ...formData, code: e.target.value })
+                  }
+                  className="mt-1"
                 />
               </div>
 

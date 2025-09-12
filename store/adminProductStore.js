@@ -86,6 +86,8 @@ export const useAdminProductStore = create((set, get) => ({
 
                        // Add all text fields
                        formData.append("title", productData.title);
+                       if (productData.code)
+                               formData.append("code", productData.code);
                        formData.append("description", productData.description);
                        formData.append(
                                "longDescription",
@@ -161,10 +163,12 @@ export const useAdminProductStore = create((set, get) => ({
                 try {
                         const formData = new FormData();
 
-                        formData.append("productId", productId);
+                       formData.append("productId", productId);
 
-                        formData.append("title", updateData.title);
-                        formData.append("description", updateData.description);
+                       formData.append("title", updateData.title);
+                       if (updateData.code)
+                               formData.append("code", updateData.code);
+                       formData.append("description", updateData.description);
                         formData.append(
                                 "longDescription",
                                 updateData.longDescription || updateData.description

@@ -92,6 +92,7 @@ export function UpdateProductPopup({ open, onOpenChange, product }) {
     title: product?.title || "",
     description: product?.description || "",
     longDescription: product?.longDescription || "",
+    code: product?.code || "",
     category: product?.category || "",
     subcategory: product?.subcategory || "",
     discount: product?.discount?.toString() || "",
@@ -169,6 +170,7 @@ export function UpdateProductPopup({ open, onOpenChange, product }) {
         title: product.title || "",
         description: product.description || "",
         longDescription: product.longDescription || "",
+        code: product.code || "",
         category: product.category || "",
         subcategory: product.subcategory || "",
         discount: product.discount?.toString() || "",
@@ -250,6 +252,7 @@ export function UpdateProductPopup({ open, onOpenChange, product }) {
 
       const productData = {
         title: formData.title,
+        code: formData.code,
         description: formData.description,
         longDescription: formData.longDescription || formData.description,
         category: formData.category,
@@ -387,6 +390,19 @@ export function UpdateProductPopup({ open, onOpenChange, product }) {
                   }
                   className="mt-1"
                   required
+                />
+              </div>
+
+              <div className="md:col-span-2">
+                <Label htmlFor="code">Product Code</Label>
+                <Input
+                  id="code"
+                  placeholder="Enter product code"
+                  value={formData.code}
+                  onChange={(e) =>
+                    setFormData({ ...formData, code: e.target.value })
+                  }
+                  className="mt-1"
                 />
               </div>
 
