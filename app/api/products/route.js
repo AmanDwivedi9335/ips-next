@@ -155,15 +155,27 @@ export async function GET(request) {
                                           ) / reviewCount
                                         : 0;
 
+                        const discountPercentage =
+                                product.salePrice > 0
+                                        ? Math.round(
+                                                  ((product.price - product.salePrice) /
+                                                          product.price) *
+                                                          100
+                                          )
+                                        : product.discount;
+
                         return {
                                 id: product._id.toString(),
+                                // Provide both title and name for backward compatibility
+                                title: product.title,
                                 name: product.title,
                                 description: product.description,
                                 longDescription: product.longDescription,
-                                price: product.salePrice > 0 ? product.salePrice : product.price,
+                                // Keep original price separate from sale price
+                                price: product.price,
+                                salePrice: product.salePrice,
                                 mrp: product.mrp || product.price,
                                 code: product.code,
-                                salePrice: product.salePrice,
                                 discount: product.discount,
                                 subcategory: product.subcategory,
                                 languageImages: product.languageImages || [],
@@ -171,14 +183,7 @@ export async function GET(request) {
                                 sizes: product.sizes || [],
                                 materials: product.materials || [],
                                 materialSpecification: product.materialSpecification || "",
-                                discountPercentage:
-                                        product.salePrice > 0
-                                                ? Math.round(
-                                                                  ((product.price - product.salePrice) /
-                                                                          product.price) *
-                                                                          100
-                                                          )
-                                                : product.discount,
+                                discountPercentage,
                                 image:
                                         product.images?.[0] ||
                                         "https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png",

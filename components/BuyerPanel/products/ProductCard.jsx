@@ -16,6 +16,10 @@ export default function ProductCard({ product, viewMode = "grid" }) {
         const { addItem, isLoading } = useCartStore();
         const { addItem: addWishlistItem } = useWishlistStore();
 
+        // Ensure consistent identifiers and titles across different API shapes
+        const productId = product.id || product._id;
+        const productTitle = product.title || product.name || "";
+
         const englishImage = product.languageImages?.find(
                 (l) => l.language === "English"
         )?.image;
@@ -26,7 +30,9 @@ export default function ProductCard({ product, viewMode = "grid" }) {
                 "https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png";
 
         const handleViewProduct = () => {
-                router.push(`/products/${product._id || product.id}`);
+                if (productId) {
+                        router.push(`/products/${productId}`);
+                }
         };
 
         const handleAddToCart = async (e) => {
@@ -34,8 +40,8 @@ export default function ProductCard({ product, viewMode = "grid" }) {
 
                 // Use the unified addItem function
                 await addItem({
-                        id: product.id || product._id,
-                        name: product.title,
+                        id: productId,
+                        name: productTitle,
                         description: product.description,
                         price: product.salePrice || product.price,
                         originalPrice: product.price,
@@ -47,8 +53,8 @@ export default function ProductCard({ product, viewMode = "grid" }) {
                 e.stopPropagation();
 
                 addWishlistItem({
-                        id: product.id || product._id,
-                        name: product.title,
+                        id: productId,
+                        name: productTitle,
                         description: product.description,
                         price: product.salePrice || product.price,
                         originalPrice: product.price,
@@ -61,8 +67,8 @@ export default function ProductCard({ product, viewMode = "grid" }) {
 		e.stopPropagation();
 
 		// Redirect to checkout with buy now parameters
-		router.push(`/checkout?buyNow=true&id=${product.id || product._id}&qty=1`);
-	};
+                router.push(`/checkout?buyNow=true&id=${productId}&qty=1`);
+        };
 
         if (viewMode === "list") {
                 return (
@@ -75,7 +81,7 @@ export default function ProductCard({ product, viewMode = "grid" }) {
 						<div className="relative w-full sm:w-48 h-48 bg-gray-50 rounded-lg overflow-hidden flex-shrink-0">
                                                         <Image
                                                                 src={defaultImage}
-                                                                alt={product.title}
+                                                                alt={productTitle}
                                                                 fill
                                                                 className="object-contain p-4 group-hover:scale-105 transition-transform duration-300"
                                                                 onClick={handleViewProduct}
@@ -95,7 +101,7 @@ export default function ProductCard({ product, viewMode = "grid" }) {
 						<div className="flex-1 space-y-4">
                                                         <div onClick={handleViewProduct}>
                                                                 <h3 className="text-xl font-semibold hover:text-blue-600 transition-colors">
-                                                                        {product.title}
+                                                                        {productTitle}
                                                                 </h3>
                                                                 {product.code && (
                                                                         <p className="text-sm text-gray-500">Code: {product.code}</p>
@@ -177,10 +183,10 @@ export default function ProductCard({ product, viewMode = "grid" }) {
                         >
                                 <CardContent className="p-0 flex-1 flex flex-col">
 					<div className="relative overflow-hidden">
-						<div className="relative h-64 bg-gray-50 rounded-t-xl overflow-hidden">
+                                                <div className="relative h-64 bg-gray-50 rounded-t-xl overflow-hidden">
                                                         <Image
                                                                 src={defaultImage}
-                                                                alt={product.title}
+                                                                alt={productTitle}
                                                                 fill
                                                                 className="object-contain p-4 group-hover:scale-105 transition-transform duration-300"
                                                                 onClick={handleViewProduct}
@@ -215,7 +221,7 @@ export default function ProductCard({ product, viewMode = "grid" }) {
 					<div className="p-6 flex-1 flex flex-col">
                                                 <div className="flex-1" onClick={handleViewProduct}>
                                                         <h3 className="font-semibold text-lg mb-2 line-clamp-2 hover:text-blue-600 transition-colors">
-                                                                {product.title}
+                                                                {productTitle}
                                                         </h3>
                                                         {product.code && (
                                                                 <p className="text-xs text-gray-500 mb-1">Code: {product.code}</p>

@@ -129,18 +129,18 @@ export default function ProductGrid() {
 					animate={{ opacity: 1 }}
 					transition={{ duration: 0.3 }}
 				>
-					{filteredProducts.map((product, index) => (
-						<motion.div
-							key={product.id}
-							initial={{ opacity: 0, y: 20 }}
-							animate={{ opacity: 1, y: 0 }}
-							transition={{ delay: index * 0.05 }}
-						>
-							<ProductCard product={product} viewMode={viewMode} />
-						</motion.div>
-					))}
-				</motion.div>
-			)}
+                                        {filteredProducts.map((product, index) => (
+                                                <motion.div
+                                                        key={product.id || product._id || index}
+                                                        initial={{ opacity: 0, y: 20 }}
+                                                        animate={{ opacity: 1, y: 0 }}
+                                                        transition={{ delay: index * 0.05 }}
+                                                >
+                                                        <ProductCard product={product} viewMode={viewMode} />
+                                                </motion.div>
+                                        ))}
+                                </motion.div>
+                        )}
 
 			{/* Pagination */}
 			{totalPages > 1 && (
