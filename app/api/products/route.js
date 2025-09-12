@@ -54,14 +54,20 @@ export async function GET(request) {
                         const salePriceQuery = {};
 
                         if (minPrice) {
-                                const min = Number.parseInt(minPrice);
-                                priceQuery.$gte = min;
-                                salePriceQuery.$gte = min;
+
+                                const min = Number(minPrice);
+                                if (!Number.isNaN(min)) {
+                                        priceQuery.$gte = min;
+                                        salePriceQuery.$gte = min;
+                                }
                         }
                         if (maxPrice) {
-                                const max = Number.parseInt(maxPrice);
-                                priceQuery.$lte = max;
-                                salePriceQuery.$lte = max;
+                                const max = Number(maxPrice);
+                                if (!Number.isNaN(max)) {
+                                        priceQuery.$lte = max;
+                                        salePriceQuery.$lte = max;
+                                }
+
                         }
 
                         // Only enforce salePrice to be positive when no minimum is provided
@@ -69,9 +75,19 @@ export async function GET(request) {
                                 salePriceQuery.$gt = 0;
                         }
 
-                        query.$and.push({
-                                $or: [{ price: priceQuery }, { salePrice: salePriceQuery }],
-                        });
+
+                        const orConditions = [];
+                        if (Object.keys(priceQuery).length > 0) {
+                                orConditions.push({ price: priceQuery });
+                        }
+                        if (Object.keys(salePriceQuery).length > 0) {
+                                orConditions.push({ salePrice: salePriceQuery });
+                        }
+
+                        if (orConditions.length > 0) {
+                                query.$and.push({ $or: orConditions });
+                        }
+
                 }
 
 
