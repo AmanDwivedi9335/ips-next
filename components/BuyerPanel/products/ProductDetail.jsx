@@ -14,23 +14,20 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import {
-	ArrowLeft,
-	ShoppingCart,
-	Heart,
-	Share2,
-	Minus,
-	Plus,
-	MapPin,
-	Truck,
-	CreditCard,
-	Star,
-	User,
-	RotateCcw,
-	Home,
-	AlertCircle,
-	Receipt,
-	Lock,
-	HelpCircle,
+        ArrowLeft,
+        ShoppingCart,
+        Heart,
+        Share2,
+        Minus,
+        Plus,
+        Star,
+        User,
+        RotateCcw,
+        Home,
+        AlertCircle,
+        Receipt,
+        Lock,
+        HelpCircle,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -42,7 +39,6 @@ import Image from "next/image";
 export default function ProductDetail({ product, relatedProducts = [] }) {
         const [selectedImage, setSelectedImage] = useState(0);
         const [quantity, setQuantity] = useState(1);
-        const [selectedQuantityOffer, setSelectedQuantityOffer] = useState(null);
         const languages =
                 product.languages && product.languages.length > 0
                         ? product.languages
@@ -126,32 +122,6 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
 		},
 	];
 
-	const quantityOffers = [
-		{
-			qty: 2,
-                        price: Math.round(calculatedPrice * 0.95),
-			discount: 5,
-			label: "Qty 2",
-		},
-		{
-			qty: 3,
-                        price: Math.round(calculatedPrice * 0.9),
-			discount: 10,
-			label: "Qty 3",
-		},
-		{
-			qty: 5,
-                        price: Math.round(calculatedPrice * 0.85),
-			discount: 15,
-			label: "Qty 5",
-		},
-		{
-			qty: 10,
-                        price: Math.round(calculatedPrice * 0.8),
-			discount: 20,
-			label: "Qty 10",
-		},
-	];
 
 	const handleAddToCart = async (e) => {
 		e.stopPropagation();
@@ -542,181 +512,10 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                                         </div>
                                 ) : null}
 
-                                {/* Delivery Details and Offers */}
-                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-10">
-                                        {/* Delivery Details Section */}
+                                {/* Product Features */}
+                                {product.features && product.features.length > 0 && (
                                         <motion.div
-                                                initial={{ opacity: 0, y: 20 }}
-						animate={{ opacity: 1, y: 0 }}
-						transition={{ duration: 0.5, delay: 0.3 }}
-						className="flex-1"
-					>
-						<Card className="bg-green-50 border-green-200">
-							<CardContent className="p-6">
-								<h2 className="text-2xl font-bold mb-6">Delivery Details</h2>
-
-								{/* Location Check */}
-								<div className="bg-white rounded-lg p-4 mb-6 flex items-center justify-between">
-									<div className="flex items-center space-x-3">
-										<MapPin className="h-6 w-6 text-gray-600" />
-										<span className="text-gray-600">Enter your pincode</span>
-									</div>
-									<Button className="bg-black text-white hover:bg-gray-800 rounded-full px-6">
-										CHECK
-									</Button>
-								</div>
-
-								<p className="text-gray-700 mb-6">
-									Check serviceability at your location
-								</p>
-
-								{/* Delivery Options */}
-								<div className="space-y-4">
-									<div className="flex items-center space-x-4">
-										<div className="bg-green-600 p-2 rounded-lg">
-											<Truck className="h-6 w-6 text-white" />
-										</div>
-										<div>
-											<h3 className="font-semibold text-green-600 text-lg">
-												Free Delivery
-											</h3>
-											<p className="text-gray-600">
-												No shipping charge on this order
-											</p>
-										</div>
-									</div>
-
-									<div className="flex items-center space-x-4">
-										<div className="bg-green-600 p-2 rounded-lg">
-											<CreditCard className="h-6 w-6 text-white" />
-										</div>
-										<div>
-											<h3 className="font-semibold text-green-600 text-lg">
-												COD Available
-											</h3>
-											<p className="text-gray-600">
-												You can pay at the time of delivery
-											</p>
-										</div>
-									</div>
-								</div>
-							</CardContent>
-						</Card>
-					</motion.div>
-
-					{/* Offers and Coupons Section */}
-					<motion.div
-						initial={{ opacity: 0, y: 20 }}
-						animate={{ opacity: 1, y: 0 }}
-						transition={{ duration: 0.5, delay: 0.4 }}
-						className="flex-1"
-					>
-						<Card className="bg-green-50 border-green-200">
-							<CardContent className="p-6">
-								<h2 className="text-2xl font-bold mb-6">Offers and Coupons</h2>
-
-								{/* Offers List */}
-								<div className="space-y-4 mb-8">
-									<div className="flex items-start space-x-3">
-										<div className="bg-green-600 p-1 rounded">
-											<div className="w-4 h-4 bg-white rounded-sm flex items-center justify-center">
-												<div className="w-2 h-2 bg-green-600 rounded-sm"></div>
-											</div>
-										</div>
-										<div>
-											<h3 className="font-semibold text-green-600">
-												Save instantly 5% with online payment.
-											</h3>
-											<p className="text-sm text-gray-600">
-												via UPI, EMI, Credit/Debit Card, Net Banking, Wallets.
-											</p>
-										</div>
-									</div>
-
-									<div className="flex items-start space-x-3">
-										<div className="bg-green-600 p-1 rounded">
-											<div className="w-4 h-4 bg-white rounded-sm flex items-center justify-center">
-												<div className="w-2 h-2 bg-green-600 rounded-sm"></div>
-											</div>
-										</div>
-										<div className="flex-1">
-											<div className="flex items-center justify-between">
-												<div>
-													<h3 className="font-semibold text-green-600">
-														Get flat ₹1000 OFF on app
-													</h3>
-													<p className="text-sm text-gray-600">
-														Min cart value ₹2,000
-													</p>
-												</div>
-												<Badge
-													variant="outline"
-													className="border-green-600 text-green-600 border-dashed"
-												>
-													SAFETY ₹1000
-												</Badge>
-											</div>
-										</div>
-									</div>
-
-									<div className="flex items-start space-x-3">
-										<div className="bg-green-600 p-1 rounded">
-											<div className="w-4 h-4 bg-white rounded-sm flex items-center justify-center">
-												<div className="w-2 h-2 bg-green-600 rounded-sm"></div>
-											</div>
-										</div>
-										<div>
-											<h3 className="font-semibold text-green-600">
-												Get GST invoice and save up to 18% on business purchases
-											</h3>
-										</div>
-									</div>
-								</div>
-
-								{/* Buy More & Save More */}
-								<div>
-									<h3 className="text-xl font-bold mb-4">
-										Buy More & Save More
-									</h3>
-									<div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-										{quantityOffers.map((offer, index) => (
-											<div
-												key={index}
-												className={`border-2 rounded-lg p-4 cursor-pointer transition-colors ${
-													selectedQuantityOffer === index
-														? "border-green-600 bg-green-50"
-														: "border-gray-200 bg-white hover:border-green-300"
-												}`}
-												onClick={() => setSelectedQuantityOffer(index)}
-											>
-												<div className="text-center">
-													<h4 className="font-semibold text-lg">
-														{offer.label}
-													</h4>
-													<p className="text-xl font-bold">
-														₹{offer.price.toLocaleString()}{" "}
-														<span className="text-sm font-normal">/ pc</span>
-													</p>
-													<Badge
-														variant="secondary"
-														className="text-green-600 bg-green-100"
-													>
-														{offer.discount}% OFF
-													</Badge>
-												</div>
-											</div>
-										))}
-									</div>
-								</div>
-							</CardContent>
-						</Card>
-					</motion.div>
-				</div>
-
-				{/* Product Features */}
-				{product.features && product.features.length > 0 && (
-					<motion.div
-						className="mb-10"
+                                                className="mb-10"
 						initial={{ opacity: 0, y: 20 }}
 						animate={{ opacity: 1, y: 0 }}
 						transition={{ duration: 0.5, delay: 0.5 }}
