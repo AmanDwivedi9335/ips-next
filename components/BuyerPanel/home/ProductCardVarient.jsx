@@ -11,7 +11,7 @@ function ProductCardVarient({ product, variant = "vertical" }) {
         const router = useRouter();
 
         const handleViewProduct = () => {
-                router.push(`/products/${product?.id || product?._id}`);
+                router.push(`/products/${product?._id || product?.id}`);
         };
 
         if (variant === "horizontal") {
