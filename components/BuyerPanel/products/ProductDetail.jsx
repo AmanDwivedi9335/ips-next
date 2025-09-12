@@ -44,11 +44,14 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                 product.languages && product.languages.length > 0
                         ? product.languages
                         : product.languageImages?.map((li) => li.language) || [];
+        const normalizedLanguages = languages.map((l) => l?.toLowerCase());
         const englishImage = product.languageImages?.find(
-                (l) => l.language === "English"
+                (l) => l.language?.toLowerCase() === "english"
         )?.image;
         const [selectedLanguage, setSelectedLanguage] = useState(
-                languages.includes("English") ? "English" : languages[0] || ""
+                normalizedLanguages.includes("english")
+                        ? languages[normalizedLanguages.indexOf("english")]
+                        : languages[0] || ""
         );
         const [availableLayouts, setAvailableLayouts] = useState(
                 product.layouts || [],
@@ -157,7 +160,9 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
 
         const languageImage =
                 product.languageImages?.find(
-                        (l) => l.language === selectedLanguage
+                        (l) =>
+                                l.language?.toLowerCase() ===
+                                selectedLanguage.toLowerCase()
                 )?.image || englishImage;
         const categoryName = product.category?.replace("-", " ");
         const subcategoryName = product.subcategory?.replace("-", " ");

@@ -13,7 +13,7 @@ export default function FeaturedProduct({ product }) {
         const router = useRouter();
         const { addItem, isLoading } = useCartStore();
 
-	if (!product) {
+        if (!product) {
 		return (
 			<div className="mb-12 md:mb-16">
 				<h2 className="text-2xl md:text-3xl font-bold mb-6 md:mb-8">
@@ -23,8 +23,18 @@ export default function FeaturedProduct({ product }) {
 					<p className="text-gray-500">No best selling product available</p>
 				</div>
 			</div>
-		);
-	}
+                );
+        }
+
+        const englishImage = product.languageImages?.find(
+                (l) => l.language?.toLowerCase() === "english"
+        )?.image;
+        const defaultImage =
+                englishImage ||
+                product.languageImages?.[0]?.image ||
+                product.images?.[0] ||
+                product.image ||
+                "https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png";
 
         const handleAddToCart = async () => {
                 await addItem({
@@ -33,7 +43,7 @@ export default function FeaturedProduct({ product }) {
                         description: product.description,
                         price: product.price,
                         originalPrice: product.originalPrice || product.price,
-                        image: product.image,
+                        image: defaultImage,
                 });
         };
 
@@ -117,13 +127,13 @@ export default function FeaturedProduct({ product }) {
 									{product.discountPercentage}% OFF
 								</Badge>
 							)}
-							<Image
-								src={product.image || "https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png"}
-								alt={product.name}
-								width={400}
-								height={400}
-								className="w-full h-auto rounded max-h-[400px] object-contain"
-							/>
+                                                        <Image
+                                                                src={defaultImage}
+                                                                alt={product.name}
+                                                                width={400}
+                                                                height={400}
+                                                                className="w-full h-auto rounded max-h-[400px] object-contain"
+                                                        />
 						</div>
 						<div className="order-1 lg:order-2">
 							<h3
