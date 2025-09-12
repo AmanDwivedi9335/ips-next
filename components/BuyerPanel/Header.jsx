@@ -4,30 +4,45 @@ import Image from "next/image";
 import Link from "next/link";
 import Logo from "@/public/ipslogo.png";
 
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+
 import { Button } from "@/components/ui/button";
-import { Menu, ShoppingCart, Heart, User, X, GraduationCap } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Menu, ShoppingCart, Heart, User, X, Search } from "lucide-react";
 import { useCartStore } from "@/store/cartStore";
 import MiniCart from "./cart/MiniCart";
 import {
-	useUserFullName,
-	useUserEmail,
-	useUserProfilePic,
-	useIsAuthenticated,
+        useUserFullName,
+        useUserEmail,
+        useUserProfilePic,
+        useIsAuthenticated,
 } from "@/store/authStore.js";
+import { useProductStore } from "@/store/productStore.js";
 
 export default function Header({ onMenuToggle, isMenuOpen }) {
-	const fullName = useUserFullName();
-	const email = useUserEmail();
-	const profilePic = useUserProfilePic();
-	const isAuthenticated = useIsAuthenticated();
+        const [searchQuery, setSearchQuery] = useState("");
+        const router = useRouter();
+        const { setSearchQuery: setGlobalSearch } = useProductStore();
 
-	// console.log("isAuthenticated", isAuthenticated);
+        const fullName = useUserFullName();
+        const email = useUserEmail();
+        const profilePic = useUserProfilePic();
+        const isAuthenticated = useIsAuthenticated();
 
         const { getTotalItems, openCart } = useCartStore();
         const totalItems = getTotalItems();
 
         const handleCartClick = () => {
                 openCart();
+        };
+
+        const handleSearch = (e) => {
+                e.preventDefault();
+                if (searchQuery.trim()) {
+                        setGlobalSearch(searchQuery);
+                        router.push(`/products?search=${encodeURIComponent(searchQuery)}`);
+                }
         };
 
         const categories = [
@@ -41,12 +56,12 @@ export default function Header({ onMenuToggle, isMenuOpen }) {
                 }
         ];
 
-	return (
-		<>
-                        <header className="bg-white shadow-sm sticky top-0 z-40">
+        return (
+                <>
+                        <header className="bg-[#162b60] text-white sticky top-0 z-40 shadow-md">
                                 <div className="px-4 lg:px-10">
                                         {/* Top Bar */}
-                                        <div className="flex items-center py-5">
+                                        <div className="flex items-center py-5 space-x-4">
                                                 {/* Logo */}
                                                 <div className="flex items-center flex-1 space-x-2 md:space-x-4">
                                                         <Link href="/" className="flex items-center space-x-2">
@@ -58,22 +73,25 @@ export default function Header({ onMenuToggle, isMenuOpen }) {
                                                         </Link>
                                                 </div>
 
-                                                {/* Training Button */}
-                                                <div className="flex justify-center">
-                                                        <Link href="/lms">
-                                                                <Button className="text-sm font-medium">
-                                                                        <GraduationCap className="h-5 w-5 mr-2" />
-                                                                        Get training now
-                                                                </Button>
-                                                        </Link>
-                                                </div>
+                                                {/* Search */}
+                                                <form onSubmit={handleSearch} className="hidden md:flex flex-1 justify-center">
+                                                        <div className="relative w-full max-w-md">
+                                                                <Input
+                                                                        placeholder="Search products..."
+                                                                        className="w-full bg-white text-black pr-10"
+                                                                        value={searchQuery}
+                                                                        onChange={(e) => setSearchQuery(e.target.value)}
+                                                                />
+                                                                <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                                                        </div>
+                                                </form>
 
                                                 {/* Actions */}
                                                 <div className="flex items-center justify-end flex-1 space-x-2 md:space-x-4">
                                                         <Button
                                                                 variant="ghost"
                                                                 size="icon"
-                                                                className="lg:hidden"
+                                                                className="lg:hidden text-white hover:bg-white/10"
                                                                 onClick={onMenuToggle}
                                                         >
                                                                 {isMenuOpen ? (
@@ -86,7 +104,7 @@ export default function Header({ onMenuToggle, isMenuOpen }) {
                                                         <Button
                                                                 variant="ghost"
                                                                 size="icon"
-                                                                className="relative"
+                                                                className="relative text-white hover:bg-white/10"
                                                                 onClick={handleCartClick}
                                                         >
                                                                 <ShoppingCart className="h-5 w-5 md:h-6 md:w-6" />
@@ -96,7 +114,7 @@ export default function Header({ onMenuToggle, isMenuOpen }) {
                                                                         </span>
                                                                 )}
                                                         </Button>
-                                                        <Button variant="ghost" size="icon">
+                                                        <Button variant="ghost" size="icon" className="text-white hover:bg-white/10">
                                                                 <Heart className="h-5 w-5 md:h-6 md:w-6" />
                                                         </Button>
 
@@ -113,14 +131,14 @@ export default function Header({ onMenuToggle, isMenuOpen }) {
                                                                                         />
                                                                                         <div className="hidden md:block">
                                                                                                 <p className="text-sm font-medium">{fullName}</p>
-                                                                                                <p className="text-xs text-gray-600">{email}</p>
+                                                                                                <p className="text-xs text-gray-300">{email}</p>
                                                                                         </div>
                                                                                 </div>
                                                                         </Link>
                                                                 </div>
                                                         ) : (
                                                                 <Link href="/account">
-                                                                        <Button variant="ghost" size="icon">
+                                                                        <Button variant="ghost" size="icon" className="text-white hover:bg-white/10">
                                                                                 <User className="h-5 w-5 md:h-6 md:w-6" />
                                                                         </Button>
                                                                 </Link>
@@ -128,15 +146,15 @@ export default function Header({ onMenuToggle, isMenuOpen }) {
                                                 </div>
                                         </div>
                                 </div>
-                                <nav className="bg-gray-50 border-t">
+                                <nav className="border-t border-white/10">
                                         <div className="px-4 lg:px-10">
-                                                <ul className="flex flex-wrap items-center justify-center gap-4 py-2 text-sm font-medium">
+                                                <ul className="flex flex-wrap items-center justify-center gap-4 py-2 text-sm font-medium text-white">
                                                         {categories.map((cat) => (
                                                                 <li key={cat.name}>
                                                                         <Link
                                                                                 href={cat.href}
-                                                                                className={`flex items-center gap-2 hover:text-primary ${
-                                                                                        cat.highlight ? "text-red-600 font-semibold animate-blink-slow" : ""
+                                                                                className={`flex items-center gap-2 hover:text-yellow-300 ${
+                                                                                        cat.highlight ? "text-yellow-300 font-semibold animate-blink-slow" : ""
                                                                                 }`}
                                                                         >
                                                                                 {cat.poster && (
@@ -150,7 +168,7 @@ export default function Header({ onMenuToggle, isMenuOpen }) {
                                                                                 )}
                                                                                 <span>{cat.name}</span>
                                                                                 {cat.isNew && (
-                                                                                        <span className="ml-1 text-red-600 font-bold animate-blink">
+                                                                                        <span className="ml-1 text-red-300 font-bold animate-blink">
                                                                                                 New
                                                                                         </span>
                                                                                 )}

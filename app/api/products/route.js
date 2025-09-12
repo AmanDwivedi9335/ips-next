@@ -54,6 +54,7 @@ export async function GET(request) {
                         const salePriceQuery = {};
 
                         if (minPrice) {
+
                                 const min = Number(minPrice);
                                 if (!Number.isNaN(min)) {
                                         priceQuery.$gte = min;
@@ -66,12 +67,14 @@ export async function GET(request) {
                                         priceQuery.$lte = max;
                                         salePriceQuery.$lte = max;
                                 }
+
                         }
 
                         // Only enforce salePrice to be positive when no minimum is provided
                         if (!minPrice) {
                                 salePriceQuery.$gt = 0;
                         }
+
 
                         const orConditions = [];
                         if (Object.keys(priceQuery).length > 0) {
@@ -84,6 +87,7 @@ export async function GET(request) {
                         if (orConditions.length > 0) {
                                 query.$and.push({ $or: orConditions });
                         }
+
                 }
 
 
