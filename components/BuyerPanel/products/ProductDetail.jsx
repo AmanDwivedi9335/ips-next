@@ -35,6 +35,7 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCartStore } from "@/store/cartStore";
+import { useWishlistStore } from "@/store/wishlistStore";
 import ProductCard from "@/components/BuyerPanel/products/ProductCard.jsx";
 import { toast } from "react-hot-toast";
 import Image from "next/image";
@@ -66,6 +67,7 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
         const [calculatedPrice, setCalculatedPrice] = useState(0);
         const router = useRouter();
         const { addItem, isLoading } = useCartStore();
+        const { addItem: addWishlistItem } = useWishlistStore();
 
         useEffect(() => {
                 const fetchPrice = async () => {
@@ -153,11 +155,11 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
 		},
 	];
 
-	const handleAddToCart = async (e) => {
-		e.stopPropagation();
+        const handleAddToCart = async (e) => {
+                e.stopPropagation();
 
-		// Use the unified addItem function
-		await addItem({
+                // Use the unified addItem function
+                await addItem({
 			id: product.id || product._id,
 			name: product.title,
 			description: product.description,
@@ -169,6 +171,24 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                                 product.images?.[0] ||
                                 product.image,
                 });
+        };
+
+        const handleAddToWishlist = (e) => {
+                e.stopPropagation();
+
+                addWishlistItem({
+                        id: product.id || product._id,
+                        name: product.title,
+                        description: product.description,
+                        price: calculatedPrice,
+                        originalPrice: calculatedPrice,
+                        image:
+                                languageImage ||
+                                englishImage ||
+                                product.images?.[0] ||
+                                "https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png",
+                });
+                toast.success("Added to wishlist!");
         };
 
 	const handleBuyNow = async (e) => {
@@ -492,10 +512,14 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                                                                 >
 									Buy Now
 								</Button>
-								<Button variant="outline" size="lg">
-									<Heart className="h-5 w-5 mr-2" />
-									Wishlist
-								</Button>
+                                                                <Button
+                                                                        variant="outline"
+                                                                        size="lg"
+                                                                        onClick={handleAddToWishlist}
+                                                                >
+                                                                        <Heart className="h-5 w-5 mr-2" />
+                                                                        Wishlist
+                                                                </Button>
 								<Button variant="outline" size="lg">
 									<Share2 className="h-5 w-5" />
 								</Button>

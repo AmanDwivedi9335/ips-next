@@ -10,8 +10,8 @@ import { ShoppingCart, ArrowRight } from "lucide-react";
 import { useCartStore } from "@/store/cartStore";
 
 export default function FeaturedProduct({ product }) {
-	const router = useRouter();
-	const { addItemLocal } = useCartStore();
+        const router = useRouter();
+        const { addItem, isLoading } = useCartStore();
 
 	if (!product) {
 		return (
@@ -26,15 +26,16 @@ export default function FeaturedProduct({ product }) {
 		);
 	}
 
-	const handleAddToCart = () => {
-                addItemLocal({
+        const handleAddToCart = async () => {
+                await addItem({
                         id: product.id,
-                        name: product.name,
+                        name: product.title || product.name,
                         description: product.description,
                         price: product.price,
+                        originalPrice: product.originalPrice || product.price,
                         image: product.image,
                 });
-	};
+        };
 
 	const handleBuyNow = () => {
 		router.push(`/checkout?buyNow=true&id=${product.id}&qty=1`);
@@ -161,11 +162,12 @@ export default function FeaturedProduct({ product }) {
 								</Button>
                                                                 <Button
                                                                         onClick={handleAddToCart}
+                                                                        disabled={isLoading}
                                                                         className="bg-black text-white px-4 py-2 md:py-3 rounded-full w-full md:w-fit"
                                                                 >
-									Add to Cart
-									<ShoppingCart className="ml-2 h-4 w-4" />
-								</Button>
+                                                                        Add to Cart
+                                                                        <ShoppingCart className="ml-2 h-4 w-4" />
+                                                                </Button>
 							</div>
 						</div>
 					</div>

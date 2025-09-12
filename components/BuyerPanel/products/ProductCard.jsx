@@ -7,12 +7,14 @@ import { Badge } from "@/components/ui/badge";
 import { ShoppingCart, Heart, Eye, ArrowRight, Star } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCartStore } from "@/store/cartStore";
+import { useWishlistStore } from "@/store/wishlistStore";
 import { toast } from "react-hot-toast";
 import Image from "next/image";
 
 export default function ProductCard({ product, viewMode = "grid" }) {
         const router = useRouter();
         const { addItem, isLoading } = useCartStore();
+        const { addItem: addWishlistItem } = useWishlistStore();
 
         const englishImage = product.languageImages?.find(
                 (l) => l.language === "English"
@@ -27,10 +29,10 @@ export default function ProductCard({ product, viewMode = "grid" }) {
 		router.push(`/products/${product.id || product._id}`);
 	};
 
-	const handleAddToCart = async (e) => {
-		e.stopPropagation();
+        const handleAddToCart = async (e) => {
+                e.stopPropagation();
 
-		// Use the unified addItem function
+                // Use the unified addItem function
                 await addItem({
                         id: product.id || product._id,
                         name: product.title,
@@ -39,6 +41,20 @@ export default function ProductCard({ product, viewMode = "grid" }) {
                         originalPrice: product.price,
                         image: defaultImage,
                 });
+        };
+
+        const handleAddToWishlist = (e) => {
+                e.stopPropagation();
+
+                addWishlistItem({
+                        id: product.id || product._id,
+                        name: product.title,
+                        description: product.description,
+                        price: product.salePrice || product.price,
+                        originalPrice: product.price,
+                        image: defaultImage,
+                });
+                toast.success("Added to wishlist!");
         };
 
 	const handleBuyNow = async (e) => {
@@ -115,13 +131,14 @@ export default function ProductCard({ product, viewMode = "grid" }) {
 								</div>
 
 								<div className="flex items-center gap-2">
-									<Button
-										variant="outline"
-										size="icon"
-										className="rounded-full bg-transparent"
-									>
-										<Heart className="h-4 w-4" />
-									</Button>
+                                                                        <Button
+                                                                                variant="outline"
+                                                                                size="icon"
+                                                                                onClick={handleAddToWishlist}
+                                                                                className="rounded-full bg-transparent"
+                                                                        >
+                                                                                <Heart className="h-4 w-4" />
+                                                                        </Button>
                                                                         <Button
                                                                                 onClick={handleAddToCart}
                                                                                 disabled={isLoading}
@@ -238,13 +255,14 @@ export default function ProductCard({ product, viewMode = "grid" }) {
 						{/* Actions */}
 						<div className="flex items-center justify-between gap-2">
 							<div className="flex gap-2">
-								<Button
-									variant="outline"
-									size="icon"
-									className="rounded-full border-gray-300 hover:border-gray-400 bg-transparent"
-								>
-									<Heart className="h-4 w-4" />
-								</Button>
+                                                                <Button
+                                                                        variant="outline"
+                                                                        size="icon"
+                                                                        onClick={handleAddToWishlist}
+                                                                        className="rounded-full border-gray-300 hover:border-gray-400 bg-transparent"
+                                                                >
+                                                                        <Heart className="h-4 w-4" />
+                                                                </Button>
                                                                 <Button
                                                                         variant="outline"
                                                                         size="icon"
