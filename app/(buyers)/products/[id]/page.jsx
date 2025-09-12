@@ -8,10 +8,14 @@ async function getProduct(id) {
                 // Determine the base URL for server-side fetching. Fall back to the current
                 // request's host when the environment variable isn't provided to avoid
                 // constructing an invalid URL which previously resulted in a 404 page.
+                // The `headers` API is asynchronous in newer Next.js versions and must
+                // be awaited before accessing values like `host` to correctly mark the
+                // route as dynamic and avoid runtime errors.
+                const headersList = await headers();
                 const baseUrl =
                         process.env.NEXT_PUBLIC_BASE_URL ||
                         process.env.BASE_URL ||
-                        `http://${headers().get("host")}`;
+                        `http://${headersList.get("host")}`;
 
                 const response = await fetch(`${baseUrl}/api/products/${id}`, {
                         cache: "no-store",

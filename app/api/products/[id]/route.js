@@ -36,7 +36,9 @@ export async function GET(req, { params }) {
                                   reviewCount
                                 : 0;
 
-                const transformedReviews = product.reviews.map((r) => ({
+                // Safeguard against products with no reviews to prevent runtime errors
+                // when attempting to map over an undefined value.
+                const transformedReviews = (product.reviews || []).map((r) => ({
                         id: r._id.toString(),
                         rating: r.rating,
                         comment: r.comment,
