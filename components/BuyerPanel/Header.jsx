@@ -58,7 +58,7 @@ export default function Header({ onMenuToggle, isMenuOpen }) {
 
         return (
                 <>
-                        <header className="bg-[#162b60] text-white sticky top-0 z-40 shadow-md">
+                        <header className="bg-gray-50 text-gray-900 sticky top-0 z-40 shadow-md">
                                 <div className="px-4 lg:px-10">
                                         {/* Top Bar */}
                                         <div className="flex items-center py-5 space-x-4">
@@ -91,7 +91,7 @@ export default function Header({ onMenuToggle, isMenuOpen }) {
                                                         <Button
                                                                 variant="ghost"
                                                                 size="icon"
-                                                                className="lg:hidden text-white hover:bg-white/10"
+                                                                className="lg:hidden text-gray-900 hover:bg-gray-200"
                                                                 onClick={onMenuToggle}
                                                         >
                                                                 {isMenuOpen ? (
@@ -104,7 +104,7 @@ export default function Header({ onMenuToggle, isMenuOpen }) {
                                                         <Button
                                                                 variant="ghost"
                                                                 size="icon"
-                                                                className="relative text-white hover:bg-white/10"
+                                                                className="relative text-gray-900 hover:bg-gray-200"
                                                                 onClick={handleCartClick}
                                                         >
                                                                 <ShoppingCart className="h-5 w-5 md:h-6 md:w-6" />
@@ -114,7 +114,7 @@ export default function Header({ onMenuToggle, isMenuOpen }) {
                                                                         </span>
                                                                 )}
                                                         </Button>
-                                                        <Button variant="ghost" size="icon" className="text-white hover:bg-white/10">
+                                                        <Button variant="ghost" size="icon" className="text-gray-900 hover:bg-gray-200">
                                                                 <Heart className="h-5 w-5 md:h-6 md:w-6" />
                                                         </Button>
 
@@ -138,7 +138,7 @@ export default function Header({ onMenuToggle, isMenuOpen }) {
                                                                 </div>
                                                         ) : (
                                                                 <Link href="/account">
-                                                                        <Button variant="ghost" size="icon" className="text-white hover:bg-white/10">
+                                                                        <Button variant="ghost" size="icon" className="text-gray-900 hover:bg-gray-200">
                                                                                 <User className="h-5 w-5 md:h-6 md:w-6" />
                                                                         </Button>
                                                                 </Link>
@@ -146,15 +146,15 @@ export default function Header({ onMenuToggle, isMenuOpen }) {
                                                 </div>
                                         </div>
                                 </div>
-                                <nav className="border-t border-white/10">
+                                <nav className="border-t border-gray-200">
                                         <div className="px-4 lg:px-10">
-                                                <ul className="flex flex-wrap items-center justify-center gap-4 py-2 text-sm font-medium text-white">
+                                                <ul className="flex flex-wrap items-center justify-center gap-4 py-2 text-sm font-medium text-gray-900">
                                                         {categories.map((cat) => (
                                                                 <li key={cat.name}>
                                                                         <Link
                                                                                 href={cat.href}
-                                                                                className={`flex items-center gap-2 hover:text-yellow-300 ${
-                                                                                        cat.highlight ? "text-yellow-300 font-semibold animate-blink-slow" : ""
+                                                                                className={`flex items-center gap-2 hover:text-yellow-600 ${
+                                                                                        cat.highlight ? "text-yellow-600 font-semibold animate-blink-slow" : ""
                                                                                 }`}
                                                                         >
                                                                                 {cat.poster && (
