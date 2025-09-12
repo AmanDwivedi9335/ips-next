@@ -138,7 +138,11 @@ export async function GET(request) {
                         .sort(sortObj)
                         .skip(skip)
                         .limit(limit)
-                        .populate("reviews")
+                        .populate({
+                                path: "reviews",
+                                select: "rating",
+                                strictPopulate: false,
+                        })
                         .lean();
 
 		const total = await Product.countDocuments(query);

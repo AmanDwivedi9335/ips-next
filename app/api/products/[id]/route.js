@@ -12,6 +12,8 @@ export async function GET(req, { params }) {
         try {
                 const product = await Product.findById(id).populate({
                         path: "reviews",
+                        select: "rating comment user",
+                        strictPopulate: false,
                         populate: { path: "user", select: "firstName lastName" },
                 });
 
