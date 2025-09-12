@@ -98,33 +98,44 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
         const categoryName = product.category?.replace("-", " ");
         const subcategoryName = product.subcategory?.replace("-", " ");
 
-	// Mock reviews data - you can replace this with real reviews from the API
-	const reviews = [
-		{
-			id: 1,
-			name: "KL RAHUL KUMAR KARTHIK",
-			rating: 5,
-			comment: `The ${product.name} offers superior protection and quality. Each item is carefully crafted to meet ISI standards, ensuring high-quality safety for demanding work conditions. Whether you're working in construction or industrial environments, this product delivers excellent value.`,
-		},
-		{
-			id: 2,
-			name: "VAIBHAV SHARMA",
-			rating: 5,
-			comment: `Excellent quality ${product.name}. The build quality is outstanding and it provides great value for money. Highly recommended for professional use.`,
-		},
-		{
-			id: 3,
-			name: "ANITA GUPTA",
-			rating: 4,
-			comment: `Good product overall. The ${product.name} meets expectations and the delivery was prompt. Would purchase again.`,
-		},
-		{
-			id: 4,
-			name: "RAJESH MEHTA",
-			rating: 4,
-			comment: `Quality product with good durability. The ${product.name} is well-designed and serves its purpose effectively.`,
-		},
-	];
+        const [reviews, setReviews] = useState(product.reviews || []);
+        const [newRating, setNewRating] = useState(0);
+        const [newComment, setNewComment] = useState("");
+        const [submittingReview, setSubmittingReview] = useState(false);
+
+        const averageRating =
+                reviews.length > 0
+                        ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
+                        : 0;
+
+        const handleSubmitReview = async (e) => {
+                e.preventDefault();
+                if (!newRating || !newComment) return;
+                try {
+                        setSubmittingReview(true);
+                        const res = await fetch(
+                                `/api/products/${product.id || product._id}/reviews`,
+                                {
+                                        method: "POST",
+                                        headers: { "Content-Type": "application/json" },
+                                        body: JSON.stringify({ rating: newRating, comment: newComment }),
+                                }
+                        );
+                        const data = await res.json();
+                        if (res.ok) {
+                                setReviews((prev) => [...prev, data.review]);
+                                setNewRating(0);
+                                setNewComment("");
+                                toast.success("Review submitted");
+                        } else {
+                                toast.error(data.message || "Failed to submit review");
+                        }
+                } catch (error) {
+                        toast.error("Failed to submit review");
+                } finally {
+                        setSubmittingReview(false);
+                }
+        };
 
 	const quantityOffers = [
 		{
@@ -341,10 +352,10 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
 
                                                         {/* Product rating */}
                                                         <div className="flex items-center mb-2">
-								<span className="flex items-center gap-2 bg-green-600 text-white px-2 py-1 rounded-lg">
-									{product.rating || 4.5}
-									<Star className="w-4 h-4 fill-white text-white" />
-								</span>
+                                                                <span className="flex items-center gap-2 bg-green-600 text-white px-2 py-1 rounded-lg">
+                                                                        {averageRating.toFixed(1)}
+                                                                        <Star className="w-4 h-4 fill-white text-white" />
+                                                                </span>
 								<span className="ml-2 text-gray-600 font-semibold">
 									({reviews.length} Reviews)
 								</span>
@@ -767,14 +778,13 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
 							<div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
 								<div className="text-center">
 									<div className="flex items-center justify-center space-x-2 mb-2">
-										<span className="text-4xl font-bold text-green-600">
-											{product.rating || 4.5}
-										</span>
+                                                                                <span className="text-4xl font-bold text-green-600">
+                                                                                        {averageRating.toFixed(1)}
+                                                                                </span>
 										<Star className="w-8 h-8 fill-green-600 text-green-600" />
 									</div>
 									<p className="text-gray-600">
-										Average Rating based on {reviews.length} ratings and{" "}
-										{reviews.length} reviews
+                                                                                Average Rating based on {reviews.length} ratings and {reviews.length} reviews
 									</p>
 								</div>
 
@@ -799,34 +809,67 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
 								</div>
 							</div>
 
-							{/* Individual Reviews */}
-							<div className="space-y-6">
-								{reviews.map((review) => (
-									<div
-										key={review.id}
-										className="border-b border-gray-200 pb-6 last:border-b-0"
-									>
-										<div className="flex items-start space-x-4">
-											<div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center">
-												<User className="w-5 h-5 text-gray-600" />
-											</div>
-											<div className="flex-1">
-												<div className="flex items-center space-x-2 mb-2">
-													<h4 className="font-semibold">{review.name}</h4>
-												</div>
-												<div className="flex items-center space-x-1 mb-3">
-													{renderStars(review.rating)}
-												</div>
-												<p className="text-gray-700 text-sm leading-relaxed">
-													{review.comment}
-												</p>
-											</div>
-										</div>
-									</div>
-								))}
-							</div>
-						</CardContent>
-					</Card>
+                                                        {/* Review Form */}
+                                                        <form onSubmit={handleSubmitReview} className="mb-8">
+                                                                <div className="flex items-center space-x-2 mb-4">
+                                                                        {[1, 2, 3, 4, 5].map((star) => (
+                                                                                <Star
+                                                                                        key={star}
+                                                                                        className={`w-6 h-6 cursor-pointer ${
+                                                                                                star <= newRating
+                                                                                                        ? "text-yellow-400 fill-yellow-400"
+                                                                                                        : "text-gray-300"
+                                                                                        }`}
+                                                                                        onClick={() => setNewRating(star)}
+                                                                                />
+                                                                        ))}
+                                                                </div>
+                                                                <textarea
+                                                                        className="w-full border rounded p-2 mb-4"
+                                                                        rows={3}
+                                                                        value={newComment}
+                                                                        onChange={(e) => setNewComment(e.target.value)}
+                                                                        placeholder="Share your thoughts about the product"
+                                                                />
+                                                                <Button type="submit" disabled={submittingReview}>
+                                                                        {submittingReview
+                                                                                ? "Submitting..."
+                                                                                : "Submit Review"}
+                                                                </Button>
+                                                        </form>
+
+                                                        {/* Individual Reviews */}
+                                                        <div className="space-y-6">
+                                                                {reviews.map((review) => (
+                                                                        <div
+                                                                                key={review.id || review._id}
+                                                                                className="border-b border-gray-200 pb-6 last:border-b-0"
+                                                                        >
+                                                                                <div className="flex items-start space-x-4">
+                                                                                        <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center">
+                                                                                                <User className="w-5 h-5 text-gray-600" />
+                                                                                        </div>
+                                                                                        <div className="flex-1">
+                                                                                                <div className="flex items-center space-x-2 mb-2">
+                                                                                                        <h4 className="font-semibold">
+                                                                                                                {review.user
+                                                                                                                        ? `${review.user.firstName} ${review.user.lastName}`
+                                                                                                                        : "User"}
+                                                                                                        </h4>
+                                                                                                </div>
+                                                                                                <div className="flex items-center space-x-1 mb-3">
+                                                                                                        {renderStars(review.rating)}
+                                                                                                </div>
+                                                                                                <p className="text-gray-700 text-sm leading-relaxed">
+                                                                                                        {review.comment}
+                                                                                                </p>
+                                                                                        </div>
+                                                                                </div>
+                                                                        </div>
+                                                                ))}
+                                                        </div>
+                                                </CardContent>
+                                        </Card>
 				</motion.div>
 
 				{/* Related Products */}
