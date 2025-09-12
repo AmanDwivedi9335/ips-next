@@ -30,7 +30,7 @@ export default function CategoriesGrid() {
         }, []);
 
         const handleClick = (slug) => {
-                router.push(`/products?category=${slug}`);
+                router.push(`/categories/${slug}`);
         };
 
         return (
