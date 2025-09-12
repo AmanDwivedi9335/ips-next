@@ -18,16 +18,26 @@ export default function ProductsPage() {
                 setFilters,
         } = useProductStore();
 
-	// Handle URL parameters
-	useEffect(() => {
+
+        // Handle URL parameters
+        useEffect(() => {
+
                 const category = searchParams.get("category") || "all";
                 const search = searchParams.get("search") || "";
                 const subcategories = searchParams.get("subcategories");
+                const minPrice = searchParams.get("minPrice");
+                const maxPrice = searchParams.get("maxPrice");
 
                 setCurrentCategory(category, false);
                 setSearchQuery(search, false);
                 setFilters({
                         categories: subcategories ? subcategories.split(",") : [],
+
+                        priceRange: [
+                                minPrice ? parseInt(minPrice, 10) : 0,
+                                maxPrice ? parseInt(maxPrice, 10) : 10000,
+                        ],
+
                 });
 
                 applyFilters();
