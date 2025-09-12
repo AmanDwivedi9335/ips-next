@@ -69,8 +69,9 @@ export async function GET(request) {
 		const categories = await Product.distinct("category", { published: true });
 
 		// Transform function
-		const transformProduct = (product) => ({
-			id: product._id.toString(),
+                const transformProduct = (product) => ({
+                        id: product._id.toString(),
+                        _id: product._id.toString(),
 			title: product.title,
 			description: product.description,
 			longDescription: product.longDescription,

@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useHomeData } from "@/hooks/useHomeData";
-import NavigationBar from "@/components/BuyerPanel/NavigationBar.jsx";
 import BannerCarousel from "@/components/BuyerPanel/home/BannerCarousel.jsx";
 import HeroSection from "@/components/BuyerPanel/home/HeroSection.jsx";
 import CategoriesGrid from "@/components/BuyerPanel/home/CategoriesGrid.jsx";
@@ -70,7 +69,6 @@ export default function HomePage() {
 
 	return (
                 <div className="min-h-[calc(100vh-68px)] bg-white hide-scrollbar">
-                        <NavigationBar />
                         <BannerCarousel />
                         <CategoriesGrid />
                         {/* <HeroSection /> */}

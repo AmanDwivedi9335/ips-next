@@ -9,7 +9,7 @@ export default function ProductCard({ product }) {
         const router = useRouter();
 
         const handleViewProduct = () => {
-                router.push(`/products/${product.id || product._id}`);
+                router.push(`/products/${product._id || product.id}`);
         };
 
         return (

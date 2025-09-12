@@ -28,7 +28,7 @@ export default function FeaturedProduct({ product }) {
 
         const handleAddToCart = async () => {
                 await addItem({
-                        id: product.id,
+                        id: product._id || product.id,
                         name: product.title || product.name,
                         description: product.description,
                         price: product.price,
@@ -38,11 +38,11 @@ export default function FeaturedProduct({ product }) {
         };
 
 	const handleBuyNow = () => {
-		router.push(`/checkout?buyNow=true&id=${product.id}&qty=1`);
+                router.push(`/checkout?buyNow=true&id=${product._id || product.id}&qty=1`);
 	};
 
 	const handleViewProduct = () => {
-		router.push(`/products/${product.id}`);
+                router.push(`/products/${product._id || product.id}`);
 	};
 
 	return (
