@@ -31,25 +31,14 @@ export default function Header({ onMenuToggle, isMenuOpen }) {
         };
 
         const categories = [
-                { name: "Smart QR vs Standard Posters", href: "/smart-qr-vs-standard-posters" },
                 { name: "All Safety Posters", href: "/all-safety-posters" },
-                { name: "ISO Posters", href: "/iso-posters" },
-                { name: "Industry Bundles", href: "/industry-bundles" },
-                { name: "Signs & Labels", href: "/signs-labels" },
+                { name: "Industrial Safety Packs", href: "/industrial-safety-packs" },
                 { name: "Monthly Poster Subscriptions", href: "/monthly-poster-subscriptions" },
-                { name: "Custom Printed Office Stationary", href: "/custom-printed-office-stationary" },
-                {
-                        name: "New Arrivals",
-                        href: "/new-arrivals",
-                        poster: "/images/home/Img1.png",
-                        isNew: true
-                },
                 {
                         name: "Corporate Bulk/Custom Orders",
                         href: "/corporate-bulk-orders",
                         highlight: true
-                },
-                { name: "Contact Us", href: "/contact" }
+                }
         ];
 
 	return (
