@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import Logo from "@/public/ipslogo.png";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
@@ -22,6 +22,10 @@ import { useProductStore } from "@/store/productStore.js";
 
 export default function Header({ onMenuToggle, isMenuOpen }) {
         const [searchQuery, setSearchQuery] = useState("");
+        const [hasMounted, setHasMounted] = useState(false);
+        useEffect(() => {
+                setHasMounted(true);
+        }, []);
         const router = useRouter();
         const { setSearchQuery: setGlobalSearch } = useProductStore();
 
@@ -108,7 +112,7 @@ export default function Header({ onMenuToggle, isMenuOpen }) {
                                                                 onClick={handleCartClick}
                                                         >
                                                                 <ShoppingCart className="h-5 w-5 md:h-6 md:w-6" />
-                                                                {totalItems > 0 && (
+                                                                {hasMounted && totalItems > 0 && (
                                                                         <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
                                                                                 {totalItems > 99 ? "99+" : totalItems}
                                                                         </span>
@@ -118,7 +122,7 @@ export default function Header({ onMenuToggle, isMenuOpen }) {
                                                                 <Heart className="h-5 w-5 md:h-6 md:w-6" />
                                                         </Button>
 
-                                                        {isAuthenticated ? (
+                                                        {hasMounted && isAuthenticated ? (
                                                                 <div className="flex items-center space-x-2 md:space-x-4">
                                                                         <Link href="/account">
                                                                                 <div className="flex items-center space-x-2">
