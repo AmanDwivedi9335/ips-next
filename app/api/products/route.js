@@ -47,23 +47,32 @@ export async function GET(request) {
 			];
 		}
 
-		// Price range filter
-		if (minPrice || maxPrice) {
-			query.$and = query.$and || [];
-			const priceQuery = {};
+                // Price range filter
+                if (minPrice || maxPrice) {
+                        query.$and = query.$and || [];
+                        const priceQuery = {};
+                        const salePriceQuery = {};
 
-			if (minPrice) {
-				priceQuery.$gte = Number.parseInt(minPrice);
-			}
-			if (maxPrice) {
-				priceQuery.$lte = Number.parseInt(maxPrice);
-			}
+                        if (minPrice) {
+                                const min = Number.parseInt(minPrice);
+                                priceQuery.$gte = min;
+                                salePriceQuery.$gte = min;
+                        }
+                        if (maxPrice) {
+                                const max = Number.parseInt(maxPrice);
+                                priceQuery.$lte = max;
+                                salePriceQuery.$lte = max;
+                        }
 
-			// Check both regular price and sale price
-			query.$and.push({
-				$or: [{ price: priceQuery }, { salePrice: { ...priceQuery, $gt: 0 } }],
-			});
-		}
+                        // Only enforce salePrice to be positive when no minimum is provided
+                        if (!minPrice) {
+                                salePriceQuery.$gt = 0;
+                        }
+
+                        query.$and.push({
+                                $or: [{ price: priceQuery }, { salePrice: salePriceQuery }],
+                        });
+                }
 
 
 		// Discount filter
