@@ -119,13 +119,15 @@ export const useProductStore = create(
 					}
 				},
 
-                                setCurrentCategory: (category) => {
+                                setCurrentCategory: (category, fetch = true) => {
                                         set({
                                                 currentCategory: category,
                                                 currentPage: 1,
                                                 filters: { ...get().filters, categories: [] },
                                         });
-                                        get().fetchProducts();
+                                        if (fetch) {
+                                                get().fetchProducts();
+                                        }
                                 },
 
 				setCurrentPage: (page) => {
@@ -133,13 +135,15 @@ export const useProductStore = create(
 					get().fetchProducts();
 				},
 
-				setSearchQuery: (query) => {
-					set({
-						searchQuery: query,
-						currentPage: 1,
-					});
-					get().fetchProducts();
-				},
+                                setSearchQuery: (query, fetch = true) => {
+                                        set({
+                                                searchQuery: query,
+                                                currentPage: 1,
+                                        });
+                                        if (fetch) {
+                                                get().fetchProducts();
+                                        }
+                                },
 
 				setFilters: (newFilters) => {
 					set((state) => ({
