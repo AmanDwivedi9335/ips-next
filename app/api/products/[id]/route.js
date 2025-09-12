@@ -48,15 +48,27 @@ export async function GET(req, { params }) {
                         createdAt: r.createdAt,
                 }));
 
+                const discountPercentage =
+                        product.salePrice > 0
+                                ? Math.round(
+                                          ((product.price - product.salePrice) / product.price) *
+                                                  100
+                                  )
+                                : product.discount || 0;
+
                 const transformedProduct = {
                         id: product._id.toString(),
+                        // expose both title and name
+                        title: product.title,
                         name: product.title,
                         description: product.description,
                         longDescription: product.longDescription || product.description,
-                        price: product.salePrice > 0 ? product.salePrice : product.price,
+                        // provide original price and sale price separately
+                        price: product.price,
+                        salePrice: product.salePrice,
                         mrp: product.mrp || product.price,
                         code: product.code,
-                        discountPercentage: product.discount || 0,
+                        discountPercentage,
                         category: product.category,
                         subcategory: product.subcategory,
                         images: product.images || [],
@@ -67,7 +79,9 @@ export async function GET(req, { params }) {
                         materials: product.materials || [],
                         layouts: product.layouts || [],
                         materialSpecification: product.materialSpecification || "",
-                        image: product.images?.[0] || "https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png",
+                        image:
+                                product.images?.[0] ||
+                                "https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png",
                         type: product.type,
                         published: product.published,
                         features: product.features || [],
@@ -79,17 +93,28 @@ export async function GET(req, { params }) {
                 };
 
 		// Transform related products
-		const transformedRelatedProducts = relatedProducts.map((p) => ({
-			id: p._id.toString(),
-			name: p.title,
-			description: p.description,
-			price: p.salePrice > 0 ? p.salePrice : p.price,
-			originalPrice: p.price,
-			discountPercentage: p.discount || 0,
-			image: p.images?.[0] || "https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png",
-			category: p.category,
-			type: p.type,
-		}));
+                const transformedRelatedProducts = relatedProducts.map((p) => {
+                        const relatedDiscount =
+                                p.salePrice > 0
+                                        ? Math.round(((p.price - p.salePrice) / p.price) * 100)
+                                        : p.discount || 0;
+
+                        return {
+                                id: p._id.toString(),
+                                title: p.title,
+                                name: p.title,
+                                description: p.description,
+                                price: p.price,
+                                salePrice: p.salePrice,
+                                originalPrice: p.price,
+                                discountPercentage: relatedDiscount,
+                                image:
+                                        p.images?.[0] ||
+                                        "https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png",
+                                category: p.category,
+                                type: p.type,
+                        };
+                });
 
 		return Response.json({
 			success: true,
