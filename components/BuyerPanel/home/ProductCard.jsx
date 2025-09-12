@@ -12,6 +12,16 @@ export default function ProductCard({ product }) {
                 router.push(`/products/${product._id || product.id}`);
         };
 
+        const englishImage = product.languageImages?.find(
+                (l) => l.language?.toLowerCase() === "english"
+        )?.image;
+        const defaultImage =
+                englishImage ||
+                product.languageImages?.[0]?.image ||
+                product.images?.[0] ||
+                product.image ||
+                "https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png";
+
         return (
                 <Card
                         onClick={handleViewProduct}
@@ -57,13 +67,13 @@ export default function ProductCard({ product }) {
 					</p>
 				)}
 
-				<div className="relative mb-4">
-					<img
-						src={product.image || "https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png"}
-						alt={product.title}
-						className="w-full h-32 md:h-48 object-contain rounded"
-					/>
-				</div>
+                                <div className="relative mb-4">
+                                        <img
+                                                src={defaultImage}
+                                                alt={product.title}
+                                                className="w-full h-32 md:h-48 object-contain rounded"
+                                        />
+                                </div>
 
 				<div className="flex justify-between items-center absolute bottom-4 left-4 right-4">
 					<div className="flex space-x-2">

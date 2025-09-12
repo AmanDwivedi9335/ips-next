@@ -7,12 +7,21 @@ import { ShoppingCart, Heart, ArrowRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 function ProductCardVarient({ product, variant = "vertical" }) {
-        console.log("Product:", product);
         const router = useRouter();
 
         const handleViewProduct = () => {
                 router.push(`/products/${product?._id || product?.id}`);
         };
+
+        const englishImage = product?.languageImages?.find(
+                (l) => l.language?.toLowerCase() === "english"
+        )?.image;
+        const defaultImage =
+                englishImage ||
+                product?.languageImages?.[0]?.image ||
+                product?.images?.[0] ||
+                product?.image ||
+                "https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png";
 
         if (variant === "horizontal") {
                 return (
@@ -96,13 +105,13 @@ function ProductCardVarient({ product, variant = "vertical" }) {
 
 					{/* Right side - Product Image */}
 					<div className="flex-1 w-full h-[300px] overflow-hidden">
-						<Image
-							src={product?.image || "https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png"}
-							alt={product?.title}
-							width={300}
-							height={300}
-							className="w-full h-[300px] object-contain"
-						/>
+                                                <Image
+                                                        src={defaultImage}
+                                                        alt={product?.title}
+                                                        width={300}
+                                                        height={300}
+                                                        className="w-full h-[300px] object-contain"
+                                                />
 					</div>
 				</CardContent>
 			</Card>
@@ -176,11 +185,11 @@ function ProductCardVarient({ product, variant = "vertical" }) {
 				{/* product? Image - Takes remaining space */}
 				<div className="relative flex-1 px-4 md:px-6 pb-16 md:pb-20">
 					<div className="w-full h-full overflow-hidden relative">
-						<img
-							src={product?.image || "https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png"}
-							alt={product?.title}
-							className="w-full h-full object-cover rounded-lg"
-						/>
+                                                <img
+                                                        src={defaultImage}
+                                                        alt={product?.title}
+                                                        className="w-full h-full object-cover rounded-lg"
+                                                />
 					</div>
 				</div>
 
