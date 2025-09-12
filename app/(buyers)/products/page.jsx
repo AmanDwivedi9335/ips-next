@@ -9,29 +9,35 @@ import { useSearchParams } from "next/navigation";
 export default function ProductsPage() {
 	const searchParams = useSearchParams();
 
-        const { error, fetchProducts, setCurrentCategory, setSearchQuery, setFilters } =
-                useProductStore();
+        const {
+                error,
+                fetchProducts,
+                applyFilters,
+                setCurrentCategory,
+                setSearchQuery,
+                setFilters,
+        } = useProductStore();
 
-	// Handle URL parameters
-	useEffect(() => {
-                const category = searchParams.get("category");
-                const search = searchParams.get("search");
+        // Handle URL parameters
+        useEffect(() => {
+                const category = searchParams.get("category") || "all";
+                const search = searchParams.get("search") || "";
                 const subcategories = searchParams.get("subcategories");
+                const minPrice = searchParams.get("minPrice");
+                const maxPrice = searchParams.get("maxPrice");
 
-                if (category) {
-                        setCurrentCategory(category, false);
-                }
+                setCurrentCategory(category, false);
+                setSearchQuery(search, false);
+                setFilters({
+                        categories: subcategories ? subcategories.split(",") : [],
+                        priceRange: [
+                                minPrice ? parseInt(minPrice, 10) : 0,
+                                maxPrice ? parseInt(maxPrice, 10) : 10000,
+                        ],
+                });
 
-                if (search) {
-                        setSearchQuery(search, false);
-                }
-
-                if (subcategories) {
-                        setFilters({ categories: subcategories.split(",") });
-                }
-
-                fetchProducts();
-        }, [searchParams, fetchProducts, setCurrentCategory, setSearchQuery, setFilters]);
+                applyFilters();
+        }, [searchParams, applyFilters, setCurrentCategory, setSearchQuery, setFilters]);
 
 	if (error) {
 		return (
