@@ -16,7 +16,10 @@ export async function GET(request) {
 		const category = searchParams.get("category");
 		const search = searchParams.get("search");
                 const type = searchParams.get("type");
-                const subcategories = searchParams.get("subcategories");
+                // Support both `subcategories` and legacy `subcategory` params
+                const subcategoriesParam =
+                        searchParams.get("subcategories") ||
+                        searchParams.get("subcategory");
 		const page = Number.parseInt(searchParams.get("page") || "1");
 		const limit = Number.parseInt(searchParams.get("limit") || "12");
 		const sort = searchParams.get("sort") || "createdAt";
@@ -31,8 +34,11 @@ export async function GET(request) {
                 }
 
                 // Subcategory filter
-                if (subcategories) {
-                        const subcategoryList = subcategories.split(",").filter(Boolean);
+                if (subcategoriesParam) {
+                        const subcategoryList = subcategoriesParam
+                                .split(",")
+                                .map((s) => decodeURIComponent(s).trim())
+                                .filter(Boolean);
                         if (subcategoryList.length > 0) {
                                 query.subcategory = { $in: subcategoryList };
                         }
