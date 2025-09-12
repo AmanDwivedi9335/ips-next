@@ -41,6 +41,7 @@ export async function GET(req, { params }) {
                         languages: product.languages || [],
                         sizes: product.sizes || [],
                         materials: product.materials || [],
+                        layouts: product.layouts || [],
                         materialSpecification: product.materialSpecification || "",
                         image: product.images?.[0] || "https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png",
 			type: product.type,
