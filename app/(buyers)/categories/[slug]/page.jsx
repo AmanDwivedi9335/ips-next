@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 
@@ -8,7 +8,7 @@ const FALLBACK_IMAGE =
         "https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png";
 
 export default function CategoryPage({ params }) {
-        const { slug } = params;
+        const { slug } = use(params);
         const router = useRouter();
         const [categories, setCategories] = useState([]);
         const [currentCategory, setCurrentCategory] = useState(null);
