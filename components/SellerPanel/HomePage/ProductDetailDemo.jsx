@@ -7,18 +7,21 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import ProductCard from "@/components/SellerPanel/HomePage/ProductCard.jsx";
 import {
-	ShoppingCart,
-	Heart,
-	Share2,
-	Minus,
-	Plus,
-	MapPin,
-	Truck,
-	CreditCard,
-	Star,
-	User,
+        ShoppingCart,
+        Heart,
+        Share2,
+        Minus,
+        Plus,
+        MapPin,
+        Truck,
+        CreditCard,
+        Star,
+        User,
 } from "lucide-react";
 import Image from "next/image";
+import { useCartStore } from "@/store/cartStore";
+import { useWishlistStore } from "@/store/wishlistStore";
+import { toast } from "react-hot-toast";
 
 import {
 	ISP1, // green helmet
@@ -135,8 +138,11 @@ const products = [
 ];
 
 export default function ProductDetailDemo() {
-	const [selectedImage, setSelectedImage] = useState(0);
-	const [quantity, setQuantity] = useState(1);
+        const [selectedImage, setSelectedImage] = useState(0);
+        const [quantity, setQuantity] = useState(1);
+
+        const { addItem, isLoading } = useCartStore();
+        const { addItem: addWishlistItem } = useWishlistStore();
 
 	const containerVariants = {
 		hidden: { opacity: 0 },
@@ -166,16 +172,39 @@ export default function ProductDetailDemo() {
 		}
 	};
 
-	const renderStars = (rating) => {
-		return Array.from({ length: 5 }, (_, i) => (
-			<Star
-				key={i}
-				className={`w-4 h-4 ${
-					i < rating ? "fill-yellow-400 text-yellow-400" : "text-gray-300"
-				}`}
-			/>
-		));
-	};
+        const renderStars = (rating) => {
+                return Array.from({ length: 5 }, (_, i) => (
+                        <Star
+                                key={i}
+                                className={`w-4 h-4 ${
+                                        i < rating ? "fill-yellow-400 text-yellow-400" : "text-gray-300"
+                                }`}
+                        />
+                ));
+        };
+
+        const handleAddToCart = async () => {
+                await addItem({
+                        id: dummyProduct.id,
+                        name: dummyProduct.name,
+                        description: dummyProduct.description,
+                        price: dummyProduct.price,
+                        originalPrice: dummyProduct.originalPrice || dummyProduct.price,
+                        image: dummyProduct.images[0],
+                });
+        };
+
+        const handleAddToWishlist = () => {
+                addWishlistItem({
+                        id: dummyProduct.id,
+                        name: dummyProduct.name,
+                        description: dummyProduct.description,
+                        price: dummyProduct.price,
+                        originalPrice: dummyProduct.originalPrice || dummyProduct.price,
+                        image: dummyProduct.images[0],
+                });
+                toast.success("Added to wishlist!");
+        };
 
 	return (
 		<div className="min-h-screen bg-gray-200 rounded-xl">
@@ -308,23 +337,29 @@ export default function ProductDetailDemo() {
 							</div>
 
 							<div className="flex flex-col sm:flex-row gap-4">
-								<Button
-									className="flex-1 bg-black text-white hover:bg-gray-800"
-									size="lg"
-								>
-									<ShoppingCart className="h-5 w-5 mr-2" />
-									Add to Cart
-								</Button>
-								<Button
-									className="flex-1 bg-green-600 text-white hover:bg-green-700"
-									size="lg"
-								>
-									Buy Now
-								</Button>
-								<Button variant="outline" size="lg">
-									<Heart className="h-5 w-5 mr-2" />
-									Wishlist
-								</Button>
+                                                                <Button
+                                                                        onClick={handleAddToCart}
+                                                                        disabled={isLoading}
+                                                                        className="flex-1 bg-black text-white hover:bg-gray-800"
+                                                                        size="lg"
+                                                                >
+                                                                        <ShoppingCart className="h-5 w-5 mr-2" />
+                                                                        Add to Cart
+                                                                </Button>
+                                                                <Button
+                                                                        className="flex-1 bg-green-600 text-white hover:bg-green-700"
+                                                                        size="lg"
+                                                                >
+                                                                        Buy Now
+                                                                </Button>
+                                                                <Button
+                                                                        variant="outline"
+                                                                        size="lg"
+                                                                        onClick={handleAddToWishlist}
+                                                                >
+                                                                        <Heart className="h-5 w-5 mr-2" />
+                                                                        Wishlist
+                                                                </Button>
 								<Button variant="outline" size="lg">
 									<Share2 className="h-5 w-5" />
 								</Button>

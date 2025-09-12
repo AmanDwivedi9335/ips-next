@@ -5,10 +5,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Plus, Minus, X, Heart } from "lucide-react";
 import { useCartStore } from "@/store/cartStore";
+import { useWishlistStore } from "@/store/wishlistStore";
+import { toast } from "react-hot-toast";
 import Image from "next/image";
 
 export default function CartItem({ item }) {
-	const { updateQuantity, removeItem, isLoading } = useCartStore();
+        const { updateQuantity, removeItem, isLoading } = useCartStore();
+        const { addItem: addWishlistItem } = useWishlistStore();
 
 	const handleQuantityChange = (newQuantity) => {
 		if (newQuantity < 1) {
@@ -18,9 +21,15 @@ export default function CartItem({ item }) {
 		}
 	};
 
-	const handleRemove = () => {
-		removeItem(item.id);
-	};
+        const handleRemove = () => {
+                removeItem(item.id);
+        };
+
+        const handleSaveForLater = () => {
+                addWishlistItem(item);
+                removeItem(item.id);
+                toast.success("Saved for later");
+        };
 
 	return (
 		<motion.div
@@ -111,14 +120,15 @@ export default function CartItem({ item }) {
 								</div>
 
 								{/* Wishlist Button - Need to add functionality */}
-								<Button
-									variant="outline"
-									size="sm"
-									className="flex items-center gap-2"
-								>
-									<Heart className="h-4 w-4" />
-									Save for Later
-								</Button>
+                                                                <Button
+                                                                        variant="outline"
+                                                                        size="sm"
+                                                                        onClick={handleSaveForLater}
+                                                                        className="flex items-center gap-2"
+                                                                >
+                                                                        <Heart className="h-4 w-4" />
+                                                                        Save for Later
+                                                                </Button>
 							</div>
 
 							{/* Item Total */}
