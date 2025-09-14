@@ -12,7 +12,6 @@ import {
         SelectTrigger,
         SelectValue,
 } from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
 import {
         ArrowLeft,
         ShoppingCart,
@@ -525,12 +524,24 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                                                                 </Select>
                                                         </div>
                                                 )}
-                                                {hasQrOption && (
-                                                        <div className="mt-4 flex items-center space-x-2">
-                                                                <Switch checked={hasQr} onCheckedChange={setHasQr} />
-                                                                <span>QR Code</span>
-                                                        </div>
-                                                )}
+                                               {hasQrOption && (
+                                                       <div className="mt-4">
+                                                               <Select
+                                                                       value={hasQr ? "true" : "false"}
+                                                                       onValueChange={(value) =>
+                                                                               setHasQr(value === "true")
+                                                                       }
+                                                               >
+                                                                       <SelectTrigger className="w-40">
+                                                                               <SelectValue placeholder="QR" />
+                                                                       </SelectTrigger>
+                                                                       <SelectContent>
+                                                                               <SelectItem value="true">With QR</SelectItem>
+                                                                               <SelectItem value="false">Without QR</SelectItem>
+                                                                       </SelectContent>
+                                                               </Select>
+                                                       </div>
+                                               )}
 
                                                 {/* Quantity and Add to Cart */}
                                                 <div className="space-y-4">
