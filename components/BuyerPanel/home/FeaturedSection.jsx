@@ -9,26 +9,28 @@ import { ProductCardVarient } from "@/components/BuyerPanel/home/ProductCardVari
 import BannerImg from "@/public/images/home/Banner.png";
 
 export default function FeaturedSection({
-	topSellingProducts = [],
-	bestSellingProduct = null,
-	featuredProducts = [],
+        topSellingProducts = [],
+        bestSellingProduct = null,
+        featuredProducts = [],
 }) {
-	return (
-		<section className="py-8 md:py-16 bg-gray-50">
-			<div className="px-10">
-				{/* Top Selling Products */}
-				<motion.div
-					initial={{ opacity: 0, y: 20 }}
-					whileInView={{ opacity: 1, y: 0 }}
-					viewport={{ once: true }}
-					className="mb-12 md:mb-16"
-				>
-					<h2 className="text-2xl md:text-3xl font-bold mb-6 md:mb-8">
-						Top Selling Products
-					</h2>
-					<ProductCarousel products={topSellingProducts} showDots={true} />
-				</motion.div>
-			</div>
+        return (
+                <section className="py-8 md:py-16 bg-gray-50">
+                        {topSellingProducts.length > 0 && (
+                                <div className="px-10">
+                                        {/* Top Selling Products */}
+                                        <motion.div
+                                                initial={{ opacity: 0, y: 20 }}
+                                                whileInView={{ opacity: 1, y: 0 }}
+                                                viewport={{ once: true }}
+                                                className="mb-12 md:mb-16"
+                                        >
+                                                <h2 className="text-2xl md:text-3xl font-bold mb-6 md:mb-8">
+                                                        Top Selling Products
+                                                </h2>
+                                                <ProductCarousel products={topSellingProducts} showDots={true} />
+                                        </motion.div>
+                                </div>
+                        )}
 
 			<div className="px-10">
 				{/* Best Selling Product */}
