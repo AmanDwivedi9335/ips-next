@@ -110,8 +110,13 @@ function ProductCardVarient({ product, variant = "vertical" }) {
 						</div>
 					</div>
 
-					{/* Right side - Product Image */}
-					<div className="flex-1 w-full h-[300px] overflow-hidden">
+                                        {/* Right side - Product Image */}
+                                        <div className="flex-1 w-full h-[300px] overflow-hidden relative">
+                                                {productCode && (
+                                                        <span className="absolute top-2 right-2 bg-black text-white text-xs px-2 py-1 rounded">
+                                                                {productCode}
+                                                        </span>
+                                                )}
                                                 <Image
                                                         src={defaultImage}
                                                         alt={product?.title}
@@ -119,7 +124,7 @@ function ProductCardVarient({ product, variant = "vertical" }) {
                                                         height={300}
                                                         className="w-full h-[300px] object-contain"
                                                 />
-					</div>
+                                        </div>
 				</CardContent>
 			</Card>
 		);
@@ -192,15 +197,20 @@ function ProductCardVarient({ product, variant = "vertical" }) {
 				)}
 
 				{/* product? Image - Takes remaining space */}
-				<div className="relative flex-1 px-4 md:px-6 pb-16 md:pb-20">
-					<div className="w-full h-full overflow-hidden relative">
+                                <div className="relative flex-1 px-4 md:px-6 pb-16 md:pb-20">
+                                        <div className="w-full h-full overflow-hidden relative">
+                                                {productCode && (
+                                                        <span className="absolute top-2 right-2 bg-black text-white text-xs px-2 py-1 rounded">
+                                                                {productCode}
+                                                        </span>
+                                                )}
                                                 <img
                                                         src={defaultImage}
                                                         alt={product?.title}
                                                         className="w-full h-full object-cover rounded-lg"
                                                 />
-					</div>
-				</div>
+                                        </div>
+                                </div>
 
 				{/* Action Buttons - Fixed at bottom */}
 				<div className="absolute bottom-4 left-4 right-4 flex justify-between items-center bg-white/90 backdrop-blur-sm rounded-lg p-2">

@@ -80,7 +80,7 @@ export default function ProductCard({ product, viewMode = "grid" }) {
                         >
                                 <CardContent className="p-6">
                                         <div className="flex flex-col sm:flex-row gap-6">
-						<div className="relative w-full sm:w-48 h-48 bg-gray-50 rounded-lg overflow-hidden flex-shrink-0">
+                                                <div className="relative w-full sm:w-48 h-48 bg-gray-50 rounded-lg overflow-hidden flex-shrink-0">
                                                         <Image
                                                                 src={defaultImage}
                                                                 alt={productTitle}
@@ -88,17 +88,24 @@ export default function ProductCard({ product, viewMode = "grid" }) {
                                                                 className="object-contain p-4 group-hover:scale-105 transition-transform duration-300"
                                                                 onClick={handleViewProduct}
                                                         />
-							{product.discountPercentage > 0 && (
-								<Badge className="absolute top-2 left-2 bg-red-500 text-white">
-									{product.discountPercentage}% OFF
-								</Badge>
-							)}
-							{product.type === "featured" && (
-								<Badge className="absolute top-2 right-2 bg-blue-500 text-white">
-									Featured
-								</Badge>
-							)}
-						</div>
+
+                                                        {product.discountPercentage > 0 && (
+                                                                <Badge className="absolute top-2 left-2 bg-red-500 text-white">
+                                                                        {product.discountPercentage}% OFF
+                                                                </Badge>
+                                                        )}
+
+                                                        <div className="absolute top-2 right-2 flex flex-col items-end gap-1">
+                                                                {productCode && (
+                                                                        <Badge className="bg-black text-white">
+                                                                                {productCode}
+                                                                        </Badge>
+                                                                )}
+                                                                {product.type === "featured" && (
+                                                                        <Badge className="bg-blue-500 text-white">Featured</Badge>
+                                                                )}
+                                                        </div>
+                                                </div>
 
 						<div className="flex-1 space-y-4">
                                                         <div onClick={handleViewProduct}>
@@ -196,22 +203,29 @@ export default function ProductCard({ product, viewMode = "grid" }) {
                                                                 onClick={handleViewProduct}
                                                         />
 
-							{/* Badges */}
-							<div className="absolute top-2 left-2 flex flex-col gap-1">
-								{product.discountPercentage > 0 && (
-									<Badge className="bg-red-500 text-white">
-										{product.discountPercentage}% OFF
-									</Badge>
-								)}
-								{product.type === "featured" && (
-									<Badge className="bg-blue-500 text-white">Featured</Badge>
-								)}
-							</div>
+                                                        {/* Left-side badges */}
+                                                        <div className="absolute top-2 left-2 flex flex-col gap-1">
+                                                                {product.discountPercentage > 0 && (
+                                                                        <Badge className="bg-red-500 text-white">
+                                                                                {product.discountPercentage}% OFF
+                                                                        </Badge>
+                                                                )}
+                                                                {product.type === "featured" && (
+                                                                        <Badge className="bg-blue-500 text-white">Featured</Badge>
+                                                                )}
+                                                        </div>
 
-							{/* Quick view overlay */}
-							<div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
-								<Button
-									variant="secondary"
+                                                        {/* Product code badge */}
+                                                        {productCode && (
+                                                                <Badge className="absolute top-2 right-2 bg-black text-white">
+                                                                        {productCode}
+                                                                </Badge>
+                                                        )}
+
+                                                        {/* Quick view overlay */}
+                                                        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
+                                                                <Button
+                                                                        variant="secondary"
 									size="icon"
 									className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full"
 									onClick={handleViewProduct}
