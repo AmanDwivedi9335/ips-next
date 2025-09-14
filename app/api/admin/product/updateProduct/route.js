@@ -80,6 +80,8 @@ export async function PUT(request) {
                 product.description = description;
                 product.longDescription = longDescription || description;
                 product.productCode = productCode || "";
+                // Maintain legacy `code` field alongside `productCode`
+                product.code = productCode || "";
                 product.category = category;
                 product.subcategory = subcategory || "";
                 product.productFamily = productFamily;

@@ -16,7 +16,12 @@ const ProductSchema = new mongoose.Schema(
                 salePrice: { type: Number, default: 0 },
                 discount: { type: Number, default: 0 },
 
+               // Store product code in two fields for backward compatibility
+               // `productCode` is the preferred field while `code` ensures
+               // older parts of the application that rely on `code` continue
+               // to work until fully migrated.
                productCode: { type: String, trim: true },
+               code: { type: String, trim: true },
                 mrp: { type: Number },
                 languageImages: [
                         {
