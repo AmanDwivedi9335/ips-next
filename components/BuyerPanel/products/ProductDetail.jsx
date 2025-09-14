@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { Switch } from "@/components/ui/switch";
 import {
         Select,
         SelectContent,
@@ -413,9 +414,7 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                                                         {/* Product code */}
                                                         {productCode && (
                                                                 <p className="text-sm text-gray-600 mb-2">
-
-                                                                        Product Code: {productCode}
-
+                                                                        Code: {productCode}
                                                                 </p>
                                                         )}
 
