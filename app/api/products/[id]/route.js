@@ -71,7 +71,8 @@ export async function GET(req, { params }) {
                         price: product.price,
                         salePrice: product.salePrice,
                         mrp: product.mrp || product.price,
-                        code: product.code,
+                        productCode: product.productCode || product.code,
+                        code: product.productCode || product.code,
                         discountPercentage,
                         category: product.category,
                         subcategory: product.subcategory,
@@ -117,6 +118,8 @@ export async function GET(req, { params }) {
                                         "https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png",
                                 category: p.category,
                                 type: p.type,
+                                productCode: p.productCode || p.code,
+                                code: p.productCode || p.code,
                         };
                 });
 

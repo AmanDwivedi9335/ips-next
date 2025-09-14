@@ -36,8 +36,9 @@ import {
 
 // Dummy data
 const dummyProduct = {
-	id: "ISP2",
-	name: "Industrial Safety Kit Combo",
+        id: "ISP2",
+        productCode: "ISP2",
+        name: "Industrial Safety Kit Combo",
 	description:
 		"Complete safety kit with orange helmet, safety glasses, gloves, and headset.",
 	longDescription:
@@ -99,36 +100,40 @@ const dummyReviews = [
 ];
 
 const products = [
-	{
-		id: 1,
-		title: "Retro reflective Sign",
+        {
+                id: 1,
+                productCode: "P1",
+                title: "Retro reflective Sign",
 		price: "₹2,000",
 		originalPrice: "₹3,500",
 		discount: "33% OFF",
 		image: ISP1.src,
                 rating: 4.5,
 	},
-	{
-		id: 2,
-		title: "Quick Heal - First Aid Kit",
+        {
+                id: 2,
+                productCode: "P2",
+                title: "Quick Heal - First Aid Kit",
 		price: "₹5,000",
 		originalPrice: "₹7,500",
 		discount: "33% OFF",
 		image: PSP5.src,
                 rating: 4.8,
 	},
-	{
-		id: 3,
-		title: "Fire Extinguisher",
+        {
+                id: 3,
+                productCode: "P3",
+                title: "Fire Extinguisher",
 		price: "₹3,500",
 		originalPrice: "₹7,000",
 		discount: "50% OFF",
 		image: ISP5.src,
                 rating: 4.6,
 	},
-	{
-		id: 4,
-		title: "Reflective jacket",
+        {
+                id: 4,
+                productCode: "P4",
+                title: "Reflective jacket",
 		price: "₹5,000",
 		originalPrice: "₹7,500",
 		discount: "33% OFF",
@@ -264,16 +269,23 @@ export default function ProductDetailDemo() {
 							<Badge variant="secondary" className="mb-4">
 								{dummyProduct.category.replace("-", " ").toUpperCase()}
 							</Badge>
-							<h1 className="text-3xl lg:text-4xl font-bold mb-4">
-								{dummyProduct.name}
-							</h1>
+                                                        <h1 className="text-3xl lg:text-4xl font-bold mb-2">
+                                                                {dummyProduct.name}
+                                                        </h1>
 
-							{/* Product rating */}
-							<div className="flex items-center mb-2">
-								<span className="flex items-center gap-2 bg-green-600 text-white px-2 py-1 rounded-lg">
-									{dummyProduct.rating}
-									<Star className="w-4 h-4 fill-white text-white" />
-								</span>
+                                                        {/* Product code */}
+                                                        {dummyProduct.productCode && (
+                                                                <p className="text-sm text-gray-600 mb-2">
+                                                                        Product Code: {dummyProduct.productCode}
+                                                                </p>
+                                                        )}
+
+                                                        {/* Product rating */}
+                                                        <div className="flex items-center mb-2">
+                                                                <span className="flex items-center gap-2 bg-green-600 text-white px-2 py-1 rounded-lg">
+                                                                        {dummyProduct.rating}
+                                                                        <Star className="w-4 h-4 fill-white text-white" />
+                                                                </span>
 								<span className="ml-2 text-gray-600 font-semibold">
 									({dummyReviews.length} Reviews)
 								</span>

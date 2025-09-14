@@ -19,6 +19,7 @@ export default function ProductCard({ product, viewMode = "grid" }) {
         // Ensure consistent identifiers and titles across different API shapes
         const productId = product.id || product._id;
         const productTitle = product.title || product.name || "";
+        const productCode = product.productCode || product.code;
 
         const englishImage = product.languageImages?.find(
                 (l) => l.language?.toLowerCase() === "english"
@@ -104,8 +105,8 @@ export default function ProductCard({ product, viewMode = "grid" }) {
                                                                 <h3 className="text-xl font-semibold hover:text-blue-600 transition-colors">
                                                                         {productTitle}
                                                                 </h3>
-                                                                {product.code && (
-                                                                        <p className="text-sm text-gray-500">Code: {product.code}</p>
+                                                                {productCode && (
+                                                                        <p className="text-sm text-gray-500">Product Code: {productCode}</p>
                                                                 )}
                                                                 <p className="text-gray-600 mt-2 line-clamp-2">
                                                                         {product.description}
@@ -224,8 +225,8 @@ export default function ProductCard({ product, viewMode = "grid" }) {
                                                         <h3 className="font-semibold text-lg mb-2 line-clamp-2 hover:text-blue-600 transition-colors">
                                                                 {productTitle}
                                                         </h3>
-                                                        {product.code && (
-                                                                <p className="text-xs text-gray-500 mb-1">Code: {product.code}</p>
+                                                        {productCode && (
+                                                                <p className="text-xs text-gray-500 mb-1">Product Code: {productCode}</p>
                                                         )}
                                                         <p className="text-gray-600 text-sm mb-3 line-clamp-2">
                                                                 {product.description}

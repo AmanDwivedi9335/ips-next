@@ -48,6 +48,7 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
         const englishImage = product.languageImages?.find(
                 (l) => l.language?.toLowerCase() === "english"
         )?.image;
+        const productCode = product.productCode || product.code;
         const [selectedLanguage, setSelectedLanguage] = useState(
                 normalizedLanguages.includes("english")
                         ? languages[normalizedLanguages.indexOf("english")]
@@ -405,9 +406,9 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
 							</h1>
 
                                                         {/* Product code */}
-                                                        {product.code && (
+                                                        {productCode && (
                                                                 <p className="text-sm text-gray-600 mb-2">
-                                                                        Code: {product.code}
+                                                                        Product Code: {productCode}
                                                                 </p>
                                                         )}
 
