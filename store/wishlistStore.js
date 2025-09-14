@@ -24,6 +24,7 @@ export const useWishlistStore = create(
                                 })),
 
                         clear: () => set({ items: [] }),
+                        getTotalItems: () => get().items.length,
                         openWishlist: (product) => set({ isOpen: true, product }),
                         closeWishlist: () => set({ isOpen: false, product: null }),
                 }),
