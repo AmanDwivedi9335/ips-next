@@ -44,7 +44,9 @@ function ProductCardVarient({ product, variant = "vertical" }) {
                                                                         {product?.title}
                                                                 </h3>
                                                                 {productCode && (
-                                                                        <p className="text-gray-500 text-sm mb-2">Code: {productCode}</p>
+
+                                                                        <p className="text-gray-500 text-sm mb-2">Product Code: {productCode}</p>
+
                                                                 )}
                                                                 {product?.subtitle && (
                                                                         <p className="text-gray-600 text-sm mb-2">
@@ -137,7 +139,9 @@ function ProductCardVarient({ product, variant = "vertical" }) {
                                                         {product?.title}
                                                 </h3>
                                                 {productCode && (
-                                                        <p className="text-gray-500 text-xs">Code: {productCode}</p>
+
+                                                        <p className="text-gray-500 text-xs">Product Code: {productCode}</p>
+
                                                 )}
                                                 {product?.subtitle && (
                                                         <p className="text-gray-600 text-sm line-clamp-1">

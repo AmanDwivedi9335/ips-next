@@ -52,7 +52,9 @@ export default function ProductCard({ product, viewMode = "grid" }) {
                                                                         {product.title}
                                                                 </h3>
                                                                 {productCode && (
-                                                                        <p className="text-sm text-gray-500">Code: {productCode}</p>
+
+                                                                        <p className="text-sm text-gray-500">Product Code: {productCode}</p>
+
                                                                 )}
                                                                 <p className="text-gray-600 mt-2 line-clamp-2">
                                                                         {product.description}
@@ -169,7 +171,9 @@ export default function ProductCard({ product, viewMode = "grid" }) {
                                                                 {product.title}
                                                         </h3>
                                                         {productCode && (
-                                                                <p className="text-xs text-gray-500 mb-1">Code: {productCode}</p>
+
+                                                                <p className="text-xs text-gray-500 mb-1">Product Code: {productCode}</p>
+
                                                         )}
                                                         <p className="text-gray-600 text-sm mb-3 line-clamp-2">
                                                                 {product.description}

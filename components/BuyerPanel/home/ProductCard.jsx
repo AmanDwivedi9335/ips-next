@@ -35,7 +35,9 @@ export default function ProductCard({ product }) {
                                                         {product.title}
                                                 </h3>
                                                 {productCode && (
-                                                        <p className="text-gray-500 text-xs">Code: {productCode}</p>
+
+                                                        <p className="text-gray-500 text-xs">Product Code: {productCode}</p>
+
                                                 )}
                                                 {product.subtitle && (
                                                         <p className="text-gray-600 text-sm">{product.subtitle}</p>
