@@ -5,7 +5,6 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { Switch } from "@/components/ui/switch";
 import {
         Select,
         SelectContent,
@@ -433,10 +432,24 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                                         <p className="text-xl lg:text-2xl font-semibold text-black mb-2">
                                                 ₹ {calculatedPrice.toLocaleString()} (Sale Price)
                                         </p>
-                                        {hasQrOption && (
-                                                <div className="mt-4 flex items-center space-x-2">
-                                                        <Switch checked={hasQr} onCheckedChange={setHasQr} />
-                                                        <span>QR Code</span>
+                                       {hasQrOption && (
+                                                <div className="mt-4">
+                                                        <Select
+                                                                value={hasQr ? "yes" : "no"}
+                                                                onValueChange={(v) => setHasQr(v === "yes")}
+                                                        >
+                                                                <SelectTrigger className="w-40">
+                                                                        <SelectValue placeholder="QR Code" />
+                                                                </SelectTrigger>
+                                                                <SelectContent>
+                                                                        <SelectItem value="yes">
+                                                                                With QR Code
+                                                                        </SelectItem>
+                                                                        <SelectItem value="no">
+                                                                                Without QR Code
+                                                                        </SelectItem>
+                                                                </SelectContent>
+                                                        </Select>
                                                 </div>
                                         )}
                                 </div>
