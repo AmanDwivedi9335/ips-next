@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Menu, ShoppingCart, Heart, User, X, Search } from "lucide-react";
 import { useCartStore } from "@/store/cartStore";
+import { useWishlistStore } from "@/store/wishlistStore";
 import MiniCart from "./cart/MiniCart";
 import {
         useUserFullName,
@@ -36,6 +37,7 @@ export default function Header({ onMenuToggle, isMenuOpen }) {
 
         const { getTotalItems, openCart } = useCartStore();
         const totalItems = getTotalItems();
+        const wishlistCount = useWishlistStore((state) => state.getTotalItems());
 
         const handleCartClick = () => {
                 openCart();
@@ -118,8 +120,18 @@ export default function Header({ onMenuToggle, isMenuOpen }) {
                                                                         </span>
                                                                 )}
                                                         </Button>
-                                                        <Button variant="ghost" size="icon" className="text-gray-900 hover:bg-gray-200">
+                                                        <Button
+                                                                variant="ghost"
+                                                                size="icon"
+                                                                className="relative text-gray-900 hover:bg-gray-200"
+                                                                onClick={() => router.push("/wishlist")}
+                                                        >
                                                                 <Heart className="h-5 w-5 md:h-6 md:w-6" />
+                                                                {hasMounted && wishlistCount > 0 && (
+                                                                        <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                                                                                {wishlistCount > 99 ? "99+" : wishlistCount}
+                                                                        </span>
+                                                                )}
                                                         </Button>
 
                                                         {hasMounted && isAuthenticated ? (
