@@ -92,7 +92,7 @@ export function UpdateProductPopup({ open, onOpenChange, product }) {
     title: product?.title || "",
     description: product?.description || "",
     longDescription: product?.longDescription || "",
-    code: product?.code || "",
+    productCode: product?.productCode || product?.code || "",
     category: product?.category || "",
     subcategory: product?.subcategory || "",
     discount: product?.discount?.toString() || "",
@@ -170,7 +170,7 @@ export function UpdateProductPopup({ open, onOpenChange, product }) {
         title: product.title || "",
         description: product.description || "",
         longDescription: product.longDescription || "",
-        code: product.code || "",
+        productCode: product.productCode || product.code || "",
         category: product.category || "",
         subcategory: product.subcategory || "",
         discount: product.discount?.toString() || "",
@@ -252,7 +252,7 @@ export function UpdateProductPopup({ open, onOpenChange, product }) {
 
       const productData = {
         title: formData.title,
-        code: formData.code,
+        productCode: formData.productCode,
         description: formData.description,
         longDescription: formData.longDescription || formData.description,
         category: formData.category,
@@ -394,13 +394,13 @@ export function UpdateProductPopup({ open, onOpenChange, product }) {
               </div>
 
               <div className="md:col-span-2">
-                <Label htmlFor="code">Product Code</Label>
+                <Label htmlFor="productCode">Product Code</Label>
                 <Input
-                  id="code"
+                  id="productCode"
                   placeholder="Enter product code"
-                  value={formData.code}
+                  value={formData.productCode}
                   onChange={(e) =>
-                    setFormData({ ...formData, code: e.target.value })
+                    setFormData({ ...formData, productCode: e.target.value })
                   }
                   className="mt-1"
                 />

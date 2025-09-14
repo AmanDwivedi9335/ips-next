@@ -16,7 +16,7 @@ export async function POST(request) {
                 const category = formData.get("category");
                 const subcategory = formData.get("subcategory");
                 const productFamily = formData.get("productFamily");
-                const code = formData.get("code");
+                const productCode = formData.get("productCode");
 
                 console.log("Received data:", {
                         title,
@@ -120,7 +120,7 @@ export async function POST(request) {
                         title,
                         description,
                         longDescription: formData.get("longDescription") || description,
-                        code,
+                        productCode,
                         images: imageUrls,
                         languageImages,
                         category,

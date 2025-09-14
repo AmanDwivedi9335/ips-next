@@ -26,6 +26,7 @@ function ProductCardVarient({ product, variant = "vertical" }) {
                 product?.image ||
 
                 "https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png";
+        const productCode = product?.productCode || product?.code;
 
         if (variant === "horizontal") {
                 return (
@@ -42,8 +43,8 @@ function ProductCardVarient({ product, variant = "vertical" }) {
                                                                 <h3 className="font-bold text-lg md:text-xl mb-2 line-clamp-2">
                                                                         {product?.title}
                                                                 </h3>
-                                                                {product?.code && (
-                                                                        <p className="text-gray-500 text-sm mb-2">Code: {product?.code}</p>
+                                                                {productCode && (
+                                                                        <p className="text-gray-500 text-sm mb-2">Code: {productCode}</p>
                                                                 )}
                                                                 {product?.subtitle && (
                                                                         <p className="text-gray-600 text-sm mb-2">
@@ -135,8 +136,8 @@ function ProductCardVarient({ product, variant = "vertical" }) {
                                                 <h3 className="font-bold text-base md:text-lg mb-1 line-clamp-2">
                                                         {product?.title}
                                                 </h3>
-                                                {product?.code && (
-                                                        <p className="text-gray-500 text-xs">Code: {product?.code}</p>
+                                                {productCode && (
+                                                        <p className="text-gray-500 text-xs">Code: {productCode}</p>
                                                 )}
                                                 {product?.subtitle && (
                                                         <p className="text-gray-600 text-sm line-clamp-1">

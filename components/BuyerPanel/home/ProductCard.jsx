@@ -21,6 +21,7 @@ export default function ProductCard({ product }) {
                 product.images?.[0] ||
                 product.image ||
                 "https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png";
+        const productCode = product.productCode || product.code;
 
         return (
                 <Card
@@ -33,8 +34,8 @@ export default function ProductCard({ product }) {
                                                 <h3 className="font-bold text-base md:text-lg mb-1">
                                                         {product.title}
                                                 </h3>
-                                                {product.code && (
-                                                        <p className="text-gray-500 text-xs">Code: {product.code}</p>
+                                                {productCode && (
+                                                        <p className="text-gray-500 text-xs">Code: {productCode}</p>
                                                 )}
                                                 {product.subtitle && (
                                                         <p className="text-gray-600 text-sm">{product.subtitle}</p>

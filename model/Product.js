@@ -16,7 +16,7 @@ const ProductSchema = new mongoose.Schema(
                 salePrice: { type: Number, default: 0 },
                 discount: { type: Number, default: 0 },
 
-                code: { type: String, trim: true },
+               productCode: { type: String, trim: true },
                 mrp: { type: Number },
                 languageImages: [
                         {
