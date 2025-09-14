@@ -70,7 +70,7 @@ export function AddProductPopup({ open, onOpenChange }) {
     title: "",
     description: "",
     longDescription: "",
-    code: "",
+    productCode: "",
     category: "",
     subcategory: "",
     discount: "",
@@ -178,7 +178,7 @@ export function AddProductPopup({ open, onOpenChange }) {
 
       const productData = {
         title: formData.title,
-        code: formData.code,
+        productCode: formData.productCode,
         description: formData.description,
         longDescription: formData.longDescription || formData.description,
         category: formData.category,
@@ -220,7 +220,7 @@ export function AddProductPopup({ open, onOpenChange }) {
       title: "",
       description: "",
       longDescription: "",
-      code: "",
+      productCode: "",
       category: "",
       subcategory: "",
       discount: "",
@@ -346,13 +346,13 @@ export function AddProductPopup({ open, onOpenChange }) {
               </div>
 
               <div className="md:col-span-2">
-                <Label htmlFor="code">Product Code</Label>
+                <Label htmlFor="productCode">Product Code</Label>
                 <Input
-                  id="code"
+                  id="productCode"
                   placeholder="Enter product code"
-                  value={formData.code}
+                  value={formData.productCode}
                   onChange={(e) =>
-                    setFormData({ ...formData, code: e.target.value })
+                    setFormData({ ...formData, productCode: e.target.value })
                   }
                   className="mt-1"
                 />
