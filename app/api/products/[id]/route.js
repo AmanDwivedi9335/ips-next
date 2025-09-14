@@ -1,4 +1,5 @@
 import Product from "@/model/Product.js";
+import "@/model/Review.js";
 import { dbConnect } from "@/lib/dbConnect.js";
 
 export async function GET(req, { params }) {
