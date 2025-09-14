@@ -11,8 +11,10 @@ export default function FeaturedSection({
         bestSellingProduct = null,
         featuredProducts = [],
 }) {
+
         const hasTopSelling = topSellingProducts?.length > 0;
         const hasFeatured = featuredProducts?.length > 0;
+
 
         if (!hasTopSelling && !bestSellingProduct && !hasFeatured) {
                 return null;
