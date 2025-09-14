@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Barcode, AppStore, GooglePlay } from "@/public/images/home/index.js";
 import { ArrowRight, Facebook, Instagram, Linkedin } from "lucide-react";
+import Logo from "@/public/ipslogo.png";
 
 export default function Footer() {
 	const footerSections = {
@@ -62,80 +62,55 @@ export default function Footer() {
 			{/* Main Footer */}
 			<div className="py-12">
 				<div className="px-10">
-					<div className="grid grid-cols-1 md:grid-cols-5">
-						{/* Newsletter Subscription */}
-						<div className="w-full">
-							<h4 className="text-lg font-semibold mb-4">Exclusive</h4>
-							<h4 className="text-lg font-semibold mb-4">Subscribe</h4>
-							{/* <p className="mb-4">Get 10% off your first order</p> */}
-							<div className="w-full flex">
-								<input
-									type="email"
-									placeholder="Enter your email"
-									className="flex-1 px-3 py-2 bg-transparent border border-white rounded-l-lg focus:outline-none focus:border-amber-600"
-								/>
-								<button className="bg-amber-400 hover:bg-amber-500 text-black px-4 py-2 rounded-r-lg">
-									<ArrowRight className="w-6 h-6" />
-								</button>
-							</div>
-						</div>
+                                        <div className="grid grid-cols-1 md:grid-cols-5">
+                                                {/* Logo & Social */}
+                                                <div className="flex flex-col space-y-6">
+                                                        <Image
+                                                                src={Logo}
+                                                                alt="Logo"
+                                                                className="w-32 h-auto object-contain"
+                                                        />
+                                                        <div className="flex space-x-4">
+                                                                <Facebook className="h-6 w-6 hover:text-blue-400 cursor-pointer transition-colors" />
+                                                                <Instagram className="h-6 w-6 hover:text-pink-400 cursor-pointer transition-colors" />
+                                                                <Linkedin className="h-6 w-6 hover:text-blue-600 cursor-pointer transition-colors" />
+                                                        </div>
+                                                </div>
 
-						{/* Footer Links */}
-						{Object.entries(footerSections).map(([key, section]) => (
-							<div key={key}>
-								<h4 className="text-lg font-semibold mb-4">{section.title}</h4>
-								<ul className="space-y-2">
-									{section.links.map((link, index) => (
-										<li key={index}>
-											<Link
-												href={link.href}
-												className="hover:text-gray-400 transition-colors duration-200"
-											>
-												{link.label}
-											</Link>
-										</li>
-									))}
-								</ul>
-							</div>
-						))}
+                                                {/* Footer Links */}
+                                                {Object.entries(footerSections).map(([key, section]) => (
+                                                        <div key={key}>
+                                                                <h4 className="text-lg font-semibold mb-4">{section.title}</h4>
+                                                                <ul className="space-y-2">
+                                                                        {section.links.map((link, index) => (
+                                                                                <li key={index}>
+                                                                                        <Link
+                                                                                                href={link.href}
+                                                                                                className="hover:text-gray-400 transition-colors duration-200"
+                                                                                        >
+                                                                                                {link.label}
+                                                                                        </Link>
+                                                                                </li>
+                                                                        ))}
+                                                                </ul>
+                                                        </div>
+                                                ))}
 
-						{/* Download App */}
-						<div>
-							<h3 className="text-xl font-bold mb-4">Download App</h3>
-							{/* <p className="mb-4">Save $3 with App New User Only</p> */}
-							<div className="flex flex-col sm:flex-row lg:flex-col xl:flex-row space-y-4 sm:space-y-0 sm:space-x-4 lg:space-x-0 lg:space-y-4 xl:space-y-0 xl:space-x-4 mb-6">
-								<Image
-									src={Barcode}
-									alt="Google Play"
-									width={88}
-									height={88}
-									className="w-[88px] h-[88px] object-cover flex-shrink-0"
-								/>
-								<div className="space-y-2">
-									<Image
-										src={GooglePlay}
-										alt="Google Play"
-										width={128}
-										height={40}
-										className="w-32 h-10 object-cover border rounded-lg cursor-pointer"
-									/>
-									<Image
-										src={AppStore}
-										alt="App Store"
-										width={128}
-										height={40}
-										className="w-32 h-10 object-cover border rounded-lg cursor-pointer"
-									/>
-								</div>
-							</div>
-							{/* Social Media */}
-							<div className="flex space-x-4">
-								<Facebook className="h-6 w-6 hover:text-blue-400 cursor-pointer transition-colors" />
-								<Instagram className="h-6 w-6 hover:text-pink-400 cursor-pointer transition-colors" />
-								<Linkedin className="h-6 w-6 hover:text-blue-600 cursor-pointer transition-colors" />
-							</div>
-						</div>
-					</div>
+                                                {/* Subscribe */}
+                                                <div className="w-full">
+                                                        <h4 className="text-lg font-semibold mb-4">Subscribe</h4>
+                                                        <div className="w-full flex">
+                                                                <input
+                                                                        type="email"
+                                                                        placeholder="Enter your email"
+                                                                        className="flex-1 px-3 py-2 bg-transparent border border-white rounded-l-lg focus:outline-none focus:border-amber-600"
+                                                                />
+                                                                <button className="bg-amber-400 hover:bg-amber-500 text-black px-4 py-2 rounded-r-lg">
+                                                                        <ArrowRight className="w-6 h-6" />
+                                                                </button>
+                                                        </div>
+                                                </div>
+                                        </div>
 
 					{/* Copyright */}
 					<div className="border-t border-white/20 mt-12 pt-8 text-center">
