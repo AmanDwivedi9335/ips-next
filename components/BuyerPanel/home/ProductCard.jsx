@@ -71,6 +71,11 @@ export default function ProductCard({ product }) {
 				)}
 
                                 <div className="relative mb-4">
+                                        {productCode && (
+                                                <span className="absolute top-2 right-2 bg-black text-white text-xs px-2 py-1 rounded">
+                                                        {productCode}
+                                                </span>
+                                        )}
                                         <img
                                                 src={defaultImage}
                                                 alt={product.title}

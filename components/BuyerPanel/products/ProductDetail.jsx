@@ -330,23 +330,29 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
 				<div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
 					{/* Product Images */}
 					<div className="space-y-6">
-						<motion.div
-							className="relative bg-white rounded-lg overflow-hidden shadow-sm"
-							initial={{ opacity: 0, x: -20 }}
-							animate={{ opacity: 1, x: 0 }}
-							transition={{ duration: 0.5 }}
-						>
-							<div className="absolute top-4 left-4 z-10">
-								<Link
-									href="/products"
-									className="inline-flex items-center bg-black text-white py-2 px-4 rounded-full hover:bg-gray-800 transition-colors"
-								>
-									<ArrowLeft className="h-4 w-4 mr-2" />
-									Back
-								</Link>
-							</div>
+                                                <motion.div
+                                                        className="relative bg-white rounded-lg overflow-hidden shadow-sm"
+                                                        initial={{ opacity: 0, x: -20 }}
+                                                        animate={{ opacity: 1, x: 0 }}
+                                                        transition={{ duration: 0.5 }}
+                                                >
+                                                        <div className="absolute top-4 left-4 z-10">
+                                                                <Link
+                                                                        href="/products"
+                                                                        className="inline-flex items-center bg-black text-white py-2 px-4 rounded-full hover:bg-gray-800 transition-colors"
+                                                                >
+                                                                        <ArrowLeft className="h-4 w-4 mr-2" />
+                                                                        Back
+                                                                </Link>
+                                                        </div>
 
-							<div className="relative w-full h-96 lg:h-[400px]">
+                                                        {productCode && (
+                                                                <Badge className="absolute top-4 right-4 z-10 bg-black text-white">
+                                                                        {productCode}
+                                                                </Badge>
+                                                        )}
+
+                                                        <div className="relative w-full h-96 lg:h-[400px]">
                                                                <Image
                                                                        src={
                                                                                languageImage ||
