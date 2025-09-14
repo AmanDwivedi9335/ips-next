@@ -121,6 +121,8 @@ export async function POST(request) {
                         description,
                         longDescription: formData.get("longDescription") || description,
                         productCode,
+                        // `code` field mirrors `productCode` for legacy support
+                        code: productCode,
                         images: imageUrls,
                         languageImages,
                         category,
