@@ -12,6 +12,16 @@ export default function ProductCard({ product, viewMode = "grid" }) {
         const router = useRouter();
         const productCode = product.productCode || product.code;
 
+        const englishImage = product.languageImages?.find(
+                (l) => l.language?.toLowerCase() === "english"
+        )?.image;
+        const defaultImage =
+                englishImage ||
+                product.languageImages?.[0]?.image ||
+                product.images?.[0] ||
+                product.image ||
+                "https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png";
+
         const handleViewProduct = () => {
                 router.push(`/products/${product.id || product._id}`);
         };
@@ -24,21 +34,18 @@ export default function ProductCard({ product, viewMode = "grid" }) {
                         >
                                 <CardContent className="p-6">
 					<div className="flex flex-col sm:flex-row gap-6">
-						<div className="relative w-full sm:w-48 h-48 bg-gray-50 rounded-lg overflow-hidden flex-shrink-0">
-							<Image
-								src={
-									product.images[0] ||
-									"https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png"
-								}
-								alt={product.title}
-								fill
-								className="object-contain p-4 group-hover:scale-105 transition-transform duration-300"
-							/>
-							{product.discountPercentage > 0 && (
-								<Badge className="absolute top-2 left-2 bg-red-500 text-white">
-									{product.discountPercentage}% OFF
-								</Badge>
-							)}
+                                                <div className="relative w-full sm:w-48 h-48 bg-gray-50 rounded-lg overflow-hidden flex-shrink-0">
+                                                        <Image
+                                                                src={defaultImage}
+                                                                alt={product.title}
+                                                                fill
+                                                                className="object-contain p-4 group-hover:scale-105 transition-transform duration-300"
+                                                        />
+                                                        {product.discountPercentage > 0 && (
+                                                                <Badge className="absolute top-2 left-2 bg-red-500 text-white">
+                                                                        {product.discountPercentage}% OFF
+                                                                </Badge>
+                                                        )}
 							{product.type === "featured" && (
 								<Badge className="absolute top-2 right-2 bg-blue-500 text-white">
 									Featured
@@ -129,21 +136,18 @@ export default function ProductCard({ product, viewMode = "grid" }) {
                         >
                                 <CardContent className="p-0 flex-1 flex flex-col">
 					<div className="relative overflow-hidden">
-						<div className="relative h-64 bg-gray-50 rounded-t-xl overflow-hidden">
-							<Image
-								src={
-									product.image ||
-									"https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png"
-								}
-								alt={product.title}
-								fill
-								className="object-contain p-4 group-hover:scale-105 transition-transform duration-300"
-							/>
+                                                <div className="relative h-64 bg-gray-50 rounded-t-xl overflow-hidden">
+                                                        <Image
+                                                                src={defaultImage}
+                                                                alt={product.title}
+                                                                fill
+                                                                className="object-contain p-4 group-hover:scale-105 transition-transform duration-300"
+                                                        />
 
-							{/* Badges */}
-							<div className="absolute top-2 left-2 flex flex-col gap-1">
-								{product.discount && (
-									<Badge className="bg-red-500 text-white">
+                                                        {/* Badges */}
+                                                        <div className="absolute top-2 left-2 flex flex-col gap-1">
+                                                                {product.discount && (
+                                                                        <Badge className="bg-red-500 text-white">
 										{product.discount}
 									</Badge>
 								)}
