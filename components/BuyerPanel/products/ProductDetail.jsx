@@ -408,7 +408,9 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                                                         {/* Product code */}
                                                         {productCode && (
                                                                 <p className="text-sm text-gray-600 mb-2">
+
                                                                         Product Code: {productCode}
+
                                                                 </p>
                                                         )}
 
