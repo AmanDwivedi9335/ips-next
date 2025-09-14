@@ -425,41 +425,47 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
 								</span>
 							</div>
 
-                                                        {/* Product price */}
-                                                        <p className="text-xl lg:text-2xl font-semibold text-black mb-2">
-                                                                ₹ {calculatedPrice.toLocaleString()} (Sale Price)
-                                                        </p>
+                                        {/* Product price */}
+                                        <p className="text-xl lg:text-2xl font-semibold text-black mb-2">
+                                                ₹ {calculatedPrice.toLocaleString()} (Sale Price)
+                                        </p>
+                                        {hasQrOption && (
+                                                <div className="mt-4 flex items-center space-x-2">
+                                                        <Switch checked={hasQr} onCheckedChange={setHasQr} />
+                                                        <span>QR Code</span>
                                                 </div>
+                                        )}
+                                </div>
 
-                                                {/* Product Colors */}
-                                                {/* <div className="w-fit flex space-x-2 p-3 bg-gray-200 rounded-lg">
-                                                        {colors.map((color, i) => (
-                                                                <div
-                                                                        key={i}
-                                                                        className={`w-6 h-6 rounded-full border border-gray-200 cursor-pointer ${color}`}
-                                                                />
-                                                        ))}
-                                                </div> */}
+                                {/* Product Colors */}
+                                {/* <div className="w-fit flex space-x-2 p-3 bg-gray-200 rounded-lg">
+                                        {colors.map((color, i) => (
+                                                <div
+                                                        key={i}
+                                                        className={`w-6 h-6 rounded-full border border-gray-200 cursor-pointer ${color}`}
+                                                />
+                                        ))}
+                                </div> */}
 
-                                                {languages.length > 0 && (
-                                                        <div className="mt-4">
-                                                                <Select
-                                                                        value={selectedLanguage}
-                                                                        onValueChange={setSelectedLanguage}
-                                                                >
-                                                                        <SelectTrigger className="w-40">
-                                                                                <SelectValue placeholder="Language" />
-                                                                        </SelectTrigger>
-                                                                        <SelectContent>
-                                                                                {languages.map((lang) => (
-                                                                                        <SelectItem key={lang} value={lang}>
-                                                                                                {lang}
-                                                                                        </SelectItem>
-                                                                                ))}
-                                                                        </SelectContent>
-                                                                </Select>
-                                                        </div>
-                                                )}
+                                {languages.length > 0 && (
+                                        <div className="mt-4">
+                                                <Select
+                                                        value={selectedLanguage}
+                                                        onValueChange={setSelectedLanguage}
+                                                >
+                                                        <SelectTrigger className="w-40">
+                                                                <SelectValue placeholder="Language" />
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                                {languages.map((lang) => (
+                                                                        <SelectItem key={lang} value={lang}>
+                                                                                {lang}
+                                                                        </SelectItem>
+                                                                ))}
+                                                        </SelectContent>
+                                                </Select>
+                                        </div>
+                                )}
 
                                                 {availableLayouts && availableLayouts.length > 0 && (
                                                         <div className="mt-4">
@@ -519,13 +525,6 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                                                                 </Select>
                                                         </div>
                                                 )}
-                                                {hasQrOption && (
-                                                        <div className="mt-4 flex items-center space-x-2">
-                                                                <Switch checked={hasQr} onCheckedChange={setHasQr} />
-                                                                <span>QR Code</span>
-                                                        </div>
-                                                )}
-
                                                 {/* Quantity and Add to Cart */}
                                                 <div className="space-y-4">
 							<div className="flex items-center space-x-4">
