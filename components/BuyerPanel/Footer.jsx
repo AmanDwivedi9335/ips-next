@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ArrowRight, Facebook, Instagram, Linkedin } from "lucide-react";
@@ -32,6 +33,7 @@ export default function Footer() {
                 },
 	};
 
+
 	return (
 		<footer className="bg-black text-white py-8 md:py-16">
 			<div className="px-10">
@@ -55,16 +57,11 @@ export default function Footer() {
 						<h3 className="text-xl font-bold mb-4">
 							{footerSections.support.title}
 						</h3>
-						<div className="space-y-3 text-gray-400">
-							{footerSections.support.items.map((item, index) => (
-								<p
-									key={index}
-									className="hover:text-white cursor-pointer transition-colors"
-								>
-									{item}
-								</p>
-							))}
-						</div>
+                                                <div className="space-y-3 text-gray-400">
+                                                        {footerSections.support.items.map((item, index) =>
+                                                                renderFooterItem(item, index)
+                                                        )}
+                                                </div>
 					</div>
 
 					{/* Account */}
@@ -72,16 +69,11 @@ export default function Footer() {
 						<h3 className="text-xl font-bold mb-4">
 							{footerSections.account.title}
 						</h3>
-						<div className="space-y-3 text-gray-400">
-							{footerSections.account.items.map((item, index) => (
-								<p
-									key={index}
-									className="hover:text-white cursor-pointer transition-colors"
-								>
-									{item}
-								</p>
-							))}
-						</div>
+                                                <div className="space-y-3 text-gray-400">
+                                                        {footerSections.account.items.map((item, index) =>
+                                                                renderFooterItem(item, index)
+                                                        )}
+                                                </div>
 					</div>
 
                                         {/* Quick Links */}
@@ -90,6 +82,7 @@ export default function Footer() {
                                                         {footerSections.quickLinks.title}
                                                 </h3>
                                                 <div className="space-y-3 text-gray-400">
+
                                                         {footerSections.quickLinks.items.map((item, index) => {
                                                                 if (typeof item === "string") {
                                                                         return (
@@ -112,6 +105,7 @@ export default function Footer() {
                                                                         </Link>
                                                                 );
                                                         })}
+
                                                 </div>
                                         </div>
 
