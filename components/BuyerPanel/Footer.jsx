@@ -26,10 +26,9 @@ export default function Footer() {
                                 "Terms Of Use",
                                 "FAQ",
                                 "Contact",
-                                {
-                                        label: "Cancellation & Refund Policy",
-                                        href: "/cancellation-refund-policy",
-                                },
+
+                                { label: "Disclaimer", href: "/disclaimer" },
+
                         ],
                 },
 	};
@@ -79,36 +78,36 @@ export default function Footer() {
 
                                         {/* Quick Links */}
 
-                    <div>
-                            <h3 className="text-xl font-bold mb-4">
-                                    {footerSections.quickLinks.title}
-                            </h3>
-                            <div className="space-y-3 text-gray-400">
-                                    {footerSections.quickLinks.items.map((item, index) => {
-                                            if (typeof item === "string") {
-                                                    return (
-                                                            <p
-                                                                    key={index}
-                                                                    className="hover:text-white cursor-pointer transition-colors"
-                                                            >
-                                                                    {item}
-                                                            </p>
-                                                    );
-                                            }
+                                        <div>
+                                                <h3 className="text-xl font-bold mb-4">
+                                                        {footerSections.quickLinks.title}
+                                                </h3>
+                                                <div className="space-y-3 text-gray-400">
+                                                        {footerSections.quickLinks.items.map((item, index) => {
+                                                                if (typeof item === "string") {
+                                                                        return (
+                                                                                <p
+                                                                                        key={index}
+                                                                                        className="hover:text-white cursor-pointer transition-colors"
+                                                                                >
+                                                                                        {item}
+                                                                                </p>
+                                                                        );
+                                                                }
 
-                                            return (
-                                                    <Link
-                                                            key={item.label}
-                                                            href={item.href}
-                                                            className="block hover:text-white transition-colors"
-                                                    >
-                                                            {item.label}
-                                                    </Link>
-                                            );
-                                    })}
+                                                                return (
+                                                                        <Link
+                                                                                key={`${item.label}-${index}`}
+                                                                                href={item.href}
+                                                                                className="block hover:text-white transition-colors"
+                                                                        >
+                                                                                {item.label}
+                                                                        </Link>
+                                                                );
+                                                        })}
+                                                </div>
+                                        </div>
 
-                            </div>
-                    </div>
 
 
                                         {/* Subscribe */}
