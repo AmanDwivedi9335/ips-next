@@ -25,10 +25,14 @@ export default function Footer() {
 		quickLinks: {
 			title: "Quick Link",
 			links: [
-				{ label: "Privacy Policy", href: "/privacy" },
-				{ label: "Terms Of Use", href: "/terms" },
-				{ label: "FAQ", href: "/faq" },
-				{ label: "Contact", href: "/contact" },
+                                { label: "Privacy Policy", href: "/privacy" },
+                                { label: "Terms Of Use", href: "/terms" },
+                                {
+                                        label: "Shipping & Delivery Policy",
+                                        href: "/shipping-delivery-policy",
+                                },
+                                { label: "FAQ", href: "/faq" },
+                                { label: "Contact", href: "/contact" },
 			],
 		},
 	};

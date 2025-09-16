@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -21,36 +22,17 @@ export default function Footer() {
                         title: "Quick Link",
                         items: [
                                 "Privacy Policy",
-                                { label: "Terms Of Use", href: "/terms" },
+                                "Terms Of Use",
                                 "FAQ",
                                 "Contact",
+                                {
+                                        label: "Shipping & Delivery Policy",
+                                        href: "/shipping-delivery-policy",
+                                },
                         ],
                 },
-        };
+	};
 
-        const renderFooterItem = (item, index) => {
-                if (typeof item === "string") {
-                        return (
-                                <p key={index} className="hover:text-white cursor-pointer transition-colors">
-                                        {item}
-                                </p>
-                        );
-                }
-
-                if (item?.href) {
-                        return (
-                                <Link
-                                        key={index}
-                                        href={item.href}
-                                        className="block hover:text-white cursor-pointer transition-colors"
-                                >
-                                        {item.label ?? item.href}
-                                </Link>
-                        );
-                }
-
-                return null;
-        };
 
 	return (
 		<footer className="bg-black text-white py-8 md:py-16">
@@ -100,9 +82,30 @@ export default function Footer() {
                                                         {footerSections.quickLinks.title}
                                                 </h3>
                                                 <div className="space-y-3 text-gray-400">
-                                                        {footerSections.quickLinks.items.map((item, index) =>
-                                                                renderFooterItem(item, index)
-                                                        )}
+
+                                                        {footerSections.quickLinks.items.map((item, index) => {
+                                                                if (typeof item === "string") {
+                                                                        return (
+                                                                                <p
+                                                                                        key={`${item}-${index}`}
+                                                                                        className="hover:text-white cursor-pointer transition-colors"
+                                                                                >
+                                                                                        {item}
+                                                                                </p>
+                                                                        );
+                                                                }
+
+                                                                return (
+                                                                        <Link
+                                                                                key={item.href}
+                                                                                href={item.href}
+                                                                                className="hover:text-white cursor-pointer transition-colors"
+                                                                        >
+                                                                                {item.label}
+                                                                        </Link>
+                                                                );
+                                                        })}
+
                                                 </div>
                                         </div>
 
