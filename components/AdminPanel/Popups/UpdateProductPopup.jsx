@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Checkbox } from "@/components/ui/checkbox";
-import { X, Plus } from "lucide-react";
+import { Check, Pencil, Plus, Trash2, X } from "lucide-react";
 import { useAdminProductStore } from "@/store/adminProductStore.js";
 import { useAdminLanguageStore } from "@/store/adminLanguageStore.js";
 import { useAdminMaterialStore } from "@/store/adminMaterialStore.js";
@@ -39,6 +39,21 @@ const productTags = [
   { value: "best-selling", label: "Best Selling" },
   { value: "discounted", label: "Discounted" },
 ];
+
+const createPriceRow = (price = {}, overrides = {}) => ({
+  _id: price?._id,
+  layout: price?.layout || "",
+  material: price?.material || "",
+  size: price?.size || "",
+  qr: typeof price?.qr === "boolean" ? price.qr : !!price?.qr,
+  price:
+    price?.price === undefined || price?.price === null
+      ? ""
+      : price.price.toString(),
+  isEditing: false,
+  isNew: false,
+  ...overrides,
+});
 
 export function UpdateProductPopup({ open, onOpenChange, product }) {
   const { updateProduct } = useAdminProductStore();
@@ -77,15 +92,10 @@ export function UpdateProductPopup({ open, onOpenChange, product }) {
   );
   const [prices, setPrices] = useState(
     product?.pricing?.length
-      ? product.pricing.map((p) => ({
-          layout: p.layout || "",
-          material: p.material || "",
-          size: p.size || "",
-          qr: p.qr || false,
-          price: p.price?.toString() || "",
-        }))
-      : [{ layout: "", material: "", size: "", qr: false, price: "" }],
+      ? product.pricing.map((p) => createPriceRow(p))
+      : [createPriceRow({}, { isEditing: true, isNew: true })],
   );
+  const [priceError, setPriceError] = useState("");
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
 
   const [formData, setFormData] = useState({
@@ -151,7 +161,18 @@ export function UpdateProductPopup({ open, onOpenChange, product }) {
     ]),
   );
 
+
+  const pricingColumnCount = 4 + (showLayout ? 1 : 0) + (showQR ? 1 : 0);
+
   const shouldShowPricing = showBasicFields || hasExistingPricing;
+
+  const renderReadOnlyValue = (value, fallback = "Not set") =>
+    value ? (
+      <span>{value}</span>
+    ) : (
+      <span className="text-gray-400 italic">{fallback}</span>
+    );
+
 
   const parentCategories = categoryList.filter((cat) => !cat.parent);
   const subCategories = selectedCategoryId
@@ -223,15 +244,10 @@ export function UpdateProductPopup({ open, onOpenChange, product }) {
       );
       setPrices(
         product.pricing?.length
-          ? product.pricing.map((p) => ({
-              layout: p.layout || "",
-              material: p.material || "",
-              size: p.size || "",
-              qr: p.qr || false,
-              price: p.price?.toString() || "",
-            }))
-          : [{ layout: "", material: "", size: "", qr: false, price: "" }],
+          ? product.pricing.map((p) => createPriceRow(p))
+          : [createPriceRow({}, { isEditing: true, isNew: true })],
       );
+      setPriceError("");
       if (categoryList.length) {
         const selected = categoryList.find(
           (cat) => cat.slug === product.category,
@@ -271,9 +287,13 @@ export function UpdateProductPopup({ open, onOpenChange, product }) {
             (!requiresLayout || p.layout) &&
             p.price !== "",
         )
-        .map((p) => ({
-          ...p,
-          price: parseFloat(p.price),
+        .map(({ _id, layout, material, size, qr, price }) => ({
+          ...(_id ? { _id } : {}),
+          layout,
+          material,
+          size,
+          qr,
+          price: parseFloat(price),
         }));
 
       const productData = {
@@ -343,20 +363,118 @@ export function UpdateProductPopup({ open, onOpenChange, product }) {
   };
 
   const addPriceRow = () => {
-    setPrices([
-      ...prices,
-      { layout: "", material: "", size: "", qr: false, price: "" },
+    setPrices((prev) => [
+      ...prev,
+      createPriceRow({}, { isEditing: true, isNew: true }),
     ]);
+    setPriceError("");
   };
 
   const removePriceRow = (index) => {
-    setPrices(prices.filter((_, i) => i !== index));
+    setPrices((prev) => prev.filter((_, i) => i !== index));
+    setPriceError("");
   };
 
   const updatePriceRow = (index, field, value) => {
-    const updated = [...prices];
-    updated[index][field] = value;
-    setPrices(updated);
+    setPrices((prev) => {
+      const updated = [...prev];
+      if (!updated[index]) {
+        return prev;
+      }
+
+      updated[index] = { ...updated[index], [field]: value };
+      return updated;
+    });
+    setPriceError("");
+  };
+
+  const startEditingPriceRow = (index) => {
+    setPrices((prev) =>
+      prev.map((price, i) => {
+        if (i !== index) {
+          return price;
+        }
+
+        if (price.isEditing) {
+          return price;
+        }
+
+        return {
+          ...price,
+          isEditing: true,
+          draft: {
+            _id: price._id,
+            layout: price.layout,
+            material: price.material,
+            size: price.size,
+            qr: price.qr,
+            price: price.price,
+          },
+        };
+      }),
+    );
+    setPriceError("");
+  };
+
+  const savePriceRow = (index) => {
+    setPrices((prev) => {
+      const updated = [...prev];
+      const price = updated[index];
+
+      if (!price) {
+        return prev;
+      }
+
+      const requiresLayoutForRow = showLayout;
+      const hasMaterial = !!price.material;
+      const hasSize = !!price.size;
+      const hasLayout = !requiresLayoutForRow || !!price.layout;
+      const hasPrice = price.price !== "";
+
+      if (!hasMaterial || !hasSize || !hasLayout || !hasPrice) {
+        setPriceError("Please complete all required fields before saving.");
+        return prev;
+      }
+
+      const cleanedPrice = { ...price, isEditing: false, isNew: false };
+      delete cleanedPrice.draft;
+      updated[index] = cleanedPrice;
+      setPriceError("");
+
+      return updated;
+    });
+  };
+
+  const cancelPriceRow = (index) => {
+    setPrices((prev) => {
+      const updated = [...prev];
+      const price = updated[index];
+
+      if (!price) {
+        return prev;
+      }
+
+      if (price.isNew) {
+        updated.splice(index, 1);
+        setPriceError("");
+        return updated;
+      }
+
+      if (price.draft) {
+        updated[index] = {
+          ...price.draft,
+          isEditing: false,
+          isNew: false,
+        };
+      } else {
+        updated[index] = { ...price, isEditing: false, isNew: false };
+      }
+
+      delete updated[index].draft;
+      setPriceError("");
+
+      return updated;
+    });
   };
 
   return (
@@ -733,6 +851,11 @@ export function UpdateProductPopup({ open, onOpenChange, product }) {
                     <Plus className="h-4 w-4 mr-2" /> Add Price
                   </Button>
                 </div>
+
+                {priceError && (
+                  <p className="text-sm text-red-500">{priceError}</p>
+                )}
+
                 <div className="overflow-x-auto rounded-lg border border-gray-200">
                   <table className="min-w-full text-sm">
                     <thead className="bg-gray-50">
@@ -762,109 +885,201 @@ export function UpdateProductPopup({ open, onOpenChange, product }) {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-200">
-                      {prices.map((p, index) => (
-                        <tr key={index} className="bg-white">
-                          <td className="px-3 py-2 align-top">
-                            <Select
-                              value={p.material}
-                              onValueChange={(value) =>
-                                updatePriceRow(index, "material", value)
-                              }
-                            >
-                              <SelectTrigger className="w-full">
-                                <SelectValue placeholder="Material" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {materialOptionsForPricing.map((m) => (
-                                  <SelectItem key={m} value={m}>
-                                    {m}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </td>
-                          <td className="px-3 py-2 align-top">
-                            <Select
-                              value={p.size}
-                              onValueChange={(value) =>
-                                updatePriceRow(index, "size", value)
-                              }
-                            >
-                              <SelectTrigger className="w-full">
-                                <SelectValue placeholder="Size" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {sizeOptionsForPricing.map((s) => (
-                                  <SelectItem key={s} value={s}>
-                                    {s}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </td>
-                          {showLayout && (
-                            <td className="px-3 py-2 align-top">
-                              <Select
-                                value={p.layout}
-                                onValueChange={(value) =>
-                                  updatePriceRow(index, "layout", value)
-                                }
-                              >
-                                <SelectTrigger className="w-full">
-                                  <SelectValue placeholder="Layout" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {layoutOptionsForPricing.map((l) => (
-                                    <SelectItem key={l} value={l}>
-                                      {l}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </td>
-                          )}
-                          {showQR && (
-                            <td className="px-3 py-2 align-top">
-                              <Select
-                                value={p.qr ? "true" : "false"}
-                                onValueChange={(value) =>
-                                  updatePriceRow(index, "qr", value === "true")
-                                }
-                              >
-                                <SelectTrigger className="w-full">
-                                  <SelectValue placeholder="QR" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="false">Without QR</SelectItem>
-                                  <SelectItem value="true">With QR</SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </td>
-                          )}
-                          <td className="px-3 py-2 align-top">
-                            <Input
-                              type="number"
-                              placeholder="Price"
-                              value={p.price}
-                              onChange={(e) =>
-                                updatePriceRow(index, "price", e.target.value)
-                              }
-                            />
-                          </td>
-                          <td className="px-3 py-2 align-top text-center">
-                            {prices.length > 1 && (
-                              <Button
-                                type="button"
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => removePriceRow(index)}
-                              >
-                                <X className="h-4 w-4" />
-                              </Button>
-                            )}
+
+                      {prices.length === 0 ? (
+                        <tr>
+                          <td
+                            colSpan={pricingColumnCount}
+                            className="px-4 py-6 text-center text-sm text-gray-500"
+                          >
+                            No pricing entries added yet. Click "Add Price" to
+                            create one.
                           </td>
                         </tr>
-                      ))}
+                      ) : (
+                        prices.map((price, index) => (
+                          <tr
+                            key={index}
+                            className={price.isEditing ? "bg-orange-50" : "bg-white"}
+                          >
+                            <td className="px-3 py-3 align-top">
+                              {price.isEditing ? (
+                                <Select
+                                  value={price.material}
+                                  onValueChange={(value) =>
+                                    updatePriceRow(index, "material", value)
+                                  }
+                                >
+                                  <SelectTrigger className="w-full">
+                                    <SelectValue placeholder="Material" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    {materialOptionsForPricing.map((m) => (
+                                      <SelectItem key={m} value={m}>
+                                        {m}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                              ) : (
+                                <div className="min-h-[38px] flex items-center text-gray-700">
+                                  {renderReadOnlyValue(price.material)}
+                                </div>
+                              )}
+                            </td>
+                            <td className="px-3 py-3 align-top">
+                              {price.isEditing ? (
+                                <Select
+                                  value={price.size}
+                                  onValueChange={(value) =>
+                                    updatePriceRow(index, "size", value)
+                                  }
+                                >
+                                  <SelectTrigger className="w-full">
+                                    <SelectValue placeholder="Size" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    {sizeOptionsForPricing.map((s) => (
+                                      <SelectItem key={s} value={s}>
+                                        {s}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                              ) : (
+                                <div className="min-h-[38px] flex items-center text-gray-700">
+                                  {renderReadOnlyValue(price.size)}
+                                </div>
+                              )}
+                            </td>
+                            {showLayout && (
+                              <td className="px-3 py-3 align-top">
+                                {price.isEditing ? (
+                                  <Select
+                                    value={price.layout}
+                                    onValueChange={(value) =>
+                                      updatePriceRow(index, "layout", value)
+                                    }
+                                  >
+                                    <SelectTrigger className="w-full">
+                                      <SelectValue placeholder="Layout" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      {layoutOptionsForPricing.map((l) => (
+                                        <SelectItem key={l} value={l}>
+                                          {l}
+                                        </SelectItem>
+                                      ))}
+                                    </SelectContent>
+                                  </Select>
+                                ) : (
+                                  <div className="min-h-[38px] flex items-center text-gray-700">
+                                    {renderReadOnlyValue(price.layout)}
+                                  </div>
+                                )}
+                              </td>
+                            )}
+                            {showQR && (
+                              <td className="px-3 py-3 align-top">
+                                {price.isEditing ? (
+                                  <Select
+                                    value={price.qr ? "true" : "false"}
+                                    onValueChange={(value) =>
+                                      updatePriceRow(index, "qr", value === "true")
+                                    }
+                                  >
+                                    <SelectTrigger className="w-full">
+                                      <SelectValue placeholder="QR" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value="false">Without QR</SelectItem>
+                                      <SelectItem value="true">With QR</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                ) : (
+                                  <div className="min-h-[38px] flex items-center text-gray-700">
+                                    <span>{price.qr ? "With QR" : "Without QR"}</span>
+                                  </div>
+                                )}
+                              </td>
+                            )}
+                            <td className="px-3 py-3 align-top">
+                              {price.isEditing ? (
+                                <Input
+                                  type="number"
+                                  min="0"
+                                  step="0.01"
+                                  placeholder="Price"
+                                  value={price.price}
+                                  onChange={(e) =>
+                                    updatePriceRow(index, "price", e.target.value)
+                                  }
+                                />
+                              ) : (
+                                <div className="min-h-[38px] flex items-center text-gray-700">
+                                  {renderReadOnlyValue(price.price, "Not set")}
+                                </div>
+                              )}
+                            </td>
+                            <td className="px-3 py-3 align-top">
+                              {price.isEditing ? (
+                                <div className="flex flex-wrap items-center justify-center gap-2">
+                                  <Button
+                                    type="button"
+                                    size="sm"
+                                    className="bg-orange-500 text-white hover:bg-orange-600"
+                                    onClick={() => savePriceRow(index)}
+                                  >
+                                    <Check className="mr-1 h-4 w-4" />
+                                    Save
+                                  </Button>
+                                  <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => cancelPriceRow(index)}
+                                  >
+                                    Cancel
+                                  </Button>
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="icon"
+                                    className="text-red-500 hover:text-red-600"
+                                    onClick={() => removePriceRow(index)}
+                                  >
+                                    <Trash2 className="h-4 w-4" />
+                                  </Button>
+                                </div>
+                              ) : (
+                                <div className="flex flex-wrap items-center justify-center gap-2">
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    className="flex items-center gap-1"
+                                    onClick={() => startEditingPriceRow(index)}
+                                  >
+                                    <Pencil className="h-4 w-4" />
+                                    Edit
+                                  </Button>
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    className="flex items-center gap-1 text-red-500 hover:text-red-600"
+                                    onClick={() => removePriceRow(index)}
+                                  >
+                                    <Trash2 className="h-4 w-4" />
+                                    Delete
+                                  </Button>
+                                </div>
+                              )}
+                            </td>
+                          </tr>
+                        ))
+                      )}
+
                     </tbody>
                   </table>
                 </div>
