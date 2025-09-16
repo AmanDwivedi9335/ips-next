@@ -25,6 +25,7 @@ export default function Footer() {
 		quickLinks: {
 			title: "Quick Link",
 			links: [
+
                                 { label: "Privacy Policy", href: "/privacy" },
                                 { label: "Terms Of Use", href: "/terms" },
                                 { label: "FAQ", href: "/faq" },
@@ -33,6 +34,7 @@ export default function Footer() {
                                         label: "Cancellation & Refund Policy",
                                         href: "/cancellation-refund-policy",
                                 },
+
 			],
 		},
 	};
