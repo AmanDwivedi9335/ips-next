@@ -1,5 +1,6 @@
 import { dbConnect } from "@/lib/dbConnect.js";
 import Product from "@/model/Product.js";
+import Price from "@/model/Price.js";
 
 export async function GET(request) {
 	await dbConnect();
@@ -81,11 +82,46 @@ export async function GET(request) {
 
 		// Execute query with pagination
 		const skip = (page - 1) * limit;
-		const products = await Product.find(query)
-			.sort(sortObj)
-			.skip(skip)
-			.limit(limit)
-			.lean();
+                const products = await Product.find(query)
+                        .sort(sortObj)
+                        .skip(skip)
+                        .limit(limit)
+                        .lean();
+
+                const productIds = products.map((product) => product._id);
+
+                let pricingMap = {};
+
+                if (productIds.length > 0) {
+                        const pricingDocs = await Price.find({
+                                product: { $in: productIds },
+                        })
+                                .sort({ createdAt: -1 })
+                                .lean();
+
+                        pricingMap = pricingDocs.reduce((acc, price) => {
+                                const productId = price.product.toString();
+                                if (!acc[productId]) {
+                                        acc[productId] = [];
+                                }
+
+                                acc[productId].push({
+                                        _id: price._id,
+                                        layout: price.layout || "",
+                                        material: price.material || "",
+                                        size: price.size || "",
+                                        qr: !!price.qr,
+                                        price: price.price,
+                                });
+
+                                return acc;
+                        }, {});
+                }
+
+                const productsWithPricing = products.map((product) => ({
+                        ...product,
+                        pricing: pricingMap[product._id.toString()] || [],
+                }));
 
 		const total = await Product.countDocuments(query);
 		const totalPages = Math.ceil(total / limit);
@@ -108,7 +144,7 @@ export async function GET(request) {
 
 		return Response.json({
 			success: true,
-			products,
+                        products: productsWithPricing,
 			pagination: {
 				currentPage: page,
 				totalPages,
