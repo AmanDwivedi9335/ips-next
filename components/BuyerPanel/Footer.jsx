@@ -8,13 +8,13 @@ import { ArrowRight, Facebook, Instagram, Linkedin } from "lucide-react";
 import Logo from "@/public/ipslogo.png";
 
 export default function Footer() {
-	const footerSections = {
-		support: {
-			title: "Support",
-			items: ["info@industrialprintsolutions.com", "7999704487"],
-		},
-		account: {
-			title: "Account",
+        const footerSections = {
+                support: {
+                        title: "Support",
+                        items: ["info@industrialprintsolutions.com", "7999704487"],
+                },
+                account: {
+                        title: "Account",
 			items: ["My Account", "Login / Register", "Cart", "Wishlist", "Shop"],
 		},
                 quickLinks: {
@@ -30,12 +30,87 @@ export default function Footer() {
 
                         ],
                 },
-	};
+        };
+
+        const renderFooterItem = (item, index) => {
+                const textClasses = "hover:text-white cursor-pointer transition-colors";
+                const linkClasses = "block hover:text-white transition-colors";
+
+                if (typeof item === "string") {
+                        const trimmedItem = item.trim();
+
+                        if (trimmedItem.includes("@")) {
+                                return (
+                                        <a
+                                                key={`${trimmedItem}-${index}`}
+                                                href={`mailto:${trimmedItem}`}
+                                                className={linkClasses}
+                                        >
+                                                {trimmedItem}
+                                        </a>
+                                );
+                        }
+
+                        if (/^\+?[0-9\s-]+$/.test(trimmedItem)) {
+                                const telHref = `tel:${trimmedItem.replace(/\s+/g, "")}`;
+
+                                return (
+                                        <a
+                                                key={`${trimmedItem}-${index}`}
+                                                href={telHref}
+                                                className={linkClasses}
+                                        >
+                                                {trimmedItem}
+                                        </a>
+                                );
+                        }
+
+                        return (
+                                <p key={`${trimmedItem}-${index}`} className={textClasses}>
+                                        {trimmedItem}
+                                </p>
+                        );
+                }
+
+                if (item && typeof item === "object") {
+                        const label = item.label ?? item.text ?? item.href ?? `item-${index}`;
+
+                        if (item.href) {
+                                const key = `${label}-${index}`;
+
+                                if (
+                                        item.href.startsWith("http") ||
+                                        item.href.startsWith("mailto:") ||
+                                        item.href.startsWith("tel:")
+                                ) {
+                                        return (
+                                                <a key={key} href={item.href} className={linkClasses}>
+                                                        {label}
+                                                </a>
+                                        );
+                                }
+
+                                return (
+                                        <Link key={key} href={item.href} className={linkClasses}>
+                                                {label}
+                                        </Link>
+                                );
+                        }
+
+                        return (
+                                <p key={`${label}-${index}`} className={textClasses}>
+                                        {label}
+                                </p>
+                        );
+                }
+
+                return null;
+        };
 
 
-	return (
-		<footer className="bg-black text-white py-8 md:py-16">
-			<div className="px-10">
+        return (
+                <footer className="bg-black text-white py-8 md:py-16">
+                        <div className="px-10">
                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8">
                                         {/* Logo & Social */}
                                         <div className="flex flex-col space-y-6">
@@ -82,28 +157,9 @@ export default function Footer() {
                                                         {footerSections.quickLinks.title}
                                                 </h3>
                                                 <div className="space-y-3 text-gray-400">
-                                                        {footerSections.quickLinks.items.map((item, index) => {
-                                                                if (typeof item === "string") {
-                                                                        return (
-                                                                                <p
-                                                                                        key={index}
-                                                                                        className="hover:text-white cursor-pointer transition-colors"
-                                                                                >
-                                                                                        {item}
-                                                                                </p>
-                                                                        );
-                                                                }
-
-                                                                return (
-                                                                        <Link
-                                                                                key={`${item.label}-${index}`}
-                                                                                href={item.href}
-                                                                                className="block hover:text-white transition-colors"
-                                                                        >
-                                                                                {item.label}
-                                                                        </Link>
-                                                                );
-                                                        })}
+                                                        {footerSections.quickLinks.items.map((item, index) =>
+                                                                renderFooterItem(item, index)
+                                                        )}
                                                 </div>
                                         </div>
 
