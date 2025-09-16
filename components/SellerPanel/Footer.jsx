@@ -25,7 +25,7 @@ export default function Footer() {
 		quickLinks: {
 			title: "Quick Link",
 			links: [
-				{ label: "Privacy Policy", href: "/privacy" },
+                                { label: "Privacy Policy", href: "/privacy-policy" },
 				{ label: "Terms Of Use", href: "/terms" },
 				{ label: "FAQ", href: "/faq" },
 				{ label: "Contact", href: "/contact" },

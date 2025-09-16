@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ArrowRight, Facebook, Instagram, Linkedin } from "lucide-react";
@@ -16,11 +17,16 @@ export default function Footer() {
 			title: "Account",
 			items: ["My Account", "Login / Register", "Cart", "Wishlist", "Shop"],
 		},
-		quickLinks: {
-			title: "Quick Link",
-			items: ["Privacy Policy", "Terms Of Use", "FAQ", "Contact"],
-		},
-	};
+                quickLinks: {
+                        title: "Quick Link",
+                        links: [
+                                { label: "Privacy Policy", href: "/privacy-policy" },
+                                { label: "Terms Of Use", href: "/terms" },
+                                { label: "FAQ", href: "/faq" },
+                                { label: "Contact", href: "/contact" },
+                        ],
+                },
+        };
 
 	return (
 		<footer className="bg-black text-white py-8 md:py-16">
@@ -80,13 +86,14 @@ export default function Footer() {
                                     {footerSections.quickLinks.title}
                             </h3>
                             <div className="space-y-3 text-gray-400">
-                                    {footerSections.quickLinks.items.map((item, index) => (
-                                            <p
+                                    {footerSections.quickLinks.links.map((link, index) => (
+                                            <Link
                                                     key={index}
-                                                    className="hover:text-white cursor-pointer transition-colors"
+                                                    href={link.href}
+                                                    className="block hover:text-white transition-colors"
                                             >
-                                                    {item}
-                                            </p>
+                                                    {link.label}
+                                            </Link>
                                     ))}
                             </div>
                     </div>
