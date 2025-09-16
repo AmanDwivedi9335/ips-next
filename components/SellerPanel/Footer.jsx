@@ -9,7 +9,7 @@ export default function Footer() {
 			title: "Support",
 			links: [
 				{ label: "info@industrialprintsolutions.com", href: "mailto:info@industrialprintsolutions.com" },
-				{ label: "7999704487", href: "#" },
+                                { label: "+919936814137", href: "#" },
 			],
 		},
 		account: {
