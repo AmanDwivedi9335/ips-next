@@ -73,7 +73,9 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
         );
         const [hasQr, setHasQr] = useState(false);
         const [hasQrOption, setHasQrOption] = useState(false);
-        const [calculatedPrice, setCalculatedPrice] = useState(0);
+        const [calculatedPrice, setCalculatedPrice] = useState(null);
+        const [isPriceLoading, setIsPriceLoading] = useState(false);
+        const [hasFetchedPrice, setHasFetchedPrice] = useState(false);
         const router = useRouter();
         const { addItem, isLoading } = useCartStore();
         const { addItem: addWishlistItem } = useWishlistStore();
@@ -136,6 +138,8 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
 
         useEffect(() => {
                 const fetchPrice = async () => {
+                        setIsPriceLoading(true);
+                        setHasFetchedPrice(false);
                         try {
                                 const params = new URLSearchParams({
 
@@ -148,11 +152,23 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                                 });
                                 const res = await fetch(`/api/prices?${params.toString()}`);
                                 const data = await res.json();
-                                if (data.prices && data.prices.length > 0) {
+                                if (
+                                        data.prices &&
+                                        data.prices.length > 0 &&
+                                        data.prices[0]?.price !== undefined &&
+                                        data.prices[0]?.price !== null
+                                ) {
                                         setCalculatedPrice(data.prices[0].price);
+                                } else {
+                                        setCalculatedPrice(null);
                                 }
+                                setHasFetchedPrice(true);
                         } catch (e) {
                                 // ignore
+                                setCalculatedPrice(null);
+                                setHasFetchedPrice(true);
+                        } finally {
+                                setIsPriceLoading(false);
                         }
                 };
                 fetchPrice();
@@ -210,9 +226,14 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
         const handleAddToCart = async (e) => {
                 e.stopPropagation();
 
+                if (calculatedPrice === null || isPriceLoading) {
+                        toast.error("Product not available");
+                        return;
+                }
+
                 // Use the unified addItem function
                 await addItem({
-			id: product.id || product._id,
+                        id: product.id || product._id,
 			name: product.title,
 			description: product.description,
                         price: calculatedPrice,
@@ -227,6 +248,11 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
 
         const handleAddToWishlist = (e) => {
                 e.stopPropagation();
+
+                if (calculatedPrice === null || isPriceLoading) {
+                        toast.error("Product not available");
+                        return;
+                }
 
                 addWishlistItem({
                         id: product.id || product._id,
@@ -243,12 +269,17 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                 toast.success("Added to wishlist!");
         };
 
-	const handleBuyNow = async (e) => {
-		e.stopPropagation();
+        const handleBuyNow = async (e) => {
+                e.stopPropagation();
 
-		// Redirect to checkout with buy now parameters
-		router.push(
-			`/checkout?buyNow=true&id=${product.id || product._id}&qty=${quantity}`
+                if (calculatedPrice === null || isPriceLoading) {
+                        toast.error("Product not available");
+                        return;
+                }
+
+                // Redirect to checkout with buy now parameters
+                router.push(
+                        `/checkout?buyNow=true&id=${product.id || product._id}&qty=${quantity}`
 		);
 	};
 
@@ -429,9 +460,17 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
 							</div>
 
                                         {/* Product price */}
-                                        <p className="text-xl lg:text-2xl font-semibold text-black mb-2">
-                                                ₹ {calculatedPrice.toLocaleString()} (Sale Price)
-                                        </p>
+                                        {hasFetchedPrice && calculatedPrice === null ? (
+                                                <p className="text-lg lg:text-xl font-semibold text-red-600 mb-2">
+                                                        Product not available
+                                                </p>
+                                        ) : (
+                                                calculatedPrice !== null && (
+                                                        <p className="text-xl lg:text-2xl font-semibold text-black mb-2">
+                                                                ₹ {calculatedPrice.toLocaleString()} (Sale Price)
+                                                        </p>
+                                                )
+                                        )}
                                        {hasQrOption && (
                                                 <div className="mt-4">
                                                         <Select
@@ -570,7 +609,11 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
 							<div className="flex flex-col sm:flex-row gap-4">
                                                                 <Button
                                                                         onClick={handleAddToCart}
-                                                                        disabled={isLoading}
+                                                                        disabled={
+                                                                                isLoading ||
+                                                                                calculatedPrice === null ||
+                                                                                isPriceLoading
+                                                                        }
                                                                         className="flex-1 bg-black text-white hover:bg-gray-800"
                                                                         size="lg"
                                                                 >
@@ -579,15 +622,23 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
 								</Button>
                                                                 <Button
                                                                         onClick={handleBuyNow}
+                                                                        disabled={
+                                                                                calculatedPrice === null ||
+                                                                                isPriceLoading
+                                                                        }
                                                                         className="flex-1 bg-green-600 text-white hover:bg-green-700"
                                                                         size="lg"
                                                                 >
-									Buy Now
-								</Button>
+                                                                        Buy Now
+                                                                </Button>
                                                                 <Button
                                                                         variant="outline"
                                                                         size="lg"
                                                                         onClick={handleAddToWishlist}
+                                                                        disabled={
+                                                                                calculatedPrice === null ||
+                                                                                isPriceLoading
+                                                                        }
                                                                 >
                                                                         <Heart className="h-5 w-5 mr-2" />
                                                                         Wishlist
