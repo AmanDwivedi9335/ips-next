@@ -20,18 +20,16 @@ export default function Footer() {
 		},
                 quickLinks: {
                         title: "Quick Link",
-                        items: [
-                                "Privacy Policy",
-                                "Terms Of Use",
-                                "FAQ",
-                                "Contact",
-                                {
-                                        label: "Shipping & Delivery Policy",
-                                        href: "/shipping-delivery-policy",
-                                },
+
+                        links: [
+                                { label: "Privacy Policy", href: "/privacy-policy" },
+                                { label: "Terms Of Use", href: "/terms" },
+                                { label: "FAQ", href: "/faq" },
+                                { label: "Contact", href: "/contact" },
                         ],
                 },
-	};
+        };
+
 
 
 	return (
@@ -77,37 +75,24 @@ export default function Footer() {
 					</div>
 
                                         {/* Quick Links */}
-                                        <div>
-                                                <h3 className="text-xl font-bold mb-4">
-                                                        {footerSections.quickLinks.title}
-                                                </h3>
-                                                <div className="space-y-3 text-gray-400">
 
-                                                        {footerSections.quickLinks.items.map((item, index) => {
-                                                                if (typeof item === "string") {
-                                                                        return (
-                                                                                <p
-                                                                                        key={`${item}-${index}`}
-                                                                                        className="hover:text-white cursor-pointer transition-colors"
-                                                                                >
-                                                                                        {item}
-                                                                                </p>
-                                                                        );
-                                                                }
+                    <div>
+                            <h3 className="text-xl font-bold mb-4">
+                                    {footerSections.quickLinks.title}
+                            </h3>
+                            <div className="space-y-3 text-gray-400">
+                                    {footerSections.quickLinks.links.map((link, index) => (
+                                            <Link
+                                                    key={index}
+                                                    href={link.href}
+                                                    className="block hover:text-white transition-colors"
+                                            >
+                                                    {link.label}
+                                            </Link>
+                                    ))}
+                            </div>
+                    </div>
 
-                                                                return (
-                                                                        <Link
-                                                                                key={item.href}
-                                                                                href={item.href}
-                                                                                className="hover:text-white cursor-pointer transition-colors"
-                                                                        >
-                                                                                {item.label}
-                                                                        </Link>
-                                                                );
-                                                        })}
-
-                                                </div>
-                                        </div>
 
                                         {/* Subscribe */}
                                         <div>
