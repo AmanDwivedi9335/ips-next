@@ -22,21 +22,22 @@ export default function Footer() {
 				{ label: "Shop", href: "/shop" },
 			],
 		},
-		quickLinks: {
-			title: "Quick Link",
-			links: [
-
-                                { label: "Privacy Policy", href: "/privacy" },
-                                { label: "Terms Of Use", href: "/terms" },
-                                { label: "FAQ", href: "/faq" },
-                                { label: "Contact", href: "/contact" },
+                quickLinks: {
+                        title: "Quick Links",
+                        links: [
+                                { label: "Terms & Conditions", href: "/terms" },
+                                {
+                                        label: "Shipping & Delivery Policy",
+                                        href: "/shipping-delivery-policy",
+                                },
+                                { label: "Privacy Policy", href: "/privacy-policy" },
                                 {
                                         label: "Cancellation & Refund Policy",
                                         href: "/cancellation-refund-policy",
                                 },
-
-			],
-		},
+                                { label: "Disclaimer Policy", href: "/disclaimer" },
+                        ],
+                },
 	};
 
 	return (

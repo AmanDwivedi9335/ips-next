@@ -18,16 +18,19 @@ export default function Footer() {
 			items: ["My Account", "Login / Register", "Cart", "Wishlist", "Shop"],
 		},
                 quickLinks: {
-                        title: "Quick Link",
-
+                        title: "Quick Links",
                         items: [
-                                "Privacy Policy",
-                                "Terms Of Use",
-                                "FAQ",
-                                "Contact",
-
-                                { label: "Disclaimer", href: "/disclaimer" },
-
+                                { label: "Terms & Conditions", href: "/terms" },
+                                {
+                                        label: "Shipping & Delivery Policy",
+                                        href: "/shipping-delivery-policy",
+                                },
+                                { label: "Privacy Policy", href: "/privacy-policy" },
+                                {
+                                        label: "Cancellation & Refund Policy",
+                                        href: "/cancellation-refund-policy",
+                                },
+                                { label: "Disclaimer Policy", href: "/disclaimer" },
                         ],
                 },
         };
