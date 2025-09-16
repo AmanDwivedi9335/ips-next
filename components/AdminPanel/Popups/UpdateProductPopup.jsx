@@ -161,6 +161,7 @@ export function UpdateProductPopup({ open, onOpenChange, product }) {
     ]),
   );
 
+
   const pricingColumnCount = 4 + (showLayout ? 1 : 0) + (showQR ? 1 : 0);
 
   const shouldShowPricing = showBasicFields || hasExistingPricing;
@@ -171,6 +172,7 @@ export function UpdateProductPopup({ open, onOpenChange, product }) {
     ) : (
       <span className="text-gray-400 italic">{fallback}</span>
     );
+
 
   const parentCategories = categoryList.filter((cat) => !cat.parent);
   const subCategories = selectedCategoryId
@@ -849,9 +851,11 @@ export function UpdateProductPopup({ open, onOpenChange, product }) {
                     <Plus className="h-4 w-4 mr-2" /> Add Price
                   </Button>
                 </div>
+
                 {priceError && (
                   <p className="text-sm text-red-500">{priceError}</p>
                 )}
+
                 <div className="overflow-x-auto rounded-lg border border-gray-200">
                   <table className="min-w-full text-sm">
                     <thead className="bg-gray-50">
@@ -881,6 +885,7 @@ export function UpdateProductPopup({ open, onOpenChange, product }) {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-200">
+
                       {prices.length === 0 ? (
                         <tr>
                           <td
@@ -1074,6 +1079,7 @@ export function UpdateProductPopup({ open, onOpenChange, product }) {
                           </tr>
                         ))
                       )}
+
                     </tbody>
                   </table>
                 </div>
