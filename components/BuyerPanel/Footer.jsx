@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ArrowRight, Facebook, Instagram, Linkedin } from "lucide-react";
@@ -16,11 +17,40 @@ export default function Footer() {
 			title: "Account",
 			items: ["My Account", "Login / Register", "Cart", "Wishlist", "Shop"],
 		},
-		quickLinks: {
-			title: "Quick Link",
-			items: ["Privacy Policy", "Terms Of Use", "FAQ", "Contact"],
-		},
-	};
+                quickLinks: {
+                        title: "Quick Link",
+                        items: [
+                                "Privacy Policy",
+                                { label: "Terms Of Use", href: "/terms" },
+                                "FAQ",
+                                "Contact",
+                        ],
+                },
+        };
+
+        const renderFooterItem = (item, index) => {
+                if (typeof item === "string") {
+                        return (
+                                <p key={index} className="hover:text-white cursor-pointer transition-colors">
+                                        {item}
+                                </p>
+                        );
+                }
+
+                if (item?.href) {
+                        return (
+                                <Link
+                                        key={index}
+                                        href={item.href}
+                                        className="block hover:text-white cursor-pointer transition-colors"
+                                >
+                                        {item.label ?? item.href}
+                                </Link>
+                        );
+                }
+
+                return null;
+        };
 
 	return (
 		<footer className="bg-black text-white py-8 md:py-16">
@@ -45,16 +75,11 @@ export default function Footer() {
 						<h3 className="text-xl font-bold mb-4">
 							{footerSections.support.title}
 						</h3>
-						<div className="space-y-3 text-gray-400">
-							{footerSections.support.items.map((item, index) => (
-								<p
-									key={index}
-									className="hover:text-white cursor-pointer transition-colors"
-								>
-									{item}
-								</p>
-							))}
-						</div>
+                                                <div className="space-y-3 text-gray-400">
+                                                        {footerSections.support.items.map((item, index) =>
+                                                                renderFooterItem(item, index)
+                                                        )}
+                                                </div>
 					</div>
 
 					{/* Account */}
@@ -62,34 +87,24 @@ export default function Footer() {
 						<h3 className="text-xl font-bold mb-4">
 							{footerSections.account.title}
 						</h3>
-						<div className="space-y-3 text-gray-400">
-							{footerSections.account.items.map((item, index) => (
-								<p
-									key={index}
-									className="hover:text-white cursor-pointer transition-colors"
-								>
-									{item}
-								</p>
-							))}
-						</div>
+                                                <div className="space-y-3 text-gray-400">
+                                                        {footerSections.account.items.map((item, index) =>
+                                                                renderFooterItem(item, index)
+                                                        )}
+                                                </div>
 					</div>
 
                                         {/* Quick Links */}
-                    <div>
-                            <h3 className="text-xl font-bold mb-4">
-                                    {footerSections.quickLinks.title}
-                            </h3>
-                            <div className="space-y-3 text-gray-400">
-                                    {footerSections.quickLinks.items.map((item, index) => (
-                                            <p
-                                                    key={index}
-                                                    className="hover:text-white cursor-pointer transition-colors"
-                                            >
-                                                    {item}
-                                            </p>
-                                    ))}
-                            </div>
-                    </div>
+                                        <div>
+                                                <h3 className="text-xl font-bold mb-4">
+                                                        {footerSections.quickLinks.title}
+                                                </h3>
+                                                <div className="space-y-3 text-gray-400">
+                                                        {footerSections.quickLinks.items.map((item, index) =>
+                                                                renderFooterItem(item, index)
+                                                        )}
+                                                </div>
+                                        </div>
 
                                         {/* Subscribe */}
                                         <div>
