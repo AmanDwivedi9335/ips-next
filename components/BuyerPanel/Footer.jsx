@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,10 +17,19 @@ export default function Footer() {
 			title: "Account",
 			items: ["My Account", "Login / Register", "Cart", "Wishlist", "Shop"],
 		},
-		quickLinks: {
-			title: "Quick Link",
-			items: ["Privacy Policy", "Terms Of Use", "FAQ", "Contact"],
-		},
+                quickLinks: {
+                        title: "Quick Link",
+                        items: [
+                                "Privacy Policy",
+                                "Terms Of Use",
+                                "FAQ",
+                                "Contact",
+                                {
+                                        label: "Cancellation & Refund Policy",
+                                        href: "/cancellation-refund-policy",
+                                },
+                        ],
+                },
 	};
 
 	return (
@@ -80,14 +90,28 @@ export default function Footer() {
                                     {footerSections.quickLinks.title}
                             </h3>
                             <div className="space-y-3 text-gray-400">
-                                    {footerSections.quickLinks.items.map((item, index) => (
-                                            <p
-                                                    key={index}
-                                                    className="hover:text-white cursor-pointer transition-colors"
-                                            >
-                                                    {item}
-                                            </p>
-                                    ))}
+                                    {footerSections.quickLinks.items.map((item, index) => {
+                                            if (typeof item === "string") {
+                                                    return (
+                                                            <p
+                                                                    key={index}
+                                                                    className="hover:text-white cursor-pointer transition-colors"
+                                                            >
+                                                                    {item}
+                                                            </p>
+                                                    );
+                                            }
+
+                                            return (
+                                                    <Link
+                                                            key={item.label}
+                                                            href={item.href}
+                                                            className="block hover:text-white transition-colors"
+                                                    >
+                                                            {item.label}
+                                                    </Link>
+                                            );
+                                    })}
                             </div>
                     </div>
 
