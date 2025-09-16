@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ArrowRight, Facebook, Instagram, Linkedin } from "lucide-react";
@@ -16,10 +17,16 @@ export default function Footer() {
 			title: "Account",
 			items: ["My Account", "Login / Register", "Cart", "Wishlist", "Shop"],
 		},
-		quickLinks: {
-			title: "Quick Link",
-			items: ["Privacy Policy", "Terms Of Use", "FAQ", "Contact"],
-		},
+                quickLinks: {
+                        title: "Quick Link",
+                        items: [
+                                "Privacy Policy",
+                                "Terms Of Use",
+                                "FAQ",
+                                "Contact",
+                                { label: "Disclaimer", href: "/disclaimer" },
+                        ],
+                },
 	};
 
 	return (
@@ -75,21 +82,35 @@ export default function Footer() {
 					</div>
 
                                         {/* Quick Links */}
-                    <div>
-                            <h3 className="text-xl font-bold mb-4">
-                                    {footerSections.quickLinks.title}
-                            </h3>
-                            <div className="space-y-3 text-gray-400">
-                                    {footerSections.quickLinks.items.map((item, index) => (
-                                            <p
-                                                    key={index}
-                                                    className="hover:text-white cursor-pointer transition-colors"
-                                            >
-                                                    {item}
-                                            </p>
-                                    ))}
-                            </div>
-                    </div>
+                                        <div>
+                                                <h3 className="text-xl font-bold mb-4">
+                                                        {footerSections.quickLinks.title}
+                                                </h3>
+                                                <div className="space-y-3 text-gray-400">
+                                                        {footerSections.quickLinks.items.map((item, index) => {
+                                                                if (typeof item === "string") {
+                                                                        return (
+                                                                                <p
+                                                                                        key={index}
+                                                                                        className="hover:text-white cursor-pointer transition-colors"
+                                                                                >
+                                                                                        {item}
+                                                                                </p>
+                                                                        );
+                                                                }
+
+                                                                return (
+                                                                        <Link
+                                                                                key={`${item.label}-${index}`}
+                                                                                href={item.href}
+                                                                                className="block hover:text-white transition-colors"
+                                                                        >
+                                                                                {item.label}
+                                                                        </Link>
+                                                                );
+                                                        })}
+                                                </div>
+                                        </div>
 
                                         {/* Subscribe */}
                                         <div>
