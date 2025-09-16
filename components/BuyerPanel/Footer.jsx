@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,10 +17,19 @@ export default function Footer() {
 			title: "Account",
 			items: ["My Account", "Login / Register", "Cart", "Wishlist", "Shop"],
 		},
-		quickLinks: {
-			title: "Quick Link",
-			items: ["Privacy Policy", "Terms Of Use", "FAQ", "Contact"],
-		},
+                quickLinks: {
+                        title: "Quick Link",
+                        items: [
+                                "Privacy Policy",
+                                "Terms Of Use",
+                                "FAQ",
+                                "Contact",
+                                {
+                                        label: "Shipping & Delivery Policy",
+                                        href: "/shipping-delivery-policy",
+                                },
+                        ],
+                },
 	};
 
 	return (
@@ -75,21 +85,35 @@ export default function Footer() {
 					</div>
 
                                         {/* Quick Links */}
-                    <div>
-                            <h3 className="text-xl font-bold mb-4">
-                                    {footerSections.quickLinks.title}
-                            </h3>
-                            <div className="space-y-3 text-gray-400">
-                                    {footerSections.quickLinks.items.map((item, index) => (
-                                            <p
-                                                    key={index}
-                                                    className="hover:text-white cursor-pointer transition-colors"
-                                            >
-                                                    {item}
-                                            </p>
-                                    ))}
-                            </div>
-                    </div>
+                                        <div>
+                                                <h3 className="text-xl font-bold mb-4">
+                                                        {footerSections.quickLinks.title}
+                                                </h3>
+                                                <div className="space-y-3 text-gray-400">
+                                                        {footerSections.quickLinks.items.map((item, index) => {
+                                                                if (typeof item === "string") {
+                                                                        return (
+                                                                                <p
+                                                                                        key={`${item}-${index}`}
+                                                                                        className="hover:text-white cursor-pointer transition-colors"
+                                                                                >
+                                                                                        {item}
+                                                                                </p>
+                                                                        );
+                                                                }
+
+                                                                return (
+                                                                        <Link
+                                                                                key={item.href}
+                                                                                href={item.href}
+                                                                                className="hover:text-white cursor-pointer transition-colors"
+                                                                        >
+                                                                                {item.label}
+                                                                        </Link>
+                                                                );
+                                                        })}
+                                                </div>
+                                        </div>
 
                                         {/* Subscribe */}
                                         <div>
