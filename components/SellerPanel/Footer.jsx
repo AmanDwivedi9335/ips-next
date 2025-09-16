@@ -26,10 +26,14 @@ export default function Footer() {
 			title: "Quick Link",
 			links: [
 
-                                { label: "Privacy Policy", href: "/privacy-policy" },
-				{ label: "Terms Of Use", href: "/terms" },
-				{ label: "FAQ", href: "/faq" },
-				{ label: "Contact", href: "/contact" },
+                                { label: "Privacy Policy", href: "/privacy" },
+                                { label: "Terms Of Use", href: "/terms" },
+                                { label: "FAQ", href: "/faq" },
+                                { label: "Contact", href: "/contact" },
+                                {
+                                        label: "Cancellation & Refund Policy",
+                                        href: "/cancellation-refund-policy",
+                                },
 
 			],
 		},

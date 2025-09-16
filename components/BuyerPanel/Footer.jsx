@@ -21,15 +21,18 @@ export default function Footer() {
                 quickLinks: {
                         title: "Quick Link",
 
-                        links: [
-                                { label: "Privacy Policy", href: "/privacy-policy" },
-                                { label: "Terms Of Use", href: "/terms" },
-                                { label: "FAQ", href: "/faq" },
-                                { label: "Contact", href: "/contact" },
+                        items: [
+                                "Privacy Policy",
+                                "Terms Of Use",
+                                "FAQ",
+                                "Contact",
+                                {
+                                        label: "Cancellation & Refund Policy",
+                                        href: "/cancellation-refund-policy",
+                                },
                         ],
                 },
-        };
-
+	};
 
 
 	return (
@@ -81,15 +84,29 @@ export default function Footer() {
                                     {footerSections.quickLinks.title}
                             </h3>
                             <div className="space-y-3 text-gray-400">
-                                    {footerSections.quickLinks.links.map((link, index) => (
-                                            <Link
-                                                    key={index}
-                                                    href={link.href}
-                                                    className="block hover:text-white transition-colors"
-                                            >
-                                                    {link.label}
-                                            </Link>
-                                    ))}
+                                    {footerSections.quickLinks.items.map((item, index) => {
+                                            if (typeof item === "string") {
+                                                    return (
+                                                            <p
+                                                                    key={index}
+                                                                    className="hover:text-white cursor-pointer transition-colors"
+                                                            >
+                                                                    {item}
+                                                            </p>
+                                                    );
+                                            }
+
+                                            return (
+                                                    <Link
+                                                            key={item.label}
+                                                            href={item.href}
+                                                            className="block hover:text-white transition-colors"
+                                                    >
+                                                            {item.label}
+                                                    </Link>
+                                            );
+                                    })}
+
                             </div>
                     </div>
 
