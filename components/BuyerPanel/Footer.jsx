@@ -11,7 +11,7 @@ export default function Footer() {
         const footerSections = {
                 support: {
                         title: "Support",
-                        items: ["info@industrialprintsolutions.com", "7999704487"],
+                        items: ["info@industrialprintsolutions.com", "+919936814137"],
                 },
                 account: {
                         title: "Account",

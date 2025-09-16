@@ -13,7 +13,7 @@ export default function SupportSection() {
 		{
 			icon: Headphones,
 			title: "Give Us A Call",
-			description: "+91 7999704487",
+                        description: "+919936814137",
 		},
 		{
 			icon: Heart,
