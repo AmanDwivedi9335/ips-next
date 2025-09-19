@@ -41,6 +41,7 @@ import {
         Ticket,
         Languages,
         Package as PackageIcon,
+        Mail,
 } from "lucide-react";
 import Logo from "@/public/ipslogo.png";
 
@@ -73,6 +74,11 @@ const menuItems = [
                 title: "Orders",
                 icon: ShoppingCart,
                 href: "/admin/orders",
+        },
+        {
+                title: "Contact Requests",
+                icon: Mail,
+                href: "/admin/contact",
         },
         {
                 title: "Settings",

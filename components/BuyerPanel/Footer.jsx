@@ -20,6 +20,7 @@ export default function Footer() {
                 quickLinks: {
                         title: "Quick Links",
                         items: [
+                                { label: "Contact Us", href: "/contact" },
                                 { label: "Terms & Conditions", href: "/terms" },
                                 {
                                         label: "Shipping & Delivery Policy",
