@@ -128,6 +128,12 @@ export default function Footer() {
                                                         <Instagram className="h-6 w-6 hover:text-pink-400 cursor-pointer transition-colors" />
                                                         <Linkedin className="h-6 w-6 hover:text-blue-600 cursor-pointer transition-colors" />
                                                 </div>
+                                                <Button
+                                                        asChild
+                                                        className="w-full sm:w-auto bg-white text-black hover:bg-white/90"
+                                                >
+                                                        <Link href="/contact">Contact Us</Link>
+                                                </Button>
                                         </div>
 
 					{/* Support */}
