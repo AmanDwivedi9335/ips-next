@@ -24,19 +24,21 @@ import {
 	TableRow,
 } from "@/components/ui/table";
 import {
-	Search,
-	Plus,
-	Filter,
-	RotateCcw,
-	Eye,
-	Edit,
-	Trash2,
-	Upload,
-	Download,
-	FileText,
-	ChevronLeft,
-	ChevronRight,
-	ArrowUpDown,
+        Search,
+        Plus,
+        Filter,
+        RotateCcw,
+        Eye,
+        Edit,
+        Trash2,
+        Upload,
+        Download,
+        FileText,
+        ChevronLeft,
+        ChevronRight,
+        ArrowUpDown,
+        Copy,
+        Loader2,
 } from "lucide-react";
 import { useAdminProductStore } from "@/store/adminProductStore.js";
 import { DeletePopup } from "@/components/AdminPanel/Popups/DeleteProductPopup.jsx";
@@ -73,10 +75,13 @@ export default function AdminProductsPage() {
 		selectAllProducts,
 		clearSelection,
 		toggleProductSelection,
-		deleteProduct,
-		deleteMultipleProducts,
-		updateProduct,
-	} = useAdminProductStore();
+                deleteProduct,
+                deleteMultipleProducts,
+                updateProduct,
+                cloneProduct,
+        } = useAdminProductStore();
+
+        const [cloningProductId, setCloningProductId] = useState(null);
 
 	const [popups, setPopups] = useState({
 		delete: { open: false, product: null },
@@ -113,9 +118,24 @@ export default function AdminProductsPage() {
 		setPopups((prev) => ({ ...prev, delete: { open: true, product } }));
 	};
 
-	const handleUpdate = (product) => {
-		setPopups((prev) => ({ ...prev, update: { open: true, product } }));
-	};
+        const handleUpdate = (product) => {
+                setPopups((prev) => ({ ...prev, update: { open: true, product } }));
+        };
+
+        const handleClone = async (product) => {
+                setCloningProductId(product._id);
+                try {
+                        const clonedProduct = await cloneProduct(product._id);
+                        if (clonedProduct) {
+                                setPopups((prev) => ({
+                                        ...prev,
+                                        update: { open: true, product: clonedProduct },
+                                }));
+                        }
+                } finally {
+                        setCloningProductId(null);
+                }
+        };
 
 	const confirmDelete = async () => {
 		if (popups.delete.product) {
@@ -467,13 +487,25 @@ export default function AdminProductsPage() {
                                                                                                                 {/* <Button size="icon" variant="outline">
                                                                                                                         <Eye className="w-4 h-4" />
                                                                                                                 </Button> */}
-														<Button
-															size="icon"
-															variant="outline"
-															onClick={() => handleUpdate(product)}
-														>
-															<Edit className="w-4 h-4" />
-														</Button>
+                                                <Button
+                                                        size="icon"
+                                                        variant="outline"
+                                                        onClick={() => handleClone(product)}
+                                                        disabled={cloningProductId === product._id}
+                                                >
+                                                        {cloningProductId === product._id ? (
+                                                                <Loader2 className="w-4 h-4 animate-spin" />
+                                                        ) : (
+                                                                <Copy className="w-4 h-4" />
+                                                        )}
+                                                </Button>
+                                                <Button
+                                                        size="icon"
+                                                        variant="outline"
+                                                        onClick={() => handleUpdate(product)}
+                                                >
+                                                        <Edit className="w-4 h-4" />
+                                                </Button>
 														<Button
 															size="icon"
 															variant="outline"
