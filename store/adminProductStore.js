@@ -159,7 +159,7 @@ export const useAdminProductStore = create((set, get) => ({
                }
        },
 
-       updateProduct: async (productId, updateData) => {
+        updateProduct: async (productId, updateData) => {
                 try {
                         const formData = new FormData();
 
@@ -234,8 +234,34 @@ export const useAdminProductStore = create((set, get) => ({
                 }
         },
 
-	deleteProduct: async (productId) => {
-		try {
+        cloneProduct: async (productId) => {
+                try {
+                        const response = await fetch("/api/admin/product/cloneProduct", {
+                                method: "POST",
+                                headers: {
+                                        "Content-Type": "application/json",
+                                },
+                                body: JSON.stringify({ productId }),
+                        });
+
+                        const data = await response.json();
+
+                        if (data.success) {
+                                toast.success(data.message || "Product cloned successfully");
+                                get().fetchProducts();
+                                return data.product;
+                        } else {
+                                toast.error(data.message || "Failed to clone product");
+                                return null;
+                        }
+                } catch (error) {
+                        toast.error("Failed to clone product");
+                        return null;
+                }
+        },
+
+        deleteProduct: async (productId) => {
+                try {
 			const response = await fetch("/api/admin/product/deleteProduct", {
 				method: "DELETE",
 				headers: {
