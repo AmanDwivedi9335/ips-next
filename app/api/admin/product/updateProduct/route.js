@@ -36,10 +36,12 @@ export async function PUT(request) {
                 const subcategory = formData.get("subcategory");
                 const productFamily = formData.get("productFamily");
                 const productCode = formData.get("productCode");
-                const discount = formData.get("discount")
-                        ? parseFloat(formData.get("discount"))
+                const rawDiscount = formData.get("discount");
+                const parsedDiscount = rawDiscount ? Number.parseFloat(rawDiscount) : 0;
+                const discount = Number.isFinite(parsedDiscount)
+                        ? Math.min(Math.max(parsedDiscount, 0), 100)
                         : 0;
-                const type = formData.get("type");
+                const type = formData.get("type") || "featured";
                 const published = formData.get("published") === "true";
 
                 // Parse array fields
@@ -97,12 +99,33 @@ export async function PUT(request) {
                 product.images = imageUrls;
                 product.languageImages = languageImages;
 
+                const shouldApplyDiscount = type === "discounted" && discount > 0;
+
+                const applyDiscount = (value) => {
+                        if (!shouldApplyDiscount) {
+                                return value;
+                        }
+
+                        if (typeof value !== "number" || Number.isNaN(value)) {
+                                return value;
+                        }
+
+                        const discountedValue = value - (value * discount) / 100;
+                        const roundedValue = Number.parseFloat(discountedValue.toFixed(2));
+
+                        return Number.isFinite(roundedValue) && roundedValue > 0
+                                ? roundedValue
+                                : 0;
+                };
+
                 const basePrice =
                         pricing.find(
-                                (p) => typeof p?.price === "number" && !isNaN(p.price)
+                                (p) => typeof p?.price === "number" && !Number.isNaN(p.price)
                         )?.price || 0;
+                const discountedBasePrice = applyDiscount(basePrice);
                 product.price = basePrice;
-                product.salePrice = basePrice;
+                product.mrp = basePrice;
+                product.salePrice = discountedBasePrice;
 
                 await product.save();
 
@@ -114,7 +137,7 @@ export async function PUT(request) {
                                         p.size &&
                                         p.material &&
                                         typeof p.price === "number" &&
-                                        !isNaN(p.price)
+                                        !Number.isNaN(p.price)
                         );
                         if (validPricing.length > 0) {
                                 const priceDocs = validPricing.map((p) => ({

@@ -91,6 +91,32 @@ export async function POST(request) {
                 }
 
 
+               const rawDiscount = formData.get("discount");
+               const parsedDiscount = rawDiscount ? Number.parseFloat(rawDiscount) : 0;
+               const discount = Number.isFinite(parsedDiscount)
+                       ? Math.min(Math.max(parsedDiscount, 0), 100)
+                       : 0;
+               const type = formData.get("type") || "featured";
+               const shouldApplyDiscount = type === "discounted" && discount > 0;
+
+               const applyDiscount = (value) => {
+                       if (!shouldApplyDiscount) {
+                               return value;
+                       }
+
+                       if (typeof value !== "number" || Number.isNaN(value)) {
+                               return value;
+                       }
+
+                       const discountedValue = value - (value * discount) / 100;
+                       const roundedValue = Number.parseFloat(discountedValue.toFixed(2));
+
+                       return Number.isFinite(roundedValue) && roundedValue > 0
+                               ? roundedValue
+                               : 0;
+               };
+
+
                // Parse images and languageImages
                let images = [];
                let languageImages = [];
@@ -111,10 +137,11 @@ export async function POST(request) {
                        ])
                );
 
-                 // Create new product
+                 // Determine baseline and discounted pricing
                  const basePrice =
-                         pricing.find((p) => typeof p?.price === "number" && !isNaN(p.price))
+                         pricing.find((p) => typeof p?.price === "number" && !Number.isNaN(p.price))
                                  ?.price || 0;
+                 const discountedBasePrice = applyDiscount(basePrice);
 
                 const product = new Product({
                         title,
@@ -130,12 +157,11 @@ export async function POST(request) {
                         productFamily,
                         published: formData.get("published") === "true",
                         price: basePrice,
-                        salePrice: basePrice,
-                        discount: formData.get("discount")
-                                ? parseFloat(formData.get("discount"))
-                                : 0,
-                        type: formData.get("type") || "featured",
-                        productType: formData.get("type") || "featured",
+                        mrp: basePrice,
+                        salePrice: discountedBasePrice,
+                        discount,
+                        type,
+                        productType: type,
                         features: features,
                         languages: allLanguages,
                         materials,
@@ -154,7 +180,7 @@ export async function POST(request) {
                                         p.size &&
                                         p.material &&
                                         typeof p.price === "number" &&
-                                        !isNaN(p.price)
+                                        !Number.isNaN(p.price)
 
                         );
 
