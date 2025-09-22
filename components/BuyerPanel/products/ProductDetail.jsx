@@ -36,6 +36,47 @@ import ProductCard from "@/components/BuyerPanel/products/ProductCard.jsx";
 import { toast } from "react-hot-toast";
 import Image from "next/image";
 
+const sortByReference = (values = [], reference = []) => {
+        const uniqueValues = Array.from(new Set(values.filter(Boolean)));
+
+        if (!reference || reference.length === 0) {
+                return uniqueValues.sort((a, b) =>
+                        String(a).localeCompare(String(b), undefined, {
+                                numeric: true,
+                                sensitivity: "base",
+                        })
+                );
+        }
+
+        const referenceIndex = new Map();
+        reference.filter(Boolean).forEach((item, index) => {
+                if (!referenceIndex.has(item)) {
+                        referenceIndex.set(item, index);
+                }
+        });
+
+        const ordered = [];
+        const extras = [];
+
+        uniqueValues.forEach((value) => {
+                if (referenceIndex.has(value)) {
+                        ordered.push({ value, index: referenceIndex.get(value) });
+                } else {
+                        extras.push(value);
+                }
+        });
+
+        ordered.sort((a, b) => a.index - b.index);
+        extras.sort((a, b) =>
+                String(a).localeCompare(String(b), undefined, {
+                        numeric: true,
+                        sensitivity: "base",
+                })
+        );
+
+        return [...ordered.map((item) => item.value), ...extras];
+};
+
 export default function ProductDetail({ product, relatedProducts = [] }) {
         const [selectedImage, setSelectedImage] = useState(0);
         const [quantity, setQuantity] = useState(1);
@@ -54,13 +95,13 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                         : languages[0] || ""
         );
         const [availableLayouts, setAvailableLayouts] = useState(
-                product.layouts || [],
+                sortByReference(product.layouts || [], product.layouts || []),
         );
         const [availableSizes, setAvailableSizes] = useState(
-                product.sizes || [],
+                sortByReference(product.sizes || [], product.sizes || []),
         );
         const [availableMaterials, setAvailableMaterials] = useState(
-                product.materials || [],
+                sortByReference(product.materials || [], product.materials || []),
         );
         const [selectedSize, setSelectedSize] = useState(
                 product.sizes?.[0] || ""
@@ -113,21 +154,40 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                                                         .map((p) => p.material)
                                                         .filter(Boolean)
                                         );
-                                        setAvailableLayouts(Array.from(layoutSet));
-                                        setAvailableSizes(Array.from(sizeSet));
-                                        setAvailableMaterials(Array.from(materialSet));
-                                        if (layoutSet.size > 0)
-                                                setSelectedLayout(
-                                                        Array.from(layoutSet)[0]
-                                                );
-                                        if (sizeSet.size > 0)
-                                                setSelectedSize(
-                                                        Array.from(sizeSet)[0]
-                                                );
-                                        if (materialSet.size > 0)
-                                                setSelectedMaterial(
-                                                        Array.from(materialSet)[0]
-                                                );
+
+                                        const sortedLayouts = sortByReference(
+                                                Array.from(layoutSet),
+                                                product.layouts || [],
+                                        );
+                                        const sortedSizes = sortByReference(
+                                                Array.from(sizeSet),
+                                                product.sizes || [],
+                                        );
+                                        const sortedMaterials = sortByReference(
+                                                Array.from(materialSet),
+                                                product.materials || [],
+                                        );
+
+                                        setAvailableLayouts(sortedLayouts);
+                                        setAvailableSizes(sortedSizes);
+                                        setAvailableMaterials(sortedMaterials);
+
+                                        setSelectedLayout((prev) =>
+                                                prev && sortedLayouts.includes(prev)
+                                                        ? prev
+                                                        : sortedLayouts[0] || ""
+                                        );
+                                        setSelectedSize((prev) =>
+                                                prev && sortedSizes.includes(prev)
+                                                        ? prev
+                                                        : sortedSizes[0] || ""
+                                        );
+                                        setSelectedMaterial((prev) =>
+                                                prev &&
+                                                sortedMaterials.includes(prev)
+                                                        ? prev
+                                                        : sortedMaterials[0] || ""
+                                        );
                                 }
                         } catch (e) {
                                 // ignore
