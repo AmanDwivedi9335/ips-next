@@ -145,6 +145,44 @@ const subscriptionMilestones = [
 ];
 
 
+const subscriptionPlans = [
+        {
+                name: "Awareness Stream",
+                tagline: "Keep a single facility inspired with timely safety campaigns and supervisor prompts.",
+                price: "₹2,499/mo",
+                image: PlanEssentialsPoster,
+                benefits: [
+                        "3 theme-based posters and digital signage files",
+                        "Monthly supervisor briefing card",
+                        "Email + WhatsApp copy blocks in English",
+                ],
+        },
+        {
+                name: "Engagement Plus",
+                tagline: "Drive conversations across multiple shopfloors with deeper storytelling assets.",
+                price: "₹4,799/mo",
+                image: PlanEngagePoster,
+                highlight: true,
+                benefits: [
+                        "5 posters including two semi-custom variants",
+                        "Gamified challenge kit with stickers and leaderboard poster",
+                        "Dual-language copy deck and campaign calendar",
+                ],
+        },
+        {
+                name: "Enterprise Impact",
+                tagline: "Scale to multi-site programmes with localisation support and adoption analytics.",
+                price: "₹8,499/mo",
+                image: PlanEnterprisePoster,
+                benefits: [
+                        "8 posters with plant-specific localisation",
+                        "Quarterly mega-campaign toolkit with event collateral",
+                        "Dedicated success manager + rollout dashboard",
+                ],
+        },
+];
+
+
 const corporateHighlights = [
         {
                 title: "Brand-aligned storytelling",
