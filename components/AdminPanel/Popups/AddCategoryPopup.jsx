@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/select";
 import { useAdminCategoryStore } from "@/store/adminCategoryStore.js";
 import { useAdminProductFamilyStore } from "@/store/adminProductFamilyStore.js";
+import { ImageUpload } from "@/components/AdminPanel/ImageUpload.jsx";
 
 export function AddCategoryPopup({ open, onOpenChange }) {
         const { addCategory, categories } = useAdminCategoryStore();
@@ -125,19 +126,22 @@ export function AddCategoryPopup({ open, onOpenChange }) {
 						</div>
 
                                                 <div>
-                                                        <Label htmlFor="icon">Icon URL</Label>
-                                                        <Input
-								id="icon"
-								placeholder="https://example.com/icon.png"
-								value={formData.icon}
-								onChange={(e) =>
-									setFormData({ ...formData, icon: e.target.value })
-								}
-								className="mt-1"
-							/>
-							<p className="text-xs text-gray-500 mt-1">
-								Optional: URL to category icon image
-							</p>
+                                                        <ImageUpload
+                                                                images={
+                                                                        formData.icon
+                                                                                ? [formData.icon]
+                                                                                : []
+                                                                }
+                                                                onImagesChange={(images) =>
+                                                                        setFormData({
+                                                                                ...formData,
+                                                                                icon: images[0] || "",
+                                                                        })
+                                                                }
+                                                                maxImages={1}
+                                                                label="Category Icon"
+                                                                required={false}
+                                                        />
                                                 </div>
 
                                                 <div>

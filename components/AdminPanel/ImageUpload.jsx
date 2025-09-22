@@ -141,17 +141,22 @@ export function ImageUpload({
 	// Validation for required field
 	const hasValidationError = required && images.length === 0;
 
-	return (
-		<div className="space-y-4">
-			<div>
-				<Label className="text-sm font-medium">
-					{label} {required && <span className="text-red-500">*</span>}
-				</Label>
-				<p className="text-xs text-gray-500 mt-1">
-					Upload up to {MAX_IMAGES} images. At least 1 image is required.
-					Supported formats: JPEG, PNG, WebP (Max 5MB each)
-				</p>
-			</div>
+        const imageCountLabel = MAX_IMAGES === 1 ? "image" : "images";
+        const requirementText = required
+                ? "At least 1 image is required."
+                : "This field is optional.";
+
+        return (
+                <div className="space-y-4">
+                        <div>
+                                <Label className="text-sm font-medium">
+                                        {label} {required && <span className="text-red-500">*</span>}
+                                </Label>
+                                <p className="text-xs text-gray-500 mt-1">
+                                        Upload up to {MAX_IMAGES} {imageCountLabel}. {requirementText}
+                                        Supported formats: JPEG, PNG, WebP (Max 5MB each)
+                                </p>
+                        </div>
 
 			{/* Upload Area */}
 			<div
