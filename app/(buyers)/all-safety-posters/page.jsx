@@ -27,9 +27,13 @@ import {
 import PosterCompliance from "@/public/images/products/PS-P1.png";
 import PosterEmergency from "@/public/images/products/PS-P5.png";
 import PosterBehaviour from "@/public/images/products/PS-P7.png";
-import PackCombo from "@/public/images/products/IS-P2.png";
-import PackHelmet from "@/public/images/products/IS-P4.png";
 import PosterDigital from "@/public/images/products/Q-Please-P4.png";
+import PosterSignageKitA from "@/public/images/products/RS-P3.png";
+import PosterSignageKitB from "@/public/images/products/RS-P5.png";
+import PlanEssentialsPoster from "@/public/images/products/PS-P2.png";
+import PlanEngagePoster from "@/public/images/products/SB-P2.png";
+import PlanEnterprisePoster from "@/public/images/products/RS-P6.png";
+
 
 export const metadata = {
         title: "Safety Posters & Industrial Packs | Infinite Poster Shop",
@@ -39,11 +43,12 @@ export const metadata = {
 
 const navigationOptions = [
         { label: "All Safety Posters", href: "#posters" },
-        { label: "Industrial Safety Packs", href: "#packs" },
-        { label: "Monthly Poster Subscriptions", href: "#subscriptions" },
+        { label: "Industrial Safety Packs", href: "/industrial-safety-packs" },
+        { label: "Monthly Poster Subscriptions", href: "/monthly-poster-subscriptions" },
         {
                 label: "Corporate Bulk/Custom Orders",
-                href: "#corporate",
+                href: "/corporate-bulk-orders",
+
                 highlight: true,
         },
 ];
@@ -86,32 +91,36 @@ const posterShowcase = [
 
 const packHighlights = [
         {
-                title: "Purpose-built combinations",
+
+                title: "Risk-zone specific poster sets",
                 description:
-                        "Category-specific kits for manufacturing, logistics and utilities with PPE, signage and inspection aids curated by safety specialists.",
+                        "Curated bundles for production lines, warehouses and utilities featuring hazard signage sequenced for footfall-heavy areas.",
                 icon: Layers,
         },
         {
-                title: "Ready-to-deploy documentation",
+                title: "Print + digital signage bundle",
                 description:
-                        "Each pack ships with replenishment trackers, inspection checklists and QR-linked microlearning for quick onboarding.",
+                        "Receive press-ready artwork alongside screen loops, screen saver slides and QR labels that mirror the on-wall posters.",
                 icon: ClipboardCheck,
         },
         {
-                title: "On-ground customisation support",
+                title: "Deployment & refresh guidance",
                 description:
-                        "Safety advisors help align pack contents with your SOPs, statutory norms and workforce realities across every site.",
+                        "Playbooks map poster placement, rotation cadence and engagement prompts so supervisors can activate every corner quickly.",
+
                 icon: Users,
         },
 ];
 
 const packContents = [
-        "ISI-certified industrial helmet",
-        "Class E dielectric gloves",
-        "Reflective high-visibility jacket",
-        "Lockout/Tagout quick-start set",
-        "Dual cartridge respirator",
-        "Emergency response poster kit",
+
+        "Hazard communication poster suite",
+        "Emergency exit & muster point signage",
+        "Lockout/tagout instruction infographics",
+        "Machine-specific SOP poster pairings",
+        "Daily checklist & audit status board",
+        "Incident hotline QR sticker set",
+
 ];
 
 const subscriptionMilestones = [
@@ -134,6 +143,7 @@ const subscriptionMilestones = [
                 icon: Sparkles,
         },
 ];
+
 
 const corporateHighlights = [
         {
@@ -402,15 +412,19 @@ export default function AllSafetyPostersPage() {
                                                                         <div className="grid gap-4 sm:grid-cols-2">
                                                                                 <div className="rounded-2xl bg-white/10 p-4">
                                                                                         <Image
-                                                                                                src={PackCombo}
-                                                                                                alt="Industrial safety kit combo"
+
+                                                                                                src={PosterSignageKitA}
+                                                                                                alt="Layered industrial safety signage set"
+
                                                                                                 className="h-40 w-full object-contain drop-shadow"
                                                                                         />
                                                                                 </div>
                                                                                 <div className="rounded-2xl bg-white/10 p-4">
                                                                                         <Image
-                                                                                                src={PackHelmet}
-                                                                                                alt="Safety helmet and PPE"
+
+                                                                                                src={PosterSignageKitB}
+                                                                                                alt="Emergency response poster wall"
+
                                                                                                 className="h-40 w-full object-contain drop-shadow"
                                                                                         />
                                                                                 </div>
@@ -433,6 +447,7 @@ export default function AllSafetyPostersPage() {
                                                         </Card>
                                                 </div>
                                         </div>
+
                                 </div>
                         </section>
 
@@ -472,52 +487,83 @@ export default function AllSafetyPostersPage() {
                                                 </div>
                                                 <div className="relative">
                                                         <div className="absolute -left-10 top-10 hidden h-40 w-40 rounded-full bg-amber-200/80 blur-3xl md:block" />
-                                                        <div className="relative grid gap-4 sm:grid-cols-2">
-                                                                <div className="rounded-3xl bg-white p-5 shadow-xl ring-1 ring-amber-100">
-                                                                        <Image
-                                                                                src={PosterBehaviour}
-                                                                                alt="Behavioural safety poster"
-                                                                                className="h-48 w-full rounded-2xl object-contain drop-shadow"
-                                                                        />
-                                                                        <p className="mt-3 text-sm text-slate-600">
-                                                                                Rotate behavioural nudges that resonate with diverse teams.
-                                                                        </p>
-                                                                </div>
-                                                                <div className="rounded-3xl bg-white p-5 shadow-xl ring-1 ring-amber-100">
-                                                                        <Image
-                                                                                src={PosterDigital}
-                                                                                alt="Digital signage poster"
-                                                                                className="h-48 w-full rounded-2xl object-contain drop-shadow"
-                                                                        />
-                                                                        <p className="mt-3 text-sm text-slate-600">
-                                                                                Get formats optimised for screens, dashboards and mobile broadcasts.
-                                                                        </p>
-                                                                </div>
-                                                                <div className="sm:col-span-2 rounded-3xl bg-white p-6 shadow-xl ring-1 ring-amber-100">
-                                                                        <div className="flex flex-wrap items-center justify-between gap-4">
-                                                                                <div>
-                                                                                        <h3 className="text-lg font-semibold text-slate-900">
-                                                                                                Campaign toolkit included
-                                                                                        </h3>
-                                                                                        <p className="text-sm text-slate-600">
-                                                                                                Toolbox talk prompts, quiz ideas and badge artwork with every drop.
-                                                                                        </p>
-                                                                                </div>
-                                                                                <Link
-                                                                                        href="#contact"
-                                                                                        className={cn(
-                                                                                                buttonVariants({ size: "sm" }),
-                                                                                                "bg-amber-500 text-white shadow-md hover:bg-amber-400"
+
+                                                        <div className="relative grid gap-6">
+                                                                {subscriptionPlans.map((plan) => (
+                                                                        <Card
+                                                                                key={plan.name}
+                                                                                className={cn(
+                                                                                        "overflow-hidden border-amber-100 shadow-xl",
+                                                                                        plan.highlight
+                                                                                                ? "bg-amber-100/80 ring-2 ring-amber-300"
+                                                                                                : "bg-white"
+                                                                                )}
+                                                                        >
+                                                                                <CardHeader className="space-y-3">
+                                                                                        <div className="flex items-start justify-between gap-3">
+                                                                                                <div>
+                                                                                                        <CardTitle className="text-lg font-semibold text-slate-900">
+                                                                                                                {plan.name}
+                                                                                                        </CardTitle>
+                                                                                                        <CardDescription className="text-sm text-slate-600">
+                                                                                                                {plan.tagline}
+                                                                                                        </CardDescription>
+                                                                                                </div>
+                                                                                                <span className="rounded-full bg-amber-500/10 px-3 py-1 text-xs font-semibold text-amber-700">
+                                                                                                        {plan.price}
+                                                                                                </span>
+                                                                                        </div>
+                                                                                        {plan.highlight && (
+                                                                                                <span className="inline-flex items-center gap-2 rounded-full bg-amber-500 px-3 py-1 text-xs font-semibold text-white shadow">
+                                                                                                        <Sparkles className="h-3.5 w-3.5" /> Most popular
+                                                                                                </span>
                                                                                         )}
-                                                                                >
-                                                                                        Join the subscription
-                                                                                        <ArrowRight className="h-4 w-4" />
-                                                                                </Link>
-                                                                        </div>
-                                                                </div>
+                                                                                </CardHeader>
+                                                                                <CardContent className="space-y-4">
+                                                                                        <div className="rounded-2xl bg-amber-50/80 p-4">
+                                                                                                <Image
+                                                                                                        src={plan.image}
+                                                                                                        alt={`${plan.name} poster preview`}
+                                                                                                        className="h-44 w-full rounded-xl object-contain drop-shadow"
+                                                                                                />
+                                                                                        </div>
+                                                                                        <ul className="space-y-2 text-sm text-slate-600">
+                                                                                                {plan.benefits.map((benefit) => (
+                                                                                                        <li key={benefit} className="flex items-start gap-2">
+                                                                                                                <CheckCircle2 className="mt-0.5 h-4 w-4 text-amber-500" />
+                                                                                                                <span>{benefit}</span>
+                                                                                                        </li>
+                                                                                                ))}
+                                                                                        </ul>
+                                                                                        <Link
+                                                                                                href="#contact"
+                                                                                                className={cn(
+                                                                                                        buttonVariants({ size: "sm" }),
+                                                                                                        "w-full bg-amber-500 text-white shadow-md hover:bg-amber-400"
+                                                                                                )}
+                                                                                        >
+                                                                                                Talk to the team
+                                                                                                <ArrowRight className="h-4 w-4" />
+                                                                                        </Link>
+                                                                                </CardContent>
+                                                                        </Card>
+                                                                ))}
                                                         </div>
                                                 </div>
                                         </div>
+                                        <div className="mt-12 text-center">
+                                                <Link
+                                                        href="/monthly-poster-subscriptions"
+                                                        className={cn(
+                                                                buttonVariants({ size: "lg" }),
+                                                                "bg-amber-500 text-white shadow-lg hover:bg-amber-400"
+                                                        )}
+                                                >
+                                                        Compare subscription plans in detail
+                                                        <ArrowRight className="h-4 w-4" />
+                                                </Link>
+                                        </div>
+
                                 </div>
                         </section>
 
@@ -549,13 +595,17 @@ export default function AllSafetyPostersPage() {
                                                         </div>
                                                         <div className="flex flex-wrap gap-4 pt-4">
                                                                 <Link
-                                                                        href="#contact"
+
+                                                                        href="/corporate-bulk-orders"
+
                                                                         className={cn(
                                                                                 buttonVariants({ size: "lg" }),
                                                                                 "bg-yellow-400 text-black shadow-lg hover:bg-yellow-300"
                                                                         )}
                                                                 >
-                                                                        Plan my rollout
+
+                                                                        Explore enterprise programme
+
                                                                         <ArrowRight className="h-4 w-4" />
                                                                 </Link>
                                                                 <Link
