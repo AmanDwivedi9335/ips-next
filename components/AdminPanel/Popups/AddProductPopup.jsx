@@ -731,6 +731,7 @@ export function AddProductPopup({ open, onOpenChange }) {
                         onChange={(e) =>
                           updatePriceRow(index, "price", e.target.value)
                         }
+                        className="min-w-[160px]"
                       />
                       {prices.length > 1 && (
                         <Button
