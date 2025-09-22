@@ -19,6 +19,13 @@ export const metadata = {
                 "Choose from curated subscription tiers delivering fresh safety posters, digital assets and engagement toolkits every month.",
 };
 
+const navigationOptions = [
+        { label: "All Safety Posters", href: "/all-safety-posters" },
+        { label: "Industrial Safety Packs", href: "/industrial-safety-packs" },
+        { label: "Monthly Poster Subscriptions", href: "#plans", highlight: true },
+        { label: "Corporate Bulk/Custom Orders", href: "/corporate-bulk-orders" },
+];
+
 const subscriptionPlans = [
         {
                 name: "Awareness Stream",
@@ -111,6 +118,21 @@ export default function MonthlyPosterSubscriptionsPage() {
                                                                 Pick a plan, set your priorities and receive poster storytelling kits, digital assets and engagement boosters right on schedule.
                                                         </p>
                                                         <div className="flex flex-wrap gap-3">
+                                                                {navigationOptions.map((option) => (
+                                                                        <Link
+                                                                                key={option.label}
+                                                                                href={option.href}
+                                                                                className={`inline-flex items-center gap-2 rounded-full border border-transparent px-4 py-2 text-sm font-medium transition-all ${
+                                                                                        option.highlight
+                                                                                                ? "bg-black text-yellow-300 shadow-lg ring-1 ring-yellow-400/60 animate-blink-slow hover:bg-yellow-400 hover:text-black"
+                                                                                                : "bg-white/80 text-slate-700 hover:bg-amber-100 hover:text-slate-900"
+                                                                                }`}
+                                                                        >
+                                                                                {option.label}
+                                                                        </Link>
+                                                                ))}
+                                                        </div>
+                                                        <div className="flex flex-wrap gap-3">
                                                                 <Link
                                                                         href="/contact"
                                                                         className={cn(
@@ -168,7 +190,7 @@ export default function MonthlyPosterSubscriptionsPage() {
                                 </div>
                         </section>
 
-                        <section className="bg-white py-20">
+                        <section id="plans" className="bg-white py-20">
                                 <div className="mx-auto max-w-6xl px-6">
                                         <div className="mx-auto max-w-3xl text-center">
                                                 <span className="inline-flex items-center justify-center gap-2 rounded-full bg-amber-500/10 px-4 py-2 text-sm font-semibold text-amber-700">

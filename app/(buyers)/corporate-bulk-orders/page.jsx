@@ -17,6 +17,13 @@ export const metadata = {
                 "End-to-end programme management for corporate safety poster deployments across plants, offices and warehouses with localisation and analytics.",
 };
 
+const navigationOptions = [
+        { label: "All Safety Posters", href: "/all-safety-posters" },
+        { label: "Industrial Safety Packs", href: "/industrial-safety-packs" },
+        { label: "Monthly Poster Subscriptions", href: "/monthly-poster-subscriptions" },
+        { label: "Corporate Bulk/Custom Orders", href: "#programmes", highlight: true },
+];
+
 const programmePillars = [
         {
                 title: "Brand-aligned storytelling",
@@ -90,6 +97,21 @@ export default function CorporateBulkOrdersPage() {
                                                                 We partner with HSE and communications teams to design, produce and monitor poster deployments at scale—keeping messaging consistent while respecting local realities.
                                                         </p>
                                                         <div className="flex flex-wrap gap-3">
+                                                                {navigationOptions.map((option) => (
+                                                                        <Link
+                                                                                key={option.label}
+                                                                                href={option.href}
+                                                                                className={`inline-flex items-center gap-2 rounded-full border border-transparent px-4 py-2 text-sm font-medium transition-all ${
+                                                                                        option.highlight
+                                                                                                ? "bg-black text-yellow-300 shadow-lg ring-1 ring-yellow-400/60 animate-blink-slow hover:bg-yellow-400 hover:text-black"
+                                                                                                : "bg-white/10 text-yellow-200 hover:bg-yellow-400/20 hover:text-black"
+                                                                                }`}
+                                                                        >
+                                                                                {option.label}
+                                                                        </Link>
+                                                                ))}
+                                                        </div>
+                                                        <div className="flex flex-wrap gap-3">
                                                                 <Link
                                                                         href="/contact"
                                                                         className={cn(
@@ -145,7 +167,7 @@ export default function CorporateBulkOrdersPage() {
                                 </div>
                         </section>
 
-                        <section className="bg-white py-20">
+                        <section id="programmes" className="bg-white py-20">
                                 <div className="mx-auto max-w-6xl px-6">
                                         <div className="mx-auto max-w-3xl text-center">
                                                 <span className="inline-flex items-center justify-center gap-2 rounded-full bg-yellow-500/10 px-4 py-2 text-sm font-semibold text-yellow-700">
