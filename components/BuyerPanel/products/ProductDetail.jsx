@@ -287,7 +287,7 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                 e.stopPropagation();
 
                 if (calculatedPrice === null || isPriceLoading) {
-                        toast.error("Product not available");
+                        toast.error("Please select another size");
                         return;
                 }
 
@@ -310,7 +310,7 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                 e.stopPropagation();
 
                 if (calculatedPrice === null || isPriceLoading) {
-                        toast.error("Product not available");
+                        toast.error("Please select another size");
                         return;
                 }
 
@@ -333,7 +333,7 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                 e.stopPropagation();
 
                 if (calculatedPrice === null || isPriceLoading) {
-                        toast.error("Product not available");
+                        toast.error("Please select another size");
                         return;
                 }
 
@@ -522,7 +522,7 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                                         {/* Product price */}
                                         {hasFetchedPrice && calculatedPrice === null ? (
                                                 <p className="text-lg lg:text-xl font-semibold text-red-600 mb-2">
-                                                        Product not available
+                                                        Please select another size
                                                 </p>
                                         ) : (
                                                 calculatedPrice !== null && (
