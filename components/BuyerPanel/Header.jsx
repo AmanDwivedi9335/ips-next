@@ -169,8 +169,10 @@ export default function Header({ onMenuToggle, isMenuOpen }) {
                                                                 <li key={cat.name}>
                                                                         <Link
                                                                                 href={cat.href}
-                                                                                className={`flex items-center gap-2 hover:text-yellow-600 ${
-                                                                                        cat.highlight ? "text-yellow-600 font-semibold animate-blink-slow" : ""
+                                                                                className={`flex items-center gap-2 rounded-full px-3 py-1.5 transition-all ${
+                                                                                        cat.highlight
+                                                                                                ? "bg-black text-yellow-300 font-semibold shadow-lg ring-1 ring-yellow-400/50 animate-blink-slow hover:bg-yellow-400 hover:text-black"
+                                                                                                : "text-gray-900 hover:text-yellow-600 hover:bg-yellow-50"
                                                                                 }`}
                                                                         >
                                                                                 {cat.poster && (
