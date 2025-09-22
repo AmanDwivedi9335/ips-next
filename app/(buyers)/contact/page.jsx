@@ -18,6 +18,7 @@ import {
         Building,
         Lock,
         Loader2,
+        Navigation,
 } from "lucide-react";
 
 const initialFormState = {
@@ -69,21 +70,21 @@ export default function ContactPage() {
                 () => [
                         {
                                 icon: ShieldCheck,
-                                title: "Expert safety guidance",
+                                title: "Certified compliance advisors",
                                 description:
-                                        "Decades of experience in industrial signage and compliance support at your disposal.",
+                                        "Align your safety communication with ISO, OSHA and local mandates with guidance from our specialists.",
                         },
                         {
                                 icon: Building,
-                                title: "Custom enterprise solutions",
+                                title: "End-to-end production",
                                 description:
-                                        "From plant walkthroughs to multi-site deployments, our team can craft solutions that scale.",
+                                        "From design refinement to multi-site installations, we build industrial-grade signage that scales.",
                         },
                         {
                                 icon: Clock,
-                                title: "Rapid response",
+                                title: "Agile project support",
                                 description:
-                                        "We typically respond within one business day so your operations keep moving.",
+                                        "Expedited timelines and transparent milestones keep urgent compliance deployments on track.",
                         },
                 ],
                 []
@@ -116,13 +117,15 @@ export default function ContactPage() {
                         },
                         {
                                 icon: MapPin,
-                                title: "Visit our studio",
+                                title: "Visit our Kanpur office",
                                 content: (
                                         <span className="font-medium text-gray-700">
-                                                Industrial Print Solutions, SCO 10, Sector 65, Mohali, Punjab – 160062
+                                                Industrial Print Solutions
+                                                <br />127/196, U-Block, Niralanagar, Kanpur (UP)
+                                                <br />208014
                                         </span>
                                 ),
-                                helper: "Visits by prior appointment",
+                                helper: "In-person consultations by appointment",
                         },
                 ],
                 []
@@ -132,21 +135,45 @@ export default function ContactPage() {
                 () => [
                         {
                                 icon: Clock,
-                                title: "Same-day acknowledgement",
+                                title: "Responses within one business day",
                                 description:
-                                        "Requests submitted before 3:00 PM IST receive a callback or email within the day.",
+                                        "Share your brief before 3:00 PM IST and receive next steps from an IPS specialist by 6:00 PM the same day.",
                         },
                         {
                                 icon: ShieldCheck,
-                                title: "Specialists on every brief",
+                                title: "Subject-matter experts only",
                                 description:
-                                        "Our compliance experts review each enquiry to recommend the right materials and signage mix.",
+                                        "Every enquiry is evaluated by compliance-focused consultants who recommend durable materials and messaging.",
                         },
                         {
                                 icon: Building,
-                                title: "Enterprise-ready coordination",
+                                title: "Dedicated rollout partner",
                                 description:
-                                        "Rollouts across multiple facilities are handled by a dedicated IPS account lead for smooth execution.",
+                                        "Large deployments receive an IPS account lead to coordinate vendors, installation and safety audits across sites.",
+                        },
+                ],
+                []
+        );
+
+        const visitingInformation = useMemo(
+                () => [
+                        {
+                                icon: ShieldCheck,
+                                title: "Guided compliance walkthroughs",
+                                description:
+                                        "Explore mandatory signage sets, reflective materials and safety communication plans tailored to your facility.",
+                        },
+                        {
+                                icon: Building,
+                                title: "Sample-first consultations",
+                                description:
+                                        "Review substrates, finishing, and installation hardware in person before commissioning large print runs.",
+                        },
+                        {
+                                icon: Clock,
+                                title: "Fast-track project kick-offs",
+                                description:
+                                        "Finalize specs, quantities and rollout schedules on the spot so production can begin without delays.",
                         },
                 ],
                 []
@@ -466,6 +493,126 @@ export default function ContactPage() {
                                                 </div>
                                         </div>
                                 </motion.div>
+                        </section>
+                        <section className="relative overflow-hidden bg-slate-900">
+                                <div className="pointer-events-none absolute inset-0">
+                                        <div className="absolute -top-32 -right-20 h-72 w-72 rounded-full bg-blue-500/40 blur-3xl" />
+                                        <div className="absolute bottom-10 left-[-4rem] h-80 w-80 rounded-full bg-sky-500/30 blur-3xl" />
+                                </div>
+                                <div className="relative mx-auto max-w-6xl px-6 py-20">
+                                        <div className="grid gap-12 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.9fr)]">
+                                                <div className="space-y-8 text-white">
+                                                        <Badge className="w-fit rounded-full bg-white/10 px-4 py-1 text-xs font-semibold uppercase tracking-widest text-blue-100">
+                                                                Our Kanpur office
+                                                        </Badge>
+                                                        <div className="space-y-4">
+                                                                <h2 className="text-3xl font-semibold leading-tight sm:text-4xl">
+                                                                        Visit Industrial Print Solutions in person
+                                                                </h2>
+                                                                <p className="max-w-2xl text-base text-blue-100/90">
+                                                                        Meet the team that powers nationwide industrial signage rollouts. Experience our material samples, review
+                                                                        installations, and plan safer workplaces together from our Kanpur headquarters.
+                                                                </p>
+                                                        </div>
+                                                        <div className="grid gap-5 sm:grid-cols-2">
+                                                                <div className="rounded-3xl border border-white/10 bg-white/5 p-5">
+                                                                        <div className="flex items-start gap-3">
+                                                                                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10">
+                                                                                        <MapPin className="h-5 w-5 text-blue-200" />
+                                                                                </div>
+                                                                                <div>
+                                                                                        <p className="text-xs font-semibold uppercase tracking-wider text-blue-100/80">
+                                                                                                Address
+                                                                                        </p>
+                                                                                        <address className="mt-2 text-sm not-italic leading-relaxed text-white/90">
+                                                                                                <span className="font-semibold text-white">Industrial Print Solutions</span>
+                                                                                                <br />127/196, U-Block, Niralanagar, Kanpur (UP)
+                                                                                                <br />208014
+                                                                                        </address>
+                                                                                </div>
+                                                                        </div>
+                                                                </div>
+                                                                <div className="rounded-3xl border border-white/10 bg-white/5 p-5">
+                                                                        <div className="flex items-start gap-3">
+                                                                                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10">
+                                                                                        <Clock className="h-5 w-5 text-blue-200" />
+                                                                                </div>
+                                                                                <div>
+                                                                                        <p className="text-xs font-semibold uppercase tracking-wider text-blue-100/80">
+                                                                                                Office hours
+                                                                                        </p>
+                                                                                        <p className="mt-2 text-sm leading-relaxed text-white/90">
+                                                                                                Monday – Saturday, 10:00 AM – 6:00 PM IST
+                                                                                                <br />Sunday visits available on request
+                                                                                        </p>
+                                                                                </div>
+                                                                        </div>
+                                                                </div>
+                                                        </div>
+                                                        <div className="flex flex-wrap gap-3">
+                                                                <Button
+                                                                        asChild
+                                                                        className="bg-white text-slate-900 shadow-lg shadow-blue-900/40 hover:bg-blue-100 hover:text-blue-900"
+                                                                >
+                                                                        <a
+                                                                                href="https://maps.app.goo.gl/HvGJkPJ5YBAhXNyEA"
+                                                                                target="_blank"
+                                                                                rel="noopener noreferrer"
+                                                                        >
+                                                                                <Navigation className="h-4 w-4" /> Get directions
+                                                                        </a>
+                                                                </Button>
+                                                                <Button
+                                                                        asChild
+                                                                        variant="outline"
+                                                                        className="border-white/40 bg-white/10 text-white hover:bg-white/20 hover:text-white"
+                                                                >
+                                                                        <a href="tel:+919936814137">
+                                                                                <Phone className="h-4 w-4" /> Call our team
+                                                                        </a>
+                                                                </Button>
+                                                        </div>
+                                                </div>
+                                                <div className="space-y-6">
+                                                        <div className="rounded-[28px] border border-white/15 bg-white/5 p-8 shadow-[0_35px_90px_-45px_rgba(15,23,42,0.8)] backdrop-blur">
+                                                                <h3 className="text-xl font-semibold text-white">What to expect during a visit</h3>
+                                                                <p className="mt-2 text-sm text-blue-100/80">
+                                                                        Our Kanpur centre is crafted for immersive consultations, rapid prototyping, and collaborative planning.
+                                                                </p>
+                                                                <ul className="mt-6 space-y-5 text-sm text-blue-100/80">
+                                                                        {visitingInformation.map((item) => (
+                                                                                <li key={item.title} className="flex items-start gap-3">
+                                                                                        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10">
+                                                                                                <item.icon className="h-4 w-4 text-blue-200" />
+                                                                                        </div>
+                                                                                        <div>
+                                                                                                <p className="font-semibold text-white">{item.title}</p>
+                                                                                                <p className="text-xs text-blue-100/75">{item.description}</p>
+                                                                                        </div>
+                                                                                </li>
+                                                                        ))}
+                                                                </ul>
+                                                        </div>
+                                                        <div className="rounded-[28px] bg-gradient-to-r from-blue-500 via-blue-400 to-sky-400 p-[1px]">
+                                                                <div className="rounded-[26px] bg-slate-900 p-6 text-white">
+                                                                        <h4 className="text-lg font-semibold">Prefer a virtual collaboration?</h4>
+                                                                        <p className="mt-2 text-sm text-blue-100/85">
+                                                                                Schedule a video session to review layouts, receive compliance audits, or plan installations for remote facilities.
+                                                                        </p>
+                                                                        <Button
+                                                                                asChild
+                                                                                variant="secondary"
+                                                                                className="mt-4 bg-white/15 text-white hover:bg-white/25"
+                                                                        >
+                                                                                <a href="mailto:info@industrialprintsolutions.com">
+                                                                                        <Mail className="h-4 w-4" /> Book a virtual session
+                                                                                </a>
+                                                                        </Button>
+                                                                </div>
+                                                        </div>
+                                                </div>
+                                        </div>
+                                </div>
                         </section>
                         <Toaster position="top-right" />
                 </div>
