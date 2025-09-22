@@ -18,6 +18,13 @@ export const metadata = {
                 "Pre-assembled safety poster suites for manufacturing, logistics and utility facilities complete with deployment playbooks and refresh calendars.",
 };
 
+const navigationOptions = [
+        { label: "All Safety Posters", href: "/all-safety-posters" },
+        { label: "Industrial Safety Packs", href: "#packs", highlight: true },
+        { label: "Monthly Poster Subscriptions", href: "/monthly-poster-subscriptions" },
+        { label: "Corporate Bulk/Custom Orders", href: "/corporate-bulk-orders" },
+];
+
 const signagePacks = [
         {
                 name: "Production Floor Command Set",
@@ -114,6 +121,21 @@ export default function IndustrialSafetyPacksPage() {
                                                                 Reduce rollout time and keep audits tidy with curated poster suites, installation roadmaps and ready-to-share digital variants.
                                                         </p>
                                                         <div className="flex flex-wrap gap-3">
+                                                                {navigationOptions.map((option) => (
+                                                                        <Link
+                                                                                key={option.label}
+                                                                                href={option.href}
+                                                                                className={`inline-flex items-center gap-2 rounded-full border border-transparent px-4 py-2 text-sm font-medium transition-all ${
+                                                                                        option.highlight
+                                                                                                ? "bg-black text-yellow-300 shadow-lg ring-1 ring-yellow-400/60 animate-blink-slow hover:bg-yellow-400 hover:text-black"
+                                                                                                : "bg-white/80 text-slate-700 hover:bg-yellow-100 hover:text-slate-900"
+                                                                                }`}
+                                                                        >
+                                                                                {option.label}
+                                                                        </Link>
+                                                                ))}
+                                                        </div>
+                                                        <div className="flex flex-wrap gap-3">
                                                                 <Link
                                                                         href="/contact"
                                                                         className={cn(
@@ -172,7 +194,7 @@ export default function IndustrialSafetyPacksPage() {
                                 </div>
                         </section>
 
-                        <section className="bg-white py-20">
+                        <section id="packs" className="bg-white py-20">
                                 <div className="mx-auto max-w-6xl px-6">
                                         <div className="mx-auto max-w-3xl text-center">
                                                 <span className="inline-flex items-center justify-center gap-2 rounded-full bg-yellow-500/10 px-4 py-2 text-sm font-semibold text-yellow-700">
