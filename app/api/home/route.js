@@ -69,34 +69,48 @@ export async function GET(request) {
 		const categories = await Product.distinct("category", { published: true });
 
 		// Transform function
-                const transformProduct = (product) => ({
-                        id: product._id.toString(),
-                        _id: product._id.toString(),
-			title: product.title,
-			description: product.description,
-			longDescription: product.longDescription,
-			price: product.salePrice > 0 ? product.salePrice : product.price,
-			originalPrice: product.price,
-			salePrice: product.salePrice,
-			discount: product.discount,
-			discountPercentage:
-				product.salePrice > 0
-					? Math.round(
-							((product.price - product.salePrice) / product.price) * 100
-					  )
-					: product.discount,
-			image:
-				product.images?.[0] ||
-				"https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png",
-			images: product.images || [],
-			gallery: product.images || [],
-			category: product.category,
-			type: product.type,
-			features: product.features || [],
-			colors: ["blue", "black", "red", "orange"],
-			createdAt: product.createdAt,
-			updatedAt: product.updatedAt,
-		});
+                const transformProduct = (product) => {
+                        const englishImage = product.languageImages?.find(
+                                (l) => l.language?.toLowerCase() === "english"
+                        )?.image;
+
+                        return {
+                                id: product._id.toString(),
+                                _id: product._id.toString(),
+                                title: product.title,
+                                description: product.description,
+                                longDescription: product.longDescription,
+                                price: product.salePrice > 0 ? product.salePrice : product.price,
+                                originalPrice: product.price,
+                                salePrice: product.salePrice,
+                                discount: product.discount,
+                                discountPercentage:
+                                        product.salePrice > 0
+                                                ? Math.round(
+                                                                  ((product.price - product.salePrice) /
+                                                                          product.price) *
+                                                                          100
+                                                          )
+                                                : product.discount,
+                                image:
+                                        englishImage ||
+                                        product.images?.[0] ||
+                                        "https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png",
+                                images: product.images || [],
+                                gallery: product.images || [],
+                                languageImages: product.languageImages || [],
+                                languages: product.languages || [],
+                                productCode: product.productCode || product.code,
+                                code: product.productCode || product.code,
+                                subcategory: product.subcategory,
+                                category: product.category,
+                                type: product.type,
+                                features: product.features || [],
+                                colors: ["blue", "black", "red", "orange"],
+                                createdAt: product.createdAt,
+                                updatedAt: product.updatedAt,
+                        };
+                };
 
 		return Response.json({
 			success: true,
