@@ -34,6 +34,7 @@ import PlanEssentialsPoster from "@/public/images/products/PS-P2.png";
 import PlanEngagePoster from "@/public/images/products/SB-P2.png";
 import PlanEnterprisePoster from "@/public/images/products/RS-P6.png";
 
+
 export const metadata = {
         title: "Safety Posters & Industrial Packs | Infinite Poster Shop",
         description:
@@ -47,6 +48,7 @@ const navigationOptions = [
         {
                 label: "Corporate Bulk/Custom Orders",
                 href: "/corporate-bulk-orders",
+
                 highlight: true,
         },
 ];
@@ -89,6 +91,7 @@ const posterShowcase = [
 
 const packHighlights = [
         {
+
                 title: "Risk-zone specific poster sets",
                 description:
                         "Curated bundles for production lines, warehouses and utilities featuring hazard signage sequenced for footfall-heavy areas.",
@@ -104,17 +107,20 @@ const packHighlights = [
                 title: "Deployment & refresh guidance",
                 description:
                         "Playbooks map poster placement, rotation cadence and engagement prompts so supervisors can activate every corner quickly.",
+
                 icon: Users,
         },
 ];
 
 const packContents = [
+
         "Hazard communication poster suite",
         "Emergency exit & muster point signage",
         "Lockout/tagout instruction infographics",
         "Machine-specific SOP poster pairings",
         "Daily checklist & audit status board",
         "Incident hotline QR sticker set",
+
 ];
 
 const subscriptionMilestones = [
@@ -138,42 +144,6 @@ const subscriptionMilestones = [
         },
 ];
 
-const subscriptionPlans = [
-        {
-                name: "Awareness Stream",
-                price: "₹2,499/mo",
-                tagline: "For single-site teams that want a constant flow of refreshed messaging.",
-                image: PlanEssentialsPoster,
-                benefits: [
-                        "3 theme-based posters delivered monthly",
-                        "Editable supervisor briefing prompt",
-                        "Hi-res signage loops for shopfloor screens",
-                ],
-        },
-        {
-                name: "Engagement Plus",
-                price: "₹4,799/mo",
-                tagline: "Boost participation with deeper storytelling and multi-format assets.",
-                image: PlanEngagePoster,
-                benefits: [
-                        "5 posters per drop including 2 semi-custom variants",
-                        "Monthly challenge kit with sticker & badge artwork",
-                        "Multilingual email, poster copy and WhatsApp snippets",
-                ],
-                highlight: true,
-        },
-        {
-                name: "Enterprise Impact",
-                price: "₹8,499/mo",
-                tagline: "Coordinate campaigns across plants with dedicated support and analytics.",
-                image: PlanEnterprisePoster,
-                benefits: [
-                        "Site-specific translations & compliance callouts",
-                        "Quarterly mega-campaign activation toolkit",
-                        "Dedicated success manager with adoption reports",
-                ],
-        },
-];
 
 const corporateHighlights = [
         {
@@ -442,15 +412,19 @@ export default function AllSafetyPostersPage() {
                                                                         <div className="grid gap-4 sm:grid-cols-2">
                                                                                 <div className="rounded-2xl bg-white/10 p-4">
                                                                                         <Image
+
                                                                                                 src={PosterSignageKitA}
                                                                                                 alt="Layered industrial safety signage set"
+
                                                                                                 className="h-40 w-full object-contain drop-shadow"
                                                                                         />
                                                                                 </div>
                                                                                 <div className="rounded-2xl bg-white/10 p-4">
                                                                                         <Image
+
                                                                                                 src={PosterSignageKitB}
                                                                                                 alt="Emergency response poster wall"
+
                                                                                                 className="h-40 w-full object-contain drop-shadow"
                                                                                         />
                                                                                 </div>
@@ -473,18 +447,7 @@ export default function AllSafetyPostersPage() {
                                                         </Card>
                                                 </div>
                                         </div>
-                                        <div className="mt-12 text-center">
-                                                <Link
-                                                        href="/industrial-safety-packs"
-                                                        className={cn(
-                                                                buttonVariants({ size: "lg" }),
-                                                                "bg-yellow-400 text-black shadow-lg hover:bg-yellow-300"
-                                                        )}
-                                                >
-                                                        Explore the full signage pack range
-                                                        <ArrowRight className="h-4 w-4" />
-                                                </Link>
-                                        </div>
+
                                 </div>
                         </section>
 
@@ -524,6 +487,7 @@ export default function AllSafetyPostersPage() {
                                                 </div>
                                                 <div className="relative">
                                                         <div className="absolute -left-10 top-10 hidden h-40 w-40 rounded-full bg-amber-200/80 blur-3xl md:block" />
+
                                                         <div className="relative grid gap-6">
                                                                 {subscriptionPlans.map((plan) => (
                                                                         <Card
@@ -599,6 +563,7 @@ export default function AllSafetyPostersPage() {
                                                         <ArrowRight className="h-4 w-4" />
                                                 </Link>
                                         </div>
+
                                 </div>
                         </section>
 
@@ -630,13 +595,17 @@ export default function AllSafetyPostersPage() {
                                                         </div>
                                                         <div className="flex flex-wrap gap-4 pt-4">
                                                                 <Link
+
                                                                         href="/corporate-bulk-orders"
+
                                                                         className={cn(
                                                                                 buttonVariants({ size: "lg" }),
                                                                                 "bg-yellow-400 text-black shadow-lg hover:bg-yellow-300"
                                                                         )}
                                                                 >
+
                                                                         Explore enterprise programme
+
                                                                         <ArrowRight className="h-4 w-4" />
                                                                 </Link>
                                                                 <Link
