@@ -36,6 +36,16 @@ import ProductCard from "@/components/BuyerPanel/products/ProductCard.jsx";
 import { toast } from "react-hot-toast";
 import Image from "next/image";
 
+const toNumber = (value) => {
+        if (value === null || value === undefined || value === "") {
+                return null;
+        }
+
+        const numericValue = Number(value);
+
+        return Number.isFinite(numericValue) ? numericValue : null;
+};
+
 const sortByReference = (values = [], reference = []) => {
         const uniqueValues = Array.from(new Set(values.filter(Boolean)));
 
@@ -358,19 +368,45 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
 		"bg-gray-500",
 	];
 
-	const renderStars = (rating) => {
-		return Array.from({ length: 5 }, (_, i) => (
-			<Star
-				key={i}
-				className={`w-4 h-4 ${
-					i < rating ? "fill-yellow-400 text-yellow-400" : "text-gray-300"
-				}`}
-			/>
-		));
-	};
+        const renderStars = (rating) => {
+                return Array.from({ length: 5 }, (_, i) => (
+                        <Star
+                                key={i}
+                                className={`w-4 h-4 ${
+                                        i < rating ? "fill-yellow-400 text-yellow-400" : "text-gray-300"
+                                }`}
+                        />
+                ));
+        };
 
-	if (!product) {
-		return (
+        const numericCalculatedPrice = toNumber(calculatedPrice);
+        const numericSalePrice = toNumber(product.salePrice);
+        const numericPrice = toNumber(product.price);
+        const numericMrp = toNumber(product.mrp) ?? numericPrice;
+        const fallbackPrice = numericSalePrice ?? numericPrice ?? null;
+        const displayPrice = numericCalculatedPrice ?? fallbackPrice;
+        const priceDifference =
+                numericMrp !== null && displayPrice !== null ? numericMrp - displayPrice : 0;
+        const showOriginalPrice =
+                numericMrp !== null && displayPrice !== null && priceDifference > 0;
+        const explicitDiscount = toNumber(product.discountPercentage);
+        const calculatedDiscount =
+                showOriginalPrice && numericMrp && numericMrp > 0
+                        ? Math.round((priceDifference / numericMrp) * 100)
+                        : 0;
+        const discountToShow =
+                explicitDiscount !== null && explicitDiscount > 0
+                        ? Math.round(explicitDiscount)
+                        : calculatedDiscount > 0
+                          ? calculatedDiscount
+                          : 0;
+        const showDiscountBadge = discountToShow > 0;
+        const isProductUnavailable =
+                hasFetchedPrice && numericCalculatedPrice === null && displayPrice === null;
+        const isLoadingPriceWithoutValue = isPriceLoading && displayPrice === null;
+
+        if (!product) {
+                return (
 			<div className="min-h-screen bg-gray-50 flex items-center justify-center">
 				<div className="text-center">
 					<h1 className="text-2xl font-bold text-gray-900 mb-4">
@@ -520,17 +556,42 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
 							</div>
 
                                         {/* Product price */}
-                                        {hasFetchedPrice && calculatedPrice === null ? (
+                                        {isLoadingPriceWithoutValue ? (
+                                                <p className="text-sm text-gray-500 mb-2">
+                                                        Fetching latest price...
+                                                </p>
+                                        ) : isProductUnavailable ? (
                                                 <p className="text-lg lg:text-xl font-semibold text-red-600 mb-2">
                                                         Product not available
                                                 </p>
-                                        ) : (
-                                                calculatedPrice !== null && (
-                                                        <p className="text-xl lg:text-2xl font-semibold text-black mb-2">
-                                                                ₹ {calculatedPrice.toLocaleString()} (Sale Price)
-                                                        </p>
-                                                )
-                                        )}
+                                        ) : displayPrice !== null ? (
+                                                <div className="space-y-1 mb-2">
+                                                        <div className="flex items-baseline gap-3 flex-wrap">
+                                                                <p className="text-xl lg:text-2xl font-semibold text-black">
+                                                                        ₹ {displayPrice.toLocaleString()}
+                                                                </p>
+                                                                {showOriginalPrice && (
+                                                                        <p className="text-base text-gray-500 line-through">
+                                                                                ₹ {numericMrp.toLocaleString()}
+                                                                        </p>
+                                                                )}
+                                                                {showDiscountBadge && (
+                                                                        <Badge className="bg-red-500 text-white">
+                                                                                {discountToShow}% OFF
+                                                                        </Badge>
+                                                                )}
+                                                        </div>
+                                                        {numericCalculatedPrice !== null ? (
+                                                                <p className="text-sm text-gray-500">
+                                                                        Price based on selected options
+                                                                </p>
+                                                        ) : showDiscountBadge ? (
+                                                                <p className="text-sm text-green-600 font-medium">
+                                                                        Sale price after discount
+                                                                </p>
+                                                        ) : null}
+                                                </div>
+                                        ) : null}
                                        {hasQrOption && (
                                                 <div className="mt-4">
                                                         <Select
