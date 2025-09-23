@@ -94,6 +94,19 @@ export function AddProductPopup({ open, onOpenChange }) {
     "iso-wall-kraft",
   ].includes(formData.productFamily);
 
+  const parsedDiscount = Number.parseFloat(formData.discount);
+  const normalizedDiscount =
+    Number.isFinite(parsedDiscount) && parsedDiscount > 0
+      ? Math.min(parsedDiscount, 100)
+      : 0;
+  const hasActiveDiscount =
+    formData.type === "discounted" && normalizedDiscount > 0;
+  const formattedDiscount = hasActiveDiscount
+    ? normalizedDiscount % 1 === 0
+      ? normalizedDiscount.toFixed(0)
+      : normalizedDiscount.toFixed(2)
+    : "0";
+
   const sizeOptions =
     formData.productFamily === "industrial-safety-packs"
       ? [
@@ -648,7 +661,13 @@ export function AddProductPopup({ open, onOpenChange }) {
 
             {showBasicFields && (
               <div className="mt-6">
-                <Label>Pricing</Label>
+                <Label>Pricing (MRP)</Label>
+                <p className="mt-1 text-sm text-gray-500">
+                  Enter MRPs for each combination.{" "}
+                  {hasActiveDiscount
+                    ? `A discount of ${formattedDiscount}% will be applied automatically when prices are shown to buyers.`
+                    : "These prices will be shown to buyers as entered."}
+                </p>
                 {prices.map((p, index) => (
                   <div
                     key={index}
@@ -726,7 +745,7 @@ export function AddProductPopup({ open, onOpenChange }) {
                     <div className="flex items-center gap-2">
                       <Input
                         type="number"
-                        placeholder="Price"
+                        placeholder="MRP (₹)"
                         value={p.price}
                         onChange={(e) =>
                           updatePriceRow(index, "price", e.target.value)
