@@ -166,6 +166,19 @@ export function UpdateProductPopup({ open, onOpenChange, product }) {
 
   const shouldShowPricing = showBasicFields || hasExistingPricing;
 
+  const parsedDiscount = Number.parseFloat(formData.discount);
+  const normalizedDiscount =
+    Number.isFinite(parsedDiscount) && parsedDiscount > 0
+      ? Math.min(parsedDiscount, 100)
+      : 0;
+  const hasActiveDiscount =
+    formData.type === "discounted" && normalizedDiscount > 0;
+  const formattedDiscount = hasActiveDiscount
+    ? normalizedDiscount % 1 === 0
+      ? normalizedDiscount.toFixed(0)
+      : normalizedDiscount.toFixed(2)
+    : "0";
+
   const renderReadOnlyValue = (value, fallback = "Not set") =>
     value ? (
       <span>{value}</span>
@@ -841,7 +854,7 @@ export function UpdateProductPopup({ open, onOpenChange, product }) {
             {shouldShowPricing && (
               <div className="mt-6 space-y-3">
                 <div className="flex items-center justify-between">
-                  <Label>Pricing</Label>
+                  <Label>Pricing (MRP)</Label>
                   <Button
                     type="button"
                     variant="outline"
@@ -851,6 +864,13 @@ export function UpdateProductPopup({ open, onOpenChange, product }) {
                     <Plus className="h-4 w-4 mr-2" /> Add Price
                   </Button>
                 </div>
+
+                <p className="text-sm text-gray-500">
+                  Enter MRPs for each combination.{" "}
+                  {hasActiveDiscount
+                    ? `A discount of ${formattedDiscount}% will be applied automatically when prices are shown to buyers.`
+                    : "These prices will be shown to buyers as entered."}
+                </p>
 
                 {priceError && (
                   <p className="text-sm text-red-500">{priceError}</p>
@@ -877,7 +897,7 @@ export function UpdateProductPopup({ open, onOpenChange, product }) {
                           </th>
                         )}
                         <th className="px-4 py-3 text-left font-medium text-gray-600">
-                          Price
+                          MRP (₹)
                         </th>
                         <th className="px-3 py-3 text-center font-medium text-gray-600">
                           Actions
@@ -1009,7 +1029,7 @@ export function UpdateProductPopup({ open, onOpenChange, product }) {
                                   type="number"
                                   min="0"
                                   step="0.01"
-                                  placeholder="Price"
+                                  placeholder="MRP (₹)"
                                   value={price.price}
                                   onChange={(e) =>
                                     updatePriceRow(index, "price", e.target.value)

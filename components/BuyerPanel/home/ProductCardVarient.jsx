@@ -212,7 +212,9 @@ function ProductCardVarient({ product, variant = "vertical" }) {
                                                                 {product?.description}
                                                         </p>
                                                 )}
+
                                         </div>
+
 
                                         {colorSwatches}
 
@@ -249,6 +251,7 @@ function ProductCardVarient({ product, variant = "vertical" }) {
                                                                 <ArrowRight className="h-4 w-4" />
                                                         </Button>
                                                 </div>
+
                                         </div>
                                 </div>
                         </CardContent>
