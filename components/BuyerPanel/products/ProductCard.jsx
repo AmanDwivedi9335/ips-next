@@ -10,7 +10,7 @@ import { useCartStore } from "@/store/cartStore";
 import { useWishlistStore } from "@/store/wishlistStore";
 import { toast } from "react-hot-toast";
 import Image from "next/image";
-import { deriveProductPricing } from "@/lib/pricing.js";
+import { deriveProductPricing, normalizeDisplayPriceRange } from "@/lib/pricing.js";
 
 export default function ProductCard({ product, viewMode = "grid" }) {
         const router = useRouter();
@@ -26,6 +26,37 @@ export default function ProductCard({ product, viewMode = "grid" }) {
         const finalPrice = pricing.finalPrice;
         const originalPrice = pricing.mrp;
         const discountPercentage = pricing.discountPercentage;
+        const priceRangeData = product.pricingRange || product.priceRange;
+        const { min: saleMin, max: saleMax, mrpMin, mrpMax } =
+                normalizeDisplayPriceRange(priceRangeData, pricing);
+
+        const formatPriceValue = (value) => {
+                if (typeof value !== "number" || !Number.isFinite(value)) {
+                        return null;
+                }
+
+                return `₹${value.toLocaleString("en-IN")}`;
+        };
+
+        const formatRangeLabel = (min, max) => {
+                const formattedMin = formatPriceValue(min);
+                if (!formattedMin) {
+                        return null;
+                }
+
+                const formattedMax = formatPriceValue(max);
+
+                if (formattedMax && max > min) {
+                        return `${formattedMin} - ${formattedMax}`;
+                }
+
+                return formattedMin;
+        };
+
+        const salePriceLabel =
+                formatRangeLabel(saleMin, saleMax) || formatPriceValue(finalPrice);
+        const mrpLabel = formatRangeLabel(mrpMin, mrpMax);
+        const showMrpLabel = Boolean(mrpLabel) && (mrpMax > saleMax || mrpMin > saleMin);
 
         const englishImage = product.languageImages?.find(
                 (l) => l.language?.toLowerCase() === "english"
@@ -149,11 +180,11 @@ export default function ProductCard({ product, viewMode = "grid" }) {
 								<div className="space-y-1">
 									<div className="flex items-center gap-2">
                                                                                 <p className="text-2xl font-bold">
-                                                                                        ₹{finalPrice.toLocaleString()}
+                                                                                        {salePriceLabel}
                                                                                 </p>
-                                                                                {originalPrice > finalPrice && (
+                                                                                {showMrpLabel && (
                                                                                         <p className="text-lg text-gray-500 line-through">
-                                                                                                ₹{originalPrice.toLocaleString()}
+                                                                                                {mrpLabel}
                                                                                         </p>
                                                                                 )}
                                                                         </div>
@@ -280,11 +311,11 @@ export default function ProductCard({ product, viewMode = "grid" }) {
 						<div className="space-y-2 mb-4">
 							<div className="flex items-center gap-2">
                                                                 <p className="text-xl font-bold">
-                                                                        ₹{finalPrice.toLocaleString()}
+                                                                        {salePriceLabel}
                                                                 </p>
-                                                                {originalPrice > finalPrice && (
+                                                                {showMrpLabel && (
                                                                         <p className="text-sm text-gray-500 line-through">
-                                                                                ₹{originalPrice.toLocaleString()}
+                                                                                {mrpLabel}
                                                                         </p>
                                                                 )}
                                                         </div>

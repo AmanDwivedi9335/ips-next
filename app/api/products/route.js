@@ -2,7 +2,8 @@
 
 import { dbConnect } from "@/lib/dbConnect.js";
 import Product from "@/model/Product.js";
-import { deriveProductPricing } from "@/lib/pricing.js";
+import Price from "@/model/Price.js";
+import { deriveProductPriceRange, deriveProductPricing } from "@/lib/pricing.js";
 
 export async function GET(request) {
 	await dbConnect();
@@ -150,6 +151,34 @@ export async function GET(request) {
 		const totalPages = Math.ceil(total / limit);
 
 		// Transform products for frontend
+                const productIds = products
+                        .map((product) => product._id?.toString())
+                        .filter(Boolean);
+
+                let pricingMap = {};
+
+                if (productIds.length > 0) {
+                        const pricingDocs = await Price.find({
+                                product: { $in: productIds },
+                        })
+                                .lean()
+                                .exec();
+
+                        pricingMap = pricingDocs.reduce((acc, price) => {
+                                const productId = price.product?.toString();
+                                if (!productId) {
+                                        return acc;
+                                }
+
+                                if (!acc[productId]) {
+                                        acc[productId] = [];
+                                }
+
+                                acc[productId].push(price);
+                                return acc;
+                        }, {});
+                }
+
                 const transformedProducts = products.map((product) => {
                         const reviewCount = product.reviews?.length || 0;
                         const averageRating =
@@ -161,6 +190,11 @@ export async function GET(request) {
                                         : 0;
 
                         const pricing = deriveProductPricing(product);
+                        const productId = product._id?.toString();
+                        const priceRange = deriveProductPriceRange(
+                                product,
+                                pricingMap[productId] || []
+                        );
 
                         return {
                                 id: product._id.toString(),
@@ -195,6 +229,8 @@ export async function GET(request) {
                                 reviewCount,
                                 createdAt: product.createdAt,
                                 updatedAt: product.updatedAt,
+                                priceRange,
+                                pricingRange: priceRange,
                         };
                 });
 

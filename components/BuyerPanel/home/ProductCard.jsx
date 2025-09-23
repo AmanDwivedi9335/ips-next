@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ShoppingCart, Heart } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { normalizeDisplayPriceRange } from "@/lib/pricing.js";
 
 export default function ProductCard({ product }) {
         const router = useRouter();
@@ -22,6 +23,45 @@ export default function ProductCard({ product }) {
                 product.image ||
                 "https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png";
         const productCode = product.productCode || product.code;
+
+        const priceRangeData = product.pricingRange || product.priceRange;
+        const fallbackPricing = {
+                finalPrice: product.price,
+                mrp: product.originalPrice,
+        };
+        const { min: saleMin, max: saleMax } = normalizeDisplayPriceRange(
+                priceRangeData,
+                fallbackPricing
+        );
+
+        const formatPriceValue = (value) => {
+                if (typeof value !== "number" || !Number.isFinite(value)) {
+                        return null;
+                }
+
+                return `₹${value.toLocaleString("en-IN")}`;
+        };
+
+        const formatRangeLabel = (min, max) => {
+                const formattedMin = formatPriceValue(min);
+                if (!formattedMin) {
+                        return null;
+                }
+
+                const formattedMax = formatPriceValue(max);
+
+                if (formattedMax && max > min) {
+                        return `${formattedMin} - ${formattedMax}`;
+                }
+
+                return formattedMin;
+        };
+
+        const priceLabel =
+                formatRangeLabel(saleMin, saleMax) ||
+                (typeof product.price === "number"
+                        ? formatPriceValue(product.price)
+                        : product.price);
 
         return (
                 <Card
@@ -42,7 +82,7 @@ export default function ProductCard({ product }) {
                                                 {product.subtitle && (
                                                         <p className="text-gray-600 text-sm">{product.subtitle}</p>
                                                 )}
-						<p className="font-bold text-lg md:text-xl mt-2">{product.price}</p>
+                                                <p className="font-bold text-lg md:text-xl mt-2">{priceLabel}</p>
 					</div>
 					{product.colors && (
 						<div className="flex space-x-1">
