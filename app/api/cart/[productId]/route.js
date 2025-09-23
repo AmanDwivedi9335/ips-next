@@ -4,6 +4,7 @@ import { dbConnect } from "@/lib/dbConnect.js";
 import Cart from "@/model/Cart.js";
 import { verifyToken } from "@/lib/auth.js";
 import { cookies } from "next/headers";
+import { deriveProductPricing } from "@/lib/pricing.js";
 
 export async function PUT(req, { params }) {
 	await dbConnect();
@@ -22,9 +23,11 @@ export async function PUT(req, { params }) {
 		const decoded = verifyToken(token);
 		const { quantity } = await req.json();
 
-		const cart = await Cart.findOne({ user: decoded.id }).populate(
-			"products.product"
-		);
+                const cart = await Cart.findOne({ user: decoded.id }).populate({
+                        path: "products.product",
+                        select:
+                                "title description images price salePrice discount mrp type",
+                });
 		if (!cart) {
 			return Response.json({ message: "Cart not found" }, { status: 404 });
 		}
@@ -46,10 +49,10 @@ export async function PUT(req, { params }) {
 		}
 
 		// Recalculate total price
-		cart.totalPrice = cart.products.reduce((total, item) => {
-			const price = item.product.salePrice || item.product.price;
-			return total + price * item.quantity;
-		}, 0);
+                cart.totalPrice = cart.products.reduce((total, item) => {
+                        const pricing = deriveProductPricing(item.product);
+                        return total + pricing.finalPrice * item.quantity;
+                }, 0);
 
 		await cart.save();
 
@@ -76,9 +79,11 @@ export async function DELETE(req, { params }) {
 
 		const decoded = verifyToken(token);
 
-		const cart = await Cart.findOne({ user: decoded.id }).populate(
-			"products.product"
-		);
+                const cart = await Cart.findOne({ user: decoded.id }).populate({
+                        path: "products.product",
+                        select:
+                                "title description images price salePrice discount mrp type",
+                });
 		if (!cart) {
 			return Response.json({ message: "Cart not found" }, { status: 404 });
 		}
@@ -88,10 +93,10 @@ export async function DELETE(req, { params }) {
 		);
 
 		// Recalculate total price
-		cart.totalPrice = cart.products.reduce((total, item) => {
-			const price = item.product.salePrice || item.product.price;
-			return total + price * item.quantity;
-		}, 0);
+                cart.totalPrice = cart.products.reduce((total, item) => {
+                        const pricing = deriveProductPricing(item.product);
+                        return total + pricing.finalPrice * item.quantity;
+                }, 0);
 
 		await cart.save();
 

@@ -1,5 +1,6 @@
 import { dbConnect } from "@/lib/dbConnect.js";
 import Product from "@/model/Product.js";
+import { deriveProductPricing } from "@/lib/pricing.js";
 
 export async function POST(request, { params }) {
 	await dbConnect();
@@ -27,12 +28,17 @@ export async function POST(request, { params }) {
 
                 // For now, we'll return success with product details
                 // In a real app, you'd add this to user's cart in database
+                const pricing = deriveProductPricing(product);
+
                 const productData = {
                         id: product._id.toString(),
                         name: product.title,
                         description: product.description,
-                        price: product.salePrice > 0 ? product.salePrice : product.price,
-                        originalPrice: product.price,
+                        price: pricing.finalPrice,
+                        originalPrice: pricing.mrp,
+                        mrp: pricing.mrp,
+                        discountPercentage: pricing.discountPercentage,
+                        discountAmount: pricing.discountAmount,
                         image:
                                 product.images?.[0] ||
                                 "https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png",

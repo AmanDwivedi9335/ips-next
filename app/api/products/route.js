@@ -2,6 +2,7 @@
 
 import { dbConnect } from "@/lib/dbConnect.js";
 import Product from "@/model/Product.js";
+import { deriveProductPricing } from "@/lib/pricing.js";
 
 export async function GET(request) {
 	await dbConnect();
@@ -159,14 +160,7 @@ export async function GET(request) {
                                           ) / reviewCount
                                         : 0;
 
-                        const discountPercentage =
-                                product.salePrice > 0
-                                        ? Math.round(
-                                                  ((product.price - product.salePrice) /
-                                                          product.price) *
-                                                          100
-                                          )
-                                        : product.discount;
+                        const pricing = deriveProductPricing(product);
 
                         return {
                                 id: product._id.toString(),
@@ -175,10 +169,10 @@ export async function GET(request) {
                                 name: product.title,
                                 description: product.description,
                                 longDescription: product.longDescription,
-                                // Keep original price separate from sale price
-                                price: product.price,
-                                salePrice: product.salePrice,
-                                mrp: product.mrp || product.price,
+                                price: pricing.finalPrice,
+                                salePrice: pricing.finalPrice,
+                                mrp: pricing.mrp,
+                                originalPrice: pricing.mrp,
                                 productCode: product.productCode || product.code,
                                 code: product.productCode || product.code,
                                 discount: product.discount,
@@ -188,7 +182,8 @@ export async function GET(request) {
                                 sizes: product.sizes || [],
                                 materials: product.materials || [],
                                 materialSpecification: product.materialSpecification || "",
-                                discountPercentage,
+                                discountPercentage: pricing.discountPercentage,
+                                discountAmount: pricing.discountAmount,
                                 image:
                                         product.images?.[0] ||
                                         "https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png",

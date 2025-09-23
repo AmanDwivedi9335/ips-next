@@ -95,9 +95,17 @@ export default function MiniCart() {
 													<h4 className="font-medium text-sm line-clamp-2 mb-1">
 														{item.name}
 													</h4>
-													<p className="text-sm font-bold">
-														₹{item.price.toLocaleString()}
-													</p>
+                                                                                                        <div className="flex flex-col">
+                                                                                                                <span className="text-sm font-bold">
+                                                                                                                        ₹{item.price.toLocaleString()}
+                                                                                                                </span>
+                                                                                                                {item.originalPrice &&
+                                                                                                                item.originalPrice > item.price && (
+                                                                                                                        <span className="text-xs text-gray-500 line-through">
+                                                                                                                                ₹{item.originalPrice.toLocaleString()}
+                                                                                                                        </span>
+                                                                                                                )}
+                                                                                                        </div>
 													<div className="flex items-center justify-between mt-2">
 														<div className="flex items-center gap-1">
 															<Button

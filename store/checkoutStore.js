@@ -3,6 +3,7 @@
 import { create } from "zustand";
 import { persist, devtools } from "zustand/middleware";
 import { toast } from "react-hot-toast";
+import { toNumber } from "@/lib/pricing.js";
 
 // Payment API functions
 const paymentAPI = {
@@ -175,27 +176,61 @@ export const useCheckoutStore = create(
 
 					let items = [];
 
-					if (checkoutType === "buyNow" && product) {
-						items = [
-							{
-								productId: product.id,
-								productName: product.name || product.title,
-								productImage: product.image,
-								quantity: quantity,
-								price: product.price,
-								totalPrice: product.price * quantity,
-							},
-						];
-					} else {
-						items = cartItems.map((item) => ({
-							productId: item.id,
-							productName: item.name,
-							productImage: item.image,
-							quantity: item.quantity,
-							price: item.price,
-							totalPrice: item.price * item.quantity,
-						}));
-					}
+                                        if (checkoutType === "buyNow" && product) {
+                                                const baseMrp =
+                                                        toNumber(product.originalPrice) ??
+                                                        toNumber(product.mrp) ??
+                                                        toNumber(product.price);
+                                                const normalizedMrp =
+                                                        baseMrp !== null && baseMrp > 0
+                                                                ? baseMrp
+                                                                : toNumber(product.price) ?? 0;
+                                                const finalPrice = toNumber(product.price) ?? 0;
+                                                const discountAmount = Math.max(
+                                                        (normalizedMrp || 0) - finalPrice,
+                                                        0
+                                                );
+
+                                                items = [
+                                                        {
+                                                                productId: product.id,
+                                                                productName: product.name || product.title,
+                                                                productImage: product.image,
+                                                                quantity: quantity,
+                                                                price: finalPrice,
+                                                                mrp: normalizedMrp,
+                                                                discountAmount,
+                                                                totalPrice: finalPrice * quantity,
+                                                        },
+                                                ];
+                                        } else {
+                                                items = cartItems.map((item) => {
+                                                        const baseMrp =
+                                                                toNumber(item.originalPrice) ??
+                                                                toNumber(item.mrp) ??
+                                                                toNumber(item.price);
+                                                        const normalizedMrp =
+                                                                baseMrp !== null && baseMrp > 0
+                                                                        ? baseMrp
+                                                                        : toNumber(item.price) ?? 0;
+                                                        const finalPrice = toNumber(item.price) ?? 0;
+                                                        const discountAmount = Math.max(
+                                                                (normalizedMrp || 0) - finalPrice,
+                                                                0
+                                                        );
+
+                                                        return {
+                                                                productId: item.id,
+                                                                productName: item.name,
+                                                                productImage: item.image,
+                                                                quantity: item.quantity,
+                                                                price: finalPrice,
+                                                                mrp: normalizedMrp,
+                                                                discountAmount,
+                                                                totalPrice: finalPrice * item.quantity,
+                                                        };
+                                                });
+                                        }
 
 					const subtotal = items.reduce(
 						(sum, item) => sum + item.totalPrice,

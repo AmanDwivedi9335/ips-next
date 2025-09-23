@@ -5,6 +5,7 @@ import Cart from "@/model/Cart.js";
 import Product from "@/model/Product.js";
 import { verifyToken } from "@/lib/auth.js";
 import { cookies } from "next/headers";
+import { deriveProductPricing } from "@/lib/pricing.js";
 
 export async function GET() {
 	await dbConnect();
@@ -22,10 +23,11 @@ export async function GET() {
 
 		const decoded = verifyToken(token);
 
-		let cart = await Cart.findOne({ user: decoded.id }).populate({
-			path: "products.product",
-                        select: "title description images price salePrice discount",
-		});
+                let cart = await Cart.findOne({ user: decoded.id }).populate({
+                        path: "products.product",
+                        select:
+                                "title description images price salePrice discount mrp type",
+                });
 
 		if (!cart) {
 			cart = new Cart({ user: decoded.id, products: [], totalPrice: 0 });
@@ -84,10 +86,10 @@ export async function POST(req) {
 
 		// Recalculate total price
 		await cart.populate("products.product");
-		cart.totalPrice = cart.products.reduce((total, item) => {
-			const price = item.product.salePrice || item.product.price;
-			return total + price * item.quantity;
-		}, 0);
+                cart.totalPrice = cart.products.reduce((total, item) => {
+                        const pricing = deriveProductPricing(item.product);
+                        return total + pricing.finalPrice * item.quantity;
+                }, 0);
 
 		await cart.save();
 

@@ -666,12 +666,19 @@ export default function CheckoutPage() {
 									</p>
 									<p className="text-xs text-gray-500">Qty: {item.quantity}</p>
 								</div>
-								<p className="font-medium">
-									₹{item.totalPrice.toLocaleString()}
-								</p>
-							</div>
-						))}
-					</div>
+                                                                <div className="text-right">
+                                                                        <p className="font-medium">
+                                                                                ₹{item.totalPrice.toLocaleString()}
+                                                                        </p>
+                                                                        {item.mrp && item.mrp > item.price && (
+                                                                                <p className="text-xs text-gray-500 line-through">
+                                                                                        ₹{(item.mrp * item.quantity).toLocaleString()}
+                                                                                </p>
+                                                                        )}
+                                                                </div>
+                                                        </div>
+                                                ))}
+                                        </div>
 
 					<Separator />
 

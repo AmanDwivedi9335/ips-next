@@ -121,10 +121,22 @@ export async function POST(request) {
 
 		// Calculate totals
 		let subtotal = 0;
-		for (const product of orderData.products) {
-			product.totalPrice = product.price * product.quantity;
-			subtotal += product.totalPrice;
-		}
+                for (const product of orderData.products) {
+                        const price = Number(product.price) || 0;
+                        const quantity = Number(product.quantity) || 0;
+                        const mrp =
+                                Number(product.mrp) && Number(product.mrp) > 0
+                                        ? Number(product.mrp)
+                                        : price;
+                        product.price = price;
+                        product.mrp = mrp;
+                        product.discountAmount =
+                                Number(product.discountAmount) >= 0
+                                        ? Number(product.discountAmount)
+                                        : Math.max(mrp - price, 0);
+                        product.totalPrice = price * quantity;
+                        subtotal += product.totalPrice;
+                }
 
 		orderData.subtotal = subtotal;
 		orderData.totalAmount =
