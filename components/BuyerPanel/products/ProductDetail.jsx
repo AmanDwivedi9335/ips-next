@@ -125,6 +125,7 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
         const [hasQr, setHasQr] = useState(false);
         const [hasQrOption, setHasQrOption] = useState(false);
         const [calculatedPrice, setCalculatedPrice] = useState(null);
+        const [calculatedMrp, setCalculatedMrp] = useState(null);
         const [isPriceLoading, setIsPriceLoading] = useState(false);
         const [hasFetchedPrice, setHasFetchedPrice] = useState(false);
         const router = useRouter();
@@ -210,6 +211,7 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                 const fetchPrice = async () => {
                         setIsPriceLoading(true);
                         setHasFetchedPrice(false);
+                        setCalculatedMrp(null);
                         try {
                                 const params = new URLSearchParams({
 
@@ -229,13 +231,20 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                                         data.prices[0]?.price !== null
                                 ) {
                                         setCalculatedPrice(data.prices[0].price);
+                                        setCalculatedMrp(
+                                                data.prices[0]?.mrp !== undefined
+                                                        ? data.prices[0].mrp
+                                                        : null,
+                                        );
                                 } else {
                                         setCalculatedPrice(null);
+                                        setCalculatedMrp(null);
                                 }
                                 setHasFetchedPrice(true);
                         } catch (e) {
                                 // ignore
                                 setCalculatedPrice(null);
+                                setCalculatedMrp(null);
                                 setHasFetchedPrice(true);
                         } finally {
                                 setIsPriceLoading(false);
@@ -296,18 +305,30 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
         const handleAddToCart = async (e) => {
                 e.stopPropagation();
 
-                if (calculatedPrice === null || isPriceLoading) {
+                const numericPriceForCart = toNumber(calculatedPrice);
+
+                if (numericPriceForCart === null || isPriceLoading) {
                         toast.error("Please select another size");
                         return;
                 }
 
+                const numericMrpForCart =
+                        toNumber(calculatedMrp) ??
+                        toNumber(product.mrp) ??
+                        toNumber(product.price);
+
+                const originalPriceValue =
+                        numericMrpForCart !== null && numericMrpForCart > numericPriceForCart
+                                ? numericMrpForCart
+                                : numericPriceForCart;
+
                 // Use the unified addItem function
                 await addItem({
                         id: product.id || product._id,
-			name: product.title,
-			description: product.description,
-                        price: calculatedPrice,
-                        originalPrice: calculatedPrice,
+                        name: product.title,
+                        description: product.description,
+                        price: numericPriceForCart,
+                        originalPrice: originalPriceValue,
                         image:
                                 languageImage ||
                                 englishImage ||
@@ -319,17 +340,30 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
         const handleAddToWishlist = (e) => {
                 e.stopPropagation();
 
-                if (calculatedPrice === null || isPriceLoading) {
+                const numericPriceForWishlist = toNumber(calculatedPrice);
+
+                if (numericPriceForWishlist === null || isPriceLoading) {
                         toast.error("Please select another size");
                         return;
                 }
+
+                const numericMrpForWishlist =
+                        toNumber(calculatedMrp) ??
+                        toNumber(product.mrp) ??
+                        toNumber(product.price);
+
+                const originalWishlistPrice =
+                        numericMrpForWishlist !== null &&
+                        numericMrpForWishlist > numericPriceForWishlist
+                                ? numericMrpForWishlist
+                                : numericPriceForWishlist;
 
                 addWishlistItem({
                         id: product.id || product._id,
                         name: product.title,
                         description: product.description,
-                        price: calculatedPrice,
-                        originalPrice: calculatedPrice,
+                        price: numericPriceForWishlist,
+                        originalPrice: originalWishlistPrice,
                         image:
                                 languageImage ||
                                 englishImage ||
@@ -342,7 +376,9 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
         const handleBuyNow = async (e) => {
                 e.stopPropagation();
 
-                if (calculatedPrice === null || isPriceLoading) {
+                const numericPriceForBuyNow = toNumber(calculatedPrice);
+
+                if (numericPriceForBuyNow === null || isPriceLoading) {
                         toast.error("Please select another size");
                         return;
                 }
@@ -380,19 +416,21 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
         };
 
         const numericCalculatedPrice = toNumber(calculatedPrice);
+        const numericCalculatedMrp = toNumber(calculatedMrp);
         const numericSalePrice = toNumber(product.salePrice);
         const numericPrice = toNumber(product.price);
-        const numericMrp = toNumber(product.mrp) ?? numericPrice;
+        const numericBaseMrp = toNumber(product.mrp) ?? numericPrice;
+        const effectiveMrp = numericCalculatedMrp ?? numericBaseMrp;
         const fallbackPrice = numericSalePrice ?? numericPrice ?? null;
         const displayPrice = numericCalculatedPrice ?? fallbackPrice;
         const priceDifference =
-                numericMrp !== null && displayPrice !== null ? numericMrp - displayPrice : 0;
+                effectiveMrp !== null && displayPrice !== null ? effectiveMrp - displayPrice : 0;
         const showOriginalPrice =
-                numericMrp !== null && displayPrice !== null && priceDifference > 0;
+                effectiveMrp !== null && displayPrice !== null && priceDifference > 0;
         const explicitDiscount = toNumber(product.discountPercentage);
         const calculatedDiscount =
-                showOriginalPrice && numericMrp && numericMrp > 0
-                        ? Math.round((priceDifference / numericMrp) * 100)
+                showOriginalPrice && effectiveMrp && effectiveMrp > 0
+                        ? Math.round((priceDifference / effectiveMrp) * 100)
                         : 0;
         const discountToShow =
                 explicitDiscount !== null && explicitDiscount > 0
@@ -572,7 +610,7 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                                                                 </p>
                                                                 {showOriginalPrice && (
                                                                         <p className="text-base text-gray-500 line-through">
-                                                                                ₹ {numericMrp.toLocaleString()}
+                                                                                ₹ {effectiveMrp.toLocaleString()}
                                                                         </p>
                                                                 )}
                                                                 {showDiscountBadge && (
