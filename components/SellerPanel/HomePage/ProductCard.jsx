@@ -12,6 +12,68 @@ export default function ProductCard({ product, viewMode = "grid" }) {
         const router = useRouter();
         const productCode = product.productCode || product.code;
 
+        const priceRange = product.pricingRange || product.priceRange;
+        const saleMin =
+                typeof priceRange?.min === "number" && Number.isFinite(priceRange.min)
+                        ? priceRange.min
+                        : null;
+        const saleMaxRaw =
+                typeof priceRange?.max === "number" && Number.isFinite(priceRange.max)
+                        ? priceRange.max
+                        : null;
+        const saleMax = saleMaxRaw !== null ? saleMaxRaw : saleMin;
+        const mrpMin =
+                typeof priceRange?.mrpMin === "number" && Number.isFinite(priceRange.mrpMin)
+                        ? priceRange.mrpMin
+                        : null;
+        const mrpMaxRaw =
+                typeof priceRange?.mrpMax === "number" && Number.isFinite(priceRange.mrpMax)
+                        ? priceRange.mrpMax
+                        : null;
+        const mrpMax = mrpMaxRaw !== null ? mrpMaxRaw : mrpMin;
+
+        const formatPriceValue = (value) => {
+                if (typeof value === "number" && Number.isFinite(value)) {
+                        return `₹${value.toLocaleString("en-IN")}`;
+                }
+
+                return value;
+        };
+
+        const formatRangeLabel = (min, max, fallback) => {
+                if (typeof min === "number" && Number.isFinite(min)) {
+                        const formattedMin = formatPriceValue(min);
+                        const formattedMax =
+                                typeof max === "number" && Number.isFinite(max)
+                                        ? formatPriceValue(max)
+                                        : null;
+
+                        if (formattedMax && max > min) {
+                                return `${formattedMin} - ${formattedMax}`;
+                        }
+
+                        return formattedMin;
+                }
+
+                return fallback;
+        };
+
+        const salePriceLabel = formatRangeLabel(
+                saleMin,
+                saleMax,
+                formatPriceValue(product.price)
+        );
+        const mrpLabel = formatRangeLabel(
+                mrpMin,
+                mrpMax,
+                formatPriceValue(product.originalPrice)
+        );
+
+        const showMrpLabel = Boolean(mrpLabel) &&
+                ((typeof saleMin === "number" && typeof mrpMin === "number" && mrpMin > saleMin) ||
+                        (typeof saleMax === "number" && typeof mrpMax === "number" && mrpMax > saleMax) ||
+                        (!priceRange && product.originalPrice && product.price));
+
         const englishImage = product.languageImages?.find(
                 (l) => l.language?.toLowerCase() === "english"
         )?.image;
@@ -81,16 +143,16 @@ export default function ProductCard({ product, viewMode = "grid" }) {
 
 							<div className="flex items-center justify-between">
 								<div className="space-y-1">
-									<div className="flex items-center gap-2">
-										<p className="text-2xl font-bold">
-											₹{product.price.toLocaleString()}
-										</p>
-										{product.originalPrice > product.price && (
-											<p className="text-lg text-gray-500 line-through">
-												₹{product.originalPrice.toLocaleString()}
-											</p>
-										)}
-									</div>
+                                                                        <div className="flex items-center gap-2">
+                                                                                <p className="text-2xl font-bold">
+                                                                                        {salePriceLabel}
+                                                                                </p>
+                                                                                {showMrpLabel && (
+                                                                                        <p className="text-lg text-gray-500 line-through">
+                                                                                                {mrpLabel}
+                                                                                        </p>
+                                                                                )}
+                                                                        </div>
                                                                         {/* Availability status removed */}
 								</div>
 
@@ -199,21 +261,23 @@ export default function ProductCard({ product, viewMode = "grid" }) {
 
 						{/* Price */}
 						<div className="space-y-2 mb-4">
-							<div className="flex flex-col items-start gap-2">
-								<p className="text-xl font-bold">
-									₹{product.price.toLocaleString()}
-								</p>
-								{product.originalPrice > product.price && (
-									<div className="flex items-center gap-2">
-										<p className="text-sm text-gray-500 line-through">
-											₹{product.originalPrice.toLocaleString()}
-										</p>
-										<p className="text-sm text-green-600 font-semibold">
-											{product.discount}
-										</p>
-									</div>
-								)}
-							</div>
+                                                        <div className="flex flex-col items-start gap-2">
+                                                                <p className="text-xl font-bold">
+                                                                        {salePriceLabel}
+                                                                </p>
+                                                                {showMrpLabel && (
+                                                                        <div className="flex items-center gap-2">
+                                                                                <p className="text-sm text-gray-500 line-through">
+                                                                                        {mrpLabel}
+                                                                                </p>
+                                                                                {product.discount && (
+                                                                                        <p className="text-sm text-green-600 font-semibold">
+                                                                                                {product.discount}
+                                                                                        </p>
+                                                                                )}
+                                                                        </div>
+                                                                )}
+                                                        </div>
                                                         {/* Availability information removed */}
 						</div>
 

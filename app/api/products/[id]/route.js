@@ -1,7 +1,8 @@
 import Product from "@/model/Product.js";
+import Price from "@/model/Price.js";
 import "@/model/Review.js";
 import { dbConnect } from "@/lib/dbConnect.js";
-import { deriveProductPricing } from "@/lib/pricing.js";
+import { deriveProductPriceRange, deriveProductPricing } from "@/lib/pricing.js";
 
 export async function GET(req, { params }) {
 	await dbConnect();
@@ -12,23 +13,56 @@ export async function GET(req, { params }) {
 	console.log("Product ID:", id);
 
         try {
-                const product = await Product.findById(id).populate({
-                        path: "reviews",
-                        select: "rating comment user",
-                        strictPopulate: false,
-                        populate: { path: "user", select: "firstName lastName" },
-                });
+                const product = await Product.findById(id)
+                        .populate({
+                                path: "reviews",
+                                select: "rating comment user",
+                                strictPopulate: false,
+                                populate: { path: "user", select: "firstName lastName" },
+                        })
+                        .lean();
 
-		if (!product) {
-			return Response.json({ message: "Product not found" }, { status: 404 });
-		}
+                if (!product) {
+                        return Response.json({ message: "Product not found" }, { status: 404 });
+                }
 
-		// Get related products from same category
-		const relatedProducts = await Product.find({
-			category: product.category,
-			_id: { $ne: product._id },
-			published: true,
-		}).limit(4);
+                // Get related products from same category
+                const relatedProducts = await Product.find({
+                        category: product.category,
+                        _id: { $ne: product._id },
+                        published: true,
+                })
+                        .limit(4)
+                        .lean();
+
+                const productIds = [
+                        product._id?.toString(),
+                        ...relatedProducts.map((related) => related._id?.toString()),
+                ].filter(Boolean);
+
+                let pricingMap = {};
+
+                if (productIds.length > 0) {
+                        const pricingDocs = await Price.find({
+                                product: { $in: productIds },
+                        })
+                                .lean()
+                                .exec();
+
+                        pricingMap = pricingDocs.reduce((acc, price) => {
+                                const productId = price.product?.toString();
+                                if (!productId) {
+                                        return acc;
+                                }
+
+                                if (!acc[productId]) {
+                                        acc[productId] = [];
+                                }
+
+                                acc[productId].push(price);
+                                return acc;
+                        }, {});
+                }
 
 		// Transform product data to match frontend expectations
                 const reviewCount = product.reviews?.length || 0;
@@ -55,6 +89,11 @@ export async function GET(req, { params }) {
                 }));
 
                 const pricing = deriveProductPricing(product);
+                const productIdString = product._id?.toString();
+                const priceRange = deriveProductPriceRange(
+                        product,
+                        pricingMap[productIdString] || []
+                );
 
                 const transformedProduct = {
                         id: product._id.toString(),
@@ -93,11 +132,18 @@ export async function GET(req, { params }) {
                         reviews: transformedReviews,
                         createdAt: product.createdAt,
                         updatedAt: product.updatedAt,
+                        priceRange,
+                        pricingRange: priceRange,
                 };
 
-		// Transform related products
+                // Transform related products
                 const transformedRelatedProducts = relatedProducts.map((p) => {
                         const relatedPricing = deriveProductPricing(p);
+                        const relatedId = p._id?.toString();
+                        const relatedRange = deriveProductPriceRange(
+                                p,
+                                pricingMap[relatedId] || []
+                        );
 
                         return {
                                 id: p._id.toString(),
@@ -117,6 +163,8 @@ export async function GET(req, { params }) {
                                 type: p.type,
                                 productCode: p.productCode || p.code,
                                 code: p.productCode || p.code,
+                                priceRange: relatedRange,
+                                pricingRange: relatedRange,
                         };
                 });
 

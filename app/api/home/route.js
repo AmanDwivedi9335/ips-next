@@ -1,18 +1,19 @@
 import { dbConnect } from "@/lib/dbConnect.js";
 import Product from "@/model/Product.js";
-import { deriveProductPricing } from "@/lib/pricing.js";
+import Price from "@/model/Price.js";
+import { deriveProductPriceRange, deriveProductPricing } from "@/lib/pricing.js";
 
 export async function GET(request) {
 	await dbConnect();
 
 	try {
 		// Get discounted products for showcase section
-		const discountedProducts = await Product.find({
-			published: true,
-			$or: [{ discount: { $gt: 0 } }],
-		})
-			.limit(6)
-			.lean();
+                const discountedProducts = await Product.find({
+                        published: true,
+                        $or: [{ discount: { $gt: 0 } }],
+                })
+                        .limit(6)
+                        .lean();
 
 		// Get top selling products
 		const topSellingProducts = await Product.find({
@@ -59,15 +60,58 @@ export async function GET(request) {
 		}
 
 		const skip = (page - 1) * limit;
-		const categoryProducts = await Product.find(categoryQuery)
-			.skip(skip)
-			.limit(limit)
-			.lean();
+                const categoryProducts = await Product.find(categoryQuery)
+                        .skip(skip)
+                        .limit(limit)
+                        .lean();
 
 		const totalCategoryProducts = await Product.countDocuments(categoryQuery);
 
 		// Get available categories
-		const categories = await Product.distinct("category", { published: true });
+                const categories = await Product.distinct("category", { published: true });
+
+                const allProducts = [
+                        ...discountedProducts,
+                        ...topSellingProducts,
+                        ...featuredProducts,
+                        ...categoryProducts,
+                ];
+
+                if (bestSellingProduct) {
+                        allProducts.push(bestSellingProduct);
+                }
+
+                const priceQueryIds = Array.from(
+                        new Set(
+                                allProducts
+                                        .map((product) => product?._id?.toString())
+                                        .filter(Boolean)
+                        )
+                );
+
+                let pricingMap = {};
+
+                if (priceQueryIds.length > 0) {
+                        const pricingDocs = await Price.find({
+                                product: { $in: priceQueryIds },
+                        })
+                                .lean()
+                                .exec();
+
+                        pricingMap = pricingDocs.reduce((acc, price) => {
+                                const productId = price.product?.toString();
+                                if (!productId) {
+                                        return acc;
+                                }
+
+                                if (!acc[productId]) {
+                                        acc[productId] = [];
+                                }
+
+                                acc[productId].push(price);
+                                return acc;
+                        }, {});
+                }
 
 		// Transform function
                 const transformProduct = (product) => {
@@ -76,6 +120,11 @@ export async function GET(request) {
                         )?.image;
 
                         const pricing = deriveProductPricing(product);
+                        const productId = product._id?.toString();
+                        const priceRange = deriveProductPriceRange(
+                                product,
+                                pricingMap[productId] || []
+                        );
 
                         return {
                                 id: product._id.toString(),
@@ -106,6 +155,8 @@ export async function GET(request) {
                                 colors: ["blue", "black", "red", "orange"],
                                 createdAt: product.createdAt,
                                 updatedAt: product.updatedAt,
+                                priceRange,
+                                pricingRange: priceRange,
                         };
                 };
 

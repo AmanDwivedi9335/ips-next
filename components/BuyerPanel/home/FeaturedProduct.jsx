@@ -8,7 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ShoppingCart, ArrowRight } from "lucide-react";
 import { useCartStore } from "@/store/cartStore";
-import { deriveProductPricing } from "@/lib/pricing.js";
+import { deriveProductPricing, normalizeDisplayPriceRange } from "@/lib/pricing.js";
 
 export default function FeaturedProduct({ product }) {
         const router = useRouter();
@@ -41,6 +41,37 @@ export default function FeaturedProduct({ product }) {
         const finalPrice = pricing.finalPrice;
         const originalPrice = pricing.mrp;
         const discountPercentage = pricing.discountPercentage;
+        const priceRangeData = product.pricingRange || product.priceRange;
+        const { min: saleMin, max: saleMax, mrpMin, mrpMax } =
+                normalizeDisplayPriceRange(priceRangeData, pricing);
+
+        const formatPriceValue = (value) => {
+                if (typeof value !== "number" || !Number.isFinite(value)) {
+                        return null;
+                }
+
+                return `₹${value.toLocaleString("en-IN")}`;
+        };
+
+        const formatRangeLabel = (min, max) => {
+                const formattedMin = formatPriceValue(min);
+                if (!formattedMin) {
+                        return null;
+                }
+
+                const formattedMax = formatPriceValue(max);
+
+                if (formattedMax && max > min) {
+                        return `${formattedMin} - ${formattedMax}`;
+                }
+
+                return formattedMin;
+        };
+
+        const salePriceLabel =
+                formatRangeLabel(saleMin, saleMax) || formatPriceValue(finalPrice);
+        const mrpLabel = formatRangeLabel(mrpMin, mrpMax);
+        const showMrpLabel = Boolean(mrpLabel) && (mrpMax > saleMax || mrpMin > saleMin);
 
         const handleAddToCart = async () => {
                 await addItem({
@@ -157,13 +188,13 @@ export default function FeaturedProduct({ product }) {
 							</p>
 
                                                         <p className="text-2xl md:text-3xl font-bold mb-1">
-                                                                ₹{finalPrice.toLocaleString()}
+                                                                {salePriceLabel}
                                                         </p>
 
-                                                        {originalPrice > finalPrice && (
+                                                        {showMrpLabel && (
                                                                 <div className="flex items-center mb-6">
                                                                         <span className="text-gray-500 line-through mr-2">
-                                                                                ₹{originalPrice.toLocaleString()}
+                                                                                {mrpLabel}
                                                                         </span>
                                                                         <span className="text-green-500">
                                                                                 {discountPercentage}% off

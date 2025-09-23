@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ShoppingCart, Heart, ArrowRight } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { normalizeDisplayPriceRange } from "@/lib/pricing.js";
 
 const FALLBACK_IMAGE =
         "https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png";
@@ -60,7 +61,47 @@ function ProductCardVarient({ product, variant = "vertical" }) {
                 FALLBACK_IMAGE;
 
         const productCode = product?.productCode || product?.code;
-        const hasDiscount = Boolean(product?.originalPrice && product?.price);
+
+        const priceRangeData = product?.pricingRange || product?.priceRange;
+        const fallbackPricing = {
+                finalPrice: product?.price,
+                mrp: product?.originalPrice,
+        };
+        const { min: saleMin, max: saleMax, mrpMin, mrpMax } = normalizeDisplayPriceRange(
+                priceRangeData,
+                fallbackPricing
+        );
+
+        const formatPriceValue = (value) => {
+                if (typeof value !== "number" || !Number.isFinite(value)) {
+                        return null;
+                }
+
+                return `₹${value.toLocaleString("en-IN")}`;
+        };
+
+        const formatRangeLabel = (min, max) => {
+                const formattedMin = formatPriceValue(min);
+                if (!formattedMin) {
+                        return null;
+                }
+
+                const formattedMax = formatPriceValue(max);
+
+                if (formattedMax && max > min) {
+                        return `${formattedMin} - ${formattedMax}`;
+                }
+
+                return formattedMin;
+        };
+
+        const salePriceLabel =
+                formatRangeLabel(saleMin, saleMax) ||
+                (typeof product?.price === "number"
+                        ? formatPriceValue(product?.price)
+                        : product?.price);
+        const mrpLabel = formatRangeLabel(mrpMin, mrpMax);
+        const hasDiscount = Boolean(mrpLabel) && (mrpMax > saleMax || mrpMin > saleMin);
 
         const colorSwatches =
                 product?.colors?.length > 0 ? (
@@ -133,11 +174,11 @@ function ProductCardVarient({ product, variant = "vertical" }) {
                                                 <div className="mt-auto flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                                                         <div>
                                                                 <p className="text-2xl font-semibold text-gray-900">
-                                                                        {product?.price}
+                                                                        {salePriceLabel}
                                                                 </p>
                                                                 {hasDiscount && (
                                                                         <p className="text-sm text-gray-400">
-                                                                                <span className="line-through">{product?.originalPrice}</span>
+                                                                                <span className="line-through">{mrpLabel}</span>
                                                                                 <span className="ml-2 inline-flex items-center rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">
                                                                                         Save 25%
                                                                                 </span>
@@ -221,11 +262,11 @@ function ProductCardVarient({ product, variant = "vertical" }) {
                                         <div className="mt-auto flex flex-col gap-4">
                                                 <div className="flex items-baseline gap-3">
                                                         <p className="text-2xl font-semibold text-gray-900">
-                                                                {product?.price}
+                                                                {salePriceLabel}
                                                         </p>
                                                         {hasDiscount && (
                                                                 <p className="text-sm text-gray-400 line-through">
-                                                                        {product?.originalPrice}
+                                                                        {mrpLabel}
                                                                 </p>
                                                         )}
                                                 </div>
