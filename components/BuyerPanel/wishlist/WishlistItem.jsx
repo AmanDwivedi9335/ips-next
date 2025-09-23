@@ -50,7 +50,17 @@ export default function WishlistItem({ item }) {
                                                                 <div className="flex-1 min-w-0 pr-4">
                                                                         <h3 className="font-semibold text-lg line-clamp-2 mb-1">{item.name}</h3>
                                                                         <p className="text-gray-600 text-sm line-clamp-2 mb-2">{item.description}</p>
-                                                                        <p className="text-xl font-bold">₹{item.price?.toLocaleString()}</p>
+                                                                        <div className="flex items-center gap-2">
+                                                                                <p className="text-xl font-bold">
+                                                                                        ₹{item.price?.toLocaleString()}
+                                                                                </p>
+                                                                                {item.originalPrice &&
+                                                                                item.originalPrice > item.price && (
+                                                                                        <p className="text-sm text-gray-500 line-through">
+                                                                                                ₹{item.originalPrice.toLocaleString()}
+                                                                                        </p>
+                                                                                )}
+                                                                        </div>
                                                                 </div>
                                                                 <Button
                                                                         variant="ghost"

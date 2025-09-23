@@ -4,10 +4,11 @@ import { create } from "zustand";
 import { persist, subscribeWithSelector, devtools } from "zustand/middleware";
 import { toast } from "react-hot-toast";
 import { useAuthStore } from "@/store/authStore.js";
+import { deriveProductPricing, toNumber } from "@/lib/pricing.js";
 
 // Cart API functions
 const cartAPI = {
-	async fetchCart() {
+        async fetchCart() {
 		const response = await fetch("/api/cart");
 		if (!response.ok) {
 			if (response.status === 401) {
@@ -92,16 +93,69 @@ const cartAPI = {
 		return response.json();
 	},
 
-	async clearCart() {
-		const response = await fetch("/api/cart/clear", {
-			method: "DELETE",
-		});
+        async clearCart() {
+                const response = await fetch("/api/cart/clear", {
+                        method: "DELETE",
+                });
 		if (!response.ok) {
 			const error = await response.json();
 			throw new Error(error.message || "Failed to clear cart");
 		}
 		return response.json();
 	},
+};
+
+const buildCartItemFromServer = (item) => {
+        const pricing = deriveProductPricing(item.product || {});
+
+        return {
+                id: item.product._id,
+                name: item.product.title,
+                description: item.product.description,
+                price: pricing.finalPrice,
+                originalPrice: pricing.mrp,
+                mrp: pricing.mrp,
+                discountPercentage: pricing.discountPercentage,
+                discountAmount: pricing.discountAmount,
+                image:
+                        item.product.images?.[0] ||
+                        "https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png",
+                quantity: item.quantity,
+        };
+};
+
+const normalizeClientCartItem = (product, quantity = 1) => {
+        const fallbackMrp =
+                toNumber(product.originalPrice) ??
+                toNumber(product.mrp) ??
+                toNumber(product.price);
+        const fallbackPrice = toNumber(product.price);
+
+        const pricing = deriveProductPricing({
+                ...product,
+                price: fallbackMrp ?? fallbackPrice,
+                mrp: fallbackMrp ?? fallbackPrice,
+                salePrice: fallbackPrice ?? undefined,
+        });
+
+        const finalPrice = fallbackPrice ?? pricing.finalPrice;
+        const mrp = fallbackMrp ?? pricing.mrp;
+
+        return {
+                id: product.id,
+                name: product.name || product.title || "",
+                description: product.description,
+                price: finalPrice,
+                originalPrice: mrp,
+                mrp,
+                discountPercentage:
+                        product.discountPercentage ?? pricing.discountPercentage,
+                discountAmount: product.discountAmount ?? pricing.discountAmount,
+                image:
+                        product.image ||
+                        "https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png",
+                quantity,
+        };
 };
 
 export const useCartStore = create(
@@ -138,18 +192,10 @@ export const useCartStore = create(
 							try {
 								const data = await cartAPI.addToCart(product.id, 1);
 
-								// Update local state with server response
-								const serverItems = data.cart.products.map((item) => ({
-									id: item.product._id,
-									name: item.product.title,
-									description: item.product.description,
-									price: item.product.salePrice || item.product.price,
-									originalPrice: item.product.price,
-									image:
-										item.product.images?.[0] ||
-										"https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png",
-                                                                        quantity: item.quantity,
-								}));
+                                                                // Update local state with server response
+                                                                const serverItems = data.cart.products.map(
+                                                                        buildCartItemFromServer
+                                                                );
 
                                                                 set({
                                                                         items: serverItems,
@@ -171,20 +217,25 @@ export const useCartStore = create(
 							}
 						} else {
 							// For non-authenticated users: Update locally
-							const { items } = get();
-							const existingItem = items.find((item) => item.id === product.id);
+                                                        const { items } = get();
+                                                        const existingItem = items.find((item) => item.id === product.id);
 
-							if (existingItem) {
-								set({
-									items: items.map((item) =>
-										item.id === product.id
-											? { ...item, quantity: item.quantity + 1 }
-											: item
-									),
-								});
-							} else {
-								set({ items: [...items, { ...product, quantity: 1 }] });
-							}
+                                                        if (existingItem) {
+                                                                set({
+                                                                        items: items.map((item) =>
+                                                                                item.id === product.id
+                                                                                        ? { ...item, quantity: item.quantity + 1 }
+                                                                                        : item
+                                                                        ),
+                                                                });
+                                                        } else {
+                                                                set({
+                                                                        items: [
+                                                                                ...items,
+                                                                                normalizeClientCartItem(product, 1),
+                                                                        ],
+                                                                });
+                                                        }
 
 							get().calculateTotals();
 							toast.success("Added to cart!");
@@ -206,18 +257,10 @@ export const useCartStore = create(
 							try {
 								const data = await cartAPI.updateQuantity(productId, quantity);
 
-								// Update local state with server response
-                                                                const serverItems = data.cart.products.map((item) => ({
-                                                                        id: item.product._id,
-                                                                        name: item.product.title,
-                                                                        description: item.product.description,
-                                                                        price: item.product.salePrice || item.product.price,
-                                                                        originalPrice: item.product.price,
-                                                                        image:
-                                                                                item.product.images?.[0] ||
-                                                                                "https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png",
-                                                                        quantity: item.quantity,
-                                                                }));
+                                                                // Update local state with server response
+                                                                const serverItems = data.cart.products.map(
+                                                                        buildCartItemFromServer
+                                                                );
 
 								set({
 									items: serverItems,
@@ -256,18 +299,10 @@ export const useCartStore = create(
 							try {
 								const data = await cartAPI.removeItem(productId);
 
-								// Update local state with server response
-                                                                const serverItems = data.cart.products.map((item) => ({
-                                                                        id: item.product._id,
-                                                                        name: item.product.title,
-                                                                        description: item.product.description,
-                                                                        price: item.product.salePrice || item.product.price,
-                                                                        originalPrice: item.product.price,
-                                                                        image:
-                                                                                item.product.images?.[0] ||
-                                                                                "https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png",
-                                                                        quantity: item.quantity,
-                                                                }));
+                                                                // Update local state with server response
+                                                                const serverItems = data.cart.products.map(
+                                                                        buildCartItemFromServer
+                                                                );
 
 								set({
 									items: serverItems,
@@ -344,18 +379,10 @@ export const useCartStore = create(
 						set({ isLoading: true, syncError: null });
 
 						try {
-							const data = await cartAPI.fetchCart();
-                                                        const serverItems = data.cart.products.map((item) => ({
-                                                                id: item.product._id,
-                                                                name: item.product.title,
-                                                                description: item.product.description,
-                                                                price: item.product.salePrice || item.product.price,
-                                                                originalPrice: item.product.price,
-                                                                image:
-                                                                        item.product.images?.[0] ||
-                                                                        "https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png",
-                                                                quantity: item.quantity,
-                                                        }));
+                                                        const data = await cartAPI.fetchCart();
+                                                        const serverItems = data.cart.products.map(
+                                                                buildCartItemFromServer
+                                                        );
 
 							set({
 								items: serverItems,

@@ -1,5 +1,6 @@
 import { dbConnect } from "@/lib/dbConnect.js";
 import Product from "@/model/Product.js";
+import { deriveProductPricing } from "@/lib/pricing.js";
 
 export async function GET(request) {
 	await dbConnect();
@@ -74,24 +75,20 @@ export async function GET(request) {
                                 (l) => l.language?.toLowerCase() === "english"
                         )?.image;
 
+                        const pricing = deriveProductPricing(product);
+
                         return {
                                 id: product._id.toString(),
                                 _id: product._id.toString(),
                                 title: product.title,
                                 description: product.description,
                                 longDescription: product.longDescription,
-                                price: product.salePrice > 0 ? product.salePrice : product.price,
-                                originalPrice: product.price,
-                                salePrice: product.salePrice,
+                                price: pricing.finalPrice,
+                                originalPrice: pricing.mrp,
+                                salePrice: pricing.finalPrice,
                                 discount: product.discount,
-                                discountPercentage:
-                                        product.salePrice > 0
-                                                ? Math.round(
-                                                                  ((product.price - product.salePrice) /
-                                                                          product.price) *
-                                                                          100
-                                                          )
-                                                : product.discount,
+                                discountPercentage: pricing.discountPercentage,
+                                discountAmount: pricing.discountAmount,
                                 image:
                                         englishImage ||
                                         product.images?.[0] ||

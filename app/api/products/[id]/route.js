@@ -1,6 +1,7 @@
 import Product from "@/model/Product.js";
 import "@/model/Review.js";
 import { dbConnect } from "@/lib/dbConnect.js";
+import { deriveProductPricing } from "@/lib/pricing.js";
 
 export async function GET(req, { params }) {
 	await dbConnect();
@@ -53,13 +54,7 @@ export async function GET(req, { params }) {
                         createdAt: r.createdAt,
                 }));
 
-                const discountPercentage =
-                        product.salePrice > 0
-                                ? Math.round(
-                                          ((product.price - product.salePrice) / product.price) *
-                                                  100
-                                  )
-                                : product.discount || 0;
+                const pricing = deriveProductPricing(product);
 
                 const transformedProduct = {
                         id: product._id.toString(),
@@ -68,13 +63,15 @@ export async function GET(req, { params }) {
                         name: product.title,
                         description: product.description,
                         longDescription: product.longDescription || product.description,
-                        // provide original price and sale price separately
-                        price: product.price,
-                        salePrice: product.salePrice,
-                        mrp: product.mrp || product.price,
+                        // provide pricing with applied discounts
+                        price: pricing.finalPrice,
+                        salePrice: pricing.finalPrice,
+                        mrp: pricing.mrp,
+                        originalPrice: pricing.mrp,
                         productCode: product.productCode || product.code,
                         code: product.productCode || product.code,
-                        discountPercentage,
+                        discountPercentage: pricing.discountPercentage,
+                        discountAmount: pricing.discountAmount,
                         category: product.category,
                         subcategory: product.subcategory,
                         images: product.images || [],
@@ -100,20 +97,19 @@ export async function GET(req, { params }) {
 
 		// Transform related products
                 const transformedRelatedProducts = relatedProducts.map((p) => {
-                        const relatedDiscount =
-                                p.salePrice > 0
-                                        ? Math.round(((p.price - p.salePrice) / p.price) * 100)
-                                        : p.discount || 0;
+                        const relatedPricing = deriveProductPricing(p);
 
                         return {
                                 id: p._id.toString(),
                                 title: p.title,
                                 name: p.title,
                                 description: p.description,
-                                price: p.price,
-                                salePrice: p.salePrice,
-                                originalPrice: p.price,
-                                discountPercentage: relatedDiscount,
+                                price: relatedPricing.finalPrice,
+                                salePrice: relatedPricing.finalPrice,
+                                originalPrice: relatedPricing.mrp,
+                                mrp: relatedPricing.mrp,
+                                discountPercentage: relatedPricing.discountPercentage,
+                                discountAmount: relatedPricing.discountAmount,
                                 image:
                                         p.images?.[0] ||
                                         "https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png",

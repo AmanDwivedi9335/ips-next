@@ -10,6 +10,7 @@ import { useCartStore } from "@/store/cartStore";
 import { useWishlistStore } from "@/store/wishlistStore";
 import { toast } from "react-hot-toast";
 import Image from "next/image";
+import { deriveProductPricing } from "@/lib/pricing.js";
 
 export default function ProductCard({ product, viewMode = "grid" }) {
         const router = useRouter();
@@ -20,6 +21,11 @@ export default function ProductCard({ product, viewMode = "grid" }) {
         const productId = product.id || product._id;
         const productTitle = product.title || product.name || "";
         const productCode = product.productCode || product.code;
+
+        const pricing = deriveProductPricing(product);
+        const finalPrice = pricing.finalPrice;
+        const originalPrice = pricing.mrp;
+        const discountPercentage = pricing.discountPercentage;
 
         const englishImage = product.languageImages?.find(
                 (l) => l.language?.toLowerCase() === "english"
@@ -45,8 +51,11 @@ export default function ProductCard({ product, viewMode = "grid" }) {
                         id: productId,
                         name: productTitle,
                         description: product.description,
-                        price: product.salePrice || product.price,
-                        originalPrice: product.price,
+                        price: finalPrice,
+                        originalPrice,
+                        mrp: originalPrice,
+                        discountPercentage,
+                        discountAmount: pricing.discountAmount,
                         image: defaultImage,
                 });
         };
@@ -58,8 +67,11 @@ export default function ProductCard({ product, viewMode = "grid" }) {
                         id: productId,
                         name: productTitle,
                         description: product.description,
-                        price: product.salePrice || product.price,
-                        originalPrice: product.price,
+                        price: finalPrice,
+                        originalPrice,
+                        mrp: originalPrice,
+                        discountPercentage,
+                        discountAmount: pricing.discountAmount,
                         image: defaultImage,
                 });
                 toast.success("Added to wishlist!");
@@ -89,9 +101,9 @@ export default function ProductCard({ product, viewMode = "grid" }) {
                                                                 onClick={handleViewProduct}
                                                         />
 
-                                                        {product.discountPercentage > 0 && (
+                                                        {discountPercentage > 0 && (
                                                                 <Badge className="absolute top-2 left-2 bg-red-500 text-white">
-                                                                        {product.discountPercentage}% OFF
+                                                                        {discountPercentage}% OFF
                                                                 </Badge>
                                                         )}
 
@@ -136,15 +148,15 @@ export default function ProductCard({ product, viewMode = "grid" }) {
 							<div className="flex items-center justify-between">
 								<div className="space-y-1">
 									<div className="flex items-center gap-2">
-										<p className="text-2xl font-bold">
-											₹{(product.salePrice || product.price).toLocaleString()}
-										</p>
-										{product.price > (product.salePrice || product.price) && (
-											<p className="text-lg text-gray-500 line-through">
-												₹{product.price.toLocaleString()}
-											</p>
-										)}
-									</div>
+                                                                                <p className="text-2xl font-bold">
+                                                                                        ₹{finalPrice.toLocaleString()}
+                                                                                </p>
+                                                                                {originalPrice > finalPrice && (
+                                                                                        <p className="text-lg text-gray-500 line-through">
+                                                                                                ₹{originalPrice.toLocaleString()}
+                                                                                        </p>
+                                                                                )}
+                                                                        </div>
 								</div>
 
 								<div className="flex items-center gap-2">
@@ -205,9 +217,9 @@ export default function ProductCard({ product, viewMode = "grid" }) {
 
                                                         {/* Left-side badges */}
                                                         <div className="absolute top-2 left-2 flex flex-col gap-1">
-                                                                {product.discountPercentage > 0 && (
+                                                                {discountPercentage > 0 && (
                                                                         <Badge className="bg-red-500 text-white">
-                                                                                {product.discountPercentage}% OFF
+                                                                                {discountPercentage}% OFF
                                                                         </Badge>
                                                                 )}
                                                                 {product.type === "featured" && (
@@ -267,15 +279,15 @@ export default function ProductCard({ product, viewMode = "grid" }) {
 						{/* Price */}
 						<div className="space-y-2 mb-4">
 							<div className="flex items-center gap-2">
-								<p className="text-xl font-bold">
-									₹{(product.salePrice || product.price).toLocaleString()}
-								</p>
-								{product.price > (product.salePrice || product.price) && (
-									<p className="text-sm text-gray-500 line-through">
-										₹{product.price.toLocaleString()}
-									</p>
-								)}
-							</div>
+                                                                <p className="text-xl font-bold">
+                                                                        ₹{finalPrice.toLocaleString()}
+                                                                </p>
+                                                                {originalPrice > finalPrice && (
+                                                                        <p className="text-sm text-gray-500 line-through">
+                                                                                ₹{originalPrice.toLocaleString()}
+                                                                        </p>
+                                                                )}
+                                                        </div>
 						</div>
 
 						{/* Actions */}

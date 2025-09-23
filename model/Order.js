@@ -44,14 +44,16 @@ const OrderSchema = new mongoose.Schema(
 					required: true,
 					min: 1,
 				},
-				price: {
-					type: Number,
-					required: true,
-				},
-				totalPrice: {
-					type: Number,
-					required: true,
-				},
+                                price: {
+                                        type: Number,
+                                        required: true,
+                                },
+                                mrp: { type: Number },
+                                discountAmount: { type: Number, default: 0 },
+                                totalPrice: {
+                                        type: Number,
+                                        required: true,
+                                },
 			},
 		],
 

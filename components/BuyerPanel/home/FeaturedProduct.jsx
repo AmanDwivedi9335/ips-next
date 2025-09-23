@@ -8,6 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ShoppingCart, ArrowRight } from "lucide-react";
 import { useCartStore } from "@/store/cartStore";
+import { deriveProductPricing } from "@/lib/pricing.js";
 
 export default function FeaturedProduct({ product }) {
         const router = useRouter();
@@ -36,13 +37,21 @@ export default function FeaturedProduct({ product }) {
                 product.image ||
                 "https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png";
 
+        const pricing = deriveProductPricing(product);
+        const finalPrice = pricing.finalPrice;
+        const originalPrice = pricing.mrp;
+        const discountPercentage = pricing.discountPercentage;
+
         const handleAddToCart = async () => {
                 await addItem({
                         id: product._id || product.id,
                         name: product.title || product.name,
                         description: product.description,
-                        price: product.price,
-                        originalPrice: product.originalPrice || product.price,
+                        price: finalPrice,
+                        originalPrice,
+                        mrp: originalPrice,
+                        discountPercentage,
+                        discountAmount: pricing.discountAmount,
                         image: defaultImage,
                 });
         };
@@ -122,11 +131,11 @@ export default function FeaturedProduct({ product }) {
 							className="relative order-2 lg:order-1 cursor-pointer"
 							onClick={handleViewProduct}
 						>
-							{product.discountPercentage > 0 && (
-								<Badge className="absolute top-4 left-4 bg-black text-white z-10">
-									{product.discountPercentage}% OFF
-								</Badge>
-							)}
+                                                        {discountPercentage > 0 && (
+                                                                <Badge className="absolute top-4 left-4 bg-black text-white z-10">
+                                                                        {discountPercentage}% OFF
+                                                                </Badge>
+                                                        )}
                                                         <Image
                                                                 src={defaultImage}
                                                                 alt={product.name}
@@ -147,20 +156,20 @@ export default function FeaturedProduct({ product }) {
 								{product.longDescription || product.description}
 							</p>
 
-							<p className="text-2xl md:text-3xl font-bold mb-1">
-								₹{product.price.toLocaleString()}
-							</p>
+                                                        <p className="text-2xl md:text-3xl font-bold mb-1">
+                                                                ₹{finalPrice.toLocaleString()}
+                                                        </p>
 
-							{product.originalPrice > product.price && (
-								<div className="flex items-center mb-6">
-									<span className="text-gray-500 line-through mr-2">
-										₹{product.originalPrice.toLocaleString()}
-									</span>
-									<span className="text-green-500">
-										{product.discountPercentage}% off
-									</span>
-								</div>
-							)}
+                                                        {originalPrice > finalPrice && (
+                                                                <div className="flex items-center mb-6">
+                                                                        <span className="text-gray-500 line-through mr-2">
+                                                                                ₹{originalPrice.toLocaleString()}
+                                                                        </span>
+                                                                        <span className="text-green-500">
+                                                                                {discountPercentage}% off
+                                                                        </span>
+                                                                </div>
+                                                        )}
 
 							<div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4 mt-4">
                                                                 <Button
