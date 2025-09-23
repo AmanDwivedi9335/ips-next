@@ -144,40 +144,49 @@ export default function CheckoutPage() {
 	}, [user, loadUserAddresses]);
 
 	// Initialize checkout based on URL params
-	useEffect(() => {
-		const buyNow = searchParams.get("buyNow");
-		const productId = searchParams.get("id");
-		const quantity = Number.parseInt(searchParams.get("qty") || "1");
+        useEffect(() => {
+                const buyNow = searchParams.get("buyNow");
+                const productId = searchParams.get("id");
+                const quantity = Number.parseInt(searchParams.get("qty") || "1");
 
-		if (buyNow === "true" && productId) {
-			// Buy Now flow
-			const product = getProductById(productId);
-			if (product) {
-				setCheckoutType("buyNow", product, quantity);
-				initializeCheckout([], product, quantity);
-			} else {
-				toast.error("Product not found");
-				router.push("/products");
-			}
-		} else {
-			// Cart checkout flow
-			if (cartItems.length === 0) {
-				toast.error("Your cart is empty");
-				router.push("/cart");
-				return;
-			}
-			setCheckoutType("cart");
-			initializeCheckout(cartItems, null, 1, cartAppliedPromo);
-		}
-	}, [
-		searchParams,
-		cartItems,
-		cartAppliedPromo,
-		getProductById,
-		setCheckoutType,
-		initializeCheckout,
-		router,
-	]);
+                if (buyNow === "true" && productId) {
+                        // Buy Now flow
+                        const storedBuyNowProduct =
+                                buyNowProduct &&
+                                (buyNowProduct.id === productId ||
+                                        buyNowProduct?._id === productId)
+                                        ? buyNowProduct
+                                        : null;
+
+                        const product = storedBuyNowProduct || getProductById(productId);
+
+                        if (product) {
+                                setCheckoutType("buyNow", product, quantity);
+                                initializeCheckout([], product, quantity);
+                        } else {
+                                toast.error("Product not found");
+                                router.push("/products");
+                        }
+                } else {
+                        // Cart checkout flow
+                        if (cartItems.length === 0) {
+                                toast.error("Your cart is empty");
+                                router.push("/cart");
+                                return;
+                        }
+                        setCheckoutType("cart");
+                        initializeCheckout(cartItems, null, 1, cartAppliedPromo);
+                }
+        }, [
+                searchParams,
+                cartItems,
+                cartAppliedPromo,
+                buyNowProduct,
+                getProductById,
+                setCheckoutType,
+                initializeCheckout,
+                router,
+        ]);
 
 	// Handle Razorpay script load
 	const handleRazorpayLoad = useCallback(() => {
