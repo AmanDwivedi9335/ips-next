@@ -108,11 +108,12 @@ export default function ProductCard({ product, viewMode = "grid" }) {
                 toast.success("Added to wishlist!");
         };
 
-	const handleBuyNow = async (e) => {
-		e.stopPropagation();
+        const handleBuyNow = (e) => {
+                e.stopPropagation();
 
-		// Redirect to checkout with buy now parameters
-                router.push(`/checkout?buyNow=true&id=${productId}&qty=1`);
+                if (productId) {
+                        router.push(`/products/${productId}`);
+                }
         };
 
         if (viewMode === "list") {

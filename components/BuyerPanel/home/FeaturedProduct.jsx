@@ -87,9 +87,9 @@ export default function FeaturedProduct({ product }) {
                 });
         };
 
-	const handleBuyNow = () => {
-                router.push(`/checkout?buyNow=true&id=${product._id || product.id}&qty=1`);
-	};
+        const handleBuyNow = () => {
+                router.push(`/products/${product._id || product.id}`);
+        };
 
 	const handleViewProduct = () => {
                 router.push(`/products/${product._id || product.id}`);
