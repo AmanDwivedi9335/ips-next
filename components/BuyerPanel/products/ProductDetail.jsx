@@ -32,6 +32,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCartStore } from "@/store/cartStore";
 import { useWishlistStore } from "@/store/wishlistStore";
+import { useCheckoutStore } from "@/store/checkoutStore.js";
 import ProductCard from "@/components/BuyerPanel/products/ProductCard.jsx";
 import { toast } from "react-hot-toast";
 import Image from "next/image";
@@ -131,6 +132,7 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
         const router = useRouter();
         const { addItem, isLoading } = useCartStore();
         const { addItem: addWishlistItem } = useWishlistStore();
+        const setBuyNowContext = useCheckoutStore((state) => state.setBuyNowContext);
 
         useEffect(() => {
                 const checkQrOption = async () => {
@@ -383,10 +385,61 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                         return;
                 }
 
+                const numericMrpForBuyNow =
+                        toNumber(calculatedMrp) ??
+                        toNumber(product.mrp) ??
+                        toNumber(product.price);
+
+                const normalizedMrp =
+                        numericMrpForBuyNow !== null && numericMrpForBuyNow > 0
+                                ? numericMrpForBuyNow
+                                : numericPriceForBuyNow;
+
+                const discountAmount = Math.max(
+                        (normalizedMrp || 0) - numericPriceForBuyNow,
+                        0
+                );
+
+                const discountPercentage =
+                        normalizedMrp && normalizedMrp > 0
+                                ? Math.round((discountAmount / normalizedMrp) * 100)
+                                : 0;
+
+                const fallbackImage =
+                        "https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png";
+
+                setBuyNowContext(
+                        {
+                                id: product.id || product._id,
+                                name: product.title,
+                                title: product.title,
+                                description: product.description,
+                                price: numericPriceForBuyNow,
+                                mrp: normalizedMrp,
+                                originalPrice: normalizedMrp,
+                                image:
+                                        languageImage ||
+                                        englishImage ||
+                                        product.images?.[0] ||
+                                        product.image ||
+                                        fallbackImage,
+                                selectedOptions: {
+                                        layout: selectedLayout || null,
+                                        size: selectedSize || null,
+                                        material: selectedMaterial || null,
+                                        language: selectedLanguage || null,
+                                        qr: hasQr,
+                                },
+                                discountAmount,
+                                discountPercentage,
+                        },
+                        quantity
+                );
+
                 // Redirect to checkout with buy now parameters
                 router.push(
                         `/checkout?buyNow=true&id=${product.id || product._id}&qty=${quantity}`
-		);
+                );
 	};
 
         const handleQuantityChange = (change) => {

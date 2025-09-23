@@ -142,14 +142,26 @@ export const useCheckoutStore = create(
 				paymentMethod: "razorpay", // "razorpay", "cod", "credit_card","debit_card", "net_banking", "upi", "wallet"
 
 				// Actions
-				setCheckoutType: (type, product = null, quantity = 1) => {
-					set({
-						checkoutType: type,
-						buyNowProduct: product,
-						buyNowQuantity: quantity,
-						currentStep: 1,
-					});
-				},
+                                setCheckoutType: (type, product = null, quantity = 1) => {
+                                        set({
+                                                checkoutType: type,
+                                                buyNowProduct: product,
+                                                buyNowQuantity: quantity,
+                                                currentStep: 1,
+                                        });
+                                },
+
+                                // Preserve selected buy now product details before redirecting to checkout
+                                setBuyNowContext: (product, quantity = 1) => {
+                                        if (!product) {
+                                                return;
+                                        }
+
+                                        set({
+                                                buyNowProduct: product,
+                                                buyNowQuantity: quantity,
+                                        });
+                                },
 
 				setCustomerInfo: (info) => {
 					set((state) => ({
@@ -200,6 +212,7 @@ export const useCheckoutStore = create(
                                                                 price: finalPrice,
                                                                 mrp: normalizedMrp,
                                                                 discountAmount,
+                                                                selectedOptions: product.selectedOptions || null,
                                                                 totalPrice: finalPrice * quantity,
                                                         },
                                                 ];
