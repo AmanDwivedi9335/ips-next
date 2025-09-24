@@ -127,6 +127,7 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
         const [hasQrOption, setHasQrOption] = useState(false);
         const [calculatedPrice, setCalculatedPrice] = useState(null);
         const [calculatedMrp, setCalculatedMrp] = useState(null);
+        const [isMrpMissingForSelection, setIsMrpMissingForSelection] = useState(false);
         const [isPriceLoading, setIsPriceLoading] = useState(false);
         const [hasFetchedPrice, setHasFetchedPrice] = useState(false);
         const router = useRouter();
@@ -214,11 +215,10 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                         setIsPriceLoading(true);
                         setHasFetchedPrice(false);
                         setCalculatedMrp(null);
+                        setIsMrpMissingForSelection(false);
                         try {
                                 const params = new URLSearchParams({
-
                                         product: product._id || product.id,
-
                                         layout: selectedLayout,
                                         size: selectedSize,
                                         material: selectedMaterial,
@@ -226,27 +226,28 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                                 });
                                 const res = await fetch(`/api/prices?${params.toString()}`);
                                 const data = await res.json();
-                                if (
-                                        data.prices &&
-                                        data.prices.length > 0 &&
-                                        data.prices[0]?.price !== undefined &&
-                                        data.prices[0]?.price !== null
-                                ) {
-                                        setCalculatedPrice(data.prices[0].price);
-                                        setCalculatedMrp(
-                                                data.prices[0]?.mrp !== undefined
-                                                        ? data.prices[0].mrp
-                                                        : null,
-                                        );
+                                if (Array.isArray(data.prices) && data.prices.length > 0) {
+                                        const [priceEntry] = data.prices;
+                                        const normalizedPrice = toNumber(priceEntry?.price);
+                                        const normalizedMrp = toNumber(priceEntry?.mrp);
+                                        const hasPriceValue = normalizedPrice !== null;
+                                        const hasMrpValue =
+                                                normalizedMrp !== null && normalizedMrp > 0;
+
+                                        setCalculatedPrice(hasPriceValue ? normalizedPrice : null);
+                                        setCalculatedMrp(hasMrpValue ? normalizedMrp : null);
+                                        setIsMrpMissingForSelection(!hasPriceValue || !hasMrpValue);
                                 } else {
                                         setCalculatedPrice(null);
                                         setCalculatedMrp(null);
+                                        setIsMrpMissingForSelection(true);
                                 }
                                 setHasFetchedPrice(true);
                         } catch (e) {
                                 // ignore
                                 setCalculatedPrice(null);
                                 setCalculatedMrp(null);
+                                setIsMrpMissingForSelection(true);
                                 setHasFetchedPrice(true);
                         } finally {
                                 setIsPriceLoading(false);
@@ -309,7 +310,7 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
 
                 const numericPriceForCart = toNumber(calculatedPrice);
 
-                if (numericPriceForCart === null || isPriceLoading) {
+                if (numericPriceForCart === null || isPriceLoading || isMrpMissingForSelection) {
                         toast.error("Please select another size");
                         return;
                 }
@@ -344,7 +345,11 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
 
                 const numericPriceForWishlist = toNumber(calculatedPrice);
 
-                if (numericPriceForWishlist === null || isPriceLoading) {
+                if (
+                        numericPriceForWishlist === null ||
+                        isPriceLoading ||
+                        isMrpMissingForSelection
+                ) {
                         toast.error("Please select another size");
                         return;
                 }
@@ -380,7 +385,7 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
 
                 const numericPriceForBuyNow = toNumber(calculatedPrice);
 
-                if (numericPriceForBuyNow === null || isPriceLoading) {
+                if (numericPriceForBuyNow === null || isPriceLoading || isMrpMissingForSelection) {
                         toast.error("Please select another size");
                         return;
                 }
@@ -475,7 +480,13 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
         const numericBaseMrp = toNumber(product.mrp) ?? numericPrice;
         const effectiveMrp = numericCalculatedMrp ?? numericBaseMrp;
         const fallbackPrice = numericSalePrice ?? numericPrice ?? null;
-        const displayPrice = numericCalculatedPrice ?? fallbackPrice;
+        const baseDisplayPrice = numericCalculatedPrice ?? fallbackPrice;
+        const shouldShowUnavailableMessage =
+                isMrpMissingForSelection ||
+                (hasFetchedPrice &&
+                        numericCalculatedPrice === null &&
+                        baseDisplayPrice === null);
+        const displayPrice = shouldShowUnavailableMessage ? null : baseDisplayPrice;
         const priceDifference =
                 effectiveMrp !== null && displayPrice !== null ? effectiveMrp - displayPrice : 0;
         const showOriginalPrice =
@@ -492,9 +503,7 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                           ? calculatedDiscount
                           : 0;
         const showDiscountBadge = discountToShow > 0;
-        const isProductUnavailable =
-                hasFetchedPrice && numericCalculatedPrice === null && displayPrice === null;
-        const isLoadingPriceWithoutValue = isPriceLoading && displayPrice === null;
+        const isLoadingPriceWithoutValue = isPriceLoading && baseDisplayPrice === null;
 
         if (!product) {
                 return (
@@ -651,7 +660,7 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                                                 <p className="text-sm text-gray-500 mb-2">
                                                         Fetching latest price...
                                                 </p>
-                                        ) : isProductUnavailable ? (
+                                        ) : shouldShowUnavailableMessage ? (
                                                 <p className="text-lg lg:text-xl font-semibold text-red-600 mb-2">
                                                         Please select another size
                                                 </p>
@@ -824,7 +833,8 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                                                                         disabled={
                                                                                 isLoading ||
                                                                                 calculatedPrice === null ||
-                                                                                isPriceLoading
+                                                                                isPriceLoading ||
+                                                                                isMrpMissingForSelection
                                                                         }
                                                                         className="flex-1 bg-black text-white hover:bg-gray-800"
                                                                         size="lg"
@@ -836,7 +846,8 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                                                                         onClick={handleBuyNow}
                                                                         disabled={
                                                                                 calculatedPrice === null ||
-                                                                                isPriceLoading
+                                                                                isPriceLoading ||
+                                                                                isMrpMissingForSelection
                                                                         }
                                                                         className="flex-1 bg-green-600 text-white hover:bg-green-700"
                                                                         size="lg"
@@ -849,7 +860,8 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                                                                         onClick={handleAddToWishlist}
                                                                         disabled={
                                                                                 calculatedPrice === null ||
-                                                                                isPriceLoading
+                                                                                isPriceLoading ||
+                                                                                isMrpMissingForSelection
                                                                         }
                                                                 >
                                                                         <Heart className="h-5 w-5 mr-2" />
