@@ -189,9 +189,18 @@ export default function CheckoutPage() {
         ]);
 
 	// Handle Razorpay script load
-	const handleRazorpayLoad = useCallback(() => {
-		setIsRazorpayLoaded(true);
-	}, []);
+        const handleRazorpayLoad = useCallback(() => {
+                setIsRazorpayLoaded(true);
+        }, []);
+
+        // Ensure Razorpay availability is detected even if the script
+        // was already loaded before this component mounted (for example
+        // due to caching or navigation back to the page).
+        useEffect(() => {
+                if (typeof window !== "undefined" && window.Razorpay) {
+                        handleRazorpayLoad();
+                }
+        }, [handleRazorpayLoad]);
 
 	// Handle address selection
 	const handleAddressSelect = useCallback(
@@ -804,10 +813,12 @@ export default function CheckoutPage() {
 
 	return (
 		<>
-			<Script
-				src="https://checkout.razorpay.com/v1/checkout.js"
-				onLoad={handleRazorpayLoad}
-			/>
+                        <Script
+                                src="https://checkout.razorpay.com/v1/checkout.js"
+                                strategy="afterInteractive"
+                                onLoad={handleRazorpayLoad}
+                                onReady={handleRazorpayLoad}
+                        />
 
 			<div className="min-h-screen bg-gray-50 py-8">
 				<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
