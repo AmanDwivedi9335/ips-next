@@ -226,6 +226,7 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                                 });
                                 const res = await fetch(`/api/prices?${params.toString()}`);
                                 const data = await res.json();
+
                                 if (Array.isArray(data.prices) && data.prices.length > 0) {
                                         const [priceEntry] = data.prices;
                                         const normalizedPrice = toNumber(priceEntry?.price);
@@ -241,13 +242,16 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                                         setCalculatedPrice(null);
                                         setCalculatedMrp(null);
                                         setIsMrpMissingForSelection(true);
+
                                 }
                                 setHasFetchedPrice(true);
                         } catch (e) {
                                 // ignore
                                 setCalculatedPrice(null);
                                 setCalculatedMrp(null);
+
                                 setIsMrpMissingForSelection(true);
+
                                 setHasFetchedPrice(true);
                         } finally {
                                 setIsPriceLoading(false);
