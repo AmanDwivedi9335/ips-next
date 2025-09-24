@@ -218,9 +218,7 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                         setIsMrpMissingForSelection(false);
                         try {
                                 const params = new URLSearchParams({
-
                                         product: product._id || product.id,
-
                                         layout: selectedLayout,
                                         size: selectedSize,
                                         material: selectedMaterial,
@@ -228,29 +226,32 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                                 });
                                 const res = await fetch(`/api/prices?${params.toString()}`);
                                 const data = await res.json();
-                                if (data.prices && data.prices.length > 0) {
-                                        const [priceEntry] = data.prices;
-                                        const hasPriceValue =
-                                                priceEntry?.price !== undefined &&
-                                                priceEntry?.price !== null;
-                                        const hasMrpValue =
-                                                priceEntry?.mrp !== undefined &&
-                                                priceEntry?.mrp !== null;
 
-                                        setCalculatedPrice(hasPriceValue ? priceEntry.price : null);
-                                        setCalculatedMrp(hasMrpValue ? priceEntry.mrp : null);
-                                        setIsMrpMissingForSelection(hasPriceValue && !hasMrpValue);
+                                if (Array.isArray(data.prices) && data.prices.length > 0) {
+                                        const [priceEntry] = data.prices;
+                                        const normalizedPrice = toNumber(priceEntry?.price);
+                                        const normalizedMrp = toNumber(priceEntry?.mrp);
+                                        const hasPriceValue = normalizedPrice !== null;
+                                        const hasMrpValue =
+                                                normalizedMrp !== null && normalizedMrp > 0;
+
+                                        setCalculatedPrice(hasPriceValue ? normalizedPrice : null);
+                                        setCalculatedMrp(hasMrpValue ? normalizedMrp : null);
+                                        setIsMrpMissingForSelection(!hasPriceValue || !hasMrpValue);
                                 } else {
                                         setCalculatedPrice(null);
                                         setCalculatedMrp(null);
-                                        setIsMrpMissingForSelection(false);
+                                        setIsMrpMissingForSelection(true);
+
                                 }
                                 setHasFetchedPrice(true);
                         } catch (e) {
                                 // ignore
                                 setCalculatedPrice(null);
                                 setCalculatedMrp(null);
-                                setIsMrpMissingForSelection(false);
+
+                                setIsMrpMissingForSelection(true);
+
                                 setHasFetchedPrice(true);
                         } finally {
                                 setIsPriceLoading(false);
