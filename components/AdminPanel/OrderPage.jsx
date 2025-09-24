@@ -34,7 +34,7 @@ import {
 	Edit,
 	Trash2,
 	Package,
-	DollarSign,
+        IndianRupee,
 	Clock,
 	CheckCircle,
 } from "lucide-react";
@@ -43,6 +43,9 @@ import { OrderDetailsPopup } from "@/components/AdminPanel/Popups/OrderDetailsPo
 import { UpdateOrderPopup } from "@/components/AdminPanel/Popups/UpdateOrderPopup.jsx";
 import { DeleteOrderPopup } from "@/components/AdminPanel/Popups/DeleteOrderPopup.jsx";
 import { InvoicePopup } from "@/components/AdminPanel/Popups/InvoicePopup.jsx";
+import { formatCurrency as formatCurrencyValue } from "@/lib/pricing.js";
+
+const formatCurrency = (value) => `₹${formatCurrencyValue(value ?? 0)}`;
 
 function OrderPage() {
 	const {
@@ -203,21 +206,21 @@ function OrderPage() {
 						</CardContent>
 					</Card>
 
-					<Card>
-						<CardContent className="p-6">
-							<div className="flex items-center">
-								<DollarSign className="h-8 w-8 text-green-600" />
-								<div className="ml-4">
-									<p className="text-sm font-medium text-gray-600">
-										Total Revenue
-									</p>
-									<p className="text-2xl font-bold text-gray-900">
-										${stats.totalRevenue.toFixed(2)}
-									</p>
-								</div>
-							</div>
-						</CardContent>
-					</Card>
+                                        <Card>
+                                                <CardContent className="p-6">
+                                                        <div className="flex items-center">
+                                                                <IndianRupee className="h-8 w-8 text-green-600" />
+                                                                <div className="ml-4">
+                                                                        <p className="text-sm font-medium text-gray-600">
+                                                                                Total Revenue
+                                                                        </p>
+                                                                        <p className="text-2xl font-bold text-gray-900">
+                                                                                {formatCurrency(stats.totalRevenue)}
+                                                                        </p>
+                                                                </div>
+                                                        </div>
+                                                </CardContent>
+                                        </Card>
 
 					<Card>
 						<CardContent className="p-6">
@@ -472,9 +475,9 @@ function OrderPage() {
 														</p>
 													</div>
 												</TableCell>
-												<TableCell className="font-medium text-green-600">
-													${order.totalAmount.toFixed(2)}
-												</TableCell>
+                                                                                                <TableCell className="font-medium text-green-600">
+                                                                                                        {formatCurrency(order.totalAmount)}
+                                                                                                </TableCell>
 												<TableCell>
 													<Select
 														value={order.status}

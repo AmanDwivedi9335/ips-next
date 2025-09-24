@@ -30,7 +30,7 @@ const initialOrders = [
                 color: "yellow",
                 qty: 2,
                 date: "June 2, 2025",
-                price: "$253.82",
+                price: "₹253.82",
                 status: "Delivered",
         },
         {
@@ -39,7 +39,7 @@ const initialOrders = [
                 color: "black",
                 qty: 3,
                 date: "June 5, 2025",
-                price: "$45.99",
+                price: "₹45.99",
                 status: "In Transit",
         },
 ];
