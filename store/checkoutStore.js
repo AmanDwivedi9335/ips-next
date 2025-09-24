@@ -7,33 +7,39 @@ import { toNumber } from "@/lib/pricing.js";
 
 // Payment API functions
 const paymentAPI = {
-	async createRazorpayOrder(orderData) {
-		const response = await fetch("/api/razorpay", {
-			method: "POST",
-			headers: { "Content-Type": "application/json" },
-			credentials: "include",
-			body: JSON.stringify(orderData),
-		});
-		if (!response.ok) {
-			const error = await response.json();
-			throw new Error(error.message || "Failed to create payment order");
-		}
-		return response.json();
-	},
+        async createRazorpayOrder(orderData) {
+                const response = await fetch("/api/razorpay", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        credentials: "include",
+                        body: JSON.stringify(orderData),
+                });
+                const data = await response.json().catch(() => null);
 
-	async verifyPayment(paymentData) {
-		const response = await fetch("/api/paymentverify", {
-			method: "POST",
+                if (!response.ok || !data?.success) {
+                        const message = data?.error || data?.message || "Failed to create payment order";
+                        throw new Error(message);
+                }
+
+                return data;
+        },
+
+        async verifyPayment(paymentData) {
+                const response = await fetch("/api/paymentverify", {
+                        method: "POST",
 			headers: { "Content-Type": "application/json" },
 			credentials: "include",
 			body: JSON.stringify(paymentData),
 		});
-		if (!response.ok) {
-			const error = await response.json();
-			throw new Error(error.message || "Payment verification failed");
-		}
-		return response.json();
-	},
+                const data = await response.json().catch(() => null);
+
+                if (!response.ok || !data?.success) {
+                        const message = data?.error || data?.message || "Payment verification failed";
+                        throw new Error(message);
+                }
+
+                return data;
+        },
 
 	async createOrder(orderData) {
 		const response = await fetch("/api/orders", {
@@ -483,12 +489,12 @@ export const useCheckoutStore = create(
 
 					set({ paymentLoading: true });
 
+					let shouldResetLoading = true;
+
 					try {
-						// Determine which coupon to use
 						const couponToUse =
 							checkoutType === "cart" ? cartAppliedCoupon : appliedCoupon;
 
-						// Prepare order data
 						const orderData = {
 							userId: userId,
 							customerName: customerInfo.name,
@@ -512,65 +518,100 @@ export const useCheckoutStore = create(
 							},
 							couponApplied: couponToUse
 								? {
-										couponCode: couponToUse.code,
-										discountAmount:
-											couponToUse.discountAmount || orderSummary.discount,
-										discountType: "percentage",
-								  }
+									couponCode: couponToUse.code,
+									discountAmount:
+										couponToUse.discountAmount || orderSummary.discount,
+									discountType: "percentage",
+								}
 								: null,
 						};
 
 						if (paymentMethod === "razorpay") {
-							// Create Razorpay order
-							const razorpayOrder = await paymentAPI.createRazorpayOrder({
+							if (typeof window === "undefined" || !window.Razorpay) {
+								toast.error("Payment gateway is not available. Please refresh the page and try again.");
+								return { success: false, error: "Razorpay not available" };
+							}
+
+							const orderNotes = {};
+							if (userId) {
+								orderNotes.userId = String(userId);
+							}
+							if (customerInfo.email) {
+								orderNotes.customerEmail = customerInfo.email;
+							}
+							if (customerInfo.name) {
+								orderNotes.customerName = customerInfo.name;
+							}
+
+							const payload = {
 								amount: orderSummary.total,
 								currency: "INR",
 								receipt: `order_${Date.now()}`,
-							});
+							};
 
-							// Initialize Razorpay payment
+                                                        if (Object.keys(orderNotes).length > 0) {
+                                                                payload.notes = orderNotes;
+                                                        }
+
+							const {
+								order: razorpayOrder,
+								key: razorpayKey,
+							} = await paymentAPI.createRazorpayOrder(payload);
+
+							if (!razorpayOrder?.id) {
+								throw new Error("Failed to initialize Razorpay order");
+							}
+
+							const publicKey =
+								razorpayKey || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
+
+							if (!publicKey) {
+								throw new Error("Razorpay key is not configured");
+							}
+
+							const RazorpayCheckout = window.Razorpay;
+
+							const orderPayload = {
+								...orderData,
+								paymentDetails: {
+									gateway: "razorpay",
+									razorpayOrderId: razorpayOrder.id,
+								},
+							};
+
 							const options = {
-								key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+								key: publicKey,
 								amount: razorpayOrder.amount,
 								currency: razorpayOrder.currency,
-								name: "Your Store Name",
-								description: "Purchase from Your Store",
+								name: "IPS Store",
+								description: "Secure payment via Razorpay",
 								order_id: razorpayOrder.id,
 								handler: async function (response) {
 									try {
-										// Verify payment
-										const verificationData = {
-											// razorpay_order_id: response.razorpay_order_id,
-											razorpay_payment_id: response.razorpay_payment_id,
-											// razorpay_signature: response.razorpay_signature,
-											orderData,
-											userId: userId,
-											clearCart: checkoutType === "cart",
-										};
-
-										const verificationResult = await paymentAPI.verifyPayment(
-											verificationData
-										);
+										const verificationResult =
+											await paymentAPI.verifyPayment({
+												razorpay_order_id: response.razorpay_order_id,
+												razorpay_payment_id: response.razorpay_payment_id,
+												razorpay_signature: response.razorpay_signature,
+												orderData: orderPayload,
+												userId: userId,
+												clearCart: checkoutType === "cart",
+											});
 
 										if (verificationResult.success) {
-											// Clear cart if it was a cart checkout
 											if (checkoutType === "cart" && clearCartCallback) {
 												clearCartCallback();
 											}
 
-											// Reset checkout
 											get().resetCheckout();
 
 											toast.success("Payment successful! Order placed.");
 
-											// Redirect to success page
 											window.location.href = `/order-success?orderId=${verificationResult.orderId}&orderNumber=${verificationResult.orderNumber}`;
-										} else {
-											toast.error("Payment verification failed");
 										}
 									} catch (error) {
 										console.error("Payment verification error:", error);
-										toast.error("Payment verification failed");
+										toast.error(error.message || "Payment verification failed");
 									} finally {
 										set({ paymentLoading: false });
 									}
@@ -583,60 +624,77 @@ export const useCheckoutStore = create(
 								theme: {
 									color: "#000000",
 								},
-								modal: {
-									ondismiss: function () {
-										set({ paymentLoading: false });
-										toast.error("Payment cancelled");
-									},
-								},
-							};
+                                                                modal: {
+                                                                        ondismiss: function () {
+                                                                                set({ paymentLoading: false });
+                                                                                toast.error("Payment cancelled");
+                                                                        },
+                                                                },
+                                                        };
 
-							const razorpay = new window.Razorpay(options);
-							razorpay.open();
+                                                        if (Object.keys(orderNotes).length > 0) {
+                                                                options.notes = orderNotes;
+                                                        }
 
-							return { success: true, paymentMethod: "razorpay" };
-						} else if (paymentMethod === "cod") {
-							// Handle Cash on Delivery
-							const codOrderData = {
-								orderData: {
-									...orderData,
-									paymentStatus: "pending",
-									status: "confirmed",
-								},
-								userId: userId,
-								clearCart: checkoutType === "cart",
-							};
+                                                        const razorpay = new RazorpayCheckout(options);
 
-							const result = await paymentAPI.createOrder(codOrderData);
+                                                        razorpay.on("payment.failed", function (response) {
+                                                                console.error("Razorpay payment failed:", response.error);
+                                                                set({ paymentLoading: false });
+                                                                toast.error(
+                                                                        response?.error?.description ||
+                                                                                "Payment failed. Please try again."
+                                                                );
+                                                        });
 
-							if (result.success) {
-								// Clear cart if it was a cart checkout
-								if (checkoutType === "cart" && clearCartCallback) {
-									clearCartCallback();
-								}
+                                                        razorpay.open();
 
-								// Reset checkout
-								get().resetCheckout();
+                                                        shouldResetLoading = false;
 
-								toast.success("Order placed successfully!");
+                                                        return { success: true, paymentMethod: "razorpay" };
+					} else if (paymentMethod === "cod") {
+						const codOrderData = {
+							orderData: {
+								...orderData,
+								paymentStatus: "pending",
+								status: "confirmed",
+							},
+							userId: userId,
+							clearCart: checkoutType === "cart",
+						};
 
-								// Redirect to success page
-								window.location.href = `/order-success?orderId=${result.orderId}&orderNumber=${result.orderNumber}`;
+						const result = await paymentAPI.createOrder(codOrderData);
 
-								return { success: true, paymentMethod: "cod" };
-							} else {
-								toast.error("Failed to place order");
-								return { success: false, error: result.error };
+						if (result.success) {
+							if (checkoutType === "cart" && clearCartCallback) {
+								clearCartCallback();
 							}
+
+							get().resetCheckout();
+
+							toast.success("Order placed successfully!");
+
+							window.location.href = `/order-success?orderId=${result.orderId}&orderNumber=${result.orderNumber}`;
+
+							return { success: true, paymentMethod: "cod" };
 						}
-					} catch (error) {
-						console.error("Payment processing error:", error);
-						toast.error("Payment processing failed");
-						return { success: false, error: error.message };
-					} finally {
+
+						toast.error(result.error || "Failed to place order");
+						return { success: false, error: result.error };
+					}
+
+					toast.error("Unsupported payment method");
+					return { success: false, error: "Unsupported payment method" };
+				} catch (error) {
+					console.error("Payment processing error:", error);
+					toast.error(error.message || "Payment processing failed");
+					return { success: false, error: error.message };
+				} finally {
+					if (shouldResetLoading) {
 						set({ paymentLoading: false });
 					}
-				},
+				}
+                                },
 
 				// Reset checkout
 				resetCheckout: () => {
