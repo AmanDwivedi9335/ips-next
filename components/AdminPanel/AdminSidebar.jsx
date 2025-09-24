@@ -32,7 +32,7 @@ import {
         HelpCircle,
         ChevronDown,
         Sun,
-        DollarSign,
+        IndianRupee,
         Moon,
         FolderOpen,
         Tags,
@@ -62,7 +62,7 @@ const menuItems = [
                         { title: "Layouts", href: "/admin/catalog/layouts", icon: Square },
                         { title: "Languages", href: "/admin/catalog/languages", icon: Languages },
                         { title: "Coupons", href: "/admin/catalog/coupons", icon: Ticket },
-                        { title: "Pricing", href: "/admin/catalog/prices", icon: DollarSign },
+                        { title: "Pricing", href: "/admin/catalog/prices", icon: IndianRupee },
                 ],
         },
         {

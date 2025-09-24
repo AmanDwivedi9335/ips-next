@@ -26,7 +26,7 @@ import {
         Package,
         TrendingUp,
         Users,
-        DollarSign,
+        IndianRupee,
         RefreshCw,
         ArrowUpRight,
         ArrowDownRight,
@@ -41,21 +41,21 @@ import {
         BarChart3,
 } from "lucide-react";
 
-const currencyFormatter0 = new Intl.NumberFormat("en-US", {
+const currencyFormatter0 = new Intl.NumberFormat("en-IN", {
         style: "currency",
-        currency: "USD",
+        currency: "INR",
         minimumFractionDigits: 0,
         maximumFractionDigits: 0,
 });
 
-const currencyFormatter2 = new Intl.NumberFormat("en-US", {
+const currencyFormatter2 = new Intl.NumberFormat("en-IN", {
         style: "currency",
-        currency: "USD",
+        currency: "INR",
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
 });
 
-const numberFormatter = new Intl.NumberFormat("en-US");
+const numberFormatter = new Intl.NumberFormat("en-IN");
 
 const STATUS_META = {
         pending: {
@@ -347,7 +347,7 @@ export default function AdminDashboard() {
                                 previous: summary.revenueLastMonth,
                                 format: "currency",
                                 precision: 0,
-                                icon: DollarSign,
+                                icon: IndianRupee,
                                 iconColor: "text-blue-600",
                                 iconBg: "bg-blue-100",
                                 changeLabel: "vs last month",

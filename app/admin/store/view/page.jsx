@@ -25,7 +25,7 @@ export default function ViewStorePage() {
 		categories: 12,
 		orders: 89,
 		visitors: 1247,
-		revenue: "$12,450",
+                revenue: "₹12,450",
 		conversionRate: "3.2%",
 	});
 

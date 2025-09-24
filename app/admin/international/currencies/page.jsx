@@ -20,12 +20,12 @@ import { AddCurrencyPopup } from "@/components/AdminPanel/Popups/AddCurrencyPopu
 import { UpdateCurrencyPopup } from "@/components/AdminPanel/Popups/UpdateCurrencyPopup.jsx";
 
 const currencies = [
-	{
-		id: 1,
-		name: "Dollar",
-		symbol: "$",
-		published: true,
-	},
+        {
+                id: 1,
+                name: "Indian Rupee",
+                symbol: "₹",
+                published: true,
+        },
 	{
 		id: 2,
 		name: "Euro",

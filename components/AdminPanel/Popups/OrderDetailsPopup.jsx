@@ -11,15 +11,19 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-	Package,
-	User,
-	MapPin,
-	CreditCard,
-	Calendar,
-	Phone,
-	Mail,
-	Truck,
+        Package,
+        User,
+        MapPin,
+        CreditCard,
+        Calendar,
+        Phone,
+        Mail,
+        Truck,
 } from "lucide-react";
+import { formatCurrency as formatCurrencyValue } from "@/lib/pricing.js";
+
+const formatCurrency = (value) => `₹${formatCurrencyValue(value ?? 0)}`;
+const formatDiscount = (value) => `-₹${formatCurrencyValue(Math.abs(value ?? 0))}`;
 
 export function OrderDetailsPopup({ open, onOpenChange, order }) {
 	if (!order) return null;
@@ -194,15 +198,14 @@ export function OrderDetailsPopup({ open, onOpenChange, order }) {
 											)}
 											<div className="flex-1">
 												<h4 className="font-medium">{product.productName}</h4>
-												<p className="text-sm text-gray-600">
-													Quantity: {product.quantity} × $
-													{product.price.toFixed(2)}
-												</p>
+                                                                                                <p className="text-sm text-gray-600">
+                                                                                                        Quantity: {product.quantity} × {formatCurrency(product.price)}
+                                                                                                </p>
 											</div>
 											<div className="text-right">
-												<p className="font-medium">
-													${product.totalPrice.toFixed(2)}
-												</p>
+                                                                                                <p className="font-medium">
+                                                                                                        {formatCurrency(product.totalPrice)}
+                                                                                                </p>
 											</div>
 										</div>
 									))}
@@ -243,41 +246,39 @@ export function OrderDetailsPopup({ open, onOpenChange, order }) {
 							</CardHeader>
 							<CardContent>
 								<div className="space-y-3">
-									<div className="flex justify-between">
-										<span>Subtotal</span>
-										<span>${order.subtotal.toFixed(2)}</span>
-									</div>
+                                                                        <div className="flex justify-between">
+                                                                                <span>Subtotal</span>
+                                                                                <span>{formatCurrency(order.subtotal)}</span>
+                                                                        </div>
 									{order.tax > 0 && (
-										<div className="flex justify-between">
-											<span>Tax</span>
-											<span>${order.tax.toFixed(2)}</span>
-										</div>
+                                                                                <div className="flex justify-between">
+                                                                                        <span>Tax</span>
+                                                                                        <span>{formatCurrency(order.tax)}</span>
+                                                                                </div>
 									)}
 									{order.shippingCost > 0 && (
-										<div className="flex justify-between">
-											<span>Shipping</span>
-											<span>${order.shippingCost.toFixed(2)}</span>
-										</div>
+                                                                                <div className="flex justify-between">
+                                                                                        <span>Shipping</span>
+                                                                                        <span>{formatCurrency(order.shippingCost)}</span>
+                                                                                </div>
 									)}
 									{order.discount > 0 && (
-										<div className="flex justify-between text-green-600">
-											<span>Discount</span>
-											<span>-${order.discount.toFixed(2)}</span>
-										</div>
+                                                                                <div className="flex justify-between text-green-600">
+                                                                                        <span>Discount</span>
+                                                                                        <span>{formatDiscount(order.discount)}</span>
+                                                                                </div>
 									)}
 									{order.couponApplied && (
-										<div className="flex justify-between text-blue-600">
-											<span>Coupon ({order.couponApplied.couponCode})</span>
-											<span>
-												-${order.couponApplied.discountAmount.toFixed(2)}
-											</span>
-										</div>
+                                                                                <div className="flex justify-between text-blue-600">
+                                                                                        <span>Coupon ({order.couponApplied.couponCode})</span>
+                                                                                        <span>{formatDiscount(order.couponApplied.discountAmount)}</span>
+                                                                                </div>
 									)}
 									<Separator />
-									<div className="flex justify-between text-lg font-bold">
-										<span>Total Amount</span>
-										<span>${order.totalAmount.toFixed(2)}</span>
-									</div>
+                                                                        <div className="flex justify-between text-lg font-bold">
+                                                                                <span>Total Amount</span>
+                                                                                <span>{formatCurrency(order.totalAmount)}</span>
+                                                                        </div>
 								</div>
 							</CardContent>
 						</Card>

@@ -8,6 +8,10 @@ import { Badge } from "@/components/ui/badge";
 import { Download, Printer } from "lucide-react";
 import { useAdminOrderStore } from "@/store/adminOrderStore.js";
 import { toast } from "sonner";
+import { formatCurrency as formatCurrencyValue } from "@/lib/pricing.js";
+
+const formatCurrency = (value) => `₹${formatCurrencyValue(value ?? 0)}`;
+const formatDiscount = (value) => `-₹${formatCurrencyValue(Math.abs(value ?? 0))}`;
 
 export function InvoicePopup({ open, onOpenChange, order }) {
 	const { downloadInvoice } = useAdminOrderStore();
@@ -109,11 +113,11 @@ export function InvoicePopup({ open, onOpenChange, order }) {
 									{order.status.toUpperCase()}
 								</Badge>
 							</div>
-							<div className="text-right">
-								<p className="text-3xl font-bold text-orange-500">
-									${order.totalAmount.toFixed(2)}
-								</p>
-							</div>
+                                                        <div className="text-right">
+                                                                <p className="text-3xl font-bold text-orange-500">
+                                                                        {formatCurrency(order.totalAmount)}
+                                                                </p>
+                                                        </div>
 						</div>
 					</div>
 
@@ -167,51 +171,51 @@ export function InvoicePopup({ open, onOpenChange, order }) {
 								<div className="col-span-2 text-center flex items-center justify-center">
 									{product.quantity}
 								</div>
-								<div className="col-span-2 text-center flex items-center justify-center">
-									${product.price.toFixed(2)}
-								</div>
-								<div className="col-span-2 text-right flex items-center justify-end">
-									${product.totalPrice.toFixed(2)}
-								</div>
+                                                                <div className="col-span-2 text-center flex items-center justify-center">
+                                                                        {formatCurrency(product.price)}
+                                                                </div>
+                                                                <div className="col-span-2 text-right flex items-center justify-end">
+                                                                        {formatCurrency(product.totalPrice)}
+                                                                </div>
 							</div>
 						))}
 					</div>
 
 					{/* Totals */}
 					<div className="space-y-3">
-						<div className="flex justify-between">
-							<span>Subtotal</span>
-							<span>${order.subtotal.toFixed(2)}</span>
-						</div>
+                                                <div className="flex justify-between">
+                                                        <span>Subtotal</span>
+                                                        <span>{formatCurrency(order.subtotal)}</span>
+                                                </div>
 						{order.tax > 0 && (
-							<div className="flex justify-between">
-								<span>Tax</span>
-								<span>${order.tax.toFixed(2)}</span>
-							</div>
+                                                        <div className="flex justify-between">
+                                                                <span>Tax</span>
+                                                                <span>{formatCurrency(order.tax)}</span>
+                                                        </div>
 						)}
 						{order.shippingCost > 0 && (
-							<div className="flex justify-between">
-								<span>Shipping</span>
-								<span>${order.shippingCost.toFixed(2)}</span>
-							</div>
+                                                        <div className="flex justify-between">
+                                                                <span>Shipping</span>
+                                                                <span>{formatCurrency(order.shippingCost)}</span>
+                                                        </div>
 						)}
 						{order.discount > 0 && (
-							<div className="flex justify-between text-green-600">
-								<span>Discount</span>
-								<span>-${order.discount.toFixed(2)}</span>
-							</div>
+                                                        <div className="flex justify-between text-green-600">
+                                                                <span>Discount</span>
+                                                                <span>{formatDiscount(order.discount)}</span>
+                                                        </div>
 						)}
 						{order.couponApplied && (
-							<div className="flex justify-between text-blue-600">
-								<span>Coupon ({order.couponApplied.couponCode})</span>
-								<span>-${order.couponApplied.discountAmount.toFixed(2)}</span>
-							</div>
+                                                        <div className="flex justify-between text-blue-600">
+                                                                <span>Coupon ({order.couponApplied.couponCode})</span>
+                                                                <span>{formatDiscount(order.couponApplied.discountAmount)}</span>
+                                                        </div>
 						)}
 						<Separator />
-						<div className="flex justify-between font-bold text-lg">
-							<span>Total Amount</span>
-							<span>${order.totalAmount.toFixed(2)}</span>
-						</div>
+                                                <div className="flex justify-between font-bold text-lg">
+                                                        <span>Total Amount</span>
+                                                        <span>{formatCurrency(order.totalAmount)}</span>
+                                                </div>
 					</div>
 
 					<Separator />
