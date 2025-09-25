@@ -89,7 +89,44 @@ export default function OrderSuccessPage() {
                 setDownloadMessage(null);
 
                 try {
-                        const response = await fetch(`/api/orders/${identifier}/invoice`);
+                        const invoiceParams = new URLSearchParams();
+
+                        if (orderDetails?.orderNumber || orderNumber) {
+                                invoiceParams.set(
+                                        "orderNumber",
+                                        orderDetails?.orderNumber || orderNumber
+                                );
+                        }
+
+                        if (orderDetails?.orderNumber && orderNumber && orderDetails?.orderNumber !== orderNumber) {
+                                invoiceParams.set("fallbackOrderNumber", orderNumber);
+                        }
+
+                        if (orderDetails?.transactionId) {
+                                invoiceParams.set("transactionId", orderDetails.transactionId);
+                        }
+
+                        if (orderDetails?.paymentDetails?.razorpayOrderId) {
+                                invoiceParams.set(
+                                        "gatewayOrderId",
+                                        orderDetails.paymentDetails.razorpayOrderId
+                                );
+                        }
+
+                        if (orderDetails?.paymentDetails?.razorpayPaymentId) {
+                                invoiceParams.set(
+                                        "gatewayPaymentId",
+                                        orderDetails.paymentDetails.razorpayPaymentId
+                                );
+                        }
+
+                        const queryString = invoiceParams.toString();
+                        const response = await fetch(
+                                `/api/orders/${identifier}/invoice${queryString ? `?${queryString}` : ""}`,
+                                {
+                                        cache: "no-store",
+                                }
+                        );
 
                         if (!response.ok) {
                                 const data = await response.json().catch(() => null);
