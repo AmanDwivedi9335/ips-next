@@ -163,7 +163,8 @@ export default function AdminProductsPage() {
 			[
 				"ID",
 				"Name",
-				"Category",
+                                "Poster Code",
+                                "Category",
 				"Price",
 				"Sale Price",
                                 "Published",
@@ -172,7 +173,8 @@ export default function AdminProductsPage() {
 				[
 					product._id,
 					`"${product.title}"`,
-					product.category,
+                                        product.productCode || product.code || "",
+                                        product.category,
 					product.price,
 					product.salePrice || product.price,
                                         product.published ? "Yes" : "No",
@@ -387,16 +389,17 @@ export default function AdminProductsPage() {
 													onCheckedChange={handleSelectAll}
 												/>
 											</TableHead>
-											<TableHead>
-												<Button
-													variant="ghost"
-													onClick={() => handleSort("title")}
-													className="p-0 h-auto font-medium"
-												>
-													Product Name
-													<ArrowUpDown className="ml-2 h-4 w-4" />
-												</Button>
-											</TableHead>
+                                                                                        <TableHead>
+                                                                                                <Button
+                                                                                                        variant="ghost"
+                                                                                                        onClick={() => handleSort("title")}
+                                                                                                        className="p-0 h-auto font-medium"
+                                                                                                >
+                                                                                                        Product Name
+                                                                                                        <ArrowUpDown className="ml-2 h-4 w-4" />
+                                                                                                </Button>
+                                                                                        </TableHead>
+                                                                                        <TableHead>Poster Code</TableHead>
 											<TableHead>Category</TableHead>
 											<TableHead>
 												<Button
@@ -415,6 +418,7 @@ export default function AdminProductsPage() {
                                                                        </TableHeader>
                                                                        <TableBody>
                                                                                {products.map((product, index) => {
+                                                                                       const posterCode = product.productCode || product.code;
                                                                                        const englishImage = product.languageImages?.find(
                                                                                                (li) => li.language === "English"
                                                                                        )?.image;
@@ -459,12 +463,15 @@ export default function AdminProductsPage() {
                                                                                                                                        {product.description}
                                                                                                                                </div>
                                                                                                                        </div>
-                                                                                                               </div>
+                                                                                                              </div>
+                                                                                                      </TableCell>
+                                                                                                       <TableCell className="font-medium">
+                                                                                                               {posterCode || "-"}
                                                                                                        </TableCell>
-                                                                                                <TableCell>
-                                                                                                        <Badge variant="outline" className="capitalize">
-                                                                                                                {product.category.replace("-", " ")}
-                                                                                                        </Badge>
+                                                                                               <TableCell>
+                                                                                                       <Badge variant="outline" className="capitalize">
+                                                                                                               {product.category.replace("-", " ")}
+                                                                                                       </Badge>
                                                                                                </TableCell>
 												<TableCell className="font-medium">
 													₹{product.price.toLocaleString()}
