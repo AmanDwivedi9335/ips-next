@@ -66,8 +66,8 @@ export function MyProfile() {
                 const fetchData = async () => {
                         try {
                                 const [profileRes, addressRes] = await Promise.all([
-                                        fetch("/api/auth/me"),
-                                        fetch("/api/user/addresses"),
+                                        fetch("/api/auth/me", { credentials: "include" }),
+                                        fetch("/api/user/addresses", { credentials: "include" }),
                                 ]);
 
                                 if (profileRes.ok) {
@@ -147,12 +147,14 @@ export function MyProfile() {
                                 response = await fetch("/api/user/addresses", {
                                         method: "PUT",
                                         headers: { "Content-Type": "application/json" },
+                                        credentials: "include",
                                         body: JSON.stringify({ addressId: editingAddressId, ...payload }),
                                 });
                         } else {
                                 response = await fetch("/api/user/addresses", {
                                         method: "POST",
                                         headers: { "Content-Type": "application/json" },
+                                        credentials: "include",
                                         body: JSON.stringify(payload),
                                 });
                         }
@@ -196,6 +198,7 @@ export function MyProfile() {
                         const response = await fetch("/api/user/addresses", {
                                 method: "DELETE",
                                 headers: { "Content-Type": "application/json" },
+                                credentials: "include",
                                 body: JSON.stringify({ addressId }),
                         });
 
