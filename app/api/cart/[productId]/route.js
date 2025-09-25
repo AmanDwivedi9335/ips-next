@@ -7,7 +7,13 @@ import { cookies } from "next/headers";
 import { deriveProductPricing } from "@/lib/pricing.js";
 
 export async function PUT(req, { params }) {
-	await dbConnect();
+        const { productId } = await params;
+
+        if (!productId) {
+                return Response.json({ message: "Product identifier is required" }, { status: 400 });
+        }
+
+        await dbConnect();
 
 	try {
 		const cookieStore = cookies();
@@ -32,8 +38,8 @@ export async function PUT(req, { params }) {
 			return Response.json({ message: "Cart not found" }, { status: 404 });
 		}
 
-		const productIndex = cart.products.findIndex(
-			(item) => item.product._id.toString() === params.productId
+                const productIndex = cart.products.findIndex(
+                        (item) => item.product._id.toString() === productId
 		);
 
 		if (productIndex === -1) {
@@ -64,7 +70,13 @@ export async function PUT(req, { params }) {
 }
 
 export async function DELETE(req, { params }) {
-	await dbConnect();
+        const { productId } = await params;
+
+        if (!productId) {
+                return Response.json({ message: "Product identifier is required" }, { status: 400 });
+        }
+
+        await dbConnect();
 
 	try {
 		const cookieStore = cookies();
@@ -88,8 +100,8 @@ export async function DELETE(req, { params }) {
 			return Response.json({ message: "Cart not found" }, { status: 404 });
 		}
 
-		cart.products = cart.products.filter(
-			(item) => item.product._id.toString() !== params.productId
+                cart.products = cart.products.filter(
+                        (item) => item.product._id.toString() !== productId
 		);
 
 		// Recalculate total price

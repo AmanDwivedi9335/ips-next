@@ -155,11 +155,11 @@ const OrderSchema = new mongoose.Schema(
                 },
 
 		// Coupon Information
-		couponApplied: {
-			couponId: {
-				type: mongoose.Schema.Types.ObjectId,
-				ref: "Coupon",
-			},
+                couponApplied: {
+                        couponId: {
+                                type: mongoose.Schema.Types.ObjectId,
+                                ref: "Promocode",
+                        },
 			couponCode: String,
 			discountAmount: Number,
 			discountType: String,
@@ -193,7 +193,6 @@ const OrderSchema = new mongoose.Schema(
 );
 
 // Indexes for better query performance
-OrderSchema.index({ orderNumber: 1 });
 OrderSchema.index({ userId: 1 });
 OrderSchema.index({ status: 1 });
 OrderSchema.index({ orderDate: -1 });

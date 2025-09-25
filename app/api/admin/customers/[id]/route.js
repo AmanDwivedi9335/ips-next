@@ -4,13 +4,22 @@ import { dbConnect } from "@/lib/dbConnect.js";
 
 // GET - Fetch single customer
 export async function GET(request, { params }) {
-	try {
+        try {
+                const { id } = await params;
+
+                if (!id) {
+                        return NextResponse.json(
+                                { success: false, error: "Customer identifier is required" },
+                                { status: 400 }
+                        );
+                }
+
                 await dbConnect();
 
-		const customer = await User.findOne({
-			_id: params.id,
-			userType: "customer",
-		}).select("-password");
+                const customer = await User.findOne({
+                        _id: id,
+                        userType: "customer",
+                }).select("-password");
 
 		if (!customer) {
 			return NextResponse.json(
@@ -33,14 +42,23 @@ export async function GET(request, { params }) {
 
 // PUT - Update customer
 export async function PUT(request, { params }) {
-	try {
+        try {
+                const { id } = await params;
+
+                if (!id) {
+                        return NextResponse.json(
+                                { success: false, error: "Customer identifier is required" },
+                                { status: 400 }
+                        );
+                }
+
                 await dbConnect();
 
-		const body = await request.json();
-		const { firstName, lastName, email, mobile, address, status } = body;
+                const body = await request.json();
+                const { firstName, lastName, email, mobile, address, status } = body;
 
-		const customer = await User.findOneAndUpdate(
-			{ _id: params.id, userType: "customer" },
+                const customer = await User.findOneAndUpdate(
+                        { _id: id, userType: "customer" },
 			{
 				firstName,
 				lastName,
@@ -74,13 +92,22 @@ export async function PUT(request, { params }) {
 
 // DELETE - Delete customer
 export async function DELETE(request, { params }) {
-	try {
+        try {
+                const { id } = await params;
+
+                if (!id) {
+                        return NextResponse.json(
+                                { success: false, error: "Customer identifier is required" },
+                                { status: 400 }
+                        );
+                }
+
                 await dbConnect();
 
-		const customer = await User.findOneAndDelete({
-			_id: params.id,
-			userType: "customer",
-		});
+                const customer = await User.findOneAndDelete({
+                        _id: id,
+                        userType: "customer",
+                });
 
 		if (!customer) {
 			return NextResponse.json(

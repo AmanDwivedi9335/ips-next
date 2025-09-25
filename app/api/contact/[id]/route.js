@@ -10,9 +10,17 @@ const allowedStatuses = ["new", "in_progress", "resolved"];
 
 export async function PATCH(request, { params }) {
         try {
+                const { id } = await params;
+
+                if (!id) {
+                        return NextResponse.json(
+                                { success: false, error: "Contact message identifier is required." },
+                                { status: 400 }
+                        );
+                }
+
                 await dbConnect();
 
-                const { id } = params;
                 const body = await request.json();
 
                 const updates = {};

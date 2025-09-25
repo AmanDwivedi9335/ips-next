@@ -4,9 +4,18 @@ import Order from "@/model/Order.js";
 
 export async function GET(_request, { params }) {
         try {
+                const { id } = await params;
+
+                if (!id) {
+                        return NextResponse.json(
+                                { success: false, message: "Order identifier is required" },
+                                { status: 400 }
+                        );
+                }
+
                 await dbConnect();
 
-                const order = await Order.findById(params.id);
+                const order = await Order.findById(id);
 
                 if (!order) {
                         return NextResponse.json(

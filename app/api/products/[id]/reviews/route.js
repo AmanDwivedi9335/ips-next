@@ -6,6 +6,12 @@ import { verifyToken } from "@/lib/auth.js";
 import { cookies } from "next/headers";
 
 export async function POST(req, { params }) {
+        const { id } = await params;
+
+        if (!id) {
+                return Response.json({ message: "Product identifier is required" }, { status: 400 });
+        }
+
         await dbConnect();
 
         try {
@@ -38,7 +44,7 @@ export async function POST(req, { params }) {
                 }
 
                 // Check if product exists
-                const product = await Product.findById(params.id);
+                const product = await Product.findById(id);
                 if (!product) {
                         return Response.json({ message: "Product not found" }, { status: 404 });
                 }
@@ -46,7 +52,7 @@ export async function POST(req, { params }) {
                 // Ensure user has purchased the product
                 const hasPurchased = await Order.exists({
                         userId: decoded.id,
-                        "products.productId": params.id,
+                        "products.productId": id,
                         status: "delivered",
                 });
                 if (!hasPurchased) {
@@ -58,7 +64,7 @@ export async function POST(req, { params }) {
 
                 // Prevent duplicate reviews
                 const existingReview = await Review.findOne({
-                        product: params.id,
+                        product: id,
                         user: decoded.id,
                 });
                 if (existingReview) {
@@ -71,7 +77,7 @@ export async function POST(req, { params }) {
                 // Create review
                 const review = new Review({
                         user: decoded.id,
-                        product: params.id,
+                        product: id,
                         rating,
                         comment,
                 });
@@ -93,10 +99,16 @@ export async function POST(req, { params }) {
 }
 
 export async function GET(req, { params }) {
+        const { id } = await params;
+
+        if (!id) {
+                return Response.json({ message: "Product identifier is required" }, { status: 400 });
+        }
+
         await dbConnect();
 
         try {
-                const product = await Product.findById(params.id).populate({
+                const product = await Product.findById(id).populate({
                         path: "reviews",
                         select: "rating comment user",
                         strictPopulate: false,
