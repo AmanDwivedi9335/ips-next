@@ -27,6 +27,11 @@ const ContactMessageSchema = new mongoose.Schema(
                         required: true,
                         trim: true,
                 },
+                category: {
+                        type: String,
+                        trim: true,
+                        default: "",
+                },
                 status: {
                         type: String,
                         enum: ["new", "in_progress", "resolved"],
