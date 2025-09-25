@@ -6,51 +6,85 @@ import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle, Package, Truck, Home, Download } from "lucide-react";
+import { CheckCircle, Package, Truck, Home, Download, Loader2 } from "lucide-react";
 import Link from "next/link";
 
 export default function OrderSuccessPage() {
 	const router = useRouter();
 	const searchParams = useSearchParams();
-	const [orderDetails, setOrderDetails] = useState(null);
+        const [orderDetails, setOrderDetails] = useState(null);
+        const [isConfirming, setIsConfirming] = useState(true);
 
 	const orderId = searchParams.get("orderId");
 	const orderNumber = searchParams.get("orderNumber");
 
 	useEffect(() => {
-		if (!orderId || !orderNumber) {
-			router.push("/");
-			return;
-		}
+                if (!orderId || !orderNumber) {
+                        router.push("/");
+                        return;
+                }
 
-		// You can fetch order details here if needed
-		setOrderDetails({
-			orderId,
-			orderNumber,
-			estimatedDelivery: new Date(
-				Date.now() + 7 * 24 * 60 * 60 * 1000
-			).toLocaleDateString(),
-		});
-	}, [orderId, orderNumber, router]);
+                setIsConfirming(true);
 
-	if (!orderDetails) {
-		return <div>Loading...</div>;
-	}
+                const estimatedDeliveryDate = new Date(
+                        Date.now() + 7 * 24 * 60 * 60 * 1000
+                ).toLocaleDateString();
 
-	return (
-		<div className="min-h-screen bg-gray-50 py-8">
-			<div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
-				<motion.div
-					initial={{ opacity: 0, y: 20 }}
-					animate={{ opacity: 1, y: 0 }}
-					transition={{ duration: 0.5 }}
-					className="text-center space-y-8"
-				>
-					{/* Success Icon */}
-					<div className="flex justify-center">
-						<div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center">
-							<CheckCircle className="w-12 h-12 text-green-600" />
-						</div>
+                setOrderDetails({
+                        orderId,
+                        orderNumber,
+                        estimatedDelivery: estimatedDeliveryDate,
+                });
+
+                const timer = setTimeout(() => {
+                        setIsConfirming(false);
+                }, 2500);
+
+                return () => {
+                        clearTimeout(timer);
+                };
+        }, [orderId, orderNumber, router]);
+
+        if (!orderDetails) {
+                return (
+                        <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+                                <div className="max-w-md w-full space-y-6 text-center">
+                                        <div className="p-6 bg-white rounded-2xl shadow-sm border border-blue-100">
+                                                <div className="flex items-center justify-center gap-3">
+                                                        <Loader2 className="h-6 w-6 animate-spin text-blue-600" />
+                                                        <p className="text-sm font-medium text-blue-700">
+                                                                We are confirming your payment, please do not close this page.
+                                                        </p>
+                                                </div>
+                                        </div>
+                                </div>
+                        </div>
+                );
+        }
+
+        return (
+                <div className="min-h-screen bg-gray-50 py-8">
+                        <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
+                                <motion.div
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ duration: 0.5 }}
+                                        className="text-center space-y-8"
+                                >
+                                        {isConfirming && (
+                                                <div className="flex items-center justify-center gap-3 p-4 bg-blue-50 border border-blue-100 rounded-xl text-blue-700">
+                                                        <Loader2 className="h-5 w-5 animate-spin" />
+                                                        <span className="text-sm font-medium">
+                                                                We are confirming your payment, please do not close this page.
+                                                        </span>
+                                                </div>
+                                        )}
+
+                                        {/* Success Icon */}
+                                        <div className="flex justify-center">
+                                                <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center">
+                                                        <CheckCircle className="w-12 h-12 text-green-600" />
+                                                </div>
 					</div>
 
 					{/* Success Message */}
