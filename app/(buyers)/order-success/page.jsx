@@ -6,15 +6,7 @@ import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {
-        CheckCircle,
-        Package,
-        Truck,
-        Home,
-        Download,
-        Loader2,
-        CreditCard,
-} from "lucide-react";
+import { CheckCircle, Truck, Home, Download, Loader2, CreditCard } from "lucide-react";
 
 import Link from "next/link";
 
@@ -200,36 +192,40 @@ export default function OrderSuccessPage() {
                                                                 {purchasedItems.map((item) => (
                                                                         <div
                                                                                 key={item.id}
-                                                                                className="flex flex-col gap-2 rounded-lg border border-gray-100 bg-gray-50 p-4"
+                                                                                className="overflow-hidden rounded-xl border border-gray-100 bg-white"
                                                                         >
-                                                                                <div className="flex flex-wrap items-center justify-between gap-2">
-                                                                                        <p className="font-semibold text-gray-900">
+                                                                                <div className="flex items-start justify-between gap-4 border-b border-gray-100 px-5 py-4">
+                                                                                        <p className="text-base font-semibold text-gray-900">
                                                                                                 {item.name}
                                                                                         </p>
-                                                                                        <Badge variant="secondary">
+                                                                                        <Badge variant="secondary" className="shrink-0">
                                                                                                 Qty: {item.quantity}
                                                                                         </Badge>
                                                                                 </div>
-                                                                                <div className="grid gap-2 text-sm text-gray-600 sm:grid-cols-3">
-                                                                                        <div>
-                                                                                                <span className="block text-gray-500">MRP</span>
-                                                                                                <span className="font-medium">
+                                                                                <div className="grid gap-0 px-5 py-4 text-sm sm:grid-cols-3">
+                                                                                        <div className="py-2 sm:py-0">
+                                                                                                <span className="block text-xs font-semibold uppercase tracking-wide text-gray-400">
+                                                                                                        MRP
+                                                                                                </span>
+                                                                                                <span className="mt-1 block font-semibold text-gray-900">
                                                                                                         ₹
-                                                                                                        {item.mrp?.toLocaleString?.() ||
-                                                                                                                item.mrp ||
-                                                                                                                "-"}
+                                                                                                        {item.mrp?.toLocaleString?.() || item.mrp || "-"}
                                                                                                 </span>
                                                                                         </div>
-                                                                                        <div>
-                                                                                                <span className="block text-gray-500">Price</span>
-                                                                                                <span className="font-medium">
+                                                                                        <div className="py-2 sm:py-0 sm:text-center">
+                                                                                                <span className="block text-xs font-semibold uppercase tracking-wide text-gray-400">
+                                                                                                        Price
+                                                                                                </span>
+                                                                                                <span className="mt-1 block font-semibold text-gray-900">
                                                                                                         ₹
                                                                                                         {item.price?.toLocaleString?.() || item.price}
                                                                                                 </span>
                                                                                         </div>
-                                                                                        <div>
-                                                                                                <span className="block text-gray-500">Discount</span>
-                                                                                                <span className="font-medium">
+                                                                                        <div className="py-2 sm:py-0 sm:text-right">
+                                                                                                <span className="block text-xs font-semibold uppercase tracking-wide text-gray-400">
+                                                                                                        Discount
+                                                                                                </span>
+                                                                                                <span className="mt-1 block font-semibold text-gray-900">
                                                                                                         ₹
                                                                                                         {item.discountAmount?.toLocaleString?.() ||
                                                                                                                 item.discountAmount ||
@@ -237,12 +233,11 @@ export default function OrderSuccessPage() {
                                                                                                 </span>
                                                                                         </div>
                                                                                 </div>
-                                                                                <div className="flex items-center justify-between text-sm font-semibold text-gray-900">
+                                                                                <div className="flex items-center justify-between border-t border-gray-100 bg-gray-50 px-5 py-3 text-sm font-semibold text-gray-900">
                                                                                         <span>Total</span>
                                                                                         <span>
                                                                                                 ₹
-                                                                                                {item.totalPrice?.toLocaleString?.() ||
-                                                                                                        item.totalPrice}
+                                                                                                {item.totalPrice?.toLocaleString?.() || item.totalPrice}
                                                                                         </span>
                                                                                 </div>
                                                                         </div>
@@ -351,60 +346,21 @@ export default function OrderSuccessPage() {
                                                 </CardContent>
                                         </Card>
 
-                                        {/* Order Status Steps */}
-                                        <Card>
-                                                <CardHeader>
-                                                        <CardTitle>Order Status</CardTitle>
-                                                </CardHeader>
-                                                <CardContent>
-                                                        <div className="flex items-center justify-between">
-                                                                <div className="flex flex-col items-center">
-                                                                        <div className="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center text-white">
-                                                                                <CheckCircle className="w-5 h-5" />
-                                                                        </div>
-                                                                        <span className="text-sm mt-2 text-green-600 font-medium">
-										Confirmed
-									</span>
-								</div>
-								<div className="flex-1 h-0.5 bg-gray-200 mx-4"></div>
-                                                                <div className="flex flex-col items-center">
-                                                                        <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
-                                                                                <Package className="w-5 h-5 text-gray-400" />
-                                                                        </div>
-                                                                        <span className="text-sm mt-2 text-gray-400">Processing</span>
-								</div>
-								<div className="flex-1 h-0.5 bg-gray-200 mx-4"></div>
-                                                                <div className="flex flex-col items-center">
-                                                                        <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
-                                                                                <Truck className="w-5 h-5 text-gray-400" />
-                                                                        </div>
-                                                                        <span className="text-sm mt-2 text-gray-400">Shipped</span>
-								</div>
-							</div>
-						</CardContent>
-					</Card>
+                                        {/* Action Buttons */}
+                                        <div className="flex flex-col sm:flex-row gap-4">
+                                                <Button variant="outline" className="flex-1 bg-transparent">
+                                                        <Download className="w-4 h-4 mr-2" />
+                                                        Download Invoice
+                                                </Button>
+                                                <Button variant="outline" asChild className="flex-1 bg-transparent">
+                                                        <Link href="/products">
+                                                                <Home className="w-4 h-4 mr-2" />
+                                                                Continue Shopping
+                                                        </Link>
+                                                </Button>
+                                        </div>
 
-					{/* Action Buttons */}
-					<div className="flex flex-col sm:flex-row gap-4">
-						<Button asChild className="flex-1">
-							<Link href="/orders">
-								<Package className="w-4 h-4 mr-2" />
-								Track Order
-							</Link>
-						</Button>
-						<Button variant="outline" className="flex-1 bg-transparent">
-							<Download className="w-4 h-4 mr-2" />
-							Download Invoice
-						</Button>
-						<Button variant="outline" asChild className="flex-1 bg-transparent">
-							<Link href="/products">
-								<Home className="w-4 h-4 mr-2" />
-								Continue Shopping
-							</Link>
-						</Button>
-					</div>
-
-					{/* Additional Info */}
+                                        {/* Additional Info */}
 					<div className="text-center text-sm text-gray-500">
 						<p>
 							You will receive an email confirmation shortly with your order
