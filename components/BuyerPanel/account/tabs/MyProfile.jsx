@@ -13,13 +13,6 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-        Select,
-        SelectContent,
-        SelectItem,
-        SelectTrigger,
-        SelectValue,
-} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Plus, Edit, Trash2, CreditCard, Truck } from "lucide-react";
 import { toast } from "react-hot-toast";
@@ -60,13 +53,13 @@ export function MyProfile() {
         const [languages, setLanguages] = useState([]);
         const [selectedLanguage, setSelectedLanguage] = useState("");
 
+
         useEffect(() => {
                 const fetchData = async () => {
                         try {
-                                const [profileRes, addressRes, languageRes] = await Promise.all([
+                                const [profileRes, addressRes] = await Promise.all([
                                         fetch("/api/auth/me"),
                                         fetch("/api/user/addresses"),
-                                        fetch("/api/languages"),
                                 ]);
 
                                 if (profileRes.ok) {
@@ -85,10 +78,6 @@ export function MyProfile() {
                                         setAddresses(data.addresses || []);
                                 }
 
-                                if (languageRes.ok) {
-                                        const data = await languageRes.json();
-                                        setLanguages(data.languages || []);
-                                }
                         } catch (err) {
                                 console.error("Error loading profile data", err);
                         }
@@ -536,62 +525,6 @@ export function MyProfile() {
                                 </Card>
                         </motion.div>
 
-                        {/* Language & Region */}
-                        <motion.div
-                                custom={2}
-                                initial="hidden"
-                                animate="visible"
-                                variants={cardVariants}
-                        >
-                                <Card>
-                                        <CardHeader>
-                                                <CardTitle>Language & Region</CardTitle>
-                                                <CardDescription>
-                                                        Set your preferred language and region settings
-                                                </CardDescription>
-                                        </CardHeader>
-                                        <CardContent className="space-y-4">
-                                                <div className="grid grid-cols-2 gap-4">
-                                                        <div className="space-y-2">
-                                                                <Label htmlFor="language">Language</Label>
-                                                                <Select
-                                                                        value={selectedLanguage}
-                                                                        onValueChange={setSelectedLanguage}
-                                                                >
-                                                                        <SelectTrigger>
-                                                                                <SelectValue placeholder="Select language" />
-                                                                        </SelectTrigger>
-                                                                        <SelectContent>
-                                                                                {languages.map((lang) => (
-                                                                                        <SelectItem
-                                                                                                key={lang.code}
-                                                                                                value={lang.code}
-                                                                                        >
-                                                                                                {lang.name}
-                                                                                        </SelectItem>
-                                                                                ))}
-                                                                        </SelectContent>
-                                                                </Select>
-                                                        </div>
-                                                        <div className="space-y-2">
-                                                                <Label htmlFor="timezone">Timezone</Label>
-                                                                <Select defaultValue="est">
-                                                                        <SelectTrigger>
-                                                                                <SelectValue />
-                                                                        </SelectTrigger>
-                                                                        <SelectContent>
-                                                                                <SelectItem value="est">Eastern Time</SelectItem>
-                                                                                <SelectItem value="pst">Pacific Time</SelectItem>
-                                                                                <SelectItem value="cst">Central Time</SelectItem>
-                                                                                <SelectItem value="mst">Mountain Time</SelectItem>
-                                                                        </SelectContent>
-                                                                </Select>
-                                                        </div>
-                                                </div>
-                                                <Button>Save Preferences</Button>
-                                        </CardContent>
-                                </Card>
-                        </motion.div>
                 </div>
         );
 }

@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { useRouter, usePathname } from "next/navigation";
-import { Package, User, CreditCard, Bell, HelpCircle } from "lucide-react";
+import { Package, User, HelpCircle } from "lucide-react";
 
 const sidebarItems = [
 	{
@@ -18,20 +18,6 @@ const sidebarItems = [
 		icon: Package,
 		description: "View your past orders",
 		href: "/account/orders",
-	},
-	{
-		id: "payment-options",
-		title: "Payment Options",
-		icon: CreditCard,
-		description: "Cards, wallets & UPI",
-		href: "/account/payment",
-	},
-	{
-		id: "notification-settings",
-		title: "Notification Settings",
-		icon: Bell,
-		description: "Manage your notifications",
-		href: "/account/notifications",
 	},
 	{
 		id: "help-center",

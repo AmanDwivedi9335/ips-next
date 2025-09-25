@@ -54,7 +54,7 @@ function getTransporter() {
         return cachedTransporter;
 }
 
-function buildEmailBody({ fullName, email, phone, subject, message }) {
+function buildEmailBody({ fullName, email, phone, subject, message, category, source }) {
         const lines = [
                 `You have received a new contact request on Industrial Print Solutions.`,
                 "",
@@ -64,6 +64,14 @@ function buildEmailBody({ fullName, email, phone, subject, message }) {
 
         if (phone) {
                 lines.push(`Phone: ${phone}`);
+        }
+
+        if (category) {
+                lines.push(`Category: ${category}`);
+        }
+
+        if (source) {
+                lines.push(`Source: ${source}`);
         }
 
         lines.push("", `Subject: ${subject}`, "", "Message:", message);
@@ -86,7 +94,15 @@ export async function POST(request) {
                 await dbConnect();
 
                 const body = await request.json();
-                const { fullName, email, phone = "", subject, message } = body;
+                const {
+                        fullName,
+                        email,
+                        phone = "",
+                        subject,
+                        message,
+                        category = "",
+                        source = "",
+                } = body;
 
                 if (!fullName || !email || !subject || !message) {
                         return NextResponse.json(
@@ -109,12 +125,20 @@ export async function POST(request) {
                         );
                 }
 
+                const sanitizedCategory = typeof category === "string" ? category.trim() : "";
+                const sanitizedSource =
+                        typeof source === "string" && source.trim()
+                                ? source.trim().slice(0, 120)
+                                : "contact-form";
+
                 const contactMessage = new ContactMessage({
                         fullName: String(fullName).trim(),
                         email: String(email).trim(),
                         phone: String(phone).trim(),
                         subject: String(subject).trim(),
                         message: trimmedMessage,
+                        category: sanitizedCategory,
+                        source: sanitizedSource,
                 });
 
                 await contactMessage.save();
