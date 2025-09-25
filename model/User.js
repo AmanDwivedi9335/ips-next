@@ -2,21 +2,21 @@ import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 
 const AddressSchema = new mongoose.Schema(
-	{
-		tag: {
-			type: String,
-			required: true,
-			enum: ["home", "office", "other"],
-			default: "home",
-		},
-		name: { type: String, required: true },
-		street: { type: String, required: true },
-		city: { type: String, required: true },
-		state: { type: String, required: true },
-		zipCode: { type: String, required: true },
-		country: { type: String, default: "India" },
-		isDefault: { type: Boolean, default: false },
-	},
+        {
+                tag: {
+                        type: String,
+                        required: true,
+                        enum: ["billing", "shipping"],
+                        default: "shipping",
+                },
+                name: { type: String, required: true },
+                street: { type: String, required: true },
+                city: { type: String, required: true },
+                state: { type: String, required: true },
+                zipCode: { type: String, required: true },
+                country: { type: String, default: "India" },
+                isDefault: { type: Boolean, default: false },
+        },
 	{ timestamps: true }
 );
 

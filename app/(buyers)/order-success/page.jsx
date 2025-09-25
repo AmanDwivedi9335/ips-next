@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle, Package, Truck, Home, Download, Loader2 } from "lucide-react";
+
 import Link from "next/link";
 
 export default function OrderSuccessPage() {
@@ -14,6 +15,7 @@ export default function OrderSuccessPage() {
 	const searchParams = useSearchParams();
         const [orderDetails, setOrderDetails] = useState(null);
         const [isConfirming, setIsConfirming] = useState(true);
+
 
 	const orderId = searchParams.get("orderId");
 	const orderNumber = searchParams.get("orderNumber");
@@ -57,6 +59,7 @@ export default function OrderSuccessPage() {
                                                         </p>
                                                 </div>
                                         </div>
+
                                 </div>
                         </div>
                 );
@@ -85,6 +88,7 @@ export default function OrderSuccessPage() {
                                                 <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center">
                                                         <CheckCircle className="w-12 h-12 text-green-600" />
                                                 </div>
+
 					</div>
 
 					{/* Success Message */}
@@ -101,56 +105,111 @@ export default function OrderSuccessPage() {
 					{/* Order Details Card */}
 					<Card>
 						<CardHeader>
-							<CardTitle>Order Details</CardTitle>
-						</CardHeader>
-						<CardContent className="space-y-4">
-							<div className="flex justify-between items-center">
-								<span className="text-gray-600">Order Number:</span>
-								<Badge variant="secondary" className="font-mono">
-									{orderDetails.orderNumber}
-								</Badge>
-							</div>
-							<div className="flex justify-between items-center">
-								<span className="text-gray-600">Order ID:</span>
-								<span className="font-medium">{orderDetails.orderId}</span>
-							</div>
-							<div className="flex justify-between items-center">
-								<span className="text-gray-600">Estimated Delivery:</span>
-								<span className="font-medium">
-									{orderDetails.estimatedDelivery}
-								</span>
-							</div>
-						</CardContent>
-					</Card>
+                                                        <CardTitle>Order Details</CardTitle>
+                                                </CardHeader>
+                                                <CardContent className="space-y-4">
+                                                        <div className="flex justify-between items-center">
+                                                                <span className="text-gray-600">Order Number:</span>
+                                                                <Badge variant="secondary" className="font-mono">
+                                                                        {orderDetails.orderNumber}
+                                                                </Badge>
+                                                        </div>
+                                                        <div className="flex justify-between items-center">
+                                                                <span className="text-gray-600">Order ID:</span>
+                                                                <span className="font-medium">{orderDetails.orderId}</span>
+                                                        </div>
+                                                        <div className="flex justify-between items-center">
+                                                                <span className="text-gray-600">Placed On:</span>
+                                                                <span className="font-medium">
+                                                                        {new Date(orderDetails.createdAt || Date.now()).toLocaleDateString()}
+                                                                </span>
+                                                        </div>
+                                                        <div className="flex justify-between items-center">
+                                                                <span className="text-gray-600">Estimated Delivery:</span>
+                                                                <span className="font-medium">{orderDetails.estimatedDelivery}</span>
+                                                        </div>
+                                                        <div className="flex justify-between items-center">
+                                                                <span className="text-gray-600">Status:</span>
+                                                                <Badge variant="outline" className="capitalize">
+                                                                        {orderDetails.status || "pending"}
+                                                                </Badge>
+                                                        </div>
+                                                        <div className="flex justify-between items-center">
+                                                                <span className="text-gray-600">Total Amount:</span>
+                                                                <span className="font-semibold text-lg">
+                                                                        ₹{orderDetails.totalAmount?.toLocaleString?.() || orderDetails.totalAmount}
+                                                                </span>
+                                                        </div>
+                                                </CardContent>
+                                        </Card>
 
-					{/* Order Status Steps */}
-					<Card>
-						<CardHeader>
-							<CardTitle>Order Status</CardTitle>
-						</CardHeader>
-						<CardContent>
-							<div className="flex items-center justify-between">
-								<div className="flex flex-col items-center">
-									<div className="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center text-white">
-										<CheckCircle className="w-5 h-5" />
-									</div>
-									<span className="text-sm mt-2 text-green-600 font-medium">
+                                        {/* Address Summary */}
+                                        <Card>
+                                                <CardHeader>
+                                                        <CardTitle>Billing & Shipping</CardTitle>
+                                                </CardHeader>
+                                                <CardContent className="space-y-4 text-left">
+                                                        {orderDetails.billingAddress && (
+                                                                <div className="flex gap-3">
+                                                                        <CreditCard className="h-5 w-5 text-primary" />
+                                                                        <div>
+                                                                                <p className="font-semibold">Billing Address</p>
+                                                                                <p className="text-sm text-gray-600">
+                                                                                        {orderDetails.billingAddress.name}
+                                                                                        <br />
+                                                                                        {orderDetails.billingAddress.street}
+                                                                                        <br />
+                                                                                        {orderDetails.billingAddress.city}, {orderDetails.billingAddress.state} - {orderDetails.billingAddress.zipCode}
+                                                                                </p>
+                                                                        </div>
+                                                                </div>
+                                                        )}
+                                                        {orderDetails.shippingAddress && (
+                                                                <div className="flex gap-3">
+                                                                        <Truck className="h-5 w-5 text-primary" />
+                                                                        <div>
+                                                                                <p className="font-semibold">Shipping Address</p>
+                                                                                <p className="text-sm text-gray-600">
+                                                                                        {orderDetails.shippingAddress.name}
+                                                                                        <br />
+                                                                                        {orderDetails.shippingAddress.street}
+                                                                                        <br />
+                                                                                        {orderDetails.shippingAddress.city}, {orderDetails.shippingAddress.state} - {orderDetails.shippingAddress.zipCode}
+                                                                                </p>
+                                                                        </div>
+                                                                </div>
+                                                        )}
+                                                </CardContent>
+                                        </Card>
+
+                                        {/* Order Status Steps */}
+                                        <Card>
+                                                <CardHeader>
+                                                        <CardTitle>Order Status</CardTitle>
+                                                </CardHeader>
+                                                <CardContent>
+                                                        <div className="flex items-center justify-between">
+                                                                <div className="flex flex-col items-center">
+                                                                        <div className="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center text-white">
+                                                                                <CheckCircle className="w-5 h-5" />
+                                                                        </div>
+                                                                        <span className="text-sm mt-2 text-green-600 font-medium">
 										Confirmed
 									</span>
 								</div>
 								<div className="flex-1 h-0.5 bg-gray-200 mx-4"></div>
-								<div className="flex flex-col items-center">
-									<div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
-										<Package className="w-5 h-5 text-gray-400" />
-									</div>
-									<span className="text-sm mt-2 text-gray-400">Processing</span>
+                                                                <div className="flex flex-col items-center">
+                                                                        <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
+                                                                                <Package className="w-5 h-5 text-gray-400" />
+                                                                        </div>
+                                                                        <span className="text-sm mt-2 text-gray-400">Processing</span>
 								</div>
 								<div className="flex-1 h-0.5 bg-gray-200 mx-4"></div>
-								<div className="flex flex-col items-center">
-									<div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
-										<Truck className="w-5 h-5 text-gray-400" />
-									</div>
-									<span className="text-sm mt-2 text-gray-400">Shipped</span>
+                                                                <div className="flex flex-col items-center">
+                                                                        <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
+                                                                                <Truck className="w-5 h-5 text-gray-400" />
+                                                                        </div>
+                                                                        <span className="text-sm mt-2 text-gray-400">Shipped</span>
 								</div>
 							</div>
 						</CardContent>

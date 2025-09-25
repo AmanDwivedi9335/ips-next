@@ -22,6 +22,8 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { useAdminCustomerStore } from "@/store/adminCustomerStore.js";
+import { Badge } from "@/components/ui/badge";
+import { CreditCard, Truck } from "lucide-react";
 
 export function UpdateCustomerPopup({ open, onOpenChange, customer }) {
 	const { updateCustomer, loading } = useAdminCustomerStore();
@@ -58,8 +60,11 @@ export function UpdateCustomerPopup({ open, onOpenChange, customer }) {
 		}
 	};
 
-	return (
-		<Dialog open={open} onOpenChange={onOpenChange}>
+        const billingAddress = customer?.addresses?.find((addr) => addr.tag === "billing");
+        const shippingAddresses = customer?.addresses?.filter((addr) => addr.tag === "shipping") || [];
+
+        return (
+                <Dialog open={open} onOpenChange={onOpenChange}>
 			<DialogContent className="sm:max-w-md">
 				<motion.div
 					initial={{ scale: 0.95, opacity: 0 }}
@@ -138,19 +143,69 @@ export function UpdateCustomerPopup({ open, onOpenChange, customer }) {
 							/>
 						</div>
 
-						<div>
-							<Label htmlFor="address">Address</Label>
-							<Textarea
-								id="address"
-								placeholder="Customer Address"
-								value={formData.address}
-								onChange={(e) =>
-									setFormData({ ...formData, address: e.target.value })
-								}
-								className="mt-1"
-								rows={3}
-							/>
-						</div>
+                                                <div>
+                                                        <Label htmlFor="address">Address</Label>
+                                                        <Textarea
+                                                                id="address"
+                                                                placeholder="Customer Address"
+                                                                value={formData.address}
+                                                                onChange={(e) =>
+                                                                        setFormData({ ...formData, address: e.target.value })
+                                                                }
+                                                                className="mt-1"
+                                                                rows={3}
+                                                        />
+                                                </div>
+
+                                                <div className="space-y-3">
+                                                        <h4 className="text-sm font-semibold text-muted-foreground">
+                                                                Saved Addresses
+                                                        </h4>
+                                                        {billingAddress ? (
+                                                                <div className="border rounded-md p-3 bg-gray-50 flex gap-3">
+                                                                        <CreditCard className="h-4 w-4 text-primary mt-0.5" />
+                                                                        <div className="space-y-1">
+                                                                                <div className="flex items-center gap-2">
+                                                                                        <span className="font-medium">Billing Address</span>
+                                                                                        <Badge variant="secondary">Bill To</Badge>
+                                                                                </div>
+                                                                                <p className="text-xs text-muted-foreground">
+                                                                                        {billingAddress.name}
+                                                                                        <br />
+                                                                                        {billingAddress.street}, {billingAddress.city}, {billingAddress.state} - {billingAddress.zipCode}
+                                                                                </p>
+                                                                        </div>
+                                                                </div>
+                                                        ) : (
+                                                                <p className="text-xs text-muted-foreground">No billing address saved.</p>
+                                                        )}
+
+                                                        {shippingAddresses.length > 0 ? (
+                                                                <div className="space-y-2">
+                                                                        {shippingAddresses.map((addr) => (
+                                                                                <div
+                                                                                        key={addr._id || `${addr.street}-${addr.zipCode}`}
+                                                                                        className="border rounded-md p-3 flex gap-3"
+                                                                                >
+                                                                                        <Truck className="h-4 w-4 text-primary mt-0.5" />
+                                                                                        <div className="space-y-1">
+                                                                                                <div className="flex items-center gap-2">
+                                                                                                        <span className="font-medium">Shipping Address</span>
+                                                                                                        {addr.isDefault && <Badge>Default</Badge>}
+                                                                                                </div>
+                                                                                                <p className="text-xs text-muted-foreground">
+                                                                                                        {addr.name}
+                                                                                                        <br />
+                                                                                                        {addr.street}, {addr.city}, {addr.state} - {addr.zipCode}
+                                                                                                </p>
+                                                                                        </div>
+                                                                                </div>
+                                                                        ))}
+                                                                </div>
+                                                        ) : (
+                                                                <p className="text-xs text-muted-foreground">No shipping addresses saved.</p>
+                                                        )}
+                                                </div>
 
 						<div>
 							<Label htmlFor="status">Status</Label>

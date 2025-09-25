@@ -13,12 +13,7 @@ import { Menu, ShoppingCart, Heart, User, X, Search } from "lucide-react";
 import { useCartStore } from "@/store/cartStore";
 import { useWishlistStore } from "@/store/wishlistStore";
 import MiniCart from "./cart/MiniCart";
-import {
-        useUserFullName,
-        useUserEmail,
-        useUserProfilePic,
-        useIsAuthenticated,
-} from "@/store/authStore.js";
+import { useUserFullName, useUserEmail, useIsAuthenticated } from "@/store/authStore.js";
 import { useProductStore } from "@/store/productStore.js";
 
 export default function Header({ onMenuToggle, isMenuOpen }) {
@@ -32,8 +27,23 @@ export default function Header({ onMenuToggle, isMenuOpen }) {
 
         const fullName = useUserFullName();
         const email = useUserEmail();
-        const profilePic = useUserProfilePic();
         const isAuthenticated = useIsAuthenticated();
+
+        const getInitials = (name) => {
+                if (!name) return "";
+
+                const trimmedName = name.trim();
+                if (!trimmedName) return "";
+
+                const nameParts = trimmedName.split(/\s+/);
+                const firstLetter = nameParts[0]?.[0] ?? "";
+                const lastLetter =
+                        nameParts.length > 1
+                                ? nameParts[nameParts.length - 1]?.[0] ?? ""
+                                : trimmedName[trimmedName.length - 1] ?? "";
+
+                return `${firstLetter}${lastLetter}`.toUpperCase();
+        };
 
         const { getTotalItems, openCart } = useCartStore();
         const totalItems = getTotalItems();
@@ -138,13 +148,9 @@ export default function Header({ onMenuToggle, isMenuOpen }) {
                                                                 <div className="flex items-center space-x-2 md:space-x-4">
                                                                         <Link href="/account">
                                                                                 <div className="flex items-center space-x-2">
-                                                                                        <Image
-                                                                                                src={profilePic}
-                                                                                                alt="Profile"
-                                                                                                width={40}
-                                                                                                height={40}
-                                                                                                className="h-6 w-6 md:h-8 md:w-8 rounded-full"
-                                                                                        />
+                                                                                        <div className="flex h-6 w-6 md:h-8 md:w-8 items-center justify-center rounded-full bg-gray-900 text-xs font-semibold uppercase text-white md:text-sm">
+                                                                                                {getInitials(fullName)}
+                                                                                        </div>
                                                                                         <div className="hidden md:block">
                                                                                                 <p className="text-sm font-medium">{fullName}</p>
                                                                                                 <p className="text-xs text-gray-300">{email}</p>
