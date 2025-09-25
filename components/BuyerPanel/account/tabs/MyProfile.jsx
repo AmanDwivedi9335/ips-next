@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
         Card,
         CardContent,
@@ -13,7 +14,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Plus, Edit, Trash2 } from "lucide-react";
+import { Plus, Edit, Trash2, CreditCard, Truck } from "lucide-react";
+import { toast } from "react-hot-toast";
 
 const cardVariants = {
         hidden: { opacity: 0, y: 20 },
@@ -37,16 +39,21 @@ export function MyProfile() {
         });
         const [addresses, setAddresses] = useState([]);
         const [addressForm, setAddressForm] = useState({
-                tag: "home",
+                tag: "shipping",
                 name: "",
                 street: "",
                 city: "",
                 state: "",
                 zipCode: "",
-                country: "United States",
+                country: "India",
+                isDefault: false,
         });
         const [showAddressForm, setShowAddressForm] = useState(false);
-        const [editingIndex, setEditingIndex] = useState(null);
+        const [editingAddressId, setEditingAddressId] = useState(null);
+        const [languages, setLanguages] = useState([]);
+        const [selectedLanguage, setSelectedLanguage] = useState("");
+
+
         useEffect(() => {
                 const fetchData = async () => {
                         try {
@@ -91,18 +98,23 @@ export function MyProfile() {
                 setAddressForm({ ...addressForm, [e.target.id]: e.target.value });
         };
 
-        const resetAddressForm = () => {
+        const hasBillingAddress = addresses.some((addr) => addr.tag === "billing");
+
+        const resetAddressForm = (shouldClose = true) => {
                 setAddressForm({
-                        tag: "home",
+                        tag: hasBillingAddress ? "shipping" : "billing",
                         name: "",
                         street: "",
                         city: "",
                         state: "",
                         zipCode: "",
-                        country: "United States",
+                        country: "India",
+                        isDefault: hasBillingAddress ? false : true,
                 });
-                setEditingIndex(null);
-                setShowAddressForm(false);
+                setEditingAddressId(null);
+                if (shouldClose) {
+                        setShowAddressForm(false);
+                }
         };
 
         const handleAddOrUpdateAddress = async () => {
@@ -115,39 +127,91 @@ export function MyProfile() {
                 )
                         return;
 
-                if (editingIndex !== null) {
-                        const updated = [...addresses];
-                        updated[editingIndex] = addressForm;
-                        setAddresses(updated);
-                        resetAddressForm();
-                        return;
-                }
-
                 try {
-                        const res = await fetch("/api/user/addresses", {
-                                method: "POST",
-                                headers: { "Content-Type": "application/json" },
-                                body: JSON.stringify(addressForm),
-                        });
+                        const payload = {
+                                ...addressForm,
+                                country: addressForm.country || "United States",
+                        };
 
-                        if (res.ok) {
-                                const data = await res.json();
-                                setAddresses([...addresses, data.address]);
-                                resetAddressForm();
+                        let response;
+
+                        if (editingAddressId) {
+                                response = await fetch("/api/user/addresses", {
+                                        method: "PUT",
+                                        headers: { "Content-Type": "application/json" },
+                                        body: JSON.stringify({ addressId: editingAddressId, ...payload }),
+                                });
+                        } else {
+                                response = await fetch("/api/user/addresses", {
+                                        method: "POST",
+                                        headers: { "Content-Type": "application/json" },
+                                        body: JSON.stringify(payload),
+                                });
                         }
+
+                        const data = await response.json();
+
+                        if (!response.ok || !data.success) {
+                                throw new Error(data.message || "Failed to save address");
+                        }
+
+                        setAddresses(data.addresses || []);
+                        toast.success(
+                                editingAddressId
+                                        ? "Address updated successfully"
+                                        : "Address added successfully"
+                        );
+                        resetAddressForm();
                 } catch (err) {
                         console.error("Failed to save address", err);
+                        toast.error(err.message || "Failed to save address");
                 }
         };
 
-        const handleEditAddress = (idx) => {
-                setAddressForm(addresses[idx]);
-                setEditingIndex(idx);
+        const handleEditAddress = (address) => {
+                setAddressForm({
+                        tag: address.tag,
+                        name: address.name,
+                        street: address.street,
+                        city: address.city,
+                        state: address.state,
+                        zipCode: address.zipCode,
+                        country: address.country || "India",
+                        isDefault: address.isDefault,
+                });
+                setEditingAddressId(address._id);
                 setShowAddressForm(true);
         };
 
-        const handleDeleteAddress = (idx) => {
-                setAddresses(addresses.filter((_, i) => i !== idx));
+        const handleDeleteAddress = async (addressId) => {
+                try {
+                        const response = await fetch("/api/user/addresses", {
+                                method: "DELETE",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({ addressId }),
+                        });
+
+                        const data = await response.json();
+
+                        if (!response.ok || !data.success) {
+                                throw new Error(data.message || "Failed to delete address");
+                        }
+
+                        setAddresses(data.addresses || []);
+                        toast.success("Address deleted successfully");
+                } catch (error) {
+                        console.error("Failed to delete address", error);
+                        toast.error(error.message || "Failed to delete address");
+                }
+        };
+
+        const billingAddress = addresses.find((addr) => addr.tag === "billing");
+        const shippingAddresses = addresses.filter((addr) => addr.tag === "shipping");
+        const isEditingBilling = editingAddressId && addressForm.tag === "billing";
+
+        const handleAddAddressClick = () => {
+                resetAddressForm(false);
+                setShowAddressForm(true);
         };
 
         return (
@@ -232,61 +296,141 @@ export function MyProfile() {
                                                                 Manage your shipping and billing addresses
                                                         </CardDescription>
                                                 </div>
-                                                <Button
-                                                        size="sm"
-                                                        onClick={() => {
-                                                                resetAddressForm();
-                                                                setShowAddressForm(true);
-                                                        }}
-                                                >
+                                                <Button size="sm" onClick={handleAddAddressClick}>
                                                         <Plus className="h-4 w-4 mr-2" />
                                                         Add Address
                                                 </Button>
                                         </CardHeader>
                                         <CardContent>
-                                                <div className="space-y-4">
-                                                        {addresses.map((addr, idx) => (
-                                                                <div key={idx} className="border rounded-lg p-4">
-                                                                        <div className="flex items-center justify-between mb-2">
-                                                                                <div className="font-medium">
-                                                                                        {addr.tag} Address
+                                                <div className="space-y-6">
+                                                        <div className="space-y-3">
+                                                                <h4 className="text-sm font-semibold text-muted-foreground">
+                                                                        Billing Address
+                                                                </h4>
+                                                                {billingAddress ? (
+                                                                        <div className="border rounded-lg p-4 bg-gray-50">
+                                                                                <div className="flex items-center justify-between">
+                                                                                        <div className="flex items-center gap-2">
+                                                                                                <CreditCard className="h-4 w-4 text-primary" />
+                                                                                                <span className="font-medium">Bill To</span>
+                                                                                                <Badge variant="default">Default</Badge>
+                                                                                        </div>
+                                                                                        <div className="flex gap-2">
+                                                                                                <Button
+                                                                                                        variant="ghost"
+                                                                                                        size="sm"
+                                                                                                        onClick={() => handleEditAddress(billingAddress)}
+                                                                                                >
+                                                                                                        <Edit className="h-4 w-4" />
+                                                                                                </Button>
+                                                                                                <Button
+                                                                                                        variant="ghost"
+                                                                                                        size="sm"
+                                                                                                        onClick={() => handleDeleteAddress(billingAddress._id)}
+                                                                                                        disabled={shippingAddresses.length === 0}
+                                                                                                >
+                                                                                                        <Trash2 className="h-4 w-4" />
+                                                                                                </Button>
+                                                                                        </div>
                                                                                 </div>
-                                                                                <div className="flex gap-2">
-                                                                                        <Button
-                                                                                                variant="ghost"
-                                                                                                size="sm"
-                                                                                                onClick={() => handleEditAddress(idx)}
-                                                                                        >
-                                                                                                <Edit className="h-4 w-4" />
-                                                                                        </Button>
-                                                                                        <Button
-                                                                                                variant="ghost"
-                                                                                                size="sm"
-                                                                                                onClick={() => handleDeleteAddress(idx)}
-                                                                                        >
-                                                                                                <Trash2 className="h-4 w-4" />
-                                                                                        </Button>
+                                                                                <div className="mt-2 text-sm text-muted-foreground space-y-1">
+                                                                                        <p className="font-medium text-foreground">{billingAddress.name}</p>
+                                                                                        <p>
+                                                                                                {billingAddress.street}
+                                                                                                <br />
+                                                                                                {billingAddress.city}, {billingAddress.state} {billingAddress.zipCode}
+                                                                                                <br />
+                                                                                                {billingAddress.country}
+                                                                                        </p>
                                                                                 </div>
                                                                         </div>
-                                                                        <div className="text-sm text-muted-foreground">
-                                                                                {addr.street}
-                                                                                <br />
-                                                                                {addr.city}, {addr.state} {addr.zipCode}
-                                                                                <br />
-                                                                                {addr.country}
-                                                                        </div>
+                                                                ) : (
+                                                                        <p className="text-sm text-muted-foreground">
+                                                                                Add a billing address to speed up checkout.
+                                                                        </p>
+                                                                )}
+                                                        </div>
+
+                                                        <div className="space-y-3">
+                                                                <div className="flex items-center justify-between">
+                                                                        <h4 className="text-sm font-semibold text-muted-foreground">
+                                                                                Shipping Addresses
+                                                                        </h4>
+                                                                        <Badge variant="outline">Ship To</Badge>
                                                                 </div>
-                                                        ))}
+                                                                {shippingAddresses.length > 0 ? (
+                                                                        <div className="space-y-3">
+                                                                                {shippingAddresses.map((addr) => (
+                                                                                        <div key={addr._id} className="border rounded-lg p-4">
+                                                                                                <div className="flex items-center justify-between">
+                                                                                                        <div className="flex items-center gap-2">
+                                                                                                                <Truck className="h-4 w-4 text-primary" />
+                                                                                                                <span className="font-medium">Ship To</span>
+                                                                                                                {addr.isDefault && (
+                                                                                                                        <Badge variant="default">Default</Badge>
+                                                                                                                )}
+                                                                                                        </div>
+                                                                                                        <div className="flex gap-2">
+                                                                                                                <Button
+                                                                                                                        variant="ghost"
+                                                                                                                        size="sm"
+                                                                                                                        onClick={() => handleEditAddress(addr)}
+                                                                                                                >
+                                                                                                                        <Edit className="h-4 w-4" />
+                                                                                                                </Button>
+                                                                                                                <Button
+                                                                                                                        variant="ghost"
+                                                                                                                        size="sm"
+                                                                                                                        onClick={() => handleDeleteAddress(addr._id)}
+                                                                                                                >
+                                                                                                                        <Trash2 className="h-4 w-4" />
+                                                                                                                </Button>
+                                                                                                        </div>
+                                                                                                </div>
+                                                                                                <div className="mt-2 text-sm text-muted-foreground space-y-1">
+                                                                                                        <p className="font-medium text-foreground">{addr.name}</p>
+                                                                                                        <p>
+                                                                                                                {addr.street}
+                                                                                                                <br />
+                                                                                                                {addr.city}, {addr.state} {addr.zipCode}
+                                                                                                                <br />
+                                                                                                                {addr.country}
+                                                                                                        </p>
+                                                                                                </div>
+                                                                                        </div>
+                                                                                ))}
+                                                                        </div>
+                                                                ) : (
+                                                                        <p className="text-sm text-muted-foreground">
+                                                                                Add shipping addresses for different delivery locations.
+                                                                        </p>
+                                                                )}
+                                                        </div>
+
                                                         {showAddressForm && (
                                                                 <div className="border rounded-lg p-4 space-y-2">
                                                                         <div className="grid grid-cols-2 gap-2">
                                                                                 <div className="space-y-1">
                                                                                         <Label htmlFor="tag">Tag</Label>
-                                                                                        <Input
-                                                                                                id="tag"
+                                                                                        <Select
                                                                                                 value={addressForm.tag}
-                                                                                                onChange={handleAddressChange}
-                                                                                        />
+                                                                                                onValueChange={(value) =>
+                                                                                                        setAddressForm({ ...addressForm, tag: value })
+                                                                                                }
+                                                                                        >
+                                                                                                <SelectTrigger>
+                                                                                                        <SelectValue placeholder="Select address type" />
+                                                                                                </SelectTrigger>
+                                                                                                <SelectContent>
+                                                                                                        <SelectItem value="shipping">Ship To</SelectItem>
+                                                                                                        <SelectItem
+                                                                                                                value="billing"
+                                                                                                                disabled={hasBillingAddress && !isEditingBilling}
+                                                                                                        >
+                                                                                                                Bill To
+                                                                                                        </SelectItem>
+                                                                                                </SelectContent>
+                                                                                        </Select>
                                                                                 </div>
                                                                                 <div className="space-y-1">
                                                                                         <Label htmlFor="name">Name</Label>
@@ -341,6 +485,23 @@ export function MyProfile() {
                                                                                         />
                                                                                 </div>
                                                                         </div>
+                                                                        {addressForm.tag === "shipping" && (
+                                                                                <div className="flex items-center space-x-2 pt-2">
+                                                                                        <Checkbox
+                                                                                                id="isDefault"
+                                                                                                checked={addressForm.isDefault}
+                                                                                                onCheckedChange={(checked) =>
+                                                                                                        setAddressForm({
+                                                                                                                ...addressForm,
+                                                                                                                isDefault: checked === true,
+                                                                                                        })
+                                                                                                }
+                                                                                        />
+                                                                                        <Label htmlFor="isDefault" className="text-sm">
+                                                                                                Set as default shipping address
+                                                                                        </Label>
+                                                                                </div>
+                                                                        )}
                                                                         <div className="flex justify-end gap-2 pt-2">
                                                                                 <Button
                                                                                         variant="outline"
@@ -353,7 +514,7 @@ export function MyProfile() {
                                                                                         size="sm"
                                                                                         onClick={handleAddOrUpdateAddress}
                                                                                 >
-                                                                                        {editingIndex !== null ? "Update" : "Add"}
+                                                                                        {editingAddressId ? "Update" : "Add"}
                                                                                         Address
                                                                                 </Button>
                                                                         </div>

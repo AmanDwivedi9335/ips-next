@@ -114,18 +114,19 @@ export const useCheckoutStore = create(
 				},
 
 				// Delivery Address Management
-				savedAddresses: [],
-				selectedAddressId: null,
-				newAddress: {
-					tag: "home",
-					name: "",
-					street: "",
-					city: "",
-					state: "",
-					zipCode: "",
-					country: "India",
-					isDefault: false,
-				},
+                                savedAddresses: [],
+                                selectedBillingAddressId: null,
+                                selectedShippingAddressId: null,
+                                newAddress: {
+                                        tag: "shipping",
+                                        name: "",
+                                        street: "",
+                                        city: "",
+                                        state: "",
+                                        zipCode: "",
+                                        country: "India",
+                                        isDefault: false,
+                                },
 				isAddingNewAddress: false,
 
 				// Order Summary
@@ -288,22 +289,62 @@ export const useCheckoutStore = create(
 				loadUserAddresses: async () => {
 					set({ isLoading: true });
 					try {
-						const data = await paymentAPI.getUserAddresses();
-						if (data.success) {
-							set({ savedAddresses: data.addresses });
+                                                const data = await paymentAPI.getUserAddresses();
+                                                if (data.success) {
+                                                        const addresses = data.addresses || [];
+                                                        const billingAddress = addresses.find(
+                                                                (addr) => addr.tag === "billing"
+                                                        );
+                                                        const shippingAddresses = addresses.filter(
+                                                                (addr) => addr.tag === "shipping"
+                                                        );
+                                                        const defaultShipping =
+                                                                shippingAddresses.find((addr) => addr.isDefault) ||
+                                                                shippingAddresses[0] ||
+                                                                null;
 
-							// Auto-select default address if available
-							const defaultAddress = data.addresses.find(
-								(addr) => addr.isDefault
-							);
-							if (defaultAddress) {
-								set({ selectedAddressId: defaultAddress._id });
-							}
-						}
-					} catch (error) {
-						console.error("Failed to load addresses:", error);
-						toast.error("Failed to load saved addresses");
-					} finally {
+                                                        const {
+                                                                selectedBillingAddressId,
+                                                                selectedShippingAddressId,
+                                                        } = get();
+
+                                                        const nextState = {
+                                                                savedAddresses: addresses,
+                                                                selectedBillingAddressId: billingAddress
+                                                                        ? billingAddress._id
+                                                                        : null,
+                                                                selectedShippingAddressId: null,
+                                                        };
+
+                                                        if (
+                                                                selectedShippingAddressId &&
+                                                                shippingAddresses.some(
+                                                                        (addr) => addr._id === selectedShippingAddressId
+                                                                )
+                                                        ) {
+                                                                nextState.selectedShippingAddressId =
+                                                                        selectedShippingAddressId;
+                                                        } else if (defaultShipping) {
+                                                                nextState.selectedShippingAddressId =
+                                                                        defaultShipping._id;
+                                                        }
+
+                                                        // Preserve billing selection if still valid
+                                                        if (
+                                                                selectedBillingAddressId &&
+                                                                billingAddress &&
+                                                                billingAddress._id === selectedBillingAddressId
+                                                        ) {
+                                                                nextState.selectedBillingAddressId =
+                                                                        selectedBillingAddressId;
+                                                        }
+
+                                                        set(nextState);
+                                                }
+                                        } catch (error) {
+                                                console.error("Failed to load addresses:", error);
+                                                toast.error("Failed to load saved addresses");
+                                        } finally {
 						set({ isLoading: false });
 					}
 				},
@@ -325,20 +366,20 @@ export const useCheckoutStore = create(
 
 					set({ isLoading: true });
 					try {
-						const data = await paymentAPI.addUserAddress(newAddress);
-						if (data.success) {
-							// Reload addresses
-							await get().loadUserAddresses();
+                                                const data = await paymentAPI.addUserAddress(newAddress);
+                                                if (data.success) {
+                                                        // Reload addresses
+                                                        await get().loadUserAddresses();
 
-							// Reset new address form
-							set({
-								newAddress: {
-									tag: "home",
-									name: "",
-									street: "",
-									city: "",
-									state: "",
-									zipCode: "",
+                                                        // Reset new address form
+                                                        set({
+                                                                newAddress: {
+                                                                        tag: "shipping",
+                                                                        name: "",
+                                                                        street: "",
+                                                                        city: "",
+                                                                        state: "",
+                                                                        zipCode: "",
 									country: "India",
 									isDefault: false,
 								},
@@ -365,9 +406,9 @@ export const useCheckoutStore = create(
 				},
 
 				// Select address
-				selectAddress: (addressId) => {
-					set({ selectedAddressId: addressId });
-				},
+                                selectShippingAddress: (addressId) => {
+                                        set({ selectedShippingAddressId: addressId });
+                                },
 
 				// Toggle add new address form
 				toggleAddNewAddress: () => {
@@ -459,10 +500,19 @@ export const useCheckoutStore = create(
 				},
 
 				// Get selected address
-				getSelectedAddress: () => {
-					const { savedAddresses, selectedAddressId } = get();
-					return savedAddresses.find((addr) => addr._id === selectedAddressId);
-				},
+                                getSelectedShippingAddress: () => {
+                                        const { savedAddresses, selectedShippingAddressId } = get();
+                                        return savedAddresses.find(
+                                                (addr) => addr._id === selectedShippingAddressId
+                                        );
+                                },
+
+                                getSelectedBillingAddress: () => {
+                                        const { savedAddresses, selectedBillingAddressId } = get();
+                                        return savedAddresses.find(
+                                                (addr) => addr._id === selectedBillingAddressId
+                                        );
+                                },
 
 				// Process payment
 				processPayment: async (userId, clearCartCallback = null) => {
@@ -475,12 +525,19 @@ export const useCheckoutStore = create(
 						paymentMethod,
 					} = get();
 
-					const selectedAddress = get().getSelectedAddress();
+                                        const selectedShippingAddress =
+                                                get().getSelectedShippingAddress();
+                                        const selectedBillingAddress = get().getSelectedBillingAddress();
 
-					if (!selectedAddress) {
-						toast.error("Please select a delivery address");
-						return { success: false, error: "No delivery address selected" };
-					}
+                                        if (!selectedBillingAddress) {
+                                                toast.error("Please add a billing address in your profile");
+                                                return { success: false, error: "No billing address" };
+                                        }
+
+                                        if (!selectedShippingAddress) {
+                                                toast.error("Please select a shipping address");
+                                                return { success: false, error: "No shipping address selected" };
+                                        }
 
 					if (orderSummary.items.length === 0) {
 						toast.error("No items to checkout");
@@ -506,16 +563,36 @@ export const useCheckoutStore = create(
 							discount: orderSummary.discount,
 							totalAmount: orderSummary.total,
 							paymentMethod: paymentMethod,
-							deliveryAddress: {
-								tag: selectedAddress.tag,
-								name: selectedAddress.name,
-								street: selectedAddress.street,
-								city: selectedAddress.city,
-								state: selectedAddress.state,
-								zipCode: selectedAddress.zipCode,
-								country: selectedAddress.country,
-								fullAddress: `${selectedAddress.street}, ${selectedAddress.city}, ${selectedAddress.state} - ${selectedAddress.zipCode}`,
-							},
+                                                        billingAddress: {
+                                                                tag: selectedBillingAddress.tag,
+                                                                name: selectedBillingAddress.name,
+                                                                street: selectedBillingAddress.street,
+                                                                city: selectedBillingAddress.city,
+                                                                state: selectedBillingAddress.state,
+                                                                zipCode: selectedBillingAddress.zipCode,
+                                                                country: selectedBillingAddress.country,
+                                                                fullAddress: `${selectedBillingAddress.street}, ${selectedBillingAddress.city}, ${selectedBillingAddress.state} - ${selectedBillingAddress.zipCode}`,
+                                                        },
+                                                        shippingAddress: {
+                                                                tag: selectedShippingAddress.tag,
+                                                                name: selectedShippingAddress.name,
+                                                                street: selectedShippingAddress.street,
+                                                                city: selectedShippingAddress.city,
+                                                                state: selectedShippingAddress.state,
+                                                                zipCode: selectedShippingAddress.zipCode,
+                                                                country: selectedShippingAddress.country,
+                                                                fullAddress: `${selectedShippingAddress.street}, ${selectedShippingAddress.city}, ${selectedShippingAddress.state} - ${selectedShippingAddress.zipCode}`,
+                                                        },
+                                                        deliveryAddress: {
+                                                                tag: selectedShippingAddress.tag,
+                                                                name: selectedShippingAddress.name,
+                                                                street: selectedShippingAddress.street,
+                                                                city: selectedShippingAddress.city,
+                                                                state: selectedShippingAddress.state,
+                                                                zipCode: selectedShippingAddress.zipCode,
+                                                                country: selectedShippingAddress.country,
+                                                                fullAddress: `${selectedShippingAddress.street}, ${selectedShippingAddress.city}, ${selectedShippingAddress.state} - ${selectedShippingAddress.zipCode}`,
+                                                        },
 							couponApplied: couponToUse
 								? {
 									couponCode: couponToUse.code,
@@ -703,15 +780,16 @@ export const useCheckoutStore = create(
 						buyNowProduct: null,
 						buyNowQuantity: 1,
 						customerInfo: { name: "", email: "", mobile: "" },
-						savedAddresses: [],
-						selectedAddressId: null,
-						newAddress: {
-							tag: "home",
-							name: "",
-							street: "",
-							city: "",
-							state: "",
-							zipCode: "",
+                                                savedAddresses: [],
+                                                selectedBillingAddressId: null,
+                                                selectedShippingAddressId: null,
+                                                newAddress: {
+                                                        tag: "shipping",
+                                                        name: "",
+                                                        street: "",
+                                                        city: "",
+                                                        state: "",
+                                                        zipCode: "",
 							country: "India",
 							isDefault: false,
 						},
@@ -733,19 +811,26 @@ export const useCheckoutStore = create(
 
 				// Validate checkout data
 				validateCheckoutData: () => {
-					const { customerInfo, selectedAddressId, orderSummary } = get();
-					const errors = [];
+                                        const {
+                                                customerInfo,
+                                                selectedBillingAddressId,
+                                                selectedShippingAddressId,
+                                                orderSummary,
+                                        } = get();
+                                        const errors = [];
 
-					// Validate customer info
-					if (!customerInfo.name.trim())
-						errors.push("Customer name is required");
+                                        // Validate customer info
+                                        if (!customerInfo.name.trim())
+                                                errors.push("Customer name is required");
 					if (!customerInfo.email.trim()) errors.push("Email is required");
 					if (!customerInfo.mobile.trim())
 						errors.push("Mobile number is required");
 
 					// Validate delivery address
-					if (!selectedAddressId)
-						errors.push("Please select a delivery address");
+                                        if (!selectedBillingAddressId)
+                                                errors.push("Please add a billing address");
+                                        if (!selectedShippingAddressId)
+                                                errors.push("Please select a shipping address");
 
 					// Validate order items
 					if (orderSummary.items.length === 0) errors.push("No items in order");
