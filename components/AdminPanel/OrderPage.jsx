@@ -114,14 +114,14 @@ function OrderPage() {
 		}
 	};
 
-	const handleDownloadInvoice = async (order) => {
-		const result = await downloadInvoice(order._id, order.orderNumber);
-		if (result.success) {
-			toast.success("Invoice downloaded successfully");
-		} else {
-			toast.error("Failed to download invoice");
-		}
-	};
+        const handleDownloadInvoice = async (order) => {
+                const result = await downloadInvoice(order);
+                if (result.success) {
+                        toast.success("Invoice downloaded successfully");
+                } else {
+                        toast.error(result.message || "Failed to download invoice");
+                }
+        };
 
 	const openPopup = (type, order = null) => {
 		setPopups((prev) => ({
