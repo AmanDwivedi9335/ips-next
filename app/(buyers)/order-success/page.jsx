@@ -6,15 +6,16 @@ import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle, Package, Truck, Home, Download, CreditCard, Loader2 } from "lucide-react";
+import { CheckCircle, Package, Truck, Home, Download, Loader2 } from "lucide-react";
+
 import Link from "next/link";
 
 export default function OrderSuccessPage() {
 	const router = useRouter();
 	const searchParams = useSearchParams();
         const [orderDetails, setOrderDetails] = useState(null);
-        const [loading, setLoading] = useState(true);
-        const [error, setError] = useState(null);
+        const [isConfirming, setIsConfirming] = useState(true);
+
 
 	const orderId = searchParams.get("orderId");
 	const orderNumber = searchParams.get("orderNumber");
@@ -25,82 +26,69 @@ export default function OrderSuccessPage() {
                         return;
                 }
 
-                const fetchOrder = async () => {
-                        try {
-                                setLoading(true);
-                                const response = await fetch(`/api/orders/${orderId}`);
-                                const data = await response.json();
+                setIsConfirming(true);
 
-                                if (!response.ok || !data.success) {
-                                        throw new Error(data.message || "Unable to load order details");
-                                }
+                const estimatedDeliveryDate = new Date(
+                        Date.now() + 7 * 24 * 60 * 60 * 1000
+                ).toLocaleDateString();
 
-                                const order = data.order;
-                                setOrderDetails({
-                                        ...order,
-                                        orderId: order._id,
-                                        orderNumber: order.orderNumber || orderNumber,
-                                        estimatedDelivery: order.estimatedDelivery
-                                                ? new Date(order.estimatedDelivery).toLocaleDateString()
-                                                : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString(),
-                                });
-                                setError(null);
-                        } catch (err) {
-                                console.error("Order success fetch error:", err);
-                                setError(err.message || "Failed to load order details");
-                        } finally {
-                                setLoading(false);
-                        }
+                setOrderDetails({
+                        orderId,
+                        orderNumber,
+                        estimatedDelivery: estimatedDeliveryDate,
+                });
+
+                const timer = setTimeout(() => {
+                        setIsConfirming(false);
+                }, 2500);
+
+                return () => {
+                        clearTimeout(timer);
                 };
-
-                fetchOrder();
         }, [orderId, orderNumber, router]);
 
-        if (loading) {
+        if (!orderDetails) {
                 return (
-                        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-                                <div className="text-center space-y-2">
-                                        <Loader2 className="h-8 w-8 animate-spin mx-auto text-gray-500" />
-                                        <p className="text-sm text-gray-600">Preparing your order details...</p>
+                        <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+                                <div className="max-w-md w-full space-y-6 text-center">
+                                        <div className="p-6 bg-white rounded-2xl shadow-sm border border-blue-100">
+                                                <div className="flex items-center justify-center gap-3">
+                                                        <Loader2 className="h-6 w-6 animate-spin text-blue-600" />
+                                                        <p className="text-sm font-medium text-blue-700">
+                                                                We are confirming your payment, please do not close this page.
+                                                        </p>
+                                                </div>
+                                        </div>
+
                                 </div>
                         </div>
                 );
         }
 
-        if (error) {
-                return (
-                        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-                                <Card className="max-w-md">
-                                        <CardHeader>
-                                                <CardTitle>Order summary unavailable</CardTitle>
-                                        </CardHeader>
-                                        <CardContent className="space-y-4 text-center">
-                                                <p className="text-sm text-gray-600">{error}</p>
-                                                <Button variant="outline" onClick={() => router.push("/orders")}>Return to orders</Button>
-                                        </CardContent>
-                                </Card>
-                        </div>
-                );
-        }
-
-        if (!orderDetails) {
-                return null;
-        }
-
         return (
                 <div className="min-h-screen bg-gray-50 py-8">
                         <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
-				<motion.div
-					initial={{ opacity: 0, y: 20 }}
-					animate={{ opacity: 1, y: 0 }}
-					transition={{ duration: 0.5 }}
-					className="text-center space-y-8"
-				>
-					{/* Success Icon */}
-					<div className="flex justify-center">
-						<div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center">
-							<CheckCircle className="w-12 h-12 text-green-600" />
-						</div>
+                                <motion.div
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ duration: 0.5 }}
+                                        className="text-center space-y-8"
+                                >
+                                        {isConfirming && (
+                                                <div className="flex items-center justify-center gap-3 p-4 bg-blue-50 border border-blue-100 rounded-xl text-blue-700">
+                                                        <Loader2 className="h-5 w-5 animate-spin" />
+                                                        <span className="text-sm font-medium">
+                                                                We are confirming your payment, please do not close this page.
+                                                        </span>
+                                                </div>
+                                        )}
+
+                                        {/* Success Icon */}
+                                        <div className="flex justify-center">
+                                                <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center">
+                                                        <CheckCircle className="w-12 h-12 text-green-600" />
+                                                </div>
+
 					</div>
 
 					{/* Success Message */}

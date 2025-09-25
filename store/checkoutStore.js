@@ -515,12 +515,12 @@ export const useCheckoutStore = create(
                                 },
 
 				// Process payment
-				processPayment: async (userId, clearCartCallback = null) => {
-					const {
-						customerInfo,
-						orderSummary,
-						appliedCoupon,
-						cartAppliedCoupon,
+                                processPayment: async (userId, clearCartCallback = null) => {
+                                        const {
+                                                customerInfo,
+                                                orderSummary,
+                                                appliedCoupon,
+                                                cartAppliedCoupon,
 						checkoutType,
 						paymentMethod,
 					} = get();
@@ -544,13 +544,35 @@ export const useCheckoutStore = create(
 						return { success: false, error: "No items to checkout" };
 					}
 
-					set({ paymentLoading: true });
+                                        set({ paymentLoading: true });
 
-					let shouldResetLoading = true;
+                                        let shouldResetLoading = true;
 
-					try {
-						const couponToUse =
-							checkoutType === "cart" ? cartAppliedCoupon : appliedCoupon;
+                                        const redirectToFailurePage = (
+                                                reason = "payment_failed",
+                                                message = "Payment failed. Please try again."
+                                        ) => {
+                                                const params = new URLSearchParams();
+
+                                                if (reason) {
+                                                        params.set("reason", reason);
+                                                }
+
+                                                if (message) {
+                                                        params.set("message", message);
+                                                }
+
+                                                const query = params.toString();
+                                                const target = query
+                                                        ? `/order-failure?${query}`
+                                                        : "/order-failure";
+
+                                                window.location.href = target;
+                                        };
+
+                                        try {
+                                                const couponToUse =
+                                                        checkoutType === "cart" ? cartAppliedCoupon : appliedCoupon;
 
 						const orderData = {
 							userId: userId,
@@ -686,13 +708,19 @@ export const useCheckoutStore = create(
 
 											window.location.href = `/order-success?orderId=${verificationResult.orderId}&orderNumber=${verificationResult.orderNumber}`;
 										}
-									} catch (error) {
-										console.error("Payment verification error:", error);
-										toast.error(error.message || "Payment verification failed");
-									} finally {
-										set({ paymentLoading: false });
-									}
-								},
+                                                                        } catch (error) {
+                                                                                console.error("Payment verification error:", error);
+                                                                                toast.error(error.message || "Payment verification failed");
+
+                                                                                redirectToFailurePage(
+                                                                                        "verification_failed",
+                                                                                        error.message ||
+                                                                                                "We could not verify your payment."
+                                                                                );
+                                                                        } finally {
+                                                                                set({ paymentLoading: false });
+                                                                        }
+                                                                },
 								prefill: {
 									name: customerInfo.name,
 									email: customerInfo.email,
@@ -721,6 +749,12 @@ export const useCheckoutStore = create(
                                                                 toast.error(
                                                                         response?.error?.description ||
                                                                                 "Payment failed. Please try again."
+                                                                );
+
+                                                                redirectToFailurePage(
+                                                                        response?.error?.code || "payment_failed",
+                                                                        response?.error?.description ||
+                                                                                "Your payment could not be completed."
                                                                 );
                                                         });
 
@@ -754,22 +788,32 @@ export const useCheckoutStore = create(
 							window.location.href = `/order-success?orderId=${result.orderId}&orderNumber=${result.orderNumber}`;
 
 							return { success: true, paymentMethod: "cod" };
-						}
+                                                }
 
-						toast.error(result.error || "Failed to place order");
-						return { success: false, error: result.error };
-					}
+                                                toast.error(result.error || "Failed to place order");
 
-					toast.error("Unsupported payment method");
-					return { success: false, error: "Unsupported payment method" };
-				} catch (error) {
-					console.error("Payment processing error:", error);
-					toast.error(error.message || "Payment processing failed");
-					return { success: false, error: error.message };
-				} finally {
-					if (shouldResetLoading) {
-						set({ paymentLoading: false });
-					}
+                                                redirectToFailurePage(
+                                                        "order_creation_failed",
+                                                        result.error || "We could not place your order."
+                                                );
+                                                return { success: false, error: result.error };
+                                        }
+
+                                        toast.error("Unsupported payment method");
+                                        return { success: false, error: "Unsupported payment method" };
+                                } catch (error) {
+                                        console.error("Payment processing error:", error);
+                                        toast.error(error.message || "Payment processing failed");
+
+                                        redirectToFailurePage(
+                                                "payment_processing_error",
+                                                error.message || "An unexpected error occurred while processing payment."
+                                        );
+                                        return { success: false, error: error.message };
+                                } finally {
+                                        if (shouldResetLoading) {
+                                                set({ paymentLoading: false });
+                                        }
 				}
                                 },
 
