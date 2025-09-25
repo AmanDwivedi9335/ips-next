@@ -192,3 +192,102 @@
 	-webkit-text-stroke: 2px white;
 	text-stroke: 2px white;
 }
+
+.paper-sheet {
+        width: 112px;
+        height: 140px;
+        background: linear-gradient(180deg, rgba(243, 244, 246, 0.9), #ffffff 45%, rgba(229, 231, 235, 0.8));
+        border-radius: 18px;
+        box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+        animation: print-paper-feed 2.4s infinite ease-in-out;
+        position: relative;
+}
+
+.paper-sheet::before {
+        content: "";
+        position: absolute;
+        top: 18px;
+        left: 14px;
+        right: 14px;
+        height: 4px;
+        border-radius: 9999px;
+        background: linear-gradient(90deg, rgba(99, 102, 241, 0.35), rgba(59, 130, 246, 0.65));
+        box-shadow: 0 18px 0 rgba(99, 102, 241, 0.12), 0 36px 0 rgba(59, 130, 246, 0.08), 0 54px 0 rgba(59, 130, 246, 0.05);
+}
+
+.paper-sheet::after {
+        content: "";
+        position: absolute;
+        bottom: 18px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 56px;
+        height: 12px;
+        background: rgba(59, 130, 246, 0.12);
+        border-radius: 9999px;
+}
+
+@keyframes print-paper-feed {
+        0% {
+                transform: translateY(-140%) rotate(0.5deg);
+                opacity: 0;
+        }
+        20% {
+                opacity: 1;
+        }
+        60% {
+                transform: translateY(8%) rotate(-0.5deg);
+        }
+        100% {
+                transform: translateY(120%) rotate(0.5deg);
+                opacity: 0;
+        }
+}
+
+.animate-print-light {
+        animation: print-light 1.8s infinite ease-in-out;
+}
+
+@keyframes print-light {
+        0%,
+        100% {
+                opacity: 0.4;
+        }
+        50% {
+                opacity: 1;
+        }
+}
+
+.animate-print-dots {
+        animation: print-dots 2.4s infinite ease-in-out;
+}
+
+@keyframes print-dots {
+        0%,
+        20% {
+                opacity: 0.4;
+        }
+        50% {
+                opacity: 1;
+        }
+        80%,
+        100% {
+                opacity: 0.6;
+        }
+}
+
+.animate-print-pulse {
+        animation: print-pulse 1.6s infinite ease-in-out;
+}
+
+@keyframes print-pulse {
+        0%,
+        100% {
+                letter-spacing: 0.3em;
+                opacity: 0.6;
+        }
+        50% {
+                letter-spacing: 0.4em;
+                opacity: 1;
+        }
+}

@@ -1,3 +1,5 @@
+import PrintLoader from "@/components/Shared/PrintLoader.jsx";
+
 export default function Loading() {
-	return null;
+        return <PrintLoader />;
 }

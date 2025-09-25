@@ -1,10 +1,9 @@
 import "./globals.css";
-import Script from "next/script";
+import GlobalLoaderProvider from "@/components/Shared/GlobalLoaderProvider.jsx";
 
 export const metadata = {
-	title: " Industrial Print Solutions",
-	description:
-		"Order best quality poster and sign for industrial purpose",
+        title: " Industrial Print Solutions",
+        description: "Order best quality poster and sign for industrial purpose",
 };
 
 export default function RootLayout({ children }) {
@@ -19,7 +18,9 @@ export default function RootLayout({ children }) {
                                 />
                         </head>
 
-                        <body className="antialiased" suppressHydrationWarning>{children}</body>
+                        <body className="antialiased" suppressHydrationWarning>
+                                <GlobalLoaderProvider>{children}</GlobalLoaderProvider>
+                        </body>
                 </html>
         );
 }
