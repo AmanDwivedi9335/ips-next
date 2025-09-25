@@ -20,7 +20,9 @@ const decodeStoredInvoice = (pdfBase64) => {
 
 export async function GET(_request, { params }) {
         try {
-                if (!params?.id) {
+                const { id } = await params;
+
+                if (!id) {
                         return NextResponse.json(
                                 { success: false, message: "Order identifier is required" },
                                 { status: 400 }
@@ -29,7 +31,7 @@ export async function GET(_request, { params }) {
 
                 await dbConnect();
 
-                const order = await Order.findById(params.id)
+                const order = await Order.findById(id)
                         .populate("userId", "firstName lastName email mobile")
                         .populate("products.productId", "name images price")
                         .populate("couponApplied.couponId", "code discountType discountValue");
@@ -55,7 +57,7 @@ export async function GET(_request, { params }) {
                         );
                 }
 
-                const fileName = order.invoice?.fileName || `invoice-${order.orderNumber || params.id}.pdf`;
+                const fileName = order.invoice?.fileName || `invoice-${order.orderNumber || id}.pdf`;
 
                 return new NextResponse(pdfBuffer, {
                         headers: {

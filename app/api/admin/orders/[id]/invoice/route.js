@@ -5,12 +5,21 @@ import { generateInvoicePDF } from "@/lib/generateInvoicePDF.js";
 
 export async function GET(request, { params }) {
         try {
+                const { id } = await params;
+
+                if (!id) {
+                        return NextResponse.json(
+                                { success: false, message: "Order identifier is required" },
+                                { status: 400 }
+                        );
+                }
+
                 await dbConnect();
 
-                const order = await Order.findById(params.id)
-			.populate("userId", "firstName lastName email mobile")
-			.populate("products.productId", "name images price")
-			.populate("couponApplied.couponId", "code discountType discountValue");
+                const order = await Order.findById(id)
+                        .populate("userId", "firstName lastName email mobile")
+                        .populate("products.productId", "name images price")
+                        .populate("couponApplied.couponId", "code discountType discountValue");
 
 		if (!order) {
 			return NextResponse.json(
@@ -38,6 +47,15 @@ export async function GET(request, { params }) {
 
 export async function POST(request, { params }) {
         try {
+                const { id } = await params;
+
+                if (!id) {
+                        return NextResponse.json(
+                                { success: false, message: "Order identifier is required" },
+                                { status: 400 }
+                        );
+                }
+
                 const body = await request.json();
                 const { pdfBase64, fileName } = body || {};
 
@@ -51,11 +69,11 @@ export async function POST(request, { params }) {
                 await dbConnect();
 
                 const order = await Order.findByIdAndUpdate(
-                        params.id,
+                        id,
                         {
                                 invoice: {
                                         pdfBase64,
-                                        fileName: fileName || `invoice-${params.id}.pdf`,
+                                        fileName: fileName || `invoice-${id}.pdf`,
                                         generatedAt: new Date(),
                                 },
                         },

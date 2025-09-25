@@ -3,11 +3,19 @@ import Product from "@/model/Product.js";
 import { deriveProductPricing } from "@/lib/pricing.js";
 
 export async function POST(request, { params }) {
-	await dbConnect();
+        const { productId } = await params;
 
-	try {
-		const { productId } = params;
-		const { quantity = 1 } = await request.json();
+        if (!productId) {
+                return Response.json(
+                        { success: false, message: "Product identifier is required" },
+                        { status: 400 }
+                );
+        }
+
+        await dbConnect();
+
+        try {
+                const { quantity = 1 } = await request.json();
 
                 // Validate product exists and is available
                 const product = await Product.findById(productId);

@@ -3,13 +3,22 @@ import { dbConnect } from "@/lib/dbConnect.js";
 import Order from "@/model/Order.js";
 
 export async function GET(request, { params }) {
-	try {
-		await dbConnect();
+        try {
+                const { id } = await params;
 
-		const order = await Order.findById(params.id)
-			.populate("userId", "firstName lastName email mobile")
-			.populate("products.productId", "name images price")
-			.populate("couponApplied.couponId", "code discountType discountValue");
+                if (!id) {
+                        return NextResponse.json(
+                                { success: false, message: "Order identifier is required" },
+                                { status: 400 }
+                        );
+                }
+
+                await dbConnect();
+
+                const order = await Order.findById(id)
+                        .populate("userId", "firstName lastName email mobile")
+                        .populate("products.productId", "name images price")
+                        .populate("couponApplied.couponId", "code discountType discountValue");
 
 		if (!order) {
 			return NextResponse.json(
@@ -32,12 +41,21 @@ export async function GET(request, { params }) {
 }
 
 export async function PUT(request, { params }) {
-	try {
-		await dbConnect();
+        try {
+                const { id } = await params;
 
-		const updateData = await request.json();
+                if (!id) {
+                        return NextResponse.json(
+                                { success: false, message: "Order identifier is required" },
+                                { status: 400 }
+                        );
+                }
 
-		const order = await Order.findByIdAndUpdate(params.id, updateData, {
+                await dbConnect();
+
+                const updateData = await request.json();
+
+                const order = await Order.findByIdAndUpdate(id, updateData, {
 			new: true,
 			runValidators: true,
 		})
@@ -66,10 +84,19 @@ export async function PUT(request, { params }) {
 }
 
 export async function DELETE(request, { params }) {
-	try {
-		await dbConnect();
+        try {
+                const { id } = await params;
 
-		const order = await Order.findByIdAndDelete(params.id);
+                if (!id) {
+                        return NextResponse.json(
+                                { success: false, message: "Order identifier is required" },
+                                { status: 400 }
+                        );
+                }
+
+                await dbConnect();
+
+                const order = await Order.findByIdAndDelete(id);
 
 		if (!order) {
 			return NextResponse.json(
