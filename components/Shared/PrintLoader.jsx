@@ -9,6 +9,7 @@ export default function PrintLoader({ isVisible = true, message }) {
 
         return (
                 <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-[radial-gradient(circle_at_top,_#ffffff,_#f5f5f5)]">
+
                         <div className="flex flex-col items-center text-center gap-8 px-6">
                                 <div className="flex flex-col items-center gap-6">
                                         <div className="relative flex flex-col items-center">
@@ -30,6 +31,7 @@ export default function PrintLoader({ isVisible = true, message }) {
                                                 <div className="mt-6 text-xs uppercase tracking-[0.35em] text-gray-400 font-semibold">
                                                         Printing Magic
                                                 </div>
+
                                         </div>
                                 </div>
 
