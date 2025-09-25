@@ -3,6 +3,23 @@
 import { create } from "zustand";
 import { persist, devtools } from "zustand/middleware";
 
+const PRODUCT_CACHE_TTL = 60 * 1000;
+const FILTER_CACHE_TTL = 5 * 60 * 1000;
+const MAX_PRODUCT_CACHE_ENTRIES = 20;
+const MAX_FILTER_CACHE_ENTRIES = 15;
+const productCache = new Map();
+const filterCache = new Map();
+let activeProductsController = null;
+
+const trimCache = (cache, maxEntries) => {
+        if (cache.size > maxEntries) {
+                const firstKey = cache.keys().next().value;
+                if (firstKey !== undefined) {
+                        cache.delete(firstKey);
+                }
+        }
+};
+
 export const useProductStore = create(
 	devtools(
 		persist(
@@ -25,37 +42,37 @@ export const useProductStore = create(
 				sortOrder: "desc",
 
 				// Actions
-				fetchProducts: async () => {
-					set({ isLoading: true, error: null });
+                                fetchProducts: async () => {
+                                        let controller;
 
-					try {
-						const {
-							currentCategory,
-							searchQuery,
-							filters,
-							currentPage,
-							sortBy,
-							sortOrder,
-						} = get();
+                                        try {
+                                                const {
+                                                        currentCategory,
+                                                        searchQuery,
+                                                        filters,
+                                                        currentPage,
+                                                        sortBy,
+                                                        sortOrder,
+                                                } = get();
 
-						const params = new URLSearchParams({
-							page: currentPage.toString(),
-							limit: "12",
-							sort: sortBy,
-							order: sortOrder,
-						});
+                                                const params = new URLSearchParams({
+                                                        page: currentPage.toString(),
+                                                        limit: "12",
+                                                        sort: sortBy,
+                                                        order: sortOrder,
+                                                });
 
-						if (currentCategory !== "all") {
-							params.append("category", currentCategory);
-						}
+                                                if (currentCategory !== "all") {
+                                                        params.append("category", currentCategory);
+                                                }
 
-						if (searchQuery) {
-							params.append("search", searchQuery);
-						}
+                                                if (searchQuery) {
+                                                        params.append("search", searchQuery);
+                                                }
 
-						if (filters.priceRange[0] > 0) {
-							params.append("minPrice", filters.priceRange[0].toString());
-						}
+                                                if (filters.priceRange[0] > 0) {
+                                                        params.append("minPrice", filters.priceRange[0].toString());
+                                                }
 
                                                 if (filters.priceRange[1] < 10000) {
                                                         params.append("maxPrice", filters.priceRange[1].toString());
@@ -68,27 +85,83 @@ export const useProductStore = create(
                                                         );
                                                 }
 
+                                                const cacheKey = params.toString();
+                                                const cachedEntry = productCache.get(cacheKey);
 
-						const response = await fetch(`/api/products?${params}`);
-						const data = await response.json();
+                                                if (
+                                                        cachedEntry &&
+                                                        Date.now() - cachedEntry.timestamp < PRODUCT_CACHE_TTL
+                                                ) {
+                                                        set({
+                                                                products: cachedEntry.products,
+                                                                filteredProducts: cachedEntry.products,
+                                                                totalPages: cachedEntry.totalPages,
+                                                                isLoading: false,
+                                                                error: null,
+                                                        });
+                                                        return;
+                                                }
 
-						if (data.success) {
-							set({
-								products: data.products,
-								filteredProducts: data.products,
-								totalPages: data.pagination.totalPages,
-								isLoading: false,
-							});
-						} else {
-							set({ error: data.message, isLoading: false });
-						}
-					} catch (error) {
-						set({
-							error: "Failed to fetch products",
-							isLoading: false,
-						});
-					}
-				},
+                                                if (activeProductsController) {
+                                                        activeProductsController.abort();
+                                                }
+
+                                                controller = new AbortController();
+                                                activeProductsController = controller;
+
+                                                set({ isLoading: true, error: null });
+
+                                                const response = await fetch(`/api/products?${params}`, {
+                                                        signal: controller.signal,
+                                                });
+                                                const data = await response.json();
+
+                                                if (controller.signal.aborted) {
+                                                        if (activeProductsController === controller) {
+                                                                activeProductsController = null;
+                                                        }
+                                                        return;
+                                                }
+
+                                                activeProductsController = null;
+
+                                                if (!response.ok) {
+                                                        set({
+                                                                error: data?.message || "Failed to fetch products",
+                                                                isLoading: false,
+                                                        });
+                                                        return;
+                                                }
+
+                                                if (data.success) {
+                                                        productCache.set(cacheKey, {
+                                                                timestamp: Date.now(),
+                                                                products: data.products,
+                                                                totalPages: data.pagination.totalPages,
+                                                        });
+                                                        trimCache(productCache, MAX_PRODUCT_CACHE_ENTRIES);
+                                                        set({
+                                                                products: data.products,
+                                                                filteredProducts: data.products,
+                                                                totalPages: data.pagination.totalPages,
+                                                                isLoading: false,
+                                                        });
+                                                } else {
+                                                        set({ error: data.message, isLoading: false });
+                                                }
+                                        } catch (error) {
+                                                if (controller && activeProductsController === controller) {
+                                                        activeProductsController = null;
+                                                }
+
+                                                if (error.name !== "AbortError") {
+                                                        set({
+                                                                error: "Failed to fetch products",
+                                                                isLoading: false,
+                                                        });
+                                                }
+                                        }
+                                },
 
                                 fetchFilters: async () => {
                                         try {
@@ -97,14 +170,42 @@ export const useProductStore = create(
                                                 if (currentCategory) {
                                                         params.append("category", currentCategory);
                                                 }
+                                                const cacheKey = params.toString();
+                                                const cachedFilters = filterCache.get(cacheKey);
+
+                                                if (
+                                                        cachedFilters &&
+                                                        Date.now() - cachedFilters.timestamp < FILTER_CACHE_TTL
+                                                ) {
+                                                        set({
+                                                                availableFilters: cachedFilters.filters,
+                                                                filters: {
+                                                                        ...get().filters,
+                                                                        priceRange: [
+                                                                                cachedFilters.filters.priceRange.min,
+                                                                                cachedFilters.filters.priceRange.max,
+                                                                        ],
+                                                                },
+                                                        });
+                                                        return;
+                                                }
+
                                                 const response = await fetch(
-                                                        `/api/products/filters?${params.toString()}`
+                                                        `/api/products/filters?${params.toString()}`,
+                                                        {
+                                                                cache: "no-store",
+                                                        }
                                                 );
                                                 const data = await response.json();
 
-						if (data.success) {
-							set({
-								availableFilters: data.filters,
+                                                if (data.success) {
+                                                        filterCache.set(cacheKey, {
+                                                                timestamp: Date.now(),
+                                                                filters: data.filters,
+                                                        });
+                                                        trimCache(filterCache, MAX_FILTER_CACHE_ENTRIES);
+                                                        set({
+                                                                availableFilters: data.filters,
                                 filters: {
                                         ...get().filters,
                                         priceRange: [

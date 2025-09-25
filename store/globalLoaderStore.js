@@ -7,19 +7,25 @@ export const useGlobalLoaderStore = create(
         devtools((set) => ({
                 pendingRequests: 0,
                 isVisible: false,
+                isFullLoaderEnabled: false,
                 startRequest: () =>
                         set((state) => ({
                                 pendingRequests: state.pendingRequests + 1,
-                                isVisible: true,
+                                isVisible: state.isFullLoaderEnabled ? true : state.isVisible,
                         })),
                 endRequest: () =>
                         set((state) => {
                                 const pending = Math.max(0, state.pendingRequests - 1);
                                 return {
                                         pendingRequests: pending,
-                                        isVisible: pending > 0,
+                                        isVisible: state.isFullLoaderEnabled && pending > 0,
                                 };
                         }),
-                reset: () => set({ pendingRequests: 0, isVisible: false }),
+                setFullLoaderEnabled: (enabled) =>
+                        set((state) => ({
+                                isFullLoaderEnabled: enabled,
+                                isVisible: enabled && state.pendingRequests > 0,
+                        })),
+                reset: () => set({ pendingRequests: 0, isVisible: false, isFullLoaderEnabled: false }),
         }))
 );
