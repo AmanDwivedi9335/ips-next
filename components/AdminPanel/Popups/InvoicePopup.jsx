@@ -18,14 +18,14 @@ export function InvoicePopup({ open, onOpenChange, order }) {
 
 	if (!order) return null;
 
-	const handleDownload = async () => {
-		const result = await downloadInvoice(order._id, order.orderNumber);
-		if (result.success) {
-			toast.success("Invoice downloaded successfully");
-		} else {
-			toast.error("Failed to download invoice. Please try again.");
-		}
-	};
+        const handleDownload = async () => {
+                const result = await downloadInvoice(order);
+                if (result.success) {
+                        toast.success("Invoice downloaded successfully");
+                } else {
+                        toast.error(result.message || "Failed to download invoice. Please try again.");
+                }
+        };
 
 	const handlePrint = () => {
 		window.print();

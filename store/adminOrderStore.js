@@ -1,4 +1,7 @@
+'use client';
+
 import { create } from "zustand";
+import { generateInvoicePdfData } from "@/lib/generateInvoicePDF.js";
 
 export const useAdminOrderStore = create((set, get) => ({
 	// State
@@ -160,28 +163,79 @@ export const useAdminOrderStore = create((set, get) => ({
 	},
 
 	// Download invoice
-	downloadInvoice: async (orderId, orderNumber) => {
-		try {
-			const response = await fetch(`/api/admin/orders/${orderId}/invoice`);
+        downloadInvoice: async (order) => {
+                try {
+                        if (!order) {
+                                return { success: false, message: "Order not found" };
+                        }
 
-			if (response.ok) {
-				const blob = await response.blob();
-				const url = window.URL.createObjectURL(blob);
-				const a = document.createElement("a");
-				a.href = url;
-				a.download = `invoice-${orderNumber}.pdf`;
-				document.body.appendChild(a);
-				a.click();
-				window.URL.revokeObjectURL(url);
-				document.body.removeChild(a);
-				return { success: true };
-			} else {
-				return { success: false, message: "Failed to download invoice" };
-			}
-		} catch (error) {
-			return { success: false, message: "Failed to download invoice" };
-		}
-	},
+                        if (!order._id) {
+                                return { success: false, message: "Order identifier missing" };
+                        }
+
+                        const { blob, buffer, base64 } = await generateInvoicePdfData(order);
+                        const fileName = `invoice-${order.orderNumber || "order"}.pdf`;
+                        let downloadableBlob = blob;
+
+                        if (!downloadableBlob && buffer) {
+                                downloadableBlob = new Blob([buffer], { type: "application/pdf" });
+                        }
+
+                        if (downloadableBlob) {
+                                const url = window.URL.createObjectURL(downloadableBlob);
+                                const anchor = document.createElement("a");
+                                anchor.href = url;
+                                anchor.download = fileName;
+                                document.body.appendChild(anchor);
+                                anchor.click();
+                                document.body.removeChild(anchor);
+                                window.URL.revokeObjectURL(url);
+                        } else if (base64) {
+                                const anchor = document.createElement("a");
+                                anchor.href = base64;
+                                anchor.download = fileName;
+                                document.body.appendChild(anchor);
+                                anchor.click();
+                                document.body.removeChild(anchor);
+                        } else {
+                                return {
+                                        success: false,
+                                        message: "Unable to generate invoice file",
+                                };
+                        }
+
+                        if (!base64) {
+                                return {
+                                        success: false,
+                                        message: "Unable to encode invoice for storage",
+                                };
+                        }
+
+                        const response = await fetch(`/api/admin/orders/${order._id}/invoice`, {
+                                method: "POST",
+                                headers: {
+                                        "Content-Type": "application/json",
+                                },
+                                body: JSON.stringify({
+                                        pdfBase64: base64,
+                                        fileName,
+                                }),
+                        });
+
+                        if (!response.ok) {
+                                const data = await response.json().catch(() => null);
+                                return {
+                                        success: false,
+                                        message: data?.message || "Failed to save invoice",
+                                };
+                        }
+
+                        return { success: true };
+                } catch (error) {
+                        console.error("Error generating invoice:", error);
+                        return { success: false, message: "Failed to generate invoice" };
+                }
+        },
 
 	// Bulk operations
 	bulkUpdateStatus: async (orderIds, status) => {

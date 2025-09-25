@@ -170,9 +170,16 @@ const OrderSchema = new mongoose.Schema(
 		estimatedDelivery: Date,
 		actualDelivery: Date,
 
-		// Notes
-		orderNotes: String,
-		adminNotes: String,
+                // Notes
+                orderNotes: String,
+                adminNotes: String,
+
+                // Invoice storage
+                invoice: {
+                        pdfBase64: String,
+                        fileName: String,
+                        generatedAt: Date,
+                },
 
 		// Timestamps
 		orderDate: {
