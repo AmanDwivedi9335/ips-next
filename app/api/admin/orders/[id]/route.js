@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { dbConnect } from "@/lib/dbConnect.js";
 import Order from "@/model/Order.js";
+import "@/model/Promocode.js";
 
 export async function GET(request, { params }) {
         try {
@@ -18,7 +19,11 @@ export async function GET(request, { params }) {
                 const order = await Order.findById(id)
                         .populate("userId", "firstName lastName email mobile")
                         .populate("products.productId", "name images price")
-                        .populate("couponApplied.couponId", "code discountType discountValue");
+                        .populate({
+                                path: "couponApplied.couponId",
+                                model: "Promocode",
+                                select: "code discountType discountValue discount",
+                        });
 
 		if (!order) {
 			return NextResponse.json(
