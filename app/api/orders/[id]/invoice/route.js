@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { dbConnect } from "@/lib/dbConnect.js";
 import Order from "@/model/Order.js";
+import "@/model/Promocode.js";
 import { generateInvoicePdfData } from "@/lib/generateInvoicePDF.js";
 
 const decodeStoredInvoice = (pdfBase64) => {
@@ -18,9 +19,10 @@ const decodeStoredInvoice = (pdfBase64) => {
         }
 };
 
-export async function GET(_request, { params }) {
+export async function GET(_request, context) {
         try {
-                const { id } = await params;
+                const params = await context?.params;
+                const id = params?.id;
 
                 if (!id) {
                         return NextResponse.json(
