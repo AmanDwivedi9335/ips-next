@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -16,6 +16,9 @@ export default function OrderSuccessPage() {
         const [orderDetails, setOrderDetails] = useState(null);
         const [isConfirming, setIsConfirming] = useState(true);
         const [error, setError] = useState(null);
+        const [isDownloadingInvoice, setIsDownloadingInvoice] = useState(false);
+        const [downloadMessage, setDownloadMessage] = useState(null);
+        const [downloadError, setDownloadError] = useState(null);
 
 
         const orderId = searchParams.get("orderId");
@@ -71,6 +74,61 @@ export default function OrderSuccessPage() {
                         mrp: item.mrp,
                 }));
         }, [orderDetails]);
+
+        const handleDownloadInvoice = useCallback(async () => {
+                const identifier = orderDetails?._id || orderId;
+
+                if (!identifier) {
+                        setDownloadError("Order information is unavailable.");
+                        setDownloadMessage(null);
+                        return;
+                }
+
+                setIsDownloadingInvoice(true);
+                setDownloadError(null);
+                setDownloadMessage(null);
+
+                try {
+                        const response = await fetch(`/api/orders/${identifier}/invoice`);
+
+                        if (!response.ok) {
+                                const data = await response.json().catch(() => null);
+                                throw new Error(data?.message || "Unable to download invoice");
+                        }
+
+                        const blob = await response.blob();
+
+                        const contentDisposition = response.headers.get("content-disposition");
+                        let fileName = orderDetails?.invoice?.fileName;
+
+                        if (!fileName && contentDisposition) {
+                                const match = contentDisposition.match(/filename="?([^";]+)"?/i);
+                                if (match?.[1]) {
+                                        fileName = match[1];
+                                }
+                        }
+
+                        if (!fileName) {
+                                fileName = `invoice-${orderDetails?.orderNumber || orderNumber || identifier}.pdf`;
+                        }
+
+                        const url = window.URL.createObjectURL(blob);
+                        const anchor = document.createElement("a");
+                        anchor.href = url;
+                        anchor.download = fileName;
+                        document.body.appendChild(anchor);
+                        anchor.click();
+                        document.body.removeChild(anchor);
+                        window.URL.revokeObjectURL(url);
+
+                        setDownloadMessage("Invoice downloaded successfully.");
+                } catch (err) {
+                        console.error("Failed to download invoice", err);
+                        setDownloadError(err.message || "Unable to download invoice.");
+                } finally {
+                        setIsDownloadingInvoice(false);
+                }
+        }, [orderDetails, orderId, orderNumber]);
 
         if (!orderDetails && isConfirming) {
                 return (
@@ -347,17 +405,43 @@ export default function OrderSuccessPage() {
                                         </Card>
 
                                         {/* Action Buttons */}
-                                        <div className="flex flex-col sm:flex-row gap-4">
-                                                <Button variant="outline" className="flex-1 bg-transparent">
-                                                        <Download className="w-4 h-4 mr-2" />
-                                                        Download Invoice
-                                                </Button>
-                                                <Button variant="outline" asChild className="flex-1 bg-transparent">
-                                                        <Link href="/products">
-                                                                <Home className="w-4 h-4 mr-2" />
-                                                                Continue Shopping
-                                                        </Link>
-                                                </Button>
+                                        <div className="space-y-2">
+                                                <div className="flex flex-col sm:flex-row gap-4">
+                                                        <Button
+                                                                variant="outline"
+                                                                className="flex-1 bg-transparent"
+                                                                onClick={handleDownloadInvoice}
+                                                                disabled={isDownloadingInvoice}
+                                                        >
+                                                                {isDownloadingInvoice ? (
+                                                                        <>
+                                                                                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                                                                Preparing Invoice...
+                                                                        </>
+                                                                ) : (
+                                                                        <>
+                                                                                <Download className="w-4 h-4 mr-2" />
+                                                                                Download Invoice
+                                                                        </>
+                                                                )}
+                                                        </Button>
+                                                        <Button variant="outline" asChild className="flex-1 bg-transparent">
+                                                                <Link href="/products">
+                                                                        <Home className="w-4 h-4 mr-2" />
+                                                                        Continue Shopping
+                                                                </Link>
+                                                        </Button>
+                                                </div>
+                                                {downloadError ? (
+                                                        <p className="text-sm text-red-600" role="alert">
+                                                                {downloadError}
+                                                        </p>
+                                                ) : null}
+                                                {downloadMessage ? (
+                                                        <p className="text-sm text-green-600" role="status">
+                                                                {downloadMessage}
+                                                        </p>
+                                                ) : null}
                                         </div>
 
                                         {/* Additional Info */}
