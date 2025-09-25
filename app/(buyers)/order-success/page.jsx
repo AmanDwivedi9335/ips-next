@@ -1,12 +1,20 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle, Package, Truck, Home, Download, Loader2 } from "lucide-react";
+import {
+        CheckCircle,
+        Package,
+        Truck,
+        Home,
+        Download,
+        Loader2,
+        CreditCard,
+} from "lucide-react";
 
 import Link from "next/link";
 
@@ -15,39 +23,64 @@ export default function OrderSuccessPage() {
 	const searchParams = useSearchParams();
         const [orderDetails, setOrderDetails] = useState(null);
         const [isConfirming, setIsConfirming] = useState(true);
+        const [error, setError] = useState(null);
 
 
-	const orderId = searchParams.get("orderId");
-	const orderNumber = searchParams.get("orderNumber");
+        const orderId = searchParams.get("orderId");
+        const orderNumber = searchParams.get("orderNumber");
 
-	useEffect(() => {
+        useEffect(() => {
                 if (!orderId || !orderNumber) {
                         router.push("/");
                         return;
                 }
 
-                setIsConfirming(true);
+                const fetchOrderDetails = async () => {
+                        setIsConfirming(true);
+                        setError(null);
 
-                const estimatedDeliveryDate = new Date(
-                        Date.now() + 7 * 24 * 60 * 60 * 1000
-                ).toLocaleDateString();
+                        try {
+                                const response = await fetch(`/api/orders/${orderId}`);
 
-                setOrderDetails({
-                        orderId,
-                        orderNumber,
-                        estimatedDelivery: estimatedDeliveryDate,
-                });
+                                if (!response.ok) {
+                                        throw new Error("Unable to fetch order details");
+                                }
 
-                const timer = setTimeout(() => {
-                        setIsConfirming(false);
-                }, 2500);
+                                const data = await response.json();
 
-                return () => {
-                        clearTimeout(timer);
+                                if (!data?.success || !data?.order) {
+                                        throw new Error(data?.message || "Order details not available");
+                                }
+
+                                setOrderDetails(data.order);
+                        } catch (err) {
+                                console.error("Failed to load order details", err);
+                                setError(err.message || "Failed to load order details");
+                        } finally {
+                                setIsConfirming(false);
+                        }
                 };
+
+                fetchOrderDetails();
         }, [orderId, orderNumber, router]);
 
-        if (!orderDetails) {
+        const purchasedItems = useMemo(() => {
+                if (!orderDetails?.products?.length) {
+                        return [];
+                }
+
+                return orderDetails.products.map((item) => ({
+                        id: item.productId || item._id,
+                        name: item.productName,
+                        quantity: item.quantity,
+                        price: item.price,
+                        totalPrice: item.totalPrice,
+                        discountAmount: item.discountAmount,
+                        mrp: item.mrp,
+                }));
+        }, [orderDetails]);
+
+        if (!orderDetails && isConfirming) {
                 return (
                         <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
                                 <div className="max-w-md w-full space-y-6 text-center">
@@ -59,10 +92,26 @@ export default function OrderSuccessPage() {
                                                         </p>
                                                 </div>
                                         </div>
-
                                 </div>
                         </div>
                 );
+        }
+
+        if (error) {
+                return (
+                        <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+                                <div className="max-w-md w-full space-y-6 text-center">
+                                        <div className="p-6 bg-white rounded-2xl shadow-sm border border-red-100">
+                                                <p className="text-sm font-medium text-red-600">{error}</p>
+                                                <Button onClick={() => router.push("/products")}>Continue Shopping</Button>
+                                        </div>
+                                </div>
+                        </div>
+                );
+        }
+
+        if (!orderDetails) {
+                return null;
         }
 
         return (
@@ -111,22 +160,18 @@ export default function OrderSuccessPage() {
                                                         <div className="flex justify-between items-center">
                                                                 <span className="text-gray-600">Order Number:</span>
                                                                 <Badge variant="secondary" className="font-mono">
-                                                                        {orderDetails.orderNumber}
+                                                                        {orderDetails.orderNumber || orderNumber}
                                                                 </Badge>
                                                         </div>
                                                         <div className="flex justify-between items-center">
                                                                 <span className="text-gray-600">Order ID:</span>
-                                                                <span className="font-medium">{orderDetails.orderId}</span>
+                                                                <span className="font-medium">{orderDetails._id || orderId}</span>
                                                         </div>
                                                         <div className="flex justify-between items-center">
                                                                 <span className="text-gray-600">Placed On:</span>
                                                                 <span className="font-medium">
-                                                                        {new Date(orderDetails.createdAt || Date.now()).toLocaleDateString()}
+                                                                        {new Date(orderDetails.createdAt || orderDetails.orderDate || Date.now()).toLocaleString()}
                                                                 </span>
-                                                        </div>
-                                                        <div className="flex justify-between items-center">
-                                                                <span className="text-gray-600">Estimated Delivery:</span>
-                                                                <span className="font-medium">{orderDetails.estimatedDelivery}</span>
                                                         </div>
                                                         <div className="flex justify-between items-center">
                                                                 <span className="text-gray-600">Status:</span>
@@ -137,11 +182,74 @@ export default function OrderSuccessPage() {
                                                         <div className="flex justify-between items-center">
                                                                 <span className="text-gray-600">Total Amount:</span>
                                                                 <span className="font-semibold text-lg">
-                                                                        ₹{orderDetails.totalAmount?.toLocaleString?.() || orderDetails.totalAmount}
+                                                                        ₹
+                                                                        {orderDetails.totalAmount?.toLocaleString?.() ||
+                                                                                orderDetails.totalAmount}
                                                                 </span>
                                                         </div>
                                                 </CardContent>
                                         </Card>
+
+                                        {/* Purchased Items */}
+                                        {purchasedItems.length > 0 && (
+                                                <Card>
+                                                        <CardHeader>
+                                                                <CardTitle>Items Purchased</CardTitle>
+                                                        </CardHeader>
+                                                        <CardContent className="space-y-4">
+                                                                {purchasedItems.map((item) => (
+                                                                        <div
+                                                                                key={item.id}
+                                                                                className="flex flex-col gap-2 rounded-lg border border-gray-100 bg-gray-50 p-4"
+                                                                        >
+                                                                                <div className="flex flex-wrap items-center justify-between gap-2">
+                                                                                        <p className="font-semibold text-gray-900">
+                                                                                                {item.name}
+                                                                                        </p>
+                                                                                        <Badge variant="secondary">
+                                                                                                Qty: {item.quantity}
+                                                                                        </Badge>
+                                                                                </div>
+                                                                                <div className="grid gap-2 text-sm text-gray-600 sm:grid-cols-3">
+                                                                                        <div>
+                                                                                                <span className="block text-gray-500">MRP</span>
+                                                                                                <span className="font-medium">
+                                                                                                        ₹
+                                                                                                        {item.mrp?.toLocaleString?.() ||
+                                                                                                                item.mrp ||
+                                                                                                                "-"}
+                                                                                                </span>
+                                                                                        </div>
+                                                                                        <div>
+                                                                                                <span className="block text-gray-500">Price</span>
+                                                                                                <span className="font-medium">
+                                                                                                        ₹
+                                                                                                        {item.price?.toLocaleString?.() || item.price}
+                                                                                                </span>
+                                                                                        </div>
+                                                                                        <div>
+                                                                                                <span className="block text-gray-500">Discount</span>
+                                                                                                <span className="font-medium">
+                                                                                                        ₹
+                                                                                                        {item.discountAmount?.toLocaleString?.() ||
+                                                                                                                item.discountAmount ||
+                                                                                                                0}
+                                                                                                </span>
+                                                                                        </div>
+                                                                                </div>
+                                                                                <div className="flex items-center justify-between text-sm font-semibold text-gray-900">
+                                                                                        <span>Total</span>
+                                                                                        <span>
+                                                                                                ₹
+                                                                                                {item.totalPrice?.toLocaleString?.() ||
+                                                                                                        item.totalPrice}
+                                                                                        </span>
+                                                                                </div>
+                                                                        </div>
+                                                                ))}
+                                                        </CardContent>
+                                                </Card>
+                                        )}
 
                                         {/* Address Summary */}
                                         <Card>
@@ -159,7 +267,8 @@ export default function OrderSuccessPage() {
                                                                                         <br />
                                                                                         {orderDetails.billingAddress.street}
                                                                                         <br />
-                                                                                        {orderDetails.billingAddress.city}, {orderDetails.billingAddress.state} - {orderDetails.billingAddress.zipCode}
+                                                                                        {orderDetails.billingAddress.city}, {orderDetails.billingAddress.state} -
+                                                                                        {orderDetails.billingAddress.zipCode}
                                                                                 </p>
                                                                         </div>
                                                                 </div>
@@ -174,11 +283,71 @@ export default function OrderSuccessPage() {
                                                                                         <br />
                                                                                         {orderDetails.shippingAddress.street}
                                                                                         <br />
-                                                                                        {orderDetails.shippingAddress.city}, {orderDetails.shippingAddress.state} - {orderDetails.shippingAddress.zipCode}
+                                                                                        {orderDetails.shippingAddress.city}, {orderDetails.shippingAddress.state} -
+                                                                                        {orderDetails.shippingAddress.zipCode}
                                                                                 </p>
                                                                         </div>
                                                                 </div>
                                                         )}
+                                                </CardContent>
+                                        </Card>
+
+                                        {/* Payment Summary */}
+                                        <Card>
+                                                <CardHeader>
+                                                        <CardTitle>Payment Summary</CardTitle>
+                                                </CardHeader>
+                                                <CardContent className="space-y-2 text-sm text-gray-600">
+                                                        <div className="flex justify-between">
+                                                                <span>Subtotal</span>
+                                                                <span className="font-medium text-gray-900">
+                                                                        ₹
+                                                                        {orderDetails.subtotal?.toLocaleString?.() ||
+                                                                                orderDetails.subtotal}
+                                                                </span>
+                                                        </div>
+                                                        <div className="flex justify-between">
+                                                                <span>Shipping</span>
+                                                                <span className="font-medium text-gray-900">
+                                                                        ₹
+                                                                        {orderDetails.shippingCost?.toLocaleString?.() ||
+                                                                                orderDetails.shippingCost ||
+                                                                                0}
+                                                                </span>
+                                                        </div>
+                                                        <div className="flex justify-between">
+                                                                <span>Discount</span>
+                                                                <span className="font-medium text-gray-900">
+                                                                        -₹
+                                                                        {orderDetails.discount?.toLocaleString?.() ||
+                                                                                orderDetails.discount ||
+                                                                                0}
+                                                                </span>
+                                                        </div>
+                                                        {orderDetails.tax ? (
+                                                                <div className="flex justify-between">
+                                                                        <span>Tax</span>
+                                                                        <span className="font-medium text-gray-900">
+                                                                                ₹
+                                                                                {orderDetails.tax?.toLocaleString?.() ||
+                                                                                        orderDetails.tax}
+                                                                        </span>
+                                                                </div>
+                                                        ) : null}
+                                                        <div className="flex justify-between border-t border-gray-200 pt-2 text-base font-semibold text-gray-900">
+                                                                <span>Total Paid</span>
+                                                                <span>
+                                                                        ₹
+                                                                        {orderDetails.totalAmount?.toLocaleString?.() ||
+                                                                                orderDetails.totalAmount}
+                                                                </span>
+                                                        </div>
+                                                        <div className="flex justify-between pt-2 text-sm">
+                                                                <span>Payment Method</span>
+                                                                <span className="font-medium capitalize text-gray-900">
+                                                                        {orderDetails.paymentMethod}
+                                                                </span>
+                                                        </div>
                                                 </CardContent>
                                         </Card>
 
