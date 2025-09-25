@@ -122,17 +122,37 @@ const OrderSchema = new mongoose.Schema(
 			default: "pending",
 		},
 
-		// Delivery Information
-		deliveryAddress: {
-			street: String,
-			city: String,
-			state: String,
-			zipCode: String,
-			country: String,
-			fullAddress: String,
-			name: String,
-			tag: String,
-		},
+                // Delivery Information
+                billingAddress: {
+                        street: String,
+                        city: String,
+                        state: String,
+                        zipCode: String,
+                        country: String,
+                        fullAddress: String,
+                        name: String,
+                        tag: String,
+                },
+                shippingAddress: {
+                        street: String,
+                        city: String,
+                        state: String,
+                        zipCode: String,
+                        country: String,
+                        fullAddress: String,
+                        name: String,
+                        tag: String,
+                },
+                deliveryAddress: {
+                        street: String,
+                        city: String,
+                        state: String,
+                        zipCode: String,
+                        country: String,
+                        fullAddress: String,
+                        name: String,
+                        tag: String,
+                },
 
 		// Coupon Information
 		couponApplied: {

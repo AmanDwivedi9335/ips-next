@@ -10,29 +10,20 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "react-hot-toast";
 import {
-	MapPin,
-	CreditCard,
-	ArrowLeft,
-	ArrowRight,
-	Loader2,
-	Tag,
-	X,
-	User,
-	Plus,
-	Home,
-	Building,
-	MapPinIcon,
+        MapPin,
+        CreditCard,
+        ArrowLeft,
+        ArrowRight,
+        Loader2,
+        Tag,
+        X,
+        User,
+        Plus,
+        Truck,
 } from "lucide-react";
 import { useCartStore } from "@/store/cartStore";
 import { useAuthStore, useLoggedInUser, useUserEmail } from "@/store/authStore";
@@ -78,23 +69,24 @@ export default function CheckoutPage() {
 	const getProductById = useProductStore((state) => state.getProductById);
 
 	// Checkout store
-	const {
-		checkoutType,
-		buyNowProduct,
-		buyNowQuantity,
-		customerInfo,
-		savedAddresses,
-		selectedAddressId,
-		newAddress,
-		isAddingNewAddress,
-		orderSummary,
-		appliedCoupon,
-		cartAppliedCoupon,
-		currentStep,
-		isLoading,
-		paymentLoading,
-		paymentMethod,
-	} = useCheckoutStore();
+        const {
+                checkoutType,
+                buyNowProduct,
+                buyNowQuantity,
+                customerInfo,
+                savedAddresses,
+                selectedBillingAddressId,
+                selectedShippingAddressId,
+                newAddress,
+                isAddingNewAddress,
+                orderSummary,
+                appliedCoupon,
+                cartAppliedCoupon,
+                currentStep,
+                isLoading,
+                paymentLoading,
+                paymentMethod,
+        } = useCheckoutStore();
 
 	// Checkout store actions
 	const setCheckoutType = useCheckoutStore((state) => state.setCheckoutType);
@@ -109,7 +101,7 @@ export default function CheckoutPage() {
 	);
 	const addNewAddress = useCheckoutStore((state) => state.addNewAddress);
 	const updateNewAddress = useCheckoutStore((state) => state.updateNewAddress);
-	const selectAddress = useCheckoutStore((state) => state.selectAddress);
+        const selectShippingAddress = useCheckoutStore((state) => state.selectShippingAddress);
 	const toggleAddNewAddress = useCheckoutStore(
 		(state) => state.toggleAddNewAddress
 	);
@@ -117,9 +109,12 @@ export default function CheckoutPage() {
 	const removeCoupon = useCheckoutStore((state) => state.removeCoupon);
 	const processPayment = useCheckoutStore((state) => state.processPayment);
 	const resetCheckout = useCheckoutStore((state) => state.resetCheckout);
-	const getSelectedAddress = useCheckoutStore(
-		(state) => state.getSelectedAddress
-	);
+        const getSelectedShippingAddress = useCheckoutStore(
+                (state) => state.getSelectedShippingAddress
+        );
+        const getSelectedBillingAddress = useCheckoutStore(
+                (state) => state.getSelectedBillingAddress
+        );
 
 	// Initialize customer info from user data
 	useEffect(() => {
@@ -203,12 +198,12 @@ export default function CheckoutPage() {
         }, [handleRazorpayLoad]);
 
 	// Handle address selection
-	const handleAddressSelect = useCallback(
-		(addressId) => {
-			selectAddress(addressId);
-		},
-		[selectAddress]
-	);
+        const handleAddressSelect = useCallback(
+                (addressId) => {
+                        selectShippingAddress(addressId);
+                },
+                [selectShippingAddress]
+        );
 
 	// Handle new address form
 	const handleNewAddressChange = useCallback(
@@ -245,20 +240,28 @@ export default function CheckoutPage() {
 	}, [couponCode, applyCoupon, checkoutType]);
 
 	// Handle payment
-	const handlePayment = useCallback(async () => {
-		if (!isRazorpayLoaded) {
-			toast.error("Payment system is loading. Please wait.");
-			return;
-		}
+        const handlePayment = useCallback(async () => {
+                if (!isRazorpayLoaded) {
+                        toast.error("Payment system is loading. Please wait.");
+                        return;
+                }
 
-		if (!getSelectedAddress()) {
-			toast.error("Please select a delivery address");
-			return;
-		}
+                const billingAddress = getSelectedBillingAddress();
+                const shippingAddress = getSelectedShippingAddress();
 
-		try {
-			const userId = user?._id || user?.id;
-			const clearCartCallback = checkoutType === "cart" ? clearCart : null;
+                if (!billingAddress) {
+                        toast.error("Please add a billing address from your profile before checkout");
+                        return;
+                }
+
+                if (!shippingAddress) {
+                        toast.error("Please select a shipping address");
+                        return;
+                }
+
+                try {
+                        const userId = user?._id || user?.id;
+                        const clearCartCallback = checkoutType === "cart" ? clearCart : null;
 
 			const result = await processPayment(userId, clearCartCallback);
 
@@ -274,130 +277,158 @@ export default function CheckoutPage() {
 		processPayment,
 		user,
 		checkoutType,
-		clearCart,
-		getSelectedAddress,
-	]);
+                clearCart,
+                getSelectedBillingAddress,
+                getSelectedShippingAddress,
+        ]);
 
 	// Address Step Component
-	const AddressStep = useMemo(
-		() => (
-			<Card>
+        const AddressStep = useMemo(
+                () => {
+                        const billingAddress = savedAddresses.find(
+                                (address) => address.tag === "billing"
+                        );
+                        const shippingAddresses = savedAddresses.filter(
+                                (address) => address.tag === "shipping"
+                        );
+
+                        return (
+                                <Card>
 				<CardHeader>
 					<CardTitle className="flex items-center gap-2">
 						<MapPin className="h-5 w-5" />
-						Delivery Address
+						Billing & Shipping Details
 					</CardTitle>
 				</CardHeader>
-				<CardContent className="space-y-4">
-					{/* Saved Addresses */}
-					{savedAddresses.length > 0 && (
-						<div className="space-y-3">
-							<h4 className="font-medium">Saved Addresses</h4>
-							{savedAddresses.map((address) => (
-								<div
-									key={address._id}
-									className={`p-4 border rounded-lg cursor-pointer transition-colors ${
-										selectedAddressId === address._id
-											? "border-blue-500 bg-blue-50"
-											: "border-gray-200 hover:border-gray-300"
-									}`}
-									onClick={() => handleAddressSelect(address._id)}
-								>
-									<div className="flex items-start justify-between">
-										<div className="flex-1">
-											<div className="flex items-center gap-2 mb-2">
-												{address.tag === "home" && <Home className="h-4 w-4" />}
-												{address.tag === "office" && (
-													<Building className="h-4 w-4" />
-												)}
-												{address.tag === "other" && (
-													<MapPinIcon className="h-4 w-4" />
-												)}
-												<Badge variant="secondary" className="capitalize">
-													{address.tag}
-												</Badge>
-												{address.isDefault && (
-													<Badge variant="default">Default</Badge>
-												)}
+				<CardContent className="space-y-6">
+					<div className="space-y-3">
+						<div className="flex items-center justify-between">
+							<h4 className="font-medium">Billing Address</h4>
+							{billingAddress && <Badge variant="default">Bill To</Badge>}
+						</div>
+						{billingAddress ? (
+							<div className="p-4 border rounded-lg bg-gray-50">
+								<div className="flex items-start justify-between">
+									<div className="flex items-center gap-2 text-sm font-medium text-gray-700">
+										<CreditCard className="h-4 w-4 text-primary" />
+										<span>Primary Billing</span>
+									</div>
+									<p className="text-xs text-gray-500">Manage from profile</p>
+								</div>
+								<div className="mt-3 space-y-1 text-sm text-gray-600">
+									<p className="font-medium text-gray-900">{billingAddress.name}</p>
+									<p>
+										{billingAddress.street}
+										<br />
+										{billingAddress.city}, {billingAddress.state} {billingAddress.zipCode}
+										<br />
+										{billingAddress.country}
+									</p>
+								</div>
+							</div>
+						) : (
+							<div className="p-4 border border-dashed rounded-lg bg-orange-50 text-sm text-orange-700">
+								<p className="font-medium">No billing address saved.</p>
+								<p className="mt-1">
+									Please add a billing address from your profile before completing checkout.
+								</p>
+							</div>
+						)}
+					</div>
+
+					<div className="space-y-3">
+						<div className="flex items-center justify-between">
+							<h4 className="font-medium">Shipping Addresses</h4>
+							<Badge variant="outline">Ship To</Badge>
+						</div>
+						{shippingAddresses.length > 0 ? (
+							<div className="space-y-3">
+								{shippingAddresses.map((address) => (
+									<div
+										key={address._id}
+										className={`p-4 border rounded-lg cursor-pointer transition-colors ${
+											selectedShippingAddressId === address._id
+												? "border-blue-500 bg-blue-50"
+												: "border-gray-200 hover:border-gray-300"
+										}`}
+										onClick={() => handleAddressSelect(address._id)}
+									>
+										<div className="flex items-start justify-between">
+											<div className="flex-1">
+												<div className="flex items-center gap-2 mb-2">
+													<Truck className="h-4 w-4 text-primary" />
+													<span className="text-sm font-medium text-gray-700">Ship To</span>
+													{address.isDefault && (
+														<Badge variant="secondary">Default</Badge>
+													)}
+												</div>
+												<p className="font-medium text-gray-900">{address.name}</p>
+												<p className="text-sm text-gray-600">
+													{address.street}, {address.city}, {address.state} - {address.zipCode}
+												</p>
 											</div>
-											<p className="font-medium">{address.name}</p>
-											<p className="text-sm text-gray-600">
-												{address.street}, {address.city}, {address.state} -{" "}
-												{address.zipCode}
-											</p>
-										</div>
-										<div className="ml-4">
-											<div
-												className={`w-4 h-4 rounded-full border-2 ${
-													selectedAddressId === address._id
+											<div className="ml-4">
+												<div
+													className={`w-4 h-4 rounded-full border-2 ${
+														selectedShippingAddressId === address._id
 														? "border-blue-500 bg-blue-500"
 														: "border-gray-300"
 												}`}
-											>
-												{selectedAddressId === address._id && (
-													<div className="w-2 h-2 bg-white rounded-full m-0.5" />
-												)}
+												>
+													{selectedShippingAddressId === address._id && (
+														<div className="w-2 h-2 bg-white rounded-full m-0.5" />
+													)}
+												</div>
 											</div>
 										</div>
 									</div>
-								</div>
 							))}
-						</div>
-					)}
+							</div>
+						) : (
+							<p className="text-sm text-muted-foreground">
+								Add a shipping address to continue with checkout.
+							</p>
+						)}
+					</div>
 
-					{/* Add New Address Button */}
-					{!isAddingNewAddress && (
-						<Button
-							variant="outline"
-							onClick={toggleAddNewAddress}
-							className="w-full"
-						>
+                                        {!isAddingNewAddress && (
+                                                <Button
+                                                        variant="outline"
+                                                        onClick={() => {
+                                                                handleNewAddressChange("tag", "shipping");
+                                                                handleNewAddressChange(
+                                                                        "isDefault",
+                                                                        shippingAddresses.length === 0
+                                                                );
+                                                                toggleAddNewAddress();
+                                                        }}
+                                                        className="w-full"
+                                                >
 							<Plus className="h-4 w-4 mr-2" />
-							Add New Address
+							Add Shipping Address
 						</Button>
 					)}
 
-					{/* New Address Form */}
 					{isAddingNewAddress && (
 						<div className="space-y-4 p-4 border rounded-lg bg-gray-50">
 							<div className="flex items-center justify-between">
-								<h4 className="font-medium">Add New Address</h4>
+								<h4 className="font-medium">New Shipping Address</h4>
 								<Button variant="ghost" size="sm" onClick={toggleAddNewAddress}>
 									<X className="h-4 w-4" />
 								</Button>
 							</div>
 
-							<div className="grid grid-cols-2 gap-4">
-								<div>
-									<Label htmlFor="addressTag">Address Type</Label>
-									<Select
-										value={newAddress.tag}
-										onValueChange={(value) =>
-											handleNewAddressChange("tag", value)
-										}
-									>
-										<SelectTrigger>
-											<SelectValue />
-										</SelectTrigger>
-										<SelectContent>
-											<SelectItem value="home">Home</SelectItem>
-											<SelectItem value="office">Office</SelectItem>
-											<SelectItem value="other">Other</SelectItem>
-										</SelectContent>
-									</Select>
-								</div>
-								<div>
-									<Label htmlFor="addressName">Contact Name</Label>
-									<Input
-										id="addressName"
-										value={newAddress.name}
-										onChange={(e) =>
-											handleNewAddressChange("name", e.target.value)
-										}
-										placeholder="Full name"
-									/>
-								</div>
-							</div>
+                                                        <div>
+                                                                <Label htmlFor="addressName">Contact Name</Label>
+                                                                <Input
+                                                                        id="addressName"
+                                                                        value={newAddress.name}
+                                                                        onChange={(e) =>
+                                                                                handleNewAddressChange("name", e.target.value)
+                                                                        }
+                                                                        placeholder="Full name"
+                                                                />
+                                                        </div>
 
 							<div>
 								<Label htmlFor="street">Street Address</Label>
@@ -406,7 +437,7 @@ export default function CheckoutPage() {
 									value={newAddress.street}
 									onChange={(e) =>
 										handleNewAddressChange("street", e.target.value)
-									}
+								}
 									placeholder="House/Flat no, Building name, Street"
 									rows={2}
 								/>
@@ -419,7 +450,7 @@ export default function CheckoutPage() {
 										id="city"
 										value={newAddress.city}
 										onChange={(e) =>
-											handleNewAddressChange("city", e.target.value)
+												handleNewAddressChange("city", e.target.value)
 										}
 										placeholder="City"
 									/>
@@ -430,7 +461,7 @@ export default function CheckoutPage() {
 										id="state"
 										value={newAddress.state}
 										onChange={(e) =>
-											handleNewAddressChange("state", e.target.value)
+												handleNewAddressChange("state", e.target.value)
 										}
 										placeholder="State"
 									/>
@@ -444,7 +475,7 @@ export default function CheckoutPage() {
 										id="zipCode"
 										value={newAddress.zipCode}
 										onChange={(e) =>
-											handleNewAddressChange("zipCode", e.target.value)
+												handleNewAddressChange("zipCode", e.target.value)
 										}
 										placeholder="PIN Code"
 									/>
@@ -465,11 +496,11 @@ export default function CheckoutPage() {
 									id="isDefault"
 									checked={newAddress.isDefault}
 									onCheckedChange={(checked) =>
-										handleNewAddressChange("isDefault", checked)
-									}
+										handleNewAddressChange("isDefault", checked === true)
+								}
 								/>
 								<Label htmlFor="isDefault" className="text-sm">
-									Set as default address
+									Set as default shipping address
 								</Label>
 							</div>
 
@@ -492,40 +523,37 @@ export default function CheckoutPage() {
 											Adding...
 										</>
 									) : (
-										"Add Address"
+											"Save Address"
 									)}
 								</Button>
 							</div>
 						</div>
 					)}
 
-					{/* Continue Button */}
 					<Button
 						onClick={() => setCurrentStep(2)}
-						disabled={!selectedAddressId}
+						disabled={!billingAddress || !selectedShippingAddressId}
 						className="w-full"
 					>
 						Continue to Payment
-						<ArrowRight className="ml-2 h-4 w-4" />
 					</Button>
 				</CardContent>
-			</Card>
-		),
+                                </Card>
+                        );
+                },
 		[
 			savedAddresses,
-			selectedAddressId,
-			isAddingNewAddress,
-			newAddress,
-			isLoading,
+			selectedShippingAddressId,
 			handleAddressSelect,
+			isAddingNewAddress,
+			toggleAddNewAddress,
+			newAddress,
 			handleNewAddressChange,
 			handleAddNewAddress,
-			toggleAddNewAddress,
+			isLoading,
 			setCurrentStep,
 		]
 	);
-
-	// Payment Step Component
 	const PaymentStep = useMemo(
 		() => (
 			<Card>
@@ -653,9 +681,11 @@ export default function CheckoutPage() {
 	);
 
 	// Order Summary Component
-	const OrderSummary = useMemo(() => {
-		const currentCoupon =
-			checkoutType === "cart" ? cartAppliedCoupon : appliedCoupon;
+        const OrderSummary = useMemo(() => {
+                const currentCoupon =
+                        checkoutType === "cart" ? cartAppliedCoupon : appliedCoupon;
+                const billingAddress = getSelectedBillingAddress();
+                const shippingAddress = getSelectedShippingAddress();
 
 		return (
 			<Card className="sticky top-4">
@@ -700,7 +730,7 @@ export default function CheckoutPage() {
 
 					<Separator />
 
-					{/* Coupon Section - Only show for buyNow flow */}
+                                        {/* Coupon Section - Only show for buyNow flow */}
 					{checkoutType === "buyNow" && (
 						<>
 							<div className="space-y-3">
@@ -743,7 +773,42 @@ export default function CheckoutPage() {
 						</>
 					)}
 
-					{/* Show applied cart coupon for cart flow */}
+                                        {/* Shipping & Billing summary */}
+                                        {(billingAddress || shippingAddress) && (
+                                                <>
+                                                        <Separator />
+                                                        <div className="space-y-3 text-sm">
+                                                                {billingAddress && (
+                                                                        <div className="flex gap-3">
+                                                                                <CreditCard className="h-4 w-4 mt-1 text-primary" />
+                                                                                <div>
+                                                                                        <p className="font-medium text-gray-900">Billing Address</p>
+                                                                                        <p className="text-gray-600">
+                                                                                                {billingAddress.name}
+                                                                                                <br />
+                                                                                                {billingAddress.street}, {billingAddress.city}, {billingAddress.state} - {billingAddress.zipCode}
+                                                                                        </p>
+                                                                                </div>
+                                                                        </div>
+                                                                )}
+                                                                {shippingAddress && (
+                                                                        <div className="flex gap-3">
+                                                                                <Truck className="h-4 w-4 mt-1 text-primary" />
+                                                                                <div>
+                                                                                        <p className="font-medium text-gray-900">Shipping Address</p>
+                                                                                        <p className="text-gray-600">
+                                                                                                {shippingAddress.name}
+                                                                                                <br />
+                                                                                                {shippingAddress.street}, {shippingAddress.city}, {shippingAddress.state} - {shippingAddress.zipCode}
+                                                                                        </p>
+                                                                                </div>
+                                                                        </div>
+                                                                )}
+                                                        </div>
+                                                </>
+                                        )}
+
+                                        {/* Show applied cart coupon for cart flow */}
 					{checkoutType === "cart" && cartAppliedCoupon && (
 						<>
 							<div className="p-3 bg-green-50 rounded-lg">
@@ -800,16 +865,18 @@ export default function CheckoutPage() {
 				</CardContent>
 			</Card>
 		);
-	}, [
-		orderSummary,
-		appliedCoupon,
-		cartAppliedCoupon,
-		checkoutType,
-		couponCode,
-		handleApplyCoupon,
-		removeCoupon,
-		isLoading,
-	]);
+        }, [
+                orderSummary,
+                appliedCoupon,
+                cartAppliedCoupon,
+                checkoutType,
+                couponCode,
+                handleApplyCoupon,
+                removeCoupon,
+                isLoading,
+                getSelectedBillingAddress,
+                getSelectedShippingAddress,
+        ]);
 
 	return (
 		<>
