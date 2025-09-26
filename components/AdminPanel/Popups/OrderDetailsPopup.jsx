@@ -51,6 +51,37 @@ const pickNumber = (...values) => {
         }
         return null;
 };
+const pickBoolean = (...values) => {
+        for (const value of values) {
+                if (value === null || value === undefined || value === "") continue;
+
+                if (typeof value === "boolean") {
+                        return value;
+                }
+
+                if (typeof value === "number") {
+                        if (value === 1) return true;
+                        if (value === 0) return false;
+                        continue;
+                }
+
+                if (typeof value === "string") {
+                        const normalized = value.trim().toLowerCase();
+
+                        if (!normalized) continue;
+
+                        if (["true", "yes", "y", "1", "with qr", "with"].includes(normalized)) {
+                                return true;
+                        }
+
+                        if (["false", "no", "n", "0", "without qr", "without"].includes(normalized)) {
+                                return false;
+                        }
+                }
+        }
+
+        return null;
+};
 
 const formatDate = (value) => {
         if (!value) return "N/A";
@@ -401,6 +432,67 @@ export function OrderDetailsPopup({ open, onOpenChange, order }) {
                                                                                                         unitPriceValue * displayQuantity
                                                                                                 ) ?? unitPriceValue * displayQuantity;
 
+                                                                                        const selectedOptions =
+                                                                                                product?.selectedOptions &&
+                                                                                                typeof product.selectedOptions === "object"
+                                                                                                        ? product.selectedOptions
+                                                                                                        : null;
+                                                                                        const language =
+                                                                                                pickText(
+                                                                                                        product?.language,
+                                                                                                        product?.selectedLanguage,
+                                                                                                        product?.productLanguage,
+                                                                                                        product?.languageOption,
+                                                                                                        product?.languageSelection,
+                                                                                                        selectedOptions?.language,
+                                                                                                        selectedOptions?.selectedLanguage,
+                                                                                                        selectedOptions?.productLanguage,
+                                                                                                        selectedOptions?.languageOption
+                                                                                                );
+                                                                                        const size =
+                                                                                                pickText(
+                                                                                                        product?.size,
+                                                                                                        product?.selectedSize,
+                                                                                                        product?.sizeOption,
+                                                                                                        product?.sizeSelection,
+                                                                                                        product?.dimension,
+                                                                                                        selectedOptions?.size,
+                                                                                                        selectedOptions?.selectedSize,
+                                                                                                        selectedOptions?.sizeOption
+                                                                                                );
+                                                                                        const material =
+                                                                                                pickText(
+                                                                                                        product?.material,
+                                                                                                        product?.selectedMaterial,
+                                                                                                        product?.materialOption,
+                                                                                                        product?.materialSelection,
+                                                                                                        selectedOptions?.material,
+                                                                                                        selectedOptions?.selectedMaterial,
+                                                                                                        selectedOptions?.materialOption
+                                                                                                );
+                                                                                        const qrFlag = pickBoolean(
+                                                                                                selectedOptions?.qr,
+                                                                                                selectedOptions?.hasQr,
+                                                                                                selectedOptions?.withQr,
+                                                                                                product?.qr,
+                                                                                                product?.hasQr,
+                                                                                                product?.withQr
+                                                                                        );
+                                                                                        const qrTextCandidate = pickText(
+                                                                                                product?.qrLabel,
+                                                                                                product?.qrOption,
+                                                                                                product?.qrSelection,
+                                                                                                selectedOptions?.qrLabel,
+                                                                                                selectedOptions?.qrOption,
+                                                                                                selectedOptions?.qrSelection
+                                                                                        );
+                                                                                        const qrText =
+                                                                                                qrFlag !== null
+                                                                                                        ? qrFlag
+                                                                                                                ? "With QR"
+                                                                                                                : "Without QR"
+                                                                                                        : qrTextCandidate;
+
                                                                                         return (
                                                                                                 <div
                                                                                                         key={index}
@@ -416,6 +508,34 @@ export function OrderDetailsPopup({ open, onOpenChange, order }) {
                                                                                                                 <p className="text-sm text-gray-600">
                                                                                                                         Quantity: {displayQuantity} × {formatCurrency(unitPriceValue)}
                                                                                                                 </p>
+                                                                                                                {(language || size || material || qrText) && (
+                                                                                                                        <div className="mt-2 space-y-1 text-sm text-gray-600">
+                                                                                                                                {language && (
+                                                                                                                                        <p>
+                                                                                                                                                <span className="font-medium text-gray-900">Language:</span>{" "}
+                                                                                                                                                {language}
+                                                                                                                                        </p>
+                                                                                                                                )}
+                                                                                                                                {size && (
+                                                                                                                                        <p>
+                                                                                                                                                <span className="font-medium text-gray-900">Size:</span>{" "}
+                                                                                                                                                {size}
+                                                                                                                                        </p>
+                                                                                                                                )}
+                                                                                                                                {material && (
+                                                                                                                                        <p>
+                                                                                                                                                <span className="font-medium text-gray-900">Material:</span>{" "}
+                                                                                                                                                {material}
+                                                                                                                                        </p>
+                                                                                                                                )}
+                                                                                                                                {qrText && (
+                                                                                                                                        <p>
+                                                                                                                                                <span className="font-medium text-gray-900">QR:</span>{" "}
+                                                                                                                                                {qrText}
+                                                                                                                                        </p>
+                                                                                                                                )}
+                                                                                                                        </div>
+                                                                                                                )}
                                                                                                         </div>
                                                                                                         <div className="text-right">
                                                                                                                 <p className="font-medium">
