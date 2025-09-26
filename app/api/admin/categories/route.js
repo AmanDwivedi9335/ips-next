@@ -1,6 +1,8 @@
 import { dbConnect } from "@/lib/dbConnect.js";
 import Category from "@/model/Category.js";
 import Product from "@/model/Product.js";
+import ProductFamily from "@/model/ProductFamily.js";
+import mongoose from "mongoose";
 
 export async function GET(request) {
 	await dbConnect();
@@ -97,6 +99,23 @@ export async function POST(request) {
                         );
                 }
 
+                let productFamilyId = null;
+
+                if (mongoose.isValidObjectId(productFamily)) {
+                        productFamilyId = productFamily;
+                } else {
+                        const matchedFamily = await ProductFamily.findOne({ slug: productFamily });
+
+                        if (!matchedFamily) {
+                                return Response.json(
+                                        { success: false, message: "Invalid product family" },
+                                        { status: 400 }
+                                );
+                        }
+
+                        productFamilyId = matchedFamily._id;
+                }
+
                 const category = new Category({
                         name,
                         description,
@@ -104,7 +123,7 @@ export async function POST(request) {
                         published: published !== undefined ? published : true,
                         sortOrder: sortOrder || 0,
                         parent: parent || null,
-                        productFamily,
+                        productFamily: productFamilyId,
 
                 });
 
