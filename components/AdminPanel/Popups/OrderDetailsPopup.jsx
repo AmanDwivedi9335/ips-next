@@ -24,6 +24,17 @@ import { formatCurrency as formatCurrencyValue } from "@/lib/pricing.js";
 
 const formatCurrency = (value) => `₹${formatCurrencyValue(value ?? 0)}`;
 const formatDiscount = (value) => `-₹${formatCurrencyValue(Math.abs(value ?? 0))}`;
+const safeUpperCase = (value, fallback = "N/A") =>
+        typeof value === "string" && value.trim().length
+                ? value.trim().toUpperCase()
+                : fallback;
+const formatDate = (value) => {
+        if (!value) return "N/A";
+        const parsed = new Date(value);
+        return Number.isNaN(parsed.getTime()) ? "N/A" : parsed.toLocaleDateString();
+};
+const FALLBACK_PRODUCT_IMAGE =
+        "https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png";
 
 export function OrderDetailsPopup({ open, onOpenChange, order }) {
 	if (!order) return null;
@@ -41,18 +52,26 @@ export function OrderDetailsPopup({ open, onOpenChange, order }) {
 		return colors[status] || "bg-gray-100 text-gray-800";
 	};
 
-	const getPaymentStatusColor = (status) => {
-		const colors = {
-			paid: "bg-green-100 text-green-800",
-			pending: "bg-yellow-100 text-yellow-800",
-			failed: "bg-red-100 text-red-800",
-			refunded: "bg-gray-100 text-gray-800",
-		};
-		return colors[status] || "bg-gray-100 text-gray-800";
-	};
+        const getPaymentStatusColor = (status) => {
+                const colors = {
+                        paid: "bg-green-100 text-green-800",
+                        pending: "bg-yellow-100 text-yellow-800",
+                        failed: "bg-red-100 text-red-800",
+                        refunded: "bg-gray-100 text-gray-800",
+                };
+                return colors[status] || "bg-gray-100 text-gray-800";
+        };
 
-	return (
-		<Dialog open={open} onOpenChange={onOpenChange}>
+        const products = Array.isArray(order.products) ? order.products : [];
+        const couponDetails =
+                order.couponApplied && typeof order.couponApplied === "object"
+                        ? order.couponApplied
+                        : null;
+        const subtotal = order.subtotal ?? 0;
+        const totalAmount = order.totalAmount ?? subtotal;
+
+        return (
+                <Dialog open={open} onOpenChange={onOpenChange}>
 			<DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
 				<motion.div
 					initial={{ scale: 0.95, opacity: 0 }}
@@ -61,7 +80,7 @@ export function OrderDetailsPopup({ open, onOpenChange, order }) {
 				>
 					<DialogHeader>
 						<DialogTitle className="text-xl font-bold">
-							Order Details - {order.orderNumber}
+                                                        Order Details - {order.orderNumber || order._id || "Order"}
 						</DialogTitle>
 					</DialogHeader>
 
@@ -74,8 +93,8 @@ export function OrderDetailsPopup({ open, onOpenChange, order }) {
 										<Package className="w-8 h-8 text-blue-600" />
 										<div>
 											<p className="text-sm text-gray-600">Order Status</p>
-											<Badge className={getStatusColor(order.status)}>
-												{order.status.toUpperCase()}
+                                                                                        <Badge className={getStatusColor(order.status)}>
+                                                                                                {safeUpperCase(order.status)}
 											</Badge>
 										</div>
 									</div>
@@ -88,10 +107,10 @@ export function OrderDetailsPopup({ open, onOpenChange, order }) {
 										<CreditCard className="w-8 h-8 text-green-600" />
 										<div>
 											<p className="text-sm text-gray-600">Payment Status</p>
-											<Badge
-												className={getPaymentStatusColor(order.paymentStatus)}
-											>
-												{order.paymentStatus.toUpperCase()}
+                                                                                        <Badge
+                                                                                                className={getPaymentStatusColor(order.paymentStatus)}
+                                                                                        >
+                                                                                                {safeUpperCase(order.paymentStatus)}
 											</Badge>
 										</div>
 									</div>
@@ -105,7 +124,7 @@ export function OrderDetailsPopup({ open, onOpenChange, order }) {
 										<div>
 											<p className="text-sm text-gray-600">Order Date</p>
 											<p className="font-medium">
-												{new Date(order.orderDate).toLocaleDateString()}
+                                                                                                {formatDate(order.orderDate || order.createdAt)}
 											</p>
 										</div>
 									</div>
@@ -124,26 +143,26 @@ export function OrderDetailsPopup({ open, onOpenChange, order }) {
 							<CardContent>
 								<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 									<div>
-										<p className="text-sm text-gray-600">Name</p>
-										<p className="font-medium">{order.customerName}</p>
+                                                                                <p className="text-sm text-gray-600">Name</p>
+                                                                                <p className="font-medium">{order.customerName || "N/A"}</p>
 									</div>
 									<div>
 										<p className="text-sm text-gray-600">Email</p>
 										<div className="flex items-center gap-2">
 											<Mail className="w-4 h-4 text-gray-400" />
-											<p className="font-medium">{order.customerEmail}</p>
+                                                                                        <p className="font-medium">{order.customerEmail || "N/A"}</p>
 										</div>
 									</div>
 									<div>
 										<p className="text-sm text-gray-600">Phone</p>
 										<div className="flex items-center gap-2">
 											<Phone className="w-4 h-4 text-gray-400" />
-											<p className="font-medium">{order.customerMobile}</p>
+                                                                                        <p className="font-medium">{order.customerMobile || "N/A"}</p>
 										</div>
 									</div>
 									<div>
 										<p className="text-sm text-gray-600">Customer ID</p>
-										<p className="font-medium text-blue-600">{order.userId}</p>
+                                                                                <p className="font-medium text-blue-600">{order.userId || "N/A"}</p>
 									</div>
 								</div>
 							</CardContent>
@@ -160,14 +179,14 @@ export function OrderDetailsPopup({ open, onOpenChange, order }) {
 								</CardHeader>
 								<CardContent>
 									<div className="space-y-2">
-										<p>{order.deliveryAddress.street}</p>
+                                                                                <p>{order.deliveryAddress.street || ""}</p>
 										<p>
-											{order.deliveryAddress.city},{" "}
-											{order.deliveryAddress.state}
+                                                                                        {order.deliveryAddress.city || ""},{" "}
+                                                                                        {order.deliveryAddress.state || ""}
 										</p>
 										<p>
-											{order.deliveryAddress.zipCode},{" "}
-											{order.deliveryAddress.country}
+                                                                                        {order.deliveryAddress.zipCode || ""},{" "}
+                                                                                        {order.deliveryAddress.country || ""}
 										</p>
 									</div>
 								</CardContent>
@@ -179,39 +198,41 @@ export function OrderDetailsPopup({ open, onOpenChange, order }) {
 							<CardHeader>
 								<CardTitle className="flex items-center gap-2">
 									<Package className="w-5 h-5" />
-									Products ({order.products.length} items)
+                                                                        Products ({products.length} items)
 								</CardTitle>
 							</CardHeader>
 							<CardContent>
-								<div className="space-y-4">
-									{order.products.map((product, index) => (
-										<div
-											key={index}
-											className="flex items-center gap-4 p-4 border rounded-lg"
-										>
-											{product.productImage && (
-												<img
-													src={product.productImage || "https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png"}
-													alt={product.productName}
-													className="w-16 h-16 object-cover rounded"
-												/>
-											)}
-											<div className="flex-1">
-												<h4 className="font-medium">{product.productName}</h4>
-                                                                                                <p className="text-sm text-gray-600">
-                                                                                                        Quantity: {product.quantity} × {formatCurrency(product.price)}
-                                                                                                </p>
-											</div>
-											<div className="text-right">
-                                                                                                <p className="font-medium">
-                                                                                                        {formatCurrency(product.totalPrice)}
-                                                                                                </p>
-											</div>
-										</div>
-									))}
-								</div>
-							</CardContent>
-						</Card>
+                                                                <div className="space-y-4">
+                                                                        {products.length === 0 ? (
+                                                                                <p className="text-sm text-gray-500">No products found for this order.</p>
+                                                                        ) : (
+                                                                                products.map((product, index) => (
+                                                                                        <div
+                                                                                                key={index}
+                                                                                                className="flex items-center gap-4 p-4 border rounded-lg"
+                                                                                        >
+                                                                                                <img
+                                                                                                        src={product.productImage || FALLBACK_PRODUCT_IMAGE}
+                                                                                                        alt={product.productName || "Product image"}
+                                                                                                        className="w-16 h-16 object-cover rounded"
+                                                                                                />
+                                                                                                <div className="flex-1">
+                                                                                                        <h4 className="font-medium">{product.productName || "Product"}</h4>
+                                                                                                        <p className="text-sm text-gray-600">
+                                                                                                                Quantity: {product.quantity ?? 0} × {formatCurrency(product.price)}
+                                                                                                        </p>
+                                                                                                </div>
+                                                                                                <div className="text-right">
+                                                                                                        <p className="font-medium">
+                                                                                                                {formatCurrency(product.totalPrice)}
+                                                                                                        </p>
+                                                                                                </div>
+                                                                                        </div>
+                                                                                ))
+                                                                        )}
+                                                                </div>
+                                                        </CardContent>
+                                                </Card>
 
 						{/* Payment Information */}
 						<Card>
@@ -226,7 +247,9 @@ export function OrderDetailsPopup({ open, onOpenChange, order }) {
 									<div>
 										<p className="text-sm text-gray-600">Payment Method</p>
 										<p className="font-medium capitalize">
-											{order.paymentMethod.replace("_", " ")}
+                                                                                        {order.paymentMethod
+                                                                                                ? order.paymentMethod.replace(/_/g, " ")
+                                                                                                : "N/A"}
 										</p>
 									</div>
 									<div>
@@ -248,36 +271,38 @@ export function OrderDetailsPopup({ open, onOpenChange, order }) {
 								<div className="space-y-3">
                                                                         <div className="flex justify-between">
                                                                                 <span>Subtotal</span>
-                                                                                <span>{formatCurrency(order.subtotal)}</span>
+                                                                                <span>{formatCurrency(subtotal)}</span>
                                                                         </div>
-									{order.tax > 0 && (
+                                                                        {Number(order.tax) > 0 && (
                                                                                 <div className="flex justify-between">
                                                                                         <span>Tax</span>
                                                                                         <span>{formatCurrency(order.tax)}</span>
                                                                                 </div>
-									)}
-									{order.shippingCost > 0 && (
+                                                                        )}
+                                                                        {Number(order.shippingCost) > 0 && (
                                                                                 <div className="flex justify-between">
                                                                                         <span>Shipping</span>
                                                                                         <span>{formatCurrency(order.shippingCost)}</span>
                                                                                 </div>
-									)}
-									{order.discount > 0 && (
+                                                                        )}
+                                                                        {Number(order.discount) > 0 && (
                                                                                 <div className="flex justify-between text-green-600">
                                                                                         <span>Discount</span>
                                                                                         <span>{formatDiscount(order.discount)}</span>
                                                                                 </div>
-									)}
-									{order.couponApplied && (
+                                                                        )}
+                                                                        {couponDetails && (
                                                                                 <div className="flex justify-between text-blue-600">
-                                                                                        <span>Coupon ({order.couponApplied.couponCode})</span>
-                                                                                        <span>{formatDiscount(order.couponApplied.discountAmount)}</span>
+                                                                                        <span>
+                                                                                                Coupon ({couponDetails.couponCode || "Applied"})
+                                                                                        </span>
+                                                                                        <span>{formatDiscount(couponDetails.discountAmount)}</span>
                                                                                 </div>
-									)}
-									<Separator />
+                                                                        )}
+                                                                        <Separator />
                                                                         <div className="flex justify-between text-lg font-bold">
                                                                                 <span>Total Amount</span>
-                                                                                <span>{formatCurrency(order.totalAmount)}</span>
+                                                                                <span>{formatCurrency(totalAmount)}</span>
                                                                         </div>
 								</div>
 							</CardContent>
@@ -303,11 +328,7 @@ export function OrderDetailsPopup({ open, onOpenChange, order }) {
 												<p className="text-sm text-gray-600">
 													Estimated Delivery
 												</p>
-												<p className="font-medium">
-													{new Date(
-														order.estimatedDelivery
-													).toLocaleDateString()}
-												</p>
+                                                                                                <p className="font-medium">{formatDate(order.estimatedDelivery)}</p>
 											</div>
 										)}
 									</div>
