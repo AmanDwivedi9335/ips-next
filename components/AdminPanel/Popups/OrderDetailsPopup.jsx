@@ -28,6 +28,7 @@ const safeUpperCase = (value, fallback = "N/A") =>
         typeof value === "string" && value.trim().length
                 ? value.trim().toUpperCase()
                 : fallback;
+
 const safeText = (value) => {
         if (typeof value === "string") return value;
         if (typeof value === "number") return String(value);
@@ -50,6 +51,7 @@ const pickNumber = (...values) => {
         }
         return null;
 };
+
 const formatDate = (value) => {
         if (!value) return "N/A";
         const parsed = new Date(value);
@@ -85,6 +87,7 @@ export function OrderDetailsPopup({ open, onOpenChange, order }) {
         };
 
         const products = Array.isArray(order.products) ? order.products : [];
+
         const userInfo =
                 order && typeof order.userId === "object" && order.userId !== null
                         ? order.userId
@@ -184,6 +187,7 @@ export function OrderDetailsPopup({ open, onOpenChange, order }) {
         const subtotal = order.subtotal ?? 0;
         const totalAmount = order.totalAmount ?? subtotal;
 
+
         return (
                 <Dialog open={open} onOpenChange={onOpenChange}>
 			<DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
@@ -258,25 +262,33 @@ export function OrderDetailsPopup({ open, onOpenChange, order }) {
 								<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 									<div>
                                                                                 <p className="text-sm text-gray-600">Name</p>
+
                                                                                 <p className="font-medium">{displayCustomerName}</p>
+
 									</div>
 									<div>
 										<p className="text-sm text-gray-600">Email</p>
 										<div className="flex items-center gap-2">
 											<Mail className="w-4 h-4 text-gray-400" />
+
                                                                                         <p className="font-medium">{displayCustomerEmail}</p>
+
 										</div>
 									</div>
 									<div>
 										<p className="text-sm text-gray-600">Phone</p>
 										<div className="flex items-center gap-2">
 											<Phone className="w-4 h-4 text-gray-400" />
+
                                                                                         <p className="font-medium">{displayCustomerPhone}</p>
+
 										</div>
 									</div>
 									<div>
 										<p className="text-sm text-gray-600">Customer ID</p>
+
                                                                                 <p className="font-medium text-blue-600">{displayCustomerId}</p>
+
 									</div>
 								</div>
 							</CardContent>
@@ -320,6 +332,7 @@ export function OrderDetailsPopup({ open, onOpenChange, order }) {
                                                                         {products.length === 0 ? (
                                                                                 <p className="text-sm text-gray-500">No products found for this order.</p>
                                                                         ) : (
+
                                                                                 products.map((product, index) => {
                                                                                         const productName =
                                                                                                 pickText(
@@ -412,6 +425,7 @@ export function OrderDetailsPopup({ open, onOpenChange, order }) {
                                                                                                 </div>
                                                                                         );
                                                                                 })
+
                                                                         )}
                                                                 </div>
                                                         </CardContent>
@@ -429,7 +443,9 @@ export function OrderDetailsPopup({ open, onOpenChange, order }) {
 								<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 									<div>
 										<p className="text-sm text-gray-600">Payment Method</p>
+
                                                                                 <p className="font-medium capitalize">{displayPaymentMethod}</p>
+
 									</div>
 									<div>
 										<p className="text-sm text-gray-600">Transaction ID</p>
@@ -472,7 +488,9 @@ export function OrderDetailsPopup({ open, onOpenChange, order }) {
                                                                         )}
                                                                         {couponDetails && (
                                                                                 <div className="flex justify-between text-blue-600">
+
                                                                                         <span>Coupon ({couponCodeLabel || "Applied"})</span>
+
                                                                                         <span>{formatDiscount(couponDetails.discountAmount)}</span>
                                                                                 </div>
                                                                         )}
