@@ -16,13 +16,30 @@ import { useAdminPriceStore } from "@/store/adminPriceStore";
 import { useAdminLayoutStore } from "@/store/adminLayoutStore.js";
 import { useAdminMaterialStore } from "@/store/adminMaterialStore.js";
 import { useAdminSizeStore } from "@/store/adminSizeStore.js";
+import { useShallow } from "zustand/react/shallow";
 
 export default function PricesPage() {
-        const { prices, fetchPrices, addPrice, updatePrice, deletePrice } =
-                useAdminPriceStore();
-        const { layouts, fetchLayouts } = useAdminLayoutStore();
-        const { materials, fetchMaterials } = useAdminMaterialStore();
-        const { sizes, fetchSizes } = useAdminSizeStore();
+        const fetchPrices = useAdminPriceStore((state) => state.fetchPrices);
+        const { prices, addPrice, updatePrice, deletePrice } =
+                useAdminPriceStore(
+                        useShallow((state) => ({
+                                prices: state.prices,
+                                addPrice: state.addPrice,
+                                updatePrice: state.updatePrice,
+                                deletePrice: state.deletePrice,
+                        }))
+                );
+
+        const fetchLayouts = useAdminLayoutStore((state) => state.fetchLayouts);
+        const layouts = useAdminLayoutStore((state) => state.layouts);
+
+        const fetchMaterials = useAdminMaterialStore(
+                (state) => state.fetchMaterials
+        );
+        const materials = useAdminMaterialStore((state) => state.materials);
+
+        const fetchSizes = useAdminSizeStore((state) => state.fetchSizes);
+        const sizes = useAdminSizeStore((state) => state.sizes);
         const [form, setForm] = useState({
                 layout: "",
                 size: "",
@@ -39,7 +56,15 @@ export default function PricesPage() {
         }, [fetchPrices, fetchLayouts, fetchMaterials, fetchSizes]);
 
         const handleAdd = async () => {
-                const payload = { ...form, price: Number(form.price) };
+                if (!form.size || !form.material || !form.price) {
+                        return;
+                }
+
+                const payload = {
+                        ...form,
+                        qr: form.qr === true,
+                        price: Number(form.price),
+                };
                 const success = await addPrice(payload);
                 if (success) {
                         setForm({
@@ -115,7 +140,10 @@ export default function PricesPage() {
                                                         <Checkbox
                                                                 checked={form.qr}
                                                                 onCheckedChange={(v) =>
-                                                                        setForm((f) => ({ ...f, qr: v }))
+                                                                        setForm((f) => ({
+                                                                                ...f,
+                                                                                qr: v === true,
+                                                                        }))
                                                                 }
                                                         />
                                                         <span className="text-sm">QR</span>
@@ -195,7 +223,9 @@ export default function PricesPage() {
                                                                 <Checkbox
                                                                         checked={p.qr}
                                                                         onCheckedChange={(v) =>
-                                                                                updatePrice(p._id, { qr: v })
+                                                                                updatePrice(p._id, {
+                                                                                        qr: v === true,
+                                                                                })
                                                                         }
                                                                 />
                                                                 <Input
