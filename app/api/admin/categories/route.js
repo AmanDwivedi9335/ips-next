@@ -4,6 +4,7 @@ import Product from "@/model/Product.js";
 import ProductFamily from "@/model/ProductFamily.js";
 import mongoose from "mongoose";
 
+
 function escapeRegex(value) {
         return value.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&");
 }
@@ -52,6 +53,7 @@ async function resolveProductFamilyId(productFamilyInput) {
 
         return matchedFamily ? matchedFamily._id : null;
 }
+
 
 export async function GET(request) {
         await dbConnect();
@@ -157,6 +159,7 @@ export async function POST(request) {
                         );
                 }
 
+
                 const productFamilyId = await resolveProductFamilyId(productFamily);
 
                 if (!productFamilyId) {
@@ -164,6 +167,7 @@ export async function POST(request) {
                                 { success: false, message: "Invalid product family" },
                                 { status: 400 }
                         );
+
                 }
 
                 const category = new Category({
