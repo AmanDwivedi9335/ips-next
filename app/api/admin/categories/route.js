@@ -215,8 +215,7 @@ export async function POST(request) {
                         published: published !== undefined ? published : true,
                         sortOrder: sortOrder || 0,
                         parent: parent || null,
-                        productFamily: productFamilyId,
-
+                        productFamily: new mongoose.Types.ObjectId(productFamilyId),
                 });
 
 		await category.save();
@@ -242,21 +241,45 @@ export async function POST(request) {
 }
 
 export async function PUT(request) {
-	await dbConnect();
+        await dbConnect();
 
-	try {
+        try {
                 const { categoryId, ...updateData } = await request.json();
 
-		if (!categoryId) {
-			return Response.json(
-				{ success: false, message: "Category ID is required" },
-				{ status: 400 }
-			);
-		}
+                if (!categoryId) {
+                        return Response.json(
+                                { success: false, message: "Category ID is required" },
+                                { status: 400 }
+                        );
+                }
 
-		const category = await Category.findByIdAndUpdate(categoryId, updateData, {
-			new: true,
-		});
+                if (Object.prototype.hasOwnProperty.call(updateData, "productFamily")) {
+                        if (!updateData.productFamily) {
+                                return Response.json(
+                                        { success: false, message: "Product family is required" },
+                                        { status: 400 }
+                                );
+                        }
+
+                        const resolvedProductFamilyId = await resolveProductFamilyId(
+                                updateData.productFamily,
+                                { createIfMissing: true }
+                        );
+
+                        if (!resolvedProductFamilyId) {
+                                return Response.json(
+                                        { success: false, message: "Invalid product family" },
+                                        { status: 400 }
+                                );
+                        }
+
+                        updateData.productFamily = new mongoose.Types.ObjectId(resolvedProductFamilyId);
+                }
+
+                const category = await Category.findByIdAndUpdate(categoryId, updateData, {
+                        new: true,
+                        runValidators: true,
+                });
 
 		if (!category) {
 			return Response.json(
