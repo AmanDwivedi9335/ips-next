@@ -1,11 +1,62 @@
 import { dbConnect } from "@/lib/dbConnect.js";
 import Category from "@/model/Category.js";
 import Product from "@/model/Product.js";
+import ProductFamily from "@/model/ProductFamily.js";
+import mongoose from "mongoose";
+
+function escapeRegex(value) {
+        return value.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&");
+}
+
+function slugify(value) {
+        return value
+                .toLowerCase()
+                .trim()
+                .replace(/[^a-z0-9]+/gi, "-")
+                .replace(/-+/g, "-")
+                .replace(/^-|-$/g, "");
+}
+
+async function resolveProductFamilyId(productFamilyInput) {
+        if (!productFamilyInput) {
+                return null;
+        }
+
+        if (mongoose.isValidObjectId(productFamilyInput)) {
+                const existingFamily = await ProductFamily.exists({ _id: productFamilyInput });
+                if (existingFamily) {
+                        return productFamilyInput;
+                }
+                return null;
+        }
+
+        if (typeof productFamilyInput !== "string") {
+                return null;
+        }
+
+        const trimmedInput = productFamilyInput.trim();
+
+        if (!trimmedInput) {
+                return null;
+        }
+
+        const derivedSlug = slugify(trimmedInput);
+
+        const matchedFamily = await ProductFamily.findOne({
+                $or: [
+                        { slug: trimmedInput },
+                        { slug: derivedSlug },
+                        { name: { $regex: `^${escapeRegex(trimmedInput)}$`, $options: "i" } },
+                ],
+        }).select("_id");
+
+        return matchedFamily ? matchedFamily._id : null;
+}
 
 export async function GET(request) {
-	await dbConnect();
+        await dbConnect();
 
-	try {
+        try {
 		const { searchParams } = new URL(request.url);
 
 		const search = searchParams.get("search");
@@ -32,7 +83,16 @@ export async function GET(request) {
                 }
 
                 if (productFamily) {
-                        query.productFamily = productFamily;
+                        const productFamilyId = await resolveProductFamilyId(productFamily);
+
+                        if (!productFamilyId) {
+                                return Response.json(
+                                        { success: false, message: "Invalid product family" },
+                                        { status: 400 }
+                                );
+                        }
+
+                        query.productFamily = productFamilyId;
                 }
 
 		// Build sort object
@@ -97,6 +157,15 @@ export async function POST(request) {
                         );
                 }
 
+                const productFamilyId = await resolveProductFamilyId(productFamily);
+
+                if (!productFamilyId) {
+                        return Response.json(
+                                { success: false, message: "Invalid product family" },
+                                { status: 400 }
+                        );
+                }
+
                 const category = new Category({
                         name,
                         description,
@@ -104,7 +173,7 @@ export async function POST(request) {
                         published: published !== undefined ? published : true,
                         sortOrder: sortOrder || 0,
                         parent: parent || null,
-                        productFamily,
+                        productFamily: productFamilyId,
 
                 });
 
