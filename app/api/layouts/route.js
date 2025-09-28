@@ -10,14 +10,26 @@ export async function GET() {
 
 export async function POST(request) {
         await dbConnect();
-        const { name, aspectRatio } = await request.json();
-        const layout = await Layout.create({ name, aspectRatio });
+        const { name, aspectRatio, sizes } = await request.json();
+        const sanitizedSizes = Array.isArray(sizes)
+                ? sizes.map((size) => String(size).trim()).filter(Boolean)
+                : [];
+        const layout = await Layout.create({
+                name,
+                aspectRatio,
+                sizes: sanitizedSizes,
+        });
         return NextResponse.json({ success: true, layout });
 }
 
 export async function PUT(request) {
         await dbConnect();
         const { id, ...data } = await request.json();
+        if (Object.prototype.hasOwnProperty.call(data, "sizes")) {
+                data.sizes = Array.isArray(data.sizes)
+                        ? data.sizes.map((size) => String(size).trim()).filter(Boolean)
+                        : [];
+        }
         const layout = await Layout.findByIdAndUpdate(id, data, { new: true });
         return layout
                 ? NextResponse.json({ success: true, layout })

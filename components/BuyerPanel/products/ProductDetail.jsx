@@ -103,12 +103,20 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                         ? languages[normalizedLanguages.indexOf("english")]
                         : languages[0] || ""
         );
+        const initialSortedLayouts = sortByReference(
+                product.layouts || [],
+                product.layouts || [],
+        );
+        const initialSortedSizes = sortByReference(
+                product.sizes || [],
+                product.sizes || [],
+        );
         const [availableLayouts, setAvailableLayouts] = useState(
-                sortByReference(product.layouts || [], product.layouts || []),
+                initialSortedLayouts,
         );
-        const [availableSizes, setAvailableSizes] = useState(
-                sortByReference(product.sizes || [], product.sizes || []),
-        );
+        const [baseSizes, setBaseSizes] = useState(initialSortedSizes);
+        const [availableSizes, setAvailableSizes] = useState(initialSortedSizes);
+        const [layoutSizeMap, setLayoutSizeMap] = useState(null);
         const [availableMaterials, setAvailableMaterials] = useState(
                 sortByReference(product.materials || [], product.materials || []),
         );
@@ -121,6 +129,8 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
         const [selectedLayout, setSelectedLayout] = useState(
                 product.layouts?.[0] || "",
         );
+        const normalizedProductFamily = (product.productFamily || "").toLowerCase();
+        const isSafetySignFamily = normalizedProductFamily.includes("safety sign");
         const [hasQr, setHasQr] = useState(false);
         const [hasQrOption, setHasQrOption] = useState(false);
         const [calculatedPrice, setCalculatedPrice] = useState(null);
@@ -132,6 +142,87 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
         const { addItem, isLoading } = useCartStore();
         const { addItem: addWishlistItem } = useWishlistStore();
         const setBuyNowContext = useCheckoutStore((state) => state.setBuyNowContext);
+
+        useEffect(() => {
+                setBaseSizes(
+                        sortByReference(
+                                product.sizes || [],
+                                product.sizes || [],
+                        ),
+                );
+        }, [product]);
+
+        useEffect(() => {
+                if (!isSafetySignFamily) {
+                        setLayoutSizeMap(null);
+                        return;
+                }
+
+                const controller = new AbortController();
+
+                const fetchLayoutSizes = async () => {
+                        try {
+                                const res = await fetch("/api/layouts", {
+                                        signal: controller.signal,
+                                });
+                                const data = await res.json();
+                                if (Array.isArray(data.layouts)) {
+                                        const map = {};
+                                        data.layouts.forEach((layout) => {
+                                                if (!layout?.name) return;
+                                                map[layout.name] = Array.isArray(layout.sizes)
+                                                        ? layout.sizes.filter(Boolean)
+                                                        : [];
+                                        });
+                                        setLayoutSizeMap(map);
+                                }
+                        } catch (error) {
+                                if (error.name !== "AbortError") {
+                                        setLayoutSizeMap(null);
+                                }
+                        }
+                };
+
+                fetchLayoutSizes();
+
+                return () => controller.abort();
+        }, [isSafetySignFamily]);
+
+        useEffect(() => {
+                if (!isSafetySignFamily || layoutSizeMap === null) {
+                        setAvailableSizes(baseSizes);
+                        setSelectedSize((prev) => {
+                                if (baseSizes.length === 0) {
+                                        return prev ? "" : prev;
+                                }
+
+                                return baseSizes.includes(prev)
+                                        ? prev
+                                        : baseSizes[0] || "";
+                        });
+                        return;
+                }
+
+                const layoutSizes = layoutSizeMap[selectedLayout] || [];
+                const normalizedSizes = Array.isArray(layoutSizes)
+                        ? layoutSizes.filter(Boolean)
+                        : [];
+                const filteredSizes = normalizedSizes.length
+                        ? baseSizes.filter((size) => normalizedSizes.includes(size))
+                        : [];
+
+                setAvailableSizes(filteredSizes);
+
+                setSelectedSize((prev) => {
+                        if (filteredSizes.length === 0) {
+                                return prev ? "" : prev;
+                        }
+
+                        return filteredSizes.includes(prev)
+                                ? prev
+                                : filteredSizes[0];
+                });
+        }, [baseSizes, isSafetySignFamily, layoutSizeMap, selectedLayout]);
 
         useEffect(() => {
                 const checkQrOption = async () => {
@@ -181,18 +272,13 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                                         );
 
                                         setAvailableLayouts(sortedLayouts);
-                                        setAvailableSizes(sortedSizes);
+                                        setBaseSizes(sortedSizes);
                                         setAvailableMaterials(sortedMaterials);
 
                                         setSelectedLayout((prev) =>
                                                 prev && sortedLayouts.includes(prev)
                                                         ? prev
                                                         : sortedLayouts[0] || ""
-                                        );
-                                        setSelectedSize((prev) =>
-                                                prev && sortedSizes.includes(prev)
-                                                        ? prev
-                                                        : sortedSizes[0] || ""
                                         );
                                         setSelectedMaterial((prev) =>
                                                 prev &&
