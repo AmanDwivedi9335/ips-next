@@ -3,6 +3,7 @@
 import { dbConnect } from "@/lib/dbConnect.js";
 import Product from "@/model/Product.js";
 import Price from "@/model/Price.js";
+import "@/model/Review.js";
 import { deriveProductPriceRange, deriveProductPricing } from "@/lib/pricing.js";
 
 export async function GET(request) {
