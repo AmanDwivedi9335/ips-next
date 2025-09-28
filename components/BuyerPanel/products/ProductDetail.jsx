@@ -129,10 +129,12 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
         const [selectedLayout, setSelectedLayout] = useState(
                 product.layouts?.[0] || "",
         );
+
         const normalizedProductFamily = (product.productFamily || "")
                 .toLowerCase()
                 .trim();
         const isSafetySignFamily = normalizedProductFamily === "safety signs";
+
         const [hasQr, setHasQr] = useState(false);
         const [hasQrOption, setHasQrOption] = useState(false);
         const [calculatedPrice, setCalculatedPrice] = useState(null);
