@@ -208,12 +208,33 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                 }
 
                 const layoutSizes = layoutSizeMap[selectedLayout] || [];
-                const normalizedSizes = Array.isArray(layoutSizes)
+                const normalizedLayoutSizes = Array.isArray(layoutSizes)
                         ? layoutSizes.filter(Boolean)
                         : [];
-                const filteredSizes = normalizedSizes.length
-                        ? baseSizes.filter((size) => normalizedSizes.includes(size))
+                const normalizedSizes = normalizedLayoutSizes.length
+                        ? sortByReference(
+                                  normalizedLayoutSizes,
+                                  baseSizes.length > 0
+                                          ? baseSizes
+                                          : normalizedLayoutSizes,
+                          )
                         : [];
+
+                const filteredSizes = (() => {
+                        if (normalizedSizes.length === 0) {
+                                return baseSizes;
+                        }
+
+                        if (baseSizes.length === 0) {
+                                return normalizedSizes;
+                        }
+
+                        const intersection = baseSizes.filter((size) =>
+                                normalizedSizes.includes(size),
+                        );
+
+                        return intersection.length > 0 ? intersection : normalizedSizes;
+                })();
 
                 setAvailableSizes(filteredSizes);
 
