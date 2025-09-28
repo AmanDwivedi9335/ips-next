@@ -262,6 +262,7 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
 
                 const normalizedLayoutSizes = Array.isArray(rawLayoutSizes)
                         ? rawLayoutSizes.filter(Boolean)
+
                         : [];
                 const normalizedSizes = normalizedLayoutSizes.length
                         ? sortByReference(
@@ -288,7 +289,9 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                         return intersection.length > 0 ? intersection : normalizedSizes;
                 })();
 
+
                 setAvailableSizes(Array.from(new Set(filteredSizes)));
+
 
                 setSelectedSize((prev) => {
                         if (filteredSizes.length === 0) {
