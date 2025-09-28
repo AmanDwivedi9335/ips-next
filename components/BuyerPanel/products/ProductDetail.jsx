@@ -108,6 +108,7 @@ const sanitizeSizes = (sizes = []) =>
                 ),
         );
 
+
 const mergeLayoutSizeCollections = (existing = null, incoming = null) => {
         const normaliseSource = (source, target) => {
                 if (!source) return;
@@ -189,6 +190,7 @@ const deriveLayoutSizesFromPrices = (prices = []) => {
 
         return result;
 };
+
 
 export default function ProductDetail({ product, relatedProducts = [] }) {
         const [selectedImage, setSelectedImage] = useState(0);
@@ -345,11 +347,13 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                 })();
 
                 const normalizedLayoutSizes = Array.isArray(rawLayoutSizes)
+
                         ? sanitizeSizes(rawLayoutSizes)
                         : [];
                 const hasLayoutSpecificSizes = normalizedLayoutSizes.length > 0;
 
                 const prioritizedLayoutSizes = hasLayoutSpecificSizes
+
                         ? sortByReference(
                                   normalizedLayoutSizes,
                                   baseSizes.length > 0
@@ -357,6 +361,7 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                                           : normalizedLayoutSizes,
                           )
                         : [];
+
 
                 const filteredSizes = hasLayoutSpecificSizes
                         ? baseSizes.length > 0
@@ -367,6 +372,7 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                         : baseSizes;
 
                 setAvailableSizes(Array.from(new Set(filteredSizes)));
+
 
                 setSelectedSize((prev) => {
                         if (filteredSizes.length === 0) {
