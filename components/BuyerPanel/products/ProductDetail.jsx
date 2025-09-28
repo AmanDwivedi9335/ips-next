@@ -86,6 +86,110 @@ const sortByReference = (values = [], reference = []) => {
         return [...ordered.map((item) => item.value), ...extras];
 };
 
+const normalizeTextKey = (value) =>
+        typeof value === "string"
+                ? value
+                          .toString()
+                          .trim()
+                          .replace(/\s+/g, " ")
+                          .toLowerCase()
+                : "";
+
+const sanitizeSizes = (sizes = []) =>
+        Array.from(
+                new Set(
+                        sizes
+                                .map((size) =>
+                                        typeof size === "string"
+                                                ? size.trim()
+                                                : size,
+                                )
+                                .filter(Boolean),
+                ),
+        );
+
+const mergeLayoutSizeCollections = (existing = null, incoming = null) => {
+        const normaliseSource = (source, target) => {
+                if (!source) return;
+
+                if (source instanceof Map) {
+                        source.forEach((value, key) => {
+                                const normalizedKey = normalizeTextKey(key);
+                                if (!normalizedKey) return;
+
+                                const normalizedSizes = sanitizeSizes(
+                                        Array.isArray(value) ? value : [value],
+                                );
+
+                                if (normalizedSizes.length === 0) return;
+
+                                const existingSizes = target.get(normalizedKey) || [];
+                                target.set(
+                                        normalizedKey,
+                                        Array.from(
+                                                new Set([
+                                                        ...existingSizes,
+                                                        ...normalizedSizes,
+                                                ]),
+                                        ),
+                                );
+                        });
+
+                        return;
+                }
+
+                if (source && typeof source === "object") {
+                        Object.entries(source).forEach(([key, value]) => {
+                                const normalizedKey = normalizeTextKey(key);
+                                if (!normalizedKey) return;
+
+                                const normalizedSizes = sanitizeSizes(
+                                        Array.isArray(value) ? value : [value],
+                                );
+
+                                if (normalizedSizes.length === 0) return;
+
+                                const existingSizes = target.get(normalizedKey) || [];
+                                target.set(
+                                        normalizedKey,
+                                        Array.from(
+                                                new Set([
+                                                        ...existingSizes,
+                                                        ...normalizedSizes,
+                                                ]),
+                                        ),
+                                );
+                        });
+                }
+        };
+
+        const merged = new Map();
+
+        normaliseSource(existing, merged);
+        normaliseSource(incoming, merged);
+
+        return merged;
+};
+
+const deriveLayoutSizesFromPrices = (prices = []) => {
+        const result = new Map();
+
+        prices.forEach((entry) => {
+                const normalizedLayout = normalizeTextKey(entry?.layout);
+                if (!normalizedLayout) return;
+
+                const sanitizedSize = sanitizeSizes([entry?.size])[0];
+                if (!sanitizedSize) return;
+
+                const existing = result.get(normalizedLayout) || [];
+                if (!existing.includes(sanitizedSize)) {
+                        result.set(normalizedLayout, [...existing, sanitizedSize]);
+                }
+        });
+
+        return result;
+};
+
 export default function ProductDetail({ product, relatedProducts = [] }) {
         const [selectedImage, setSelectedImage] = useState(0);
         const [quantity, setQuantity] = useState(1);
@@ -107,9 +211,10 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                 product.layouts || [],
                 product.layouts || [],
         );
+        const sanitizedProductSizes = sanitizeSizes(product.sizes || []);
         const initialSortedSizes = sortByReference(
-                product.sizes || [],
-                product.sizes || [],
+                sanitizedProductSizes,
+                sanitizedProductSizes,
         );
         const [availableLayouts, setAvailableLayouts] = useState(
                 initialSortedLayouts,
@@ -148,11 +253,9 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
         const setBuyNowContext = useCheckoutStore((state) => state.setBuyNowContext);
 
         useEffect(() => {
+                const productSizes = sanitizeSizes(product.sizes || []);
                 setBaseSizes(
-                        sortByReference(
-                                product.sizes || [],
-                                product.sizes || [],
-                        ),
+                        sortByReference(productSizes, productSizes),
                 );
         }, [product]);
 
@@ -171,14 +274,31 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                                 });
                                 const data = await res.json();
                                 if (Array.isArray(data.layouts)) {
-                                        const map = {};
+                                        const map = new Map();
                                         data.layouts.forEach((layout) => {
-                                                if (!layout?.name) return;
-                                                map[layout.name] = Array.isArray(layout.sizes)
-                                                        ? layout.sizes.filter(Boolean)
+                                                const normalizedName = normalizeTextKey(
+                                                        layout?.name,
+                                                );
+                                                if (!normalizedName) return;
+                                                const sanitizedSizes = Array.isArray(
+                                                        layout?.sizes,
+                                                )
+                                                        ? Array.from(
+                                                                  new Set(
+                                                                          layout.sizes
+                                                                                  .map((size) =>
+                                                                                          String(size)
+                                                                                                  .trim()
+                                                                                  )
+                                                                                  .filter(Boolean),
+                                                                  ),
+                                                          )
                                                         : [];
+                                                map.set(normalizedName, sanitizedSizes);
                                         });
-                                        setLayoutSizeMap(map);
+                                        setLayoutSizeMap((prev) =>
+                                                mergeLayoutSizeCollections(prev, map),
+                                        );
                                 }
                         } catch (error) {
                                 if (error.name !== "AbortError") {
@@ -207,15 +327,46 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                         return;
                 }
 
-                const layoutSizes = layoutSizeMap[selectedLayout] || [];
-                const normalizedSizes = Array.isArray(layoutSizes)
-                        ? layoutSizes.filter(Boolean)
+                const normalizedSelectedLayoutKey = normalizeTextKey(selectedLayout);
+                const rawLayoutSizes = (() => {
+                        if (!normalizedSelectedLayoutKey) {
+                                return [];
+                        }
+
+                        if (layoutSizeMap instanceof Map) {
+                                return layoutSizeMap.get(normalizedSelectedLayoutKey) || [];
+                        }
+
+                        const candidate =
+                                layoutSizeMap?.[normalizedSelectedLayoutKey] ||
+                                layoutSizeMap?.[selectedLayout];
+
+                        return Array.isArray(candidate) ? candidate : [];
+                })();
+
+                const normalizedLayoutSizes = Array.isArray(rawLayoutSizes)
+                        ? sanitizeSizes(rawLayoutSizes)
                         : [];
-                const filteredSizes = normalizedSizes.length
-                        ? baseSizes.filter((size) => normalizedSizes.includes(size))
+                const hasLayoutSpecificSizes = normalizedLayoutSizes.length > 0;
+
+                const prioritizedLayoutSizes = hasLayoutSpecificSizes
+                        ? sortByReference(
+                                  normalizedLayoutSizes,
+                                  baseSizes.length > 0
+                                          ? baseSizes
+                                          : normalizedLayoutSizes,
+                          )
                         : [];
 
-                setAvailableSizes(filteredSizes);
+                const filteredSizes = hasLayoutSpecificSizes
+                        ? baseSizes.length > 0
+                                ? prioritizedLayoutSizes.filter((size) =>
+                                          baseSizes.includes(size),
+                                  )
+                                : prioritizedLayoutSizes
+                        : baseSizes;
+
+                setAvailableSizes(Array.from(new Set(filteredSizes)));
 
                 setSelectedSize((prev) => {
                         if (filteredSizes.length === 0) {
@@ -267,8 +418,8 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                                                 product.layouts || [],
                                         );
                                         const sortedSizes = sortByReference(
-                                                Array.from(sizeSet),
-                                                product.sizes || [],
+                                                sanitizeSizes(Array.from(sizeSet)),
+                                                sanitizedProductSizes,
                                         );
                                         const sortedMaterials = sortByReference(
                                                 Array.from(materialSet),
@@ -278,6 +429,20 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                                         setAvailableLayouts(sortedLayouts);
                                         setBaseSizes(sortedSizes);
                                         setAvailableMaterials(sortedMaterials);
+
+                                        if (isSafetySignFamily) {
+                                                const layoutSizesFromPrices =
+                                                        deriveLayoutSizesFromPrices(
+                                                                data.prices,
+                                                        );
+
+                                                setLayoutSizeMap((prev) =>
+                                                        mergeLayoutSizeCollections(
+                                                                prev,
+                                                                layoutSizesFromPrices,
+                                                        ),
+                                                );
+                                        }
 
                                         setSelectedLayout((prev) =>
                                                 prev && sortedLayouts.includes(prev)
@@ -296,7 +461,7 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                         }
                 };
                 checkQrOption();
-        }, [product]);
+        }, [isSafetySignFamily, product]);
 
         useEffect(() => {
                 const fetchPrice = async () => {
