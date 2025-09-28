@@ -111,6 +111,7 @@ export async function GET(req, { params }) {
                         code: product.productCode || product.code,
                         discountPercentage: pricing.discountPercentage,
                         discountAmount: pricing.discountAmount,
+                        productFamily: product.productFamily,
                         category: product.category,
                         subcategory: product.subcategory,
                         images: product.images || [],

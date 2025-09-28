@@ -105,6 +105,12 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                         ? languages[normalizedLanguages.indexOf("english")]
                         : languages[0] || ""
         );
+        const normalizedFamily =
+                typeof product?.productFamily === "string"
+                        ? product.productFamily.toLowerCase()
+                        : "";
+        const isSignsFamily = normalizedFamily.includes("signs");
+        const isLayoutSelectionEnabled = !isSignsFamily;
         const [availableLayouts, setAvailableLayouts] = useState(
                 sortByReference(product.layouts || [], product.layouts || []),
         );
@@ -121,7 +127,7 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                 product.materials?.[0] || ""
         );
         const [selectedLayout, setSelectedLayout] = useState(
-                product.layouts?.[0] || "",
+                isLayoutSelectionEnabled ? product.layouts?.[0] || "" : "",
         );
         const [hasQr, setHasQr] = useState(false);
         const [hasQrOption, setHasQrOption] = useState(false);
@@ -186,11 +192,13 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                                         setAvailableSizes(sortedSizes);
                                         setAvailableMaterials(sortedMaterials);
 
-                                        setSelectedLayout((prev) =>
-                                                prev && sortedLayouts.includes(prev)
-                                                        ? prev
-                                                        : sortedLayouts[0] || ""
-                                        );
+                                        if (isLayoutSelectionEnabled) {
+                                                setSelectedLayout((prev) =>
+                                                        prev && sortedLayouts.includes(prev)
+                                                                ? prev
+                                                                : sortedLayouts[0] || ""
+                                                );
+                                        }
                                         setSelectedSize((prev) =>
                                                 prev && sortedSizes.includes(prev)
                                                         ? prev
@@ -208,7 +216,7 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                         }
                 };
                 checkQrOption();
-        }, [product]);
+        }, [product, isLayoutSelectionEnabled]);
 
         useEffect(() => {
                 const fetchPrice = async () => {
@@ -217,13 +225,18 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                         setCalculatedMrp(null);
                         setIsMrpMissingForSelection(false);
                         try {
-                                const params = new URLSearchParams({
-                                        product: product._id || product.id,
-                                        layout: selectedLayout,
-                                        size: selectedSize,
-                                        material: selectedMaterial,
-                                        qr: hasQr,
-                                });
+                                const params = new URLSearchParams();
+                                params.set("product", product._id || product.id);
+                                if (isLayoutSelectionEnabled && selectedLayout) {
+                                        params.set("layout", selectedLayout);
+                                }
+                                if (selectedSize) {
+                                        params.set("size", selectedSize);
+                                }
+                                if (selectedMaterial) {
+                                        params.set("material", selectedMaterial);
+                                }
+                                params.set("qr", String(hasQr));
                                 const res = await fetch(`/api/prices?${params.toString()}`);
                                 const data = await res.json();
 
@@ -258,7 +271,14 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                         }
                 };
                 fetchPrice();
-        }, [selectedLayout, selectedSize, selectedMaterial, hasQr, product]);
+        }, [
+                selectedLayout,
+                selectedSize,
+                selectedMaterial,
+                hasQr,
+                product,
+                isLayoutSelectionEnabled,
+        ]);
 
         const languageImage =
                 product.languageImages?.find(
@@ -433,7 +453,9 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                                         product.image ||
                                         fallbackImage,
                                 selectedOptions: {
-                                        layout: selectedLayout || null,
+                                        layout: isLayoutSelectionEnabled
+                                                ? selectedLayout || null
+                                                : null,
                                         size: selectedSize || null,
                                         material: selectedMaterial || null,
                                         language: selectedLanguage || null,
@@ -696,7 +718,7 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                                                         ) : null}
                                                 </div>
                                         ) : null}
-                                       {hasQrOption && (
+                                        {hasQrOption && (
                                                 <div className="mt-4">
                                                         <Select
                                                                 value={hasQr ? "yes" : "no"}
@@ -748,7 +770,9 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                                         </div>
                                 )}
 
-                                                {availableLayouts && availableLayouts.length > 0 && (
+                                                {isLayoutSelectionEnabled &&
+                                                        availableLayouts &&
+                                                        availableLayouts.length > 0 && (
                                                         <div className="mt-4">
                                                                 <Select
                                                                         value={selectedLayout}
