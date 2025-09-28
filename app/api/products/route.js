@@ -3,7 +3,6 @@
 import { dbConnect } from "@/lib/dbConnect.js";
 import Product from "@/model/Product.js";
 import Price from "@/model/Price.js";
-import "@/model/Review.js";
 import { deriveProductPriceRange, deriveProductPricing } from "@/lib/pricing.js";
 
 export async function GET(request) {
@@ -141,11 +140,6 @@ export async function GET(request) {
                         .sort(sortObj)
                         .skip(skip)
                         .limit(limit)
-                        .populate({
-                                path: "reviews",
-                                select: "rating",
-                                strictPopulate: false,
-                        })
                         .lean();
 
 		const total = await Product.countDocuments(query);
@@ -181,15 +175,6 @@ export async function GET(request) {
                 }
 
                 const transformedProducts = products.map((product) => {
-                        const reviewCount = product.reviews?.length || 0;
-                        const averageRating =
-                                reviewCount > 0
-                                        ? product.reviews.reduce(
-                                                  (sum, r) => sum + r.rating,
-                                                  0
-                                          ) / reviewCount
-                                        : 0;
-
                         const pricing = deriveProductPricing(product);
                         const productId = product._id?.toString();
                         const priceRange = deriveProductPriceRange(
@@ -226,8 +211,6 @@ export async function GET(request) {
                                 category: product.category,
                                 type: product.type,
                                 features: product.features || [],
-                                rating: averageRating,
-                                reviewCount,
                                 createdAt: product.createdAt,
                                 updatedAt: product.updatedAt,
                                 priceRange,

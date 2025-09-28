@@ -662,8 +662,8 @@ const products = [
 			},
 			{
 				title: "Customer Feedback",
-				description:
-					"Built-in feedback system collects customer satisfaction ratings and comments.",
+                                description:
+                                        "Built-in feedback system captures customer comments and suggestions.",
 			},
 			{
 				title: "Multilingual Support",
