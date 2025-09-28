@@ -86,6 +86,28 @@ const sortByReference = (values = [], reference = []) => {
         return [...ordered.map((item) => item.value), ...extras];
 };
 
+const normalizeTextKey = (value) =>
+        typeof value === "string"
+                ? value
+                          .toString()
+                          .trim()
+                          .replace(/\s+/g, " ")
+                          .toLowerCase()
+                : "";
+
+const sanitizeSizes = (sizes = []) =>
+        Array.from(
+                new Set(
+                        sizes
+                                .map((size) =>
+                                        typeof size === "string"
+                                                ? size.trim()
+                                                : size,
+                                )
+                                .filter(Boolean),
+                ),
+        );
+
 export default function ProductDetail({ product, relatedProducts = [] }) {
         const [selectedImage, setSelectedImage] = useState(0);
         const [quantity, setQuantity] = useState(1);
@@ -107,9 +129,10 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                 product.layouts || [],
                 product.layouts || [],
         );
+        const sanitizedProductSizes = sanitizeSizes(product.sizes || []);
         const initialSortedSizes = sortByReference(
-                product.sizes || [],
-                product.sizes || [],
+                sanitizedProductSizes,
+                sanitizedProductSizes,
         );
         const [availableLayouts, setAvailableLayouts] = useState(
                 initialSortedLayouts,
@@ -148,11 +171,9 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
         const setBuyNowContext = useCheckoutStore((state) => state.setBuyNowContext);
 
         useEffect(() => {
+                const productSizes = sanitizeSizes(product.sizes || []);
                 setBaseSizes(
-                        sortByReference(
-                                product.sizes || [],
-                                product.sizes || [],
-                        ),
+                        sortByReference(productSizes, productSizes),
                 );
         }, [product]);
 
@@ -171,12 +192,27 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                                 });
                                 const data = await res.json();
                                 if (Array.isArray(data.layouts)) {
-                                        const map = {};
+                                        const map = new Map();
                                         data.layouts.forEach((layout) => {
-                                                if (!layout?.name) return;
-                                                map[layout.name] = Array.isArray(layout.sizes)
-                                                        ? layout.sizes.filter(Boolean)
+                                                const normalizedName = normalizeTextKey(
+                                                        layout?.name,
+                                                );
+                                                if (!normalizedName) return;
+                                                const sanitizedSizes = Array.isArray(
+                                                        layout?.sizes,
+                                                )
+                                                        ? Array.from(
+                                                                  new Set(
+                                                                          layout.sizes
+                                                                                  .map((size) =>
+                                                                                          String(size)
+                                                                                                  .trim()
+                                                                                  )
+                                                                                  .filter(Boolean),
+                                                                  ),
+                                                          )
                                                         : [];
+                                                map.set(normalizedName, sanitizedSizes);
                                         });
                                         setLayoutSizeMap(map);
                                 }
@@ -207,9 +243,26 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                         return;
                 }
 
-                const layoutSizes = layoutSizeMap[selectedLayout] || [];
-                const normalizedLayoutSizes = Array.isArray(layoutSizes)
-                        ? layoutSizes.filter(Boolean)
+                const normalizedSelectedLayoutKey = normalizeTextKey(selectedLayout);
+                const rawLayoutSizes = (() => {
+                        if (!normalizedSelectedLayoutKey) {
+                                return [];
+                        }
+
+                        if (layoutSizeMap instanceof Map) {
+                                return layoutSizeMap.get(normalizedSelectedLayoutKey) || [];
+                        }
+
+                        const candidate =
+                                layoutSizeMap?.[normalizedSelectedLayoutKey] ||
+                                layoutSizeMap?.[selectedLayout];
+
+                        return Array.isArray(candidate) ? candidate : [];
+                })();
+
+                const normalizedLayoutSizes = Array.isArray(rawLayoutSizes)
+                        ? rawLayoutSizes.filter(Boolean)
+
                         : [];
                 const normalizedSizes = normalizedLayoutSizes.length
                         ? sortByReference(
@@ -236,7 +289,9 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                         return intersection.length > 0 ? intersection : normalizedSizes;
                 })();
 
-                setAvailableSizes(filteredSizes);
+
+                setAvailableSizes(Array.from(new Set(filteredSizes)));
+
 
                 setSelectedSize((prev) => {
                         if (filteredSizes.length === 0) {
@@ -288,8 +343,8 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                                                 product.layouts || [],
                                         );
                                         const sortedSizes = sortByReference(
-                                                Array.from(sizeSet),
-                                                product.sizes || [],
+                                                sanitizeSizes(Array.from(sizeSet)),
+                                                sanitizedProductSizes,
                                         );
                                         const sortedMaterials = sortByReference(
                                                 Array.from(materialSet),
