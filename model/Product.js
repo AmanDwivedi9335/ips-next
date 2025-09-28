@@ -55,10 +55,7 @@ const ProductSchema = new mongoose.Schema(
                         type: String,
                 },
 
-                // Reviews for the product
-                reviews: [{ type: mongoose.Schema.Types.ObjectId, ref: "Review" }],
-
-		// Features array to handle product features
+                // Features array to handle product features
 		features: [
 			{
 				title: {

@@ -63,15 +63,7 @@ export async function POST(request) {
 
                 const pricingDocs = await Price.find({ product: productId }).lean();
 
-                const {
-                        _id,
-                        __v,
-                        createdAt,
-                        updatedAt,
-                        reviews,
-                        productType,
-                        ...productData
-                } = existingProduct;
+                const { _id, __v, createdAt, updatedAt, productType, ...productData } = existingProduct;
 
                 const clonedTitle = await generateCopyTitle(productData.title);
                 const clonedCode = await generateCopyCode(productData.productCode || productData.code);
@@ -82,7 +74,6 @@ export async function POST(request) {
                         productCode: clonedCode,
                         code: clonedCode,
                         published: false,
-                        reviews: [],
                 });
 
                 if (Array.isArray(pricingDocs) && pricingDocs.length > 0) {

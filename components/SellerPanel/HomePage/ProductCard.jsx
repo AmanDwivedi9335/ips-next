@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ShoppingCart, Heart, Eye, ArrowRight, Star } from "lucide-react";
+import { ShoppingCart, Heart, Eye, ArrowRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export default function ProductCard({ product, viewMode = "grid" }) {
@@ -128,18 +128,7 @@ export default function ProductCard({ product, viewMode = "grid" }) {
                                                                 <p className="text-gray-600 mt-2 line-clamp-2">
                                                                         {product.description}
                                                                 </p>
-								<div className="flex items-center gap-2 mt-2">
-									<div className="flex items-center">
-										{[...Array(5)].map((_, i) => (
-											<Star
-												key={i}
-												className="h-4 w-4 fill-yellow-400 text-yellow-400"
-											/>
-										))}
-									</div>
-									<span className="text-sm text-gray-500">(4.5)</span>
-								</div>
-							</div>
+                                                        </div>
 
 							<div className="flex items-center justify-between">
 								<div className="space-y-1">
@@ -245,19 +234,7 @@ export default function ProductCard({ product, viewMode = "grid" }) {
                                                                 {product.description}
                                                         </p>
 
-							{/* Rating */}
-							<div className="flex items-center gap-2 mb-3">
-								<div className="flex items-center">
-									{[...Array(5)].map((_, i) => (
-										<Star
-											key={i}
-											className="h-3 w-3 fill-yellow-400 text-yellow-400"
-										/>
-									))}
-								</div>
-								<span className="text-xs text-gray-500">(4.5)</span>
-							</div>
-						</div>
+                                                        </div>
 
 						{/* Price */}
 						<div className="space-y-2 mb-4">

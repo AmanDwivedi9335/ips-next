@@ -15,8 +15,6 @@ import {
         MapPin,
         Truck,
         CreditCard,
-        Star,
-        User,
 } from "lucide-react";
 import Image from "next/image";
 import { useCartStore } from "@/store/cartStore";
@@ -48,7 +46,6 @@ const dummyProduct = {
 	image: ISP2.src,
 	category: "industrial-safety",
         featured: true,
-        rating: 4.5,
         discountPercentage: 10,
 	features: [
 		{
@@ -75,30 +72,6 @@ const dummyProduct = {
 	images: [ISP2.src, ISP3.src, PSP3.src, PSP1.src],
 };
 
-const dummyReviews = [
-	{
-		id: 1,
-		name: "KL RAHUL KUMAR KARTHIK",
-		rating: 5,
-		comment:
-			"The Industrial Safety Kit Combo offers superior protection and quality. Each item is carefully crafted to meet ISI standards, ensuring high-quality safety for demanding work conditions.",
-	},
-	{
-		id: 2,
-		name: "VAIBHAV SHARMA",
-		rating: 5,
-		comment:
-			"Excellent quality Industrial Safety Kit Combo. The build quality is outstanding and it provides great value for money. Highly recommended for professional use.",
-	},
-	{
-		id: 3,
-		name: "ANITA GUPTA",
-		rating: 4,
-		comment:
-			"Good product overall. The Industrial Safety Kit Combo meets expectations and the delivery was prompt. Would purchase again.",
-	},
-];
-
 const products = [
         {
                 id: 1,
@@ -107,9 +80,8 @@ const products = [
 		price: "₹2,000",
 		originalPrice: "₹3,500",
 		discount: "33% OFF",
-		image: ISP1.src,
-                rating: 4.5,
-	},
+                image: ISP1.src,
+        },
         {
                 id: 2,
                 productCode: "P2",
@@ -117,9 +89,8 @@ const products = [
 		price: "₹5,000",
 		originalPrice: "₹7,500",
 		discount: "33% OFF",
-		image: PSP5.src,
-                rating: 4.8,
-	},
+                image: PSP5.src,
+        },
         {
                 id: 3,
                 productCode: "P3",
@@ -127,9 +98,8 @@ const products = [
 		price: "₹3,500",
 		originalPrice: "₹7,000",
 		discount: "50% OFF",
-		image: ISP5.src,
-                rating: 4.6,
-	},
+                image: ISP5.src,
+        },
         {
                 id: 4,
                 productCode: "P4",
@@ -137,9 +107,8 @@ const products = [
 		price: "₹5,000",
 		originalPrice: "₹7,500",
 		discount: "33% OFF",
-		image: ISP4.src,
-                rating: 4.7,
-	},
+                image: ISP4.src,
+        },
 ];
 
 export default function ProductDetailDemo() {
@@ -176,17 +145,6 @@ export default function ProductDetailDemo() {
 			setQuantity(newQuantity);
 		}
 	};
-
-        const renderStars = (rating) => {
-                return Array.from({ length: 5 }, (_, i) => (
-                        <Star
-                                key={i}
-                                className={`w-4 h-4 ${
-                                        i < rating ? "fill-yellow-400 text-yellow-400" : "text-gray-300"
-                                }`}
-                        />
-                ));
-        };
 
         const handleAddToCart = async () => {
                 await addItem({
@@ -280,18 +238,7 @@ export default function ProductDetailDemo() {
                                                                 </p>
                                                         )}
 
-                                                        {/* Product rating */}
-                                                        <div className="flex items-center mb-2">
-                                                                <span className="flex items-center gap-2 bg-green-600 text-white px-2 py-1 rounded-lg">
-                                                                        {dummyProduct.rating}
-                                                                        <Star className="w-4 h-4 fill-white text-white" />
-                                                                </span>
-								<span className="ml-2 text-gray-600 font-semibold">
-									({dummyReviews.length} Reviews)
-								</span>
-							</div>
-
-							{/* Product price */}
+                                                        {/* Product price */}
 							<p className="text-xl lg:text-2xl font-semibold text-black mb-2">
 								₹ {dummyProduct.price.toLocaleString()}
 							</p>
@@ -579,93 +526,7 @@ export default function ProductDetailDemo() {
 					</Card>
 				</motion.div>
 
-				{/* Reviews & Ratings Section */}
-				<motion.div
-					className="mb-10"
-					initial={{ opacity: 0, y: 20 }}
-					animate={{ opacity: 1, y: 0 }}
-					transition={{ duration: 0.5, delay: 0.6 }}
-				>
-					<Card>
-						<CardContent className="p-6">
-							<div className="flex items-center justify-between mb-6">
-								<h2 className="text-2xl font-bold">Reviews & Ratings</h2>
-								<Button className="bg-black text-white hover:bg-gray-800">
-									WRITE A REVIEW
-								</Button>
-							</div>
-
-							<p className="text-gray-600 mb-6">
-								{dummyProduct.name} - Customer Reviews and Ratings
-							</p>
-
-							{/* Rating Summary */}
-							<div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-								<div className="text-center">
-									<div className="flex items-center justify-center space-x-2 mb-2">
-										<span className="text-4xl font-bold text-green-600">
-											{dummyProduct.rating}
-										</span>
-										<Star className="w-8 h-8 fill-green-600 text-green-600" />
-									</div>
-									<p className="text-gray-600">
-										Average Rating based on {dummyReviews.length} ratings and{" "}
-										{dummyReviews.length} reviews
-									</p>
-								</div>
-
-								<div className="space-y-2">
-									{[5, 4, 3, 2, 1].map((stars) => (
-										<div key={stars} className="flex items-center space-x-3">
-											<span className="w-4 text-sm">{stars}</span>
-											<div className="flex-1 bg-gray-200 rounded-full h-2">
-												<div
-													className="bg-green-600 h-2 rounded-full"
-													style={{
-														width:
-															stars === 5 ? "67%" : stars === 4 ? "33%" : "0%",
-													}}
-												></div>
-											</div>
-											<span className="text-sm text-gray-600 w-12">
-												{stars === 5 ? "67%" : stars === 4 ? "33%" : "0%"}
-											</span>
-										</div>
-									))}
-								</div>
-							</div>
-
-							{/* Individual Reviews */}
-							<div className="space-y-6">
-								{dummyReviews.map((review) => (
-									<div
-										key={review.id}
-										className="border-b border-gray-200 pb-6 last:border-b-0"
-									>
-										<div className="flex items-start space-x-4">
-											<div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center">
-												<User className="w-5 h-5 text-gray-600" />
-											</div>
-											<div className="flex-1">
-												<div className="flex items-center space-x-2 mb-2">
-													<h4 className="font-semibold">{review.name}</h4>
-												</div>
-												<div className="flex items-center space-x-1 mb-3">
-													{renderStars(review.rating)}
-												</div>
-												<p className="text-gray-700 text-sm leading-relaxed">
-													{review.comment}
-												</p>
-											</div>
-										</div>
-									</div>
-								))}
-							</div>
-						</CardContent>
-					</Card>
-				</motion.div>
-
-				{/* Related Products Section */}
+                                {/* Related Products Section */}
 				<motion.div variants={itemVariants}>
 					<h3 className="text-2xl font-bold text-gray-900 mb-8">
 						Related Products
