@@ -9,6 +9,7 @@ import { Download, Printer } from "lucide-react";
 import { useAdminOrderStore } from "@/store/adminOrderStore.js";
 import { toast } from "sonner";
 import { formatCurrency as formatCurrencyValue } from "@/lib/pricing.js";
+import { getOrderItemOptionEntries } from "@/lib/orderOptions.js";
 
 const formatCurrency = (value) => `₹${formatCurrencyValue(value ?? 0)}`;
 const formatDiscount = (value) => `-₹${formatCurrencyValue(Math.abs(value ?? 0))}`;
@@ -146,40 +147,60 @@ export function InvoicePopup({ open, onOpenChange, order }) {
 							<div className="col-span-2 text-right">TOTAL</div>
 						</div>
 
-						{order.products.map((product, index) => (
-							<div
-								key={index}
-								className="grid grid-cols-12 gap-4 py-4 border-b"
-							>
-								<div className="col-span-6">
-									<div className="flex items-center gap-3">
-										{product.productImage && (
-											<img
-												src={product.productImage || "https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png"}
-												alt={product.productName}
-												className="w-12 h-12 object-cover rounded"
-											/>
-										)}
-										<div>
-											<p className="font-medium">{product.productName}</p>
-											<p className="text-sm text-gray-600">
-												Product ID: {product.productId}
-											</p>
-										</div>
-									</div>
-								</div>
-								<div className="col-span-2 text-center flex items-center justify-center">
-									{product.quantity}
-								</div>
-                                                                <div className="col-span-2 text-center flex items-center justify-center">
-                                                                        {formatCurrency(product.price)}
+                                                {order.products.map((product, index) => {
+                                                        const optionEntries = getOrderItemOptionEntries(product);
+
+                                                        return (
+                                                                <div
+                                                                        key={index}
+                                                                        className="grid grid-cols-12 gap-4 py-4 border-b"
+                                                                >
+                                                                        <div className="col-span-6">
+                                                                                <div className="flex items-center gap-3">
+                                                                                        {product.productImage && (
+                                                                                                <img
+                                                                                                        src={
+                                                                                                                product.productImage ||
+                                                                                                                "https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png"
+                                                                                                        }
+                                                                                                        alt={product.productName}
+                                                                                                        className="w-12 h-12 object-cover rounded"
+                                                                                                />
+                                                                                        )}
+                                                                                        <div>
+                                                                                                <p className="font-medium">{product.productName}</p>
+                                                                                                <p className="text-sm text-gray-600">
+                                                                                                        Product ID: {product.productId}
+                                                                                                </p>
+                                                                                                {optionEntries.length > 0 && (
+                                                                                                        <dl className="mt-2 space-y-1 text-xs text-gray-600">
+                                                                                                                {optionEntries.map(({ label, value }) => (
+                                                                                                                        <div
+                                                                                                                                key={`${product.productId || index}-${label}`}
+                                                                                                                                className="flex items-center gap-2"
+                                                                                                                        >
+                                                                                                                                <dt className="font-medium text-gray-900">{label}:</dt>
+                                                                                                                                <dd>{value}</dd>
+                                                                                                                        </div>
+                                                                                                                ))}
+                                                                                                        </dl>
+                                                                                                )}
+                                                                                        </div>
+                                                                                </div>
+                                                                        </div>
+                                                                        <div className="col-span-2 text-center flex items-center justify-center">
+                                                                                {product.quantity}
+                                                                        </div>
+                                                                        <div className="col-span-2 text-center flex items-center justify-center">
+                                                                                {formatCurrency(product.price)}
+                                                                        </div>
+                                                                        <div className="col-span-2 text-right flex items-center justify-end">
+                                                                                {formatCurrency(product.totalPrice)}
+                                                                        </div>
                                                                 </div>
-                                                                <div className="col-span-2 text-right flex items-center justify-end">
-                                                                        {formatCurrency(product.totalPrice)}
-                                                                </div>
-							</div>
-						))}
-					</div>
+                                                        );
+                                                })}
+                                        </div>
 
 					{/* Totals */}
 					<div className="space-y-3">

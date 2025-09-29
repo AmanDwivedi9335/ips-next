@@ -470,6 +470,17 @@ export function OrderDetailsPopup({ open, onOpenChange, order }) {
                                                                                                         selectedOptions?.selectedMaterial,
                                                                                                         selectedOptions?.materialOption
                                                                                                 );
+                                                                                        const layout =
+                                                                                                pickText(
+                                                                                                        product?.layout,
+                                                                                                        product?.selectedLayout,
+                                                                                                        product?.layoutOption,
+                                                                                                        product?.layoutSelection,
+                                                                                                        selectedOptions?.layout,
+                                                                                                        selectedOptions?.selectedLayout,
+                                                                                                        selectedOptions?.layoutOption,
+                                                                                                        selectedOptions?.layoutSelection
+                                                                                                );
                                                                                         const qrFlag = pickBoolean(
                                                                                                 selectedOptions?.qr,
                                                                                                 selectedOptions?.hasQr,
@@ -484,7 +495,9 @@ export function OrderDetailsPopup({ open, onOpenChange, order }) {
                                                                                                 product?.qrSelection,
                                                                                                 selectedOptions?.qrLabel,
                                                                                                 selectedOptions?.qrOption,
-                                                                                                selectedOptions?.qrSelection
+                                                                                                selectedOptions?.qrSelection,
+                                                                                                product?.qrText,
+                                                                                                selectedOptions?.qrText
                                                                                         );
                                                                                         const qrText =
                                                                                                 qrFlag !== null
@@ -492,6 +505,13 @@ export function OrderDetailsPopup({ open, onOpenChange, order }) {
                                                                                                                 ? "With QR"
                                                                                                                 : "Without QR"
                                                                                                         : qrTextCandidate;
+                                                                                        const optionEntries = [
+                                                                                                { label: "Language", value: language },
+                                                                                                { label: "Size", value: size },
+                                                                                                { label: "Material", value: material },
+                                                                                                { label: "Layout", value: layout },
+                                                                                                { label: "QR", value: qrText },
+                                                                                        ].filter((entry) => Boolean(entry.value));
 
                                                                                         return (
                                                                                                 <div
@@ -508,32 +528,14 @@ export function OrderDetailsPopup({ open, onOpenChange, order }) {
                                                                                                                 <p className="text-sm text-gray-600">
                                                                                                                         Quantity: {displayQuantity} × {formatCurrency(unitPriceValue)}
                                                                                                                 </p>
-                                                                                                                {(language || size || material || qrText) && (
+                                                                                                                {optionEntries.length > 0 && (
                                                                                                                         <div className="mt-2 space-y-1 text-sm text-gray-600">
-                                                                                                                                {language && (
-                                                                                                                                        <p>
-                                                                                                                                                <span className="font-medium text-gray-900">Language:</span>{" "}
-                                                                                                                                                {language}
+                                                                                                                                {optionEntries.map(({ label, value }) => (
+                                                                                                                                        <p key={`${label}-${value}`}>
+                                                                                                                                                <span className="font-medium text-gray-900">{label}:</span>{" "}
+                                                                                                                                                {value}
                                                                                                                                         </p>
-                                                                                                                                )}
-                                                                                                                                {size && (
-                                                                                                                                        <p>
-                                                                                                                                                <span className="font-medium text-gray-900">Size:</span>{" "}
-                                                                                                                                                {size}
-                                                                                                                                        </p>
-                                                                                                                                )}
-                                                                                                                                {material && (
-                                                                                                                                        <p>
-                                                                                                                                                <span className="font-medium text-gray-900">Material:</span>{" "}
-                                                                                                                                                {material}
-                                                                                                                                        </p>
-                                                                                                                                )}
-                                                                                                                                {qrText && (
-                                                                                                                                        <p>
-                                                                                                                                                <span className="font-medium text-gray-900">QR:</span>{" "}
-                                                                                                                                                {qrText}
-                                                                                                                                        </p>
-                                                                                                                                )}
+                                                                                                                                ))}
                                                                                                                         </div>
                                                                                                                 )}
                                                                                                         </div>

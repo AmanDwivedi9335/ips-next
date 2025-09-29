@@ -4,6 +4,7 @@ import { create } from "zustand";
 import { persist, devtools } from "zustand/middleware";
 import { toast } from "react-hot-toast";
 import { toNumber } from "@/lib/pricing.js";
+import { extractOrderItemOptions } from "@/lib/orderOptions.js";
 
 // Payment API functions
 const paymentAPI = {
@@ -210,6 +211,8 @@ export const useCheckoutStore = create(
                                                         0
                                                 );
 
+                                                const selectedOptions = extractOrderItemOptions(product);
+
                                                 items = [
                                                         {
                                                                 productId: product.id,
@@ -219,7 +222,16 @@ export const useCheckoutStore = create(
                                                                 price: finalPrice,
                                                                 mrp: normalizedMrp,
                                                                 discountAmount,
-                                                                selectedOptions: product.selectedOptions || null,
+                                                                selectedOptions,
+                                                                language: selectedOptions.language ?? null,
+                                                                size: selectedOptions.size ?? null,
+                                                                material: selectedOptions.material ?? null,
+                                                                layout: selectedOptions.layout ?? null,
+                                                                qrOption: selectedOptions.qrOption ?? null,
+                                                                hasQr:
+                                                                        typeof selectedOptions.hasQr === "boolean"
+                                                                                ? selectedOptions.hasQr
+                                                                                : null,
                                                                 totalPrice: finalPrice * quantity,
                                                         },
                                                 ];
@@ -239,6 +251,8 @@ export const useCheckoutStore = create(
                                                                 0
                                                         );
 
+                                                        const selectedOptions = extractOrderItemOptions(item);
+
                                                         return {
                                                                 productId: item.id,
                                                                 productName: item.name,
@@ -247,6 +261,16 @@ export const useCheckoutStore = create(
                                                                 price: finalPrice,
                                                                 mrp: normalizedMrp,
                                                                 discountAmount,
+                                                                selectedOptions,
+                                                                language: selectedOptions.language ?? null,
+                                                                size: selectedOptions.size ?? null,
+                                                                material: selectedOptions.material ?? null,
+                                                                layout: selectedOptions.layout ?? null,
+                                                                qrOption: selectedOptions.qrOption ?? null,
+                                                                hasQr:
+                                                                        typeof selectedOptions.hasQr === "boolean"
+                                                                                ? selectedOptions.hasQr
+                                                                                : null,
                                                                 totalPrice: finalPrice * item.quantity,
                                                         };
                                                 });

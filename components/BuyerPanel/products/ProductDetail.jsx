@@ -361,6 +361,13 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                                 englishImage ||
                                 product.images?.[0] ||
                                 product.image,
+                        selectedOptions: {
+                                layout: isLayoutSelectionEnabled ? selectedLayout || null : null,
+                                size: selectedSize || null,
+                                material: selectedMaterial || null,
+                                language: selectedLanguage || null,
+                                qr: hasQr,
+                        },
                 });
         };
 
