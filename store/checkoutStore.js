@@ -147,7 +147,7 @@ export const useCheckoutStore = create(
 				isLoading: false,
 				paymentLoading: false,
 				currentStep: 1, // 1: Address, 2: Payment
-				paymentMethod: "razorpay", // "razorpay", "cod", "credit_card","debit_card", "net_banking", "upi", "wallet"
+                                paymentMethod: "razorpay", // currently only Razorpay online payments are supported
 
 				// Actions
                                 setCheckoutType: (type, product = null, quantity = 1) => {
@@ -181,9 +181,14 @@ export const useCheckoutStore = create(
 					set({ currentStep: step });
 				},
 
-				setPaymentMethod: (method) => {
-					set({ paymentMethod: method });
-				},
+                                setPaymentMethod: (method) => {
+                                        if (method !== "razorpay") {
+                                                toast.error("Selected payment method is not available.");
+                                                return;
+                                        }
+
+                                        set({ paymentMethod: method });
+                                },
 
 				// Initialize checkout data
 				initializeCheckout: (
@@ -787,40 +792,6 @@ export const useCheckoutStore = create(
                                                         shouldResetLoading = false;
 
                                                         return { success: true, paymentMethod: "razorpay" };
-					} else if (paymentMethod === "cod") {
-						const codOrderData = {
-							orderData: {
-								...orderData,
-								paymentStatus: "pending",
-								status: "confirmed",
-							},
-							userId: userId,
-							clearCart: checkoutType === "cart",
-						};
-
-						const result = await paymentAPI.createOrder(codOrderData);
-
-						if (result.success) {
-							if (checkoutType === "cart" && clearCartCallback) {
-								clearCartCallback();
-							}
-
-							get().resetCheckout();
-
-							toast.success("Order placed successfully!");
-
-							window.location.href = `/order-success?orderId=${result.orderId}&orderNumber=${result.orderNumber}`;
-
-							return { success: true, paymentMethod: "cod" };
-                                                }
-
-                                                toast.error(result.error || "Failed to place order");
-
-                                                redirectToFailurePage(
-                                                        "order_creation_failed",
-                                                        result.error || "We could not place your order."
-                                                );
-                                                return { success: false, error: result.error };
                                         }
 
                                         toast.error("Unsupported payment method");
