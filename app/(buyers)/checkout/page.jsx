@@ -565,65 +565,36 @@ export default function CheckoutPage() {
 				</CardHeader>
 				<CardContent className="space-y-4">
 					{/* Payment Method Selection */}
-					<div className="space-y-3">
-						<div
-							className={`p-4 border rounded-lg cursor-pointer transition-colors ${
-								paymentMethod === "razorpay"
-									? "border-blue-500 bg-blue-50"
-									: "border-gray-200 hover:border-gray-300"
-							}`}
-							onClick={() => setPaymentMethod("razorpay")}
-						>
-							<div className="flex items-center justify-between">
-								<div>
-									<p className="font-medium">Online Payment</p>
-									<p className="text-sm text-gray-600">
-										Pay securely with Razorpay
-									</p>
-								</div>
-								<div
-									className={`w-4 h-4 rounded-full border-2 ${
-										paymentMethod === "razorpay"
-											? "border-blue-500 bg-blue-500"
-											: "border-gray-300"
-									}`}
-								>
-									{paymentMethod === "razorpay" && (
-										<div className="w-2 h-2 bg-white rounded-full m-0.5" />
-									)}
-								</div>
-							</div>
-						</div>
-
-						<div
-							className={`p-4 border rounded-lg cursor-pointer transition-colors ${
-								paymentMethod === "cod"
-									? "border-blue-500 bg-blue-50"
-									: "border-gray-200 hover:border-gray-300"
-							}`}
-							onClick={() => setPaymentMethod("cod")}
-						>
-							<div className="flex items-center justify-between">
-								<div>
-									<p className="font-medium">Cash on Delivery</p>
-									<p className="text-sm text-gray-600">
-										Pay when you receive your order
-									</p>
-								</div>
-								<div
-									className={`w-4 h-4 rounded-full border-2 ${
-										paymentMethod === "cod"
-											? "border-blue-500 bg-blue-500"
-											: "border-gray-300"
-									}`}
-								>
-									{paymentMethod === "cod" && (
-										<div className="w-2 h-2 bg-white rounded-full m-0.5" />
-									)}
-								</div>
-							</div>
-						</div>
-					</div>
+                                        <div className="space-y-3">
+                                                <div
+                                                        className={`p-4 border rounded-lg cursor-pointer transition-colors ${
+                                                                paymentMethod === "razorpay"
+                                                                        ? "border-blue-500 bg-blue-50"
+                                                                        : "border-gray-200 hover:border-gray-300"
+                                                        }`}
+                                                        onClick={() => setPaymentMethod("razorpay")}
+                                                >
+                                                        <div className="flex items-center justify-between">
+                                                                <div>
+                                                                        <p className="font-medium">Online Payment</p>
+                                                                        <p className="text-sm text-gray-600">
+                                                                                Pay securely with Razorpay
+                                                                        </p>
+                                                                </div>
+                                                                <div
+                                                                        className={`w-4 h-4 rounded-full border-2 ${
+                                                                                paymentMethod === "razorpay"
+                                                                                        ? "border-blue-500 bg-blue-500"
+                                                                                        : "border-gray-300"
+                                                                        }`}
+                                                                >
+                                                                        {paymentMethod === "razorpay" && (
+                                                                                <div className="w-2 h-2 bg-white rounded-full m-0.5" />
+                                                                        )}
+                                                                </div>
+                                                        </div>
+                                                </div>
+                                        </div>
 
 					{paymentMethod === "razorpay" && (
 						<div className="p-4 bg-blue-50 rounded-lg">
@@ -645,10 +616,7 @@ export default function CheckoutPage() {
 						</Button>
 						<Button
 							onClick={handlePayment}
-							disabled={
-								paymentLoading ||
-								(paymentMethod === "razorpay" && !isRazorpayLoaded)
-							}
+                                                        disabled={paymentLoading || !isRazorpayLoaded}
 							className="flex-1 bg-green-600 hover:bg-green-700"
 						>
 							{paymentLoading ? (
@@ -658,9 +626,7 @@ export default function CheckoutPage() {
 								</>
 							) : (
 								<>
-									{paymentMethod === "cod"
-										? "Place Order"
-										: `Pay ₹${orderSummary.total.toLocaleString()}`}
+                                                                        {`Pay ₹${orderSummary.total.toLocaleString()}`}
 									<ArrowRight className="ml-2 h-4 w-4" />
 								</>
 							)}
