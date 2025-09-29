@@ -719,7 +719,8 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                                                 </div>
                                         ) : null}
                                         {hasQrOption && (
-                                                <div className="mt-4">
+                                                <div className="mt-4 flex items-center gap-3">
+                                                        <span className="font-medium whitespace-nowrap">QR Code:</span>
                                                         <Select
                                                                 value={hasQr ? "yes" : "no"}
                                                                 onValueChange={(v) => setHasQr(v === "yes")}
@@ -751,7 +752,8 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                                 </div> */}
 
                                 {languages.length > 0 && (
-                                        <div className="mt-4">
+                                        <div className="mt-4 flex items-center gap-3">
+                                                <span className="font-medium whitespace-nowrap">Language:</span>
                                                 <Select
                                                         value={selectedLanguage}
                                                         onValueChange={setSelectedLanguage}
@@ -773,7 +775,8 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                                                 {isLayoutSelectionEnabled &&
                                                         availableLayouts &&
                                                         availableLayouts.length > 0 && (
-                                                        <div className="mt-4">
+                                                        <div className="mt-4 flex items-center gap-3">
+                                                                <span className="font-medium whitespace-nowrap">Layout:</span>
                                                                 <Select
                                                                         value={selectedLayout}
                                                                         onValueChange={setSelectedLayout}
@@ -792,7 +795,8 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                                                         </div>
                                                 )}
                                                 {availableSizes && availableSizes.length > 0 && (
-                                                        <div className="mt-4">
+                                                        <div className="mt-4 flex items-center gap-3">
+                                                                <span className="font-medium whitespace-nowrap">Size:</span>
                                                                 <Select
                                                                         value={selectedSize}
                                                                         onValueChange={setSelectedSize}
@@ -812,7 +816,8 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                                                 )}
 
                                                 {availableMaterials && availableMaterials.length > 0 && (
-                                                        <div className="mt-4">
+                                                        <div className="mt-4 flex items-center gap-3">
+                                                                <span className="font-medium whitespace-nowrap">Material:</span>
                                                                 <Select
                                                                         value={selectedMaterial}
                                                                         onValueChange={setSelectedMaterial}
