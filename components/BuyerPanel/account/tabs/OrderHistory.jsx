@@ -29,6 +29,7 @@ import {
 import { Loader2, Eye, RefreshCw } from "lucide-react";
 import { useLoggedInUser } from "@/store/authStore";
 import { formatCurrency } from "@/lib/pricing";
+import { getOrderItemOptionEntries } from "@/lib/orderOptions.js";
 
 const ORDER_STATUS_STYLES = {
         pending: "bg-amber-100 text-amber-800",
@@ -216,6 +217,10 @@ export function OrderHistory() {
                                                 ? firstProduct.price
                                                 : firstProduct?.price ?? null;
                                 let subtitle = "";
+                                const optionEntries = getOrderItemOptionEntries(firstProduct);
+                                const optionSummary = optionEntries
+                                        .map((entry) => `${entry.label}: ${entry.value}`)
+                                        .join(" • ");
 
                                 if (additionalCount > 0) {
                                         subtitle = `+${additionalCount} more item${additionalCount === 1 ? "" : "s"}`;
@@ -244,6 +249,9 @@ export function OrderHistory() {
                                                                 <span className="font-medium">{productName}</span>
                                                                 {subtitle && (
                                                                         <span className="text-sm text-muted-foreground">{subtitle}</span>
+                                                                )}
+                                                                {optionSummary && (
+                                                                        <span className="text-xs text-muted-foreground">{optionSummary}</span>
                                                                 )}
                                                         </div>
                                                 </TableCell>
@@ -491,6 +499,7 @@ export function OrderHistory() {
                                                                                 const quantity = item?.quantity ?? 0;
                                                                                 const unitPrice = item?.price ?? 0;
                                                                                 const lineTotal = item?.totalPrice ?? unitPrice * quantity;
+                                                                                const optionEntries = getOrderItemOptionEntries(item);
 
                                                                                 return (
                                                                                         <div
@@ -502,6 +511,15 @@ export function OrderHistory() {
                                                                                                         <p className="text-sm text-muted-foreground">
                                                                                                                 Qty {quantity} × ₹{formatCurrency(unitPrice)}
                                                                                                         </p>
+                                                                                                        {optionEntries.length > 0 && (
+                                                                                                                <ul className="mt-2 space-y-1 text-xs text-muted-foreground">
+                                                                                                                        {optionEntries.map(({ label, value }) => (
+                                                                                                                                <li key={`${name}-${label}`}>
+                                                                                                                                        <span className="font-medium text-gray-900">{label}:</span> {value}
+                                                                                                                                </li>
+                                                                                                                        ))}
+                                                                                                                </ul>
+                                                                                                        )}
                                                                                                 </div>
                                                                                                 <div className="text-right">
                                                                                                         <p className="font-semibold">₹{formatCurrency(lineTotal)}</p>

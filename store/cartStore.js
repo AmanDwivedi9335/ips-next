@@ -5,6 +5,7 @@ import { persist, subscribeWithSelector, devtools } from "zustand/middleware";
 import { toast } from "react-hot-toast";
 import { useAuthStore } from "@/store/authStore.js";
 import { deriveProductPricing, toNumber } from "@/lib/pricing.js";
+import { extractOrderItemOptions } from "@/lib/orderOptions.js";
 
 // Cart API functions
 const cartAPI = {
@@ -107,6 +108,12 @@ const cartAPI = {
 
 const buildCartItemFromServer = (item) => {
         const pricing = deriveProductPricing(item.product || {});
+        const optionSource = {
+                ...(item?.product || {}),
+                ...(item || {}),
+                selectedOptions: item?.selectedOptions || item?.product?.selectedOptions,
+        };
+        const selectedOptions = extractOrderItemOptions(optionSource);
 
         return {
                 id: item.product._id,
@@ -121,6 +128,14 @@ const buildCartItemFromServer = (item) => {
                         item.product.images?.[0] ||
                         "https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png",
                 quantity: item.quantity,
+                selectedOptions,
+                language: selectedOptions.language ?? null,
+                size: selectedOptions.size ?? null,
+                material: selectedOptions.material ?? null,
+                layout: selectedOptions.layout ?? null,
+                qrOption: selectedOptions.qrOption ?? null,
+                hasQr:
+                        typeof selectedOptions.hasQr === "boolean" ? selectedOptions.hasQr : null,
         };
 };
 
@@ -140,6 +155,7 @@ const normalizeClientCartItem = (product, quantity = 1) => {
 
         const finalPrice = fallbackPrice ?? pricing.finalPrice;
         const mrp = fallbackMrp ?? pricing.mrp;
+        const selectedOptions = extractOrderItemOptions(product);
 
         return {
                 id: product.id,
@@ -155,6 +171,14 @@ const normalizeClientCartItem = (product, quantity = 1) => {
                         product.image ||
                         "https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png",
                 quantity,
+                selectedOptions,
+                language: selectedOptions.language ?? null,
+                size: selectedOptions.size ?? null,
+                material: selectedOptions.material ?? null,
+                layout: selectedOptions.layout ?? null,
+                qrOption: selectedOptions.qrOption ?? null,
+                hasQr:
+                        typeof selectedOptions.hasQr === "boolean" ? selectedOptions.hasQr : null,
         };
 };
 

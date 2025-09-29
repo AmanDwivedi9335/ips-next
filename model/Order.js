@@ -30,31 +30,45 @@ const OrderSchema = new mongoose.Schema(
 		},
 
 		// Order Details
-		products: [
-			{
-				productId: {
-					type: mongoose.Schema.Types.ObjectId,
-					ref: "Product",
-					required: true,
-				},
-				productName: String,
-				productImage: String,
-				quantity: {
-					type: Number,
-					required: true,
-					min: 1,
-				},
+                products: [
+                        {
+                                productId: {
+                                        type: mongoose.Schema.Types.ObjectId,
+                                        ref: "Product",
+                                        required: true,
+                                },
+                                productName: String,
+                                productImage: String,
+                                quantity: {
+                                        type: Number,
+                                        required: true,
+                                        min: 1,
+                                },
                                 price: {
                                         type: Number,
                                         required: true,
                                 },
                                 mrp: { type: Number },
                                 discountAmount: { type: Number, default: 0 },
+                                selectedOptions: {
+                                        language: { type: String },
+                                        size: { type: String },
+                                        material: { type: String },
+                                        layout: { type: String },
+                                        qrOption: { type: String },
+                                        hasQr: { type: Boolean },
+                                },
+                                language: { type: String },
+                                size: { type: String },
+                                material: { type: String },
+                                layout: { type: String },
+                                qrOption: { type: String },
+                                hasQr: { type: Boolean },
                                 totalPrice: {
                                         type: Number,
                                         required: true,
                                 },
-			},
+                        },
 		],
 
 		// Pricing

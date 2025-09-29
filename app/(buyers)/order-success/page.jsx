@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { extractOrderItemOptions } from "@/lib/orderOptions.js";
 import { CheckCircle, Truck, Home, Download, Loader2, CreditCard } from "lucide-react";
 
 import Link from "next/link";
@@ -61,15 +62,20 @@ export default function OrderSuccessPage() {
                         return [];
                 }
 
-                return orderDetails.products.map((item) => ({
-                        id: item.productId || item._id,
-                        name: item.productName,
-                        quantity: item.quantity,
-                        price: item.price,
-                        totalPrice: item.totalPrice,
-                        discountAmount: item.discountAmount,
-                        mrp: item.mrp,
-                }));
+                return orderDetails.products.map((item) => {
+                        const options = extractOrderItemOptions(item);
+
+                        return {
+                                id: item.productId || item._id,
+                                name: item.productName,
+                                quantity: item.quantity,
+                                price: item.price,
+                                totalPrice: item.totalPrice,
+                                discountAmount: item.discountAmount,
+                                mrp: item.mrp,
+                                options,
+                        };
+                });
         }, [orderDetails]);
 
         if (!orderDetails && isConfirming) {
@@ -189,7 +195,31 @@ export default function OrderSuccessPage() {
                                                                 <CardTitle>Items Purchased</CardTitle>
                                                         </CardHeader>
                                                         <CardContent className="space-y-4">
-                                                                {purchasedItems.map((item) => (
+                                                                {purchasedItems.map((item) => {
+                                                                        const optionEntries = [
+                                                                                {
+                                                                                        label: "Language",
+                                                                                        value: item.options?.language,
+                                                                                },
+                                                                                {
+                                                                                        label: "Size",
+                                                                                        value: item.options?.size,
+                                                                                },
+                                                                                {
+                                                                                        label: "Material",
+                                                                                        value: item.options?.material,
+                                                                                },
+                                                                                {
+                                                                                        label: "Layout",
+                                                                                        value: item.options?.layout,
+                                                                                },
+                                                                                {
+                                                                                        label: "QR",
+                                                                                        value: item.options?.qrOption,
+                                                                                },
+                                                                        ].filter((entry) => Boolean(entry.value));
+
+                                                                        return (
                                                                         <div
                                                                                 key={item.id}
                                                                                 className="overflow-hidden rounded-xl border border-gray-100 bg-white"
@@ -202,6 +232,20 @@ export default function OrderSuccessPage() {
                                                                                                 Qty: {item.quantity}
                                                                                         </Badge>
                                                                                 </div>
+                                                                                {optionEntries.length > 0 && (
+                                                                                        <div className="px-5 py-3 text-sm text-gray-600 border-b border-gray-100">
+                                                                                                <dl className="grid gap-2 sm:grid-cols-2">
+                                                                                                        {optionEntries.map(({ label, value }) => (
+                                                                                                                <div key={`${item.id}-${label}`} className="flex items-center gap-2">
+                                                                                                                        <dt className="font-medium text-gray-900 min-w-[4.5rem]">
+                                                                                                                                {label}:
+                                                                                                                        </dt>
+                                                                                                                        <dd className="text-gray-600">{value}</dd>
+                                                                                                                </div>
+                                                                                                        ))}
+                                                                                                </dl>
+                                                                                        </div>
+                                                                                )}
                                                                                 <div className="grid gap-0 px-5 py-4 text-sm sm:grid-cols-3">
                                                                                         <div className="py-2 sm:py-0">
                                                                                                 <span className="block text-xs font-semibold uppercase tracking-wide text-gray-400">
@@ -233,15 +277,16 @@ export default function OrderSuccessPage() {
                                                                                                 </span>
                                                                                         </div>
                                                                                 </div>
-                                                                                <div className="flex items-center justify-between border-t border-gray-100 bg-gray-50 px-5 py-3 text-sm font-semibold text-gray-900">
-                                                                                        <span>Total</span>
-                                                                                        <span>
-                                                                                                ₹
-                                                                                                {item.totalPrice?.toLocaleString?.() || item.totalPrice}
-                                                                                        </span>
+                                                                                        <div className="flex items-center justify-between border-t border-gray-100 bg-gray-50 px-5 py-3 text-sm font-semibold text-gray-900">
+                                                                                                <span>Total</span>
+                                                                                                <span>
+                                                                                                        ₹
+                                                                                                        {item.totalPrice?.toLocaleString?.() || item.totalPrice}
+                                                                                                </span>
+                                                                                        </div>
                                                                                 </div>
-                                                                        </div>
-                                                                ))}
+                                                                        );
+                                                                })}
                                                         </CardContent>
                                                 </Card>
                                         )}
