@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { motion } from "framer-motion";
 
 export default function CategoriesGrid() {
         const [categories, setCategories] = useState([]);
+        const prefetchedSlugs = useRef(new Set());
         const router = useRouter();
 
         useEffect(() => {
@@ -28,6 +29,21 @@ export default function CategoriesGrid() {
                 };
                 fetchCategories();
         }, []);
+
+        useEffect(() => {
+                if (!categories.length) {
+                        return;
+                }
+
+                categories.forEach((cat) => {
+                        if (!cat?.slug || prefetchedSlugs.current.has(cat.slug)) {
+                                return;
+                        }
+
+                        router.prefetch(`/categories/${cat.slug}`);
+                        prefetchedSlugs.current.add(cat.slug);
+                });
+        }, [categories, router]);
 
         const handleClick = (slug) => {
                 router.push(`/categories/${slug}`);
