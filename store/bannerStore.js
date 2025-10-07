@@ -14,7 +14,9 @@ export const useBannerStore = create((set) => ({
         banners: [],
         fetchBanners: async () => {
                 try {
-                        const res = await fetch("/api/settings/banners");
+                        const res = await fetch("/api/settings/banners", {
+                                cache: "no-store",
+                        });
                         const data = await res.json();
                         if (data.success) {
                                 set({ banners: data.banners });
@@ -23,6 +25,7 @@ export const useBannerStore = create((set) => ({
                         console.error("Failed to fetch banners", error);
                 }
         },
+        setBanners: (banners) => set({ banners }),
         addBanner: async ({ file, link }) => {
                 try {
                         const image = await fileToBase64(file);
