@@ -19,7 +19,7 @@ export const metadata = {
 };
 
 const navigationOptions = [
-        { label: "All Safety Posters", href: "/all-safety-posters" },
+        { label: "All Safety Posters", href: "/products?category=safety-posters" },
         { label: "Industrial Safety Packs", href: "#packs", highlight: true },
         { label: "Monthly Poster Subscriptions", href: "/monthly-poster-subscriptions" },
         { label: "Corporate Bulk/Custom Orders", href: "/corporate-bulk-orders" },
@@ -147,7 +147,7 @@ export default function IndustrialSafetyPacksPage() {
                                                                         <ArrowRight className="h-4 w-4" />
                                                                 </Link>
                                                                 <Link
-                                                                        href="/all-safety-posters"
+                                                                        href="/products?category=safety-posters"
                                                                         className={cn(
                                                                                 buttonVariants({ variant: "outline", size: "lg" }),
                                                                                 "border-yellow-500 text-yellow-700 hover:bg-yellow-50"
