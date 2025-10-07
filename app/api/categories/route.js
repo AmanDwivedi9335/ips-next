@@ -18,6 +18,7 @@ export async function GET(request) {
                         query.$or = [
                                 { parent: { $exists: false } },
                                 { parent: null },
+                                { parent: "" },
                         ];
                 }
 
