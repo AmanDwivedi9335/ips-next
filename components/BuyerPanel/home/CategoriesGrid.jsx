@@ -7,31 +7,50 @@ import { motion } from "framer-motion";
 
 export default function CategoriesGrid() {
         const [categories, setCategories] = useState([]);
+        const [isLoading, setIsLoading] = useState(true);
         const router = useRouter();
 
         useEffect(() => {
+                let isMounted = true;
+
                 const fetchCategories = async () => {
+                        if (!isMounted) {
+                                return;
+                        }
+
+                        setIsLoading(true);
                         try {
                                 const res = await fetch(
-                                        "/api/admin/categories?published=true&limit=9"
+                                        "/api/categories?limit=9&topLevelOnly=true"
                                 );
                                 const data = await res.json();
-                                if (data.success) {
-                                        const topLevel = data.categories.filter(
+                                if (data.success && isMounted) {
+                                        const topLevel = data.categories?.filter(
                                                 (cat) => !cat.parent
                                         );
-                                        setCategories(topLevel);
+                                        setCategories(topLevel || []);
                                 }
                         } catch (err) {
                                 console.error("Failed to load categories:", err);
+                        } finally {
+                                if (isMounted) {
+                                        setIsLoading(false);
+                                }
                         }
                 };
+
                 fetchCategories();
+
+                return () => {
+                        isMounted = false;
+                };
         }, []);
 
         const handleClick = (slug) => {
                 router.push(`/categories/${slug}`);
         };
+
+        const skeletonItems = Array.from({ length: 9 }, (_, index) => index);
 
         return (
                 <section className="relative py-16 sm:py-20">
@@ -57,17 +76,31 @@ export default function CategoriesGrid() {
                                 </motion.div>
 
                                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                                        {categories.map((cat, index) => (
-                                                <motion.button
-                                                        key={cat._id}
-                                                        type="button"
-                                                        onClick={() => handleClick(cat.slug)}
-                                                        initial={{ opacity: 0, y: 30 }}
-                                                        whileInView={{ opacity: 1, y: 0 }}
-                                                        viewport={{ once: true }}
-                                                        transition={{ delay: index * 0.05 }}
-                                                        whileHover={{ y: -4 }}
-                                                        className="group relative flex h-full w-full flex-col overflow-hidden rounded-3xl border border-white/70 bg-white/80 p-4 text-left shadow-[0_20px_45px_-25px_rgba(15,23,42,0.35)] backdrop-blur"
+                                        {isLoading &&
+                                                skeletonItems.map((item) => (
+                                                        <div
+                                                                key={item}
+                                                                className="flex h-full w-full flex-col overflow-hidden rounded-3xl border border-white/70 bg-white/80 p-4 shadow-[0_20px_45px_-25px_rgba(15,23,42,0.35)] backdrop-blur"
+                                                        >
+                                                                <div className="aspect-square w-full animate-pulse rounded-2xl bg-slate-200" />
+                                                                <div className="mt-5 space-y-3">
+                                                                        <div className="h-5 w-2/3 animate-pulse rounded-full bg-slate-200" />
+                                                                        <div className="h-4 w-full animate-pulse rounded-full bg-slate-100" />
+                                                                </div>
+                                                        </div>
+                                                ))}
+                                        {!isLoading &&
+                                                categories.map((cat, index) => (
+                                                        <motion.button
+                                                                key={cat._id}
+                                                                type="button"
+                                                                onClick={() => handleClick(cat.slug)}
+                                                                initial={{ opacity: 0, y: 30 }}
+                                                                whileInView={{ opacity: 1, y: 0 }}
+                                                                viewport={{ once: true }}
+                                                                transition={{ delay: index * 0.05 }}
+                                                                whileHover={{ y: -4 }}
+                                                                className="group relative flex h-full w-full flex-col overflow-hidden rounded-3xl border border-white/70 bg-white/80 p-4 text-left shadow-[0_20px_45px_-25px_rgba(15,23,42,0.35)] backdrop-blur"
                                                 >
                                                         <div className="relative overflow-hidden rounded-2xl">
                                                                 <div className="absolute inset-0 bg-gradient-to-br from-black/0 via-black/40 to-black/70 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
@@ -129,8 +162,8 @@ export default function CategoriesGrid() {
                                                                         </svg>
                                                                 </div>
                                                         </div>
-                                                </motion.button>
-                                        ))}
+                                                        </motion.button>
+                                                ))}
                                 </div>
                         </div>
                 </section>

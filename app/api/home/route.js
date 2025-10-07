@@ -8,41 +8,12 @@ export async function GET(request) {
 
 	try {
 		// Get discounted products for showcase section
-                const discountedProducts = await Product.find({
-                        published: true,
-                        $or: [{ discount: { $gt: 0 } }],
-                })
-                        .limit(6)
-                        .lean();
-
-		// Get top selling products
-		const topSellingProducts = await Product.find({
-			published: true,
-			type: "top-selling",
-		})
-			.limit(6)
-			.lean();
-
-		// Get best selling product (single product)
-		const bestSellingProduct = await Product.findOne({
-			published: true,
-			type: "best-selling",
-		}).lean();
-
-		// Get featured products
-		const featuredProducts = await Product.find({
-			published: true,
-			type: "featured",
-		})
-			.limit(3)
-			.lean();
-
-		// Get all products for category section (with pagination)
-		const { searchParams } = new URL(request.url);
-		const category = searchParams.get("category") || "all";
-		const search = searchParams.get("search") || "";
-		const page = Number.parseInt(searchParams.get("page") || "1");
-		const limit = Number.parseInt(searchParams.get("limit") || "12");
+                // Build pagination helpers
+                const { searchParams } = new URL(request.url);
+                const category = searchParams.get("category") || "all";
+                const search = searchParams.get("search") || "";
+                const page = Number.parseInt(searchParams.get("page") || "1");
+                const limit = Number.parseInt(searchParams.get("limit") || "12");
 
 		// Build query for category section
 		const categoryQuery = { published: true };
@@ -51,24 +22,67 @@ export async function GET(request) {
 			categoryQuery.category = category;
 		}
 
-		if (search) {
-			categoryQuery.$or = [
-				{ title: { $regex: search, $options: "i" } },
-				{ description: { $regex: search, $options: "i" } },
-				{ category: { $regex: search, $options: "i" } },
-			];
-		}
+                if (search) {
+                        categoryQuery.$or = [
+                                { title: { $regex: search, $options: "i" } },
+                                { description: { $regex: search, $options: "i" } },
+                                { category: { $regex: search, $options: "i" } },
+                        ];
+                }
 
-		const skip = (page - 1) * limit;
-                const categoryProducts = await Product.find(categoryQuery)
+                const skip = (page - 1) * limit;
+                const discountedProductsPromise = Product.find({
+                        published: true,
+                        $or: [{ discount: { $gt: 0 } }],
+                })
+                        .limit(6)
+                        .lean();
+
+                const topSellingProductsPromise = Product.find({
+                        published: true,
+                        type: "top-selling",
+                })
+                        .limit(6)
+                        .lean();
+
+                const bestSellingProductPromise = Product.findOne({
+                        published: true,
+                        type: "best-selling",
+                }).lean();
+
+                const featuredProductsPromise = Product.find({
+                        published: true,
+                        type: "featured",
+                })
+                        .limit(3)
+                        .lean();
+
+                const categoryProductsPromise = Product.find(categoryQuery)
                         .skip(skip)
                         .limit(limit)
                         .lean();
 
-		const totalCategoryProducts = await Product.countDocuments(categoryQuery);
+                const totalCategoryProductsPromise = Product.countDocuments(categoryQuery);
 
-		// Get available categories
-                const categories = await Product.distinct("category", { published: true });
+                const categoriesPromise = Product.distinct("category", { published: true });
+
+                const [
+                        discountedProducts,
+                        topSellingProducts,
+                        bestSellingProductDoc,
+                        featuredProducts,
+                        categoryProducts,
+                        totalCategoryProducts,
+                        categories,
+                ] = await Promise.all([
+                        discountedProductsPromise,
+                        topSellingProductsPromise,
+                        bestSellingProductPromise,
+                        featuredProductsPromise,
+                        categoryProductsPromise,
+                        totalCategoryProductsPromise,
+                        categoriesPromise,
+                ]);
 
                 const allProducts = [
                         ...discountedProducts,
@@ -77,8 +91,8 @@ export async function GET(request) {
                         ...categoryProducts,
                 ];
 
-                if (bestSellingProduct) {
-                        allProducts.push(bestSellingProduct);
+                if (bestSellingProductDoc) {
+                        allProducts.push(bestSellingProductDoc);
                 }
 
                 const priceQueryIds = Array.from(
@@ -160,14 +174,16 @@ export async function GET(request) {
                         };
                 };
 
-		return Response.json({
-			success: true,
-			data: {
-				discountedProducts: discountedProducts.map(transformProduct),
-				topSellingProducts: topSellingProducts.map(transformProduct),
-				bestSellingProduct: bestSellingProduct
-					? transformProduct(bestSellingProduct)
-					: null,
+                const bestSellingProduct = bestSellingProductDoc
+                        ? transformProduct(bestSellingProductDoc)
+                        : null;
+
+                return Response.json({
+                        success: true,
+                        data: {
+                                discountedProducts: discountedProducts.map(transformProduct),
+                                topSellingProducts: topSellingProducts.map(transformProduct),
+                                bestSellingProduct,
 				featuredProducts: featuredProducts.map(transformProduct),
 				categoryProducts: categoryProducts.map(transformProduct),
 				categories: ["All", ...categories],
