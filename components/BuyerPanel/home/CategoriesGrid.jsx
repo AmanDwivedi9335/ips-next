@@ -7,17 +7,20 @@ import { motion } from "framer-motion";
 
 export default function CategoriesGrid() {
         const [categories, setCategories] = useState([]);
+        const [isLoading, setIsLoading] = useState(true);
         const prefetchedSlugs = useRef(new Set());
         const router = useRouter();
 
         useEffect(() => {
+                let isMounted = true;
+
                 const fetchCategories = async () => {
                         try {
                                 const res = await fetch(
-                                        "/api/admin/categories?published=true&limit=9"
+                                        "/api/admin/categories?published=true&limit=12"
                                 );
                                 const data = await res.json();
-                                if (data.success) {
+                                if (isMounted && data.success) {
                                         const topLevel = data.categories.filter(
                                                 (cat) => !cat.parent
                                         );
@@ -25,9 +28,18 @@ export default function CategoriesGrid() {
                                 }
                         } catch (err) {
                                 console.error("Failed to load categories:", err);
+                        } finally {
+                                if (isMounted) {
+                                        setIsLoading(false);
+                                }
                         }
                 };
+
                 fetchCategories();
+
+                return () => {
+                        isMounted = false;
+                };
         }, []);
 
         useEffect(() => {
@@ -72,10 +84,33 @@ export default function CategoriesGrid() {
                                         </p>
                                 </motion.div>
 
-                                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                                        {categories.map((cat, index) => (
-                                                <motion.button
-                                                        key={cat._id}
+                                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                                        {isLoading &&
+                                                Array.from({ length: 8 }).map((_, index) => (
+                                                        <div
+                                                                key={`category-skeleton-${index}`}
+                                                                className="flex h-full w-full flex-col rounded-3xl border border-white/70 bg-white/80 p-4 shadow-[0_20px_45px_-25px_rgba(15,23,42,0.35)] backdrop-blur"
+                                                        >
+                                                                <div className="relative w-full overflow-hidden rounded-2xl">
+                                                                        <div className="aspect-square w-full animate-pulse rounded-2xl bg-slate-200" />
+                                                                        <div className="absolute inset-x-5 bottom-5 flex items-center justify-between rounded-full bg-white/60 px-4 py-2">
+                                                                                <span className="h-3 w-20 animate-pulse rounded-full bg-slate-200" />
+                                                                                <span className="h-3 w-12 animate-pulse rounded-full bg-slate-200" />
+                                                                        </div>
+                                                                </div>
+                                                                <div className="mt-5 flex items-start justify-between gap-3">
+                                                                        <div className="flex-1 space-y-2">
+                                                                                <div className="h-4 w-32 animate-pulse rounded-full bg-slate-200" />
+                                                                                <div className="h-3 w-40 animate-pulse rounded-full bg-slate-200" />
+                                                                        </div>
+                                                                        <div className="h-10 w-10 animate-pulse rounded-full bg-slate-200" />
+                                                                </div>
+                                                        </div>
+                                                ))}
+                                        {!isLoading &&
+                                                categories.map((cat, index) => (
+                                                        <motion.button
+                                                                key={cat._id}
                                                         type="button"
                                                         onClick={() => handleClick(cat.slug)}
                                                         initial={{ opacity: 0, y: 30 }}
@@ -147,6 +182,11 @@ export default function CategoriesGrid() {
                                                         </div>
                                                 </motion.button>
                                         ))}
+                                        {!isLoading && categories.length === 0 && (
+                                                <div className="col-span-full text-center text-slate-500">
+                                                        No categories available at the moment.
+                                                </div>
+                                        )}
                                 </div>
                         </div>
                 </section>
