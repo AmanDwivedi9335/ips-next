@@ -34,26 +34,42 @@ export default function CategoriesGrid() {
         };
 
         return (
-                <section className="py-8 md:py-16 bg-white">
-                        <div className="px-10">
+                <section className="relative isolate py-16">
+                        <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top,_rgba(125,211,252,0.15),_transparent_60%)]" />
+                        <div className="absolute inset-0 -z-10 bg-[linear-gradient(135deg,rgba(76,29,149,0.15),rgba(14,116,144,0.1))]" />
+
+                        <div className="mx-auto flex max-w-7xl flex-col gap-10 px-4 sm:px-6">
                                 <motion.div
-                                        initial={{ opacity: 0, y: 20 }}
+                                        initial={{ opacity: 0, y: 24 }}
                                         whileInView={{ opacity: 1, y: 0 }}
-                                        viewport={{ once: true }}
-                                        className="text-center mb-8 md:mb-12"
+                                        viewport={{ once: true, amount: 0.4 }}
+                                        transition={{ duration: 0.7, ease: "easeOut" }}
+                                        className="mx-auto max-w-3xl text-center"
                                 >
-                                        {/* <p className="text-yellow-500 text-sm font-medium mb-2">Category</p> */}
-                                        <h2 className="text-2xl md:text-3xl font-bold">Browse Categories</h2>
+                                        <span className="inline-flex items-center rounded-full border border-white/10 bg-white/10 px-4 py-1 text-xs font-semibold uppercase tracking-[0.4em] text-sky-200/80 backdrop-blur">
+                                                Explore
+                                        </span>
+                                        <h2 className="mt-4 text-3xl font-semibold tracking-tight text-white sm:text-4xl">
+                                                Browse Categories
+                                        </h2>
+                                        <p className="mt-3 text-base text-slate-300/80">
+                                                Shop by the themes your team trusts. Discover curated ranges from safety prints to immersive training collaterals in a single glance.
+                                        </p>
                                 </motion.div>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
-                                        {categories.map((cat) => (
-                                                <motion.div
+
+                                <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                                        {categories.map((cat, index) => (
+                                                <motion.button
                                                         key={cat._id}
-                                                        whileHover={{ scale: 1.03 }}
-                                                        className="cursor-pointer"
+                                                        type="button"
                                                         onClick={() => handleClick(cat.slug)}
+                                                        className="group relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-0 text-left backdrop-blur-xl transition-all duration-500 hover:border-sky-300/60 hover:shadow-[0_20px_60px_rgba(56,189,248,0.25)]"
+                                                        initial={{ opacity: 0, y: 32 }}
+                                                        whileInView={{ opacity: 1, y: 0 }}
+                                                        viewport={{ once: true, amount: 0.3 }}
+                                                        transition={{ delay: index * 0.05, duration: 0.6 }}
                                                 >
-                                                        <div className="relative aspect-square rounded-lg overflow-hidden shadow group">
+                                                        <div className="relative aspect-[4/5] w-full overflow-hidden">
                                                                 <Image
                                                                         src={
                                                                                 cat.icon ||
@@ -61,17 +77,29 @@ export default function CategoriesGrid() {
                                                                         }
                                                                         alt={cat.name}
                                                                         fill
-                                                                        className="object-cover transition-transform duration-300 group-hover:scale-105"
+                                                                        className="object-cover brightness-[0.85] transition-transform duration-700 group-hover:scale-110"
                                                                 />
-                                                                <div className="absolute inset-0 bg-[#301b70]/90 flex flex-col items-center justify-center text-white opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                                                                        <p className="text-lg font-semibold mb-2">{cat.name}</p>
-                                                                        <span className="px-4 py-2 bg-white text-black rounded text-sm">Shop Now</span>
-                                                                </div>
-                                                                <div className="absolute inset-x-0 bottom-0 bg-white/90 text-center py-2 text-sm font-medium group-hover:opacity-0 transition-opacity duration-300">
-                                                                        {cat.name}
+                                                                <div className="absolute inset-0 bg-gradient-to-b from-slate-900/10 via-slate-900/60 to-slate-950/90" />
+                                                                <div className="absolute inset-x-0 bottom-0 flex flex-col gap-3 p-6">
+                                                                        <span className="inline-flex w-max items-center rounded-full bg-white/10 px-4 py-1 text-xs font-medium uppercase tracking-[0.3em] text-sky-100/90 backdrop-blur">
+                                                                                {cat.name}
+                                                                        </span>
+                                                                        <p className="text-lg font-semibold text-white">
+                                                                                {cat.name}
+                                                                        </p>
+                                                                        <div className="flex items-center justify-between text-sm text-slate-200/80">
+                                                                                <span>Experience the range</span>
+                                                                                <span className="font-semibold text-sky-300 transition-transform duration-500 group-hover:translate-x-1">
+                                                                                        Shop Now →
+                                                                                </span>
+                                                                        </div>
                                                                 </div>
                                                         </div>
-                                                </motion.div>
+                                                        <div className="pointer-events-none absolute inset-0 opacity-0 mix-blend-screen transition-opacity duration-700 group-hover:opacity-100">
+                                                                <div className="absolute -left-10 top-0 h-56 w-56 rounded-full bg-sky-300/40 blur-3xl" />
+                                                                <div className="absolute -right-6 bottom-0 h-44 w-44 rounded-full bg-violet-500/30 blur-3xl" />
+                                                        </div>
+                                                </motion.button>
                                         ))}
                                 </div>
                         </div>

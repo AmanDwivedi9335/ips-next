@@ -11,10 +11,8 @@ export default function FeaturedSection({
         bestSellingProduct = null,
         featuredProducts = [],
 }) {
-
         const hasTopSelling = topSellingProducts?.length > 0;
         const hasFeatured = featuredProducts?.length > 0;
-
 
         if (!hasTopSelling && !bestSellingProduct && !hasFeatured) {
                 return null;
@@ -25,54 +23,75 @@ export default function FeaturedSection({
                 : [];
 
         return (
-                <section className="py-8 md:py-16 bg-gray-50">
-                        {hasTopSelling && (
-                                <div className="px-10">
-                                        {/* Top Selling Products */}
+                <section className="relative isolate">
+                        <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_center,_rgba(15,118,110,0.18),_transparent_65%)]" />
+
+                        <div className="mx-auto flex max-w-7xl flex-col gap-16 px-4 sm:px-6">
+                                {hasTopSelling && (
                                         <motion.div
-                                                initial={{ opacity: 0, y: 20 }}
+                                                initial={{ opacity: 0, y: 32 }}
                                                 whileInView={{ opacity: 1, y: 0 }}
-                                                viewport={{ once: true }}
-                                                className="mb-12 md:mb-16"
+                                                viewport={{ once: true, amount: 0.4 }}
+                                                transition={{ duration: 0.7 }}
+                                                className="space-y-8"
                                         >
-                                                <h2 className="text-2xl md:text-3xl font-bold mb-6 md:mb-8">
-                                                        Top Selling Products
-                                                </h2>
-                                                <ProductCarousel
-                                                        products={topSellingProducts}
-                                                        showDots={true}
-                                                />
+                                                <div className="flex flex-col gap-3">
+                                                        <span className="inline-flex w-max items-center rounded-full border border-white/10 bg-white/10 px-4 py-1 text-xs font-semibold uppercase tracking-[0.4em] text-emerald-100/80 backdrop-blur">
+                                                                Momentum
+                                                        </span>
+                                                        <h2 className="text-3xl font-semibold text-white sm:text-4xl">
+                                                                Top Selling Products
+                                                        </h2>
+                                                        <p className="max-w-2xl text-base text-slate-200/80">
+                                                                A snapshot of the most ordered IPS products across the nation this week.
+                                                        </p>
+                                                </div>
+                                                <div className="rounded-[32px] border border-white/10 bg-white/5 p-6 backdrop-blur-xl">
+                                                        <ProductCarousel products={topSellingProducts} showDots={true} />
+                                                </div>
                                         </motion.div>
-                                </div>
-                        )}
+                                )}
 
-                        {bestSellingProduct && (
-                                <div className="px-10">
-                                        {/* Best Selling Product */}
-                                        <FeaturedProduct product={bestSellingProduct} />
-                                </div>
-                        )}
-
-                        {hasFeatured && (
-                                <div className="px-10">
-                                        {/* Featured Products Grid */}
+                                {bestSellingProduct && (
                                         <motion.div
-                                                initial={{ opacity: 0, y: 20 }}
+                                                initial={{ opacity: 0, y: 32 }}
                                                 whileInView={{ opacity: 1, y: 0 }}
-                                                viewport={{ once: true }}
-                                                className="mb-12 md:mb-16"
+                                                viewport={{ once: true, amount: 0.4 }}
+                                                transition={{ duration: 0.7, delay: 0.1 }}
+                                                className="rounded-[32px] border border-white/10 bg-white/5 p-6 backdrop-blur-xl"
                                         >
-                                                <h2 className="text-2xl md:text-3xl font-bold mb-6 md:mb-8">
-                                                        Featured Products
-                                                </h2>
+                                                <FeaturedProduct product={bestSellingProduct} />
+                                        </motion.div>
+                                )}
 
-                                                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                                {hasFeatured && (
+                                        <motion.div
+                                                initial={{ opacity: 0, y: 32 }}
+                                                whileInView={{ opacity: 1, y: 0 }}
+                                                viewport={{ once: true, amount: 0.4 }}
+                                                transition={{ duration: 0.7, delay: 0.1 }}
+                                                className="space-y-8"
+                                        >
+                                                <div className="flex flex-col gap-3">
+                                                        <span className="inline-flex w-max items-center rounded-full border border-white/10 bg-white/10 px-4 py-1 text-xs font-semibold uppercase tracking-[0.4em] text-violet-100/80 backdrop-blur">
+                                                                Spotlight
+                                                        </span>
+                                                        <h2 className="text-3xl font-semibold text-white sm:text-4xl">
+                                                                Featured Products
+                                                        </h2>
+                                                        <p className="max-w-2xl text-base text-slate-200/75">
+                                                                Curated picks from our creative studio – high-impact visuals, premium finishes and custom branding possibilities.
+                                                        </p>
+                                                </div>
+
+                                                <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
                                                         {firstFeatured && (
                                                                 <motion.div
-                                                                        initial={{ opacity: 0, y: 30 }}
+                                                                        initial={{ opacity: 0, y: 36 }}
                                                                         whileInView={{ opacity: 1, y: 0 }}
-                                                                        viewport={{ once: true }}
-                                                                        className="w-full col-span-1"
+                                                                        viewport={{ once: true, amount: 0.3 }}
+                                                                        transition={{ duration: 0.6 }}
+                                                                        className="col-span-1 rounded-[28px] border border-white/10 bg-white/5 p-4 backdrop-blur-xl"
                                                                 >
                                                                         <ProductCardVarient
                                                                                 product={firstFeatured}
@@ -86,10 +105,11 @@ export default function FeaturedSection({
                                                                         {otherFeatured.map((product, index) => (
                                                                                 <motion.div
                                                                                         key={product.id}
-                                                                                        initial={{ opacity: 0, y: 30 }}
+                                                                                        initial={{ opacity: 0, y: 36 }}
                                                                                         whileInView={{ opacity: 1, y: 0 }}
-                                                                                        viewport={{ once: true }}
-                                                                                        transition={{ delay: index * 0.1 }}
+                                                                                        viewport={{ once: true, amount: 0.3 }}
+                                                                                        transition={{ duration: 0.6, delay: index * 0.1 }}
+                                                                                        className="rounded-[24px] border border-white/10 bg-white/5 p-4 backdrop-blur-xl"
                                                                                 >
                                                                                         <ProductCardVarient
                                                                                                 product={product}
@@ -101,12 +121,17 @@ export default function FeaturedSection({
                                                         )}
                                                 </div>
                                         </motion.div>
-                                </div>
-                        )}
+                                )}
 
-                        <div className="px-10">
-                                {/* Service Guarantees */}
-                                <ServiceGuarantees />
+                                <motion.div
+                                        initial={{ opacity: 0, y: 32 }}
+                                        whileInView={{ opacity: 1, y: 0 }}
+                                        viewport={{ once: true, amount: 0.4 }}
+                                        transition={{ duration: 0.7, delay: 0.2 }}
+                                        className="rounded-[32px] border border-white/10 bg-white/5 p-6 backdrop-blur-xl"
+                                >
+                                        <ServiceGuarantees />
+                                </motion.div>
                         </div>
                 </section>
         );
