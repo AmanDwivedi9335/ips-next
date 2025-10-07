@@ -56,15 +56,13 @@ export default function BannerCarousel() {
         }
 
         return (
-                <section className="relative w-full overflow-hidden">
-                        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(59,130,246,0.35),_transparent_55%)]" />
-                        <div className="absolute inset-0 bg-gradient-to-b from-slate-950/40 via-slate-950/20 to-slate-950/60" />
+                <section className="relative w-full overflow-hidden bg-[radial-gradient(circle_at_top,_#f8f7ff_0%,_#ffffff_55%)]">
 
                         <div
                                 className="relative mx-auto w-full px-4 pb-16 pt-10 sm:px-6 lg:px-10"
                                 ref={emblaRef}
                         >
-                                <div className="relative flex h-[360px] sm:h-[420px] lg:h-[520px] w-full overflow-hidden rounded-[36px] border border-white/10 bg-slate-900/20 shadow-[0_32px_120px_rgba(15,23,42,0.35)] backdrop-blur-xl">
+                                <div className="relative flex h-[360px] sm:h-[420px] lg:h-[520px] w-full overflow-hidden rounded-[36px] border border-white/60 bg-white/80 shadow-[0_32px_120px_rgba(148,163,184,0.25)] backdrop-blur-xl">
                                         {banners.map((banner) => {
                                                 const heading = banner?.title?.trim() || FALLBACK_CONTENT.heading;
                                                 const subheading =
@@ -82,27 +80,27 @@ export default function BannerCarousel() {
                                                                                 alt={heading}
                                                                                 className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                                                                         />
-                                                                        <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-slate-950/80 via-slate-950/40 to-slate-950/10" />
+                                                                        <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-white/90 via-white/60 to-white/10" />
 
-                                                                        <div className="absolute inset-y-0 left-0 flex h-full flex-col justify-center gap-4 px-6 sm:px-10 lg:px-16 text-white">
-                                                                                <span className="inline-flex items-center rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.24em] text-slate-200">
+                                                                        <div className="absolute inset-y-0 left-0 flex h-full flex-col justify-center gap-4 px-6 sm:px-10 lg:px-16 text-slate-900">
+                                                                                <span className="inline-flex items-center rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-semibold uppercase tracking-[0.24em] text-slate-500 shadow-sm">
                                                                                         Safety Spotlight
                                                                                 </span>
                                                                                 <h2 className="max-w-2xl text-2xl font-black leading-tight sm:text-3xl lg:text-5xl">
                                                                                         {heading}
                                                                                 </h2>
-                                                                                <p className="max-w-xl text-sm text-slate-200/90 sm:text-base lg:text-lg">
+                                                                                <p className="max-w-xl text-sm text-slate-600 sm:text-base lg:text-lg">
                                                                                         {subheading}
                                                                                 </p>
                                                                                 {banner.link ? (
                                                                                         <Button
                                                                                                 asChild
-                                                                                                className="w-full max-w-xs rounded-full bg-white/90 text-slate-900 transition-colors hover:bg-white"
+                                                                                                className="w-full max-w-xs rounded-full bg-slate-900 text-white shadow-sm transition-colors hover:bg-slate-700"
                                                                                         >
                                                                                                 <Link href={banner.link}>{cta}</Link>
                                                                                         </Button>
                                                                                 ) : (
-                                                                                        <span className="inline-flex w-full max-w-xs items-center justify-center rounded-full bg-white/20 px-5 py-3 text-sm font-semibold text-white">
+                                                                                        <span className="inline-flex w-full max-w-xs items-center justify-center rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 shadow-sm">
                                                                                                 {cta}
                                                                                         </span>
                                                                                 )}
@@ -113,13 +111,13 @@ export default function BannerCarousel() {
                                         })}
                                 </div>
 
-                                <div className="pointer-events-none absolute inset-x-16 -bottom-10 h-32 rounded-full bg-slate-950/60 blur-3xl" />
+                                <div className="pointer-events-none absolute inset-x-16 -bottom-10 h-32 rounded-full bg-white blur-3xl" />
 
                                 <div className="absolute inset-y-0 left-6 right-6 hidden items-center justify-between md:flex">
                                         <Button
                                                 variant="ghost"
                                                 size="icon"
-                                                className="rounded-full border border-white/20 bg-slate-900/50 text-white backdrop-blur"
+                                                className="rounded-full border border-slate-200 bg-white/80 text-slate-700 backdrop-blur"
                                                 onClick={scrollPrev}
                                         >
                                                 <ChevronLeft className="h-6 w-6" />
@@ -127,7 +125,7 @@ export default function BannerCarousel() {
                                         <Button
                                                 variant="ghost"
                                                 size="icon"
-                                                className="rounded-full border border-white/20 bg-slate-900/50 text-white backdrop-blur"
+                                                className="rounded-full border border-slate-200 bg-white/80 text-slate-700 backdrop-blur"
                                                 onClick={scrollNext}
                                         >
                                                 <ChevronRight className="h-6 w-6" />
@@ -142,8 +140,8 @@ export default function BannerCarousel() {
                                                         onClick={() => emblaApi?.scrollTo(index)}
                                                         className={`h-2.5 rounded-full transition-all ${
                                                                 selectedIndex === index
-                                                                        ? "w-8 bg-white"
-                                                                        : "w-2.5 bg-white/40 hover:bg-white/60"
+                                                                        ? "w-8 bg-slate-900"
+                                                                        : "w-2.5 bg-slate-300 hover:bg-slate-400"
                                                         }`}
                                                 >
                                                         <span className="sr-only">Go to slide {index + 1}</span>
