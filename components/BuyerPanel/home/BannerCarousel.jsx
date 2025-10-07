@@ -78,7 +78,7 @@ export default function BannerCarousel({ initialBanners = [] }) {
                 emblaApi?.scrollNext();
         }, [emblaApi]);
 
-        if (!banners.length) {
+        if (!bannersToRender.length) {
                 return null;
         }
 
