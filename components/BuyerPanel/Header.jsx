@@ -62,7 +62,7 @@ export default function Header({ onMenuToggle, isMenuOpen }) {
         };
 
         const categories = [
-                { name: "All Safety Posters", href: "/all-safety-posters" },
+                { name: "All Safety Posters", href: "/products?category=safety-posters" },
                 { name: "Industrial Safety Packs", href: "/industrial-safety-packs" },
                 { name: "Monthly Poster Subscriptions", href: "/monthly-poster-subscriptions" },
                 {

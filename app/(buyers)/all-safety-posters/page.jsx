@@ -42,7 +42,7 @@ export const metadata = {
 };
 
 const navigationOptions = [
-        { label: "All Safety Posters", href: "#posters" },
+        { label: "All Safety Posters", href: "/products?category=safety-posters" },
         { label: "Industrial Safety Packs", href: "/industrial-safety-packs" },
         { label: "Monthly Poster Subscriptions", href: "/monthly-poster-subscriptions" },
         {
@@ -270,7 +270,7 @@ export default function AllSafetyPostersPage() {
                                                         </div>
                                                         <div className="flex flex-wrap gap-4 pt-4">
                                                                 <Link
-                                                                        href="#posters"
+                                                                        href="/products?category=safety-posters"
                                                                         className={cn(
                                                                                 buttonVariants({ size: "lg" }),
                                                                                 "bg-yellow-500 text-black shadow-lg hover:bg-yellow-400"

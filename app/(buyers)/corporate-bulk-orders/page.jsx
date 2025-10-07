@@ -18,7 +18,7 @@ export const metadata = {
 };
 
 const navigationOptions = [
-        { label: "All Safety Posters", href: "/all-safety-posters" },
+        { label: "All Safety Posters", href: "/products?category=safety-posters" },
         { label: "Industrial Safety Packs", href: "/industrial-safety-packs" },
         { label: "Monthly Poster Subscriptions", href: "/monthly-poster-subscriptions" },
         { label: "Corporate Bulk/Custom Orders", href: "#programmes", highlight: true },
