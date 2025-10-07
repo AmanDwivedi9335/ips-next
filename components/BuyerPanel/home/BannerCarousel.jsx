@@ -74,6 +74,8 @@ export default function BannerCarousel({ initialBanners = [] }) {
                 emblaApi?.scrollPrev();
         }, [emblaApi]);
 
+        const bannersToRender = banners.length ? banners : initialBanners;
+
         const scrollNext = useCallback(() => {
                 emblaApi?.scrollNext();
         }, [emblaApi]);
@@ -90,7 +92,7 @@ export default function BannerCarousel({ initialBanners = [] }) {
                                 ref={emblaRef}
                         >
                                 <div className="relative flex h-[360px] sm:h-[420px] lg:h-[520px] w-full overflow-hidden rounded-[36px] border border-white/60 bg-white/80 shadow-[0_32px_120px_rgba(148,163,184,0.25)] backdrop-blur-xl">
-                                        {banners.map((banner, index) => {
+                                        {bannersToRender.map((banner, index) => {
                                                 const heading = banner?.title?.trim() || FALLBACK_CONTENT.heading;
                                                 const subheading =
                                                         banner?.description?.trim() || FALLBACK_CONTENT.subheading;
@@ -162,7 +164,7 @@ export default function BannerCarousel({ initialBanners = [] }) {
                                 </div>
 
                                 <div className="mt-6 flex items-center justify-center gap-2">
-                                        {banners.map((banner, index) => {
+                                        {bannersToRender.map((banner, index) => {
                                                 const bannerKey =
                                                         banner?._id || `${banner?.image || "banner"}-${index}`;
 
