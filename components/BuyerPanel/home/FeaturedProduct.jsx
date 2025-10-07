@@ -95,134 +95,97 @@ export default function FeaturedProduct({ product }) {
                 router.push(`/products/${product._id || product.id}`);
 	};
 
-	return (
-		<motion.div
-			initial={{ opacity: 0, y: 20 }}
-			whileInView={{ opacity: 1, y: 0 }}
-			viewport={{ once: true }}
-			className="mb-12 md:mb-16"
-		>
-			<h2 className="text-2xl md:text-3xl font-bold mb-6 md:mb-8">
-				Best Selling Products
-			</h2>
-			{/* <Card className="bg-white">
-				<CardContent className="p-6 md:p-8">
-					<div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 items-center">
-						<div className="relative order-2 lg:order-1">
-							<Badge className="absolute top-4 left-4 bg-black text-white z-10">
-								50% OFF
-							</Badge>
-							<Image
-								src={Product12.src}
-								alt="LADWA Traffic Cones"
-								width={400}
-								height={400}
-								className="w-full h-auto rounded max-h-[400px] object-contain"
-							/>
-						</div>
-						<div className="order-1 lg:order-2">
-							<h3 className="text-xl md:text-2xl lg:text-4xl font-bold mb-4">
-								LADWA 4 Pcs 750mm Impact Resistant Road Traffic Safety Cones
-								with Reflective Strips Collar
-							</h3>
+        return (
+                <motion.div
+                        initial={{ opacity: 0, y: 24 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        className="rounded-3xl border border-white/10 bg-white/5 p-8 shadow-[0_45px_90px_-45px_rgba(15,23,42,0.9)] backdrop-blur"
+                >
+                        <div className="mb-10 flex flex-wrap items-center justify-between gap-4">
+                                <div>
+                                        <span className="inline-flex items-center rounded-full bg-white/10 px-4 py-1 text-xs font-semibold uppercase tracking-[0.35em] text-indigo-100">
+                                                Bestseller
+                                        </span>
+                                        <h2 className="mt-4 text-3xl font-semibold text-white sm:text-4xl">
+                                                Best selling product this week
+                                        </h2>
+                                        <p className="mt-2 max-w-xl text-sm text-slate-200">
+                                                Crowd-favourite signage trusted by production leaders to keep teams aware and
+                                                aligned.
+                                        </p>
+                                </div>
+                                {discountPercentage > 0 && (
+                                        <Badge className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white">
+                                                Save {discountPercentage}%
+                                        </Badge>
+                                )}
+                        </div>
 
-							<p className="text-gray-600 mb-6 text-sm md:text-base lg:text-lg">
-								This LADWA 4 Pcs 750mm Impact Resistant Road Traffic Safety
-								Cones with Reflective Strips Collar are durable and highly
-								visible traffic management tools designed to enhance safety in
-								various environments.
-							</p>
-
-							<p className="text-2xl md:text-3xl font-bold mb-1">₹ 5,000</p>
-
-							<div className="flex items-center mb-6">
-								<span className="text-gray-500 line-through mr-2">₹ 8000</span>
-								<span className="text-green-500">25% off</span>
-							</div>
-
-							<div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
-								<Button className="bg-black text-white px-4 py-2 md:py-3 rounded-full w-full md:w-fit">
-									BUY NOW
-									<ArrowRight className="ml-2 h-4 w-4" />
-								</Button>
-								<Button className="bg-black text-white px-4 py-2 md:py-3 rounded-full w-full md:w-fit">
-									Add to Cart
-									<ShoppingCart className="ml-2 h-4 w-4" />
-								</Button>
-							</div>
-						</div>
-					</div>
-				</CardContent>
-			</Card> */}
-
-			<Card className="bg-white">
-				<CardContent className="p-6 md:p-8">
-					<div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 items-center">
-						<div
-							className="relative order-2 lg:order-1 cursor-pointer"
-							onClick={handleViewProduct}
-						>
-                                                        {discountPercentage > 0 && (
-                                                                <Badge className="absolute top-4 left-4 bg-black text-white z-10">
-                                                                        {discountPercentage}% OFF
-                                                                </Badge>
-                                                        )}
+                        <Card className="border border-white/10 bg-transparent text-white shadow-none">
+                                <CardContent className="p-0">
+                                        <div className="grid items-center gap-10 lg:grid-cols-2">
+                                                <div
+                                                        className="relative order-2 cursor-pointer rounded-3xl bg-white/5 p-6 backdrop-blur lg:order-1"
+                                                        onClick={handleViewProduct}
+                                                >
+                                                        <div className="absolute inset-0 rounded-3xl border border-white/10" />
                                                         <Image
                                                                 src={defaultImage}
                                                                 alt={product.name}
-                                                                width={400}
-                                                                height={400}
-                                                                className="w-full h-auto rounded max-h-[400px] object-contain"
+                                                                width={520}
+                                                                height={520}
+                                                                className="relative z-10 w-full max-h-[420px] rounded-2xl object-contain"
                                                         />
-						</div>
-						<div className="order-1 lg:order-2">
-							<h3
-								className="text-xl md:text-2xl lg:text-4xl font-bold mb-4 cursor-pointer hover:text-blue-600"
-								onClick={handleViewProduct}
-							>
-								{product.title}
-							</h3>
+                                                </div>
+                                                <div className="order-1 space-y-6 text-white lg:order-2">
+                                                        <div>
+                                                                <h3
+                                                                        className="text-2xl font-semibold sm:text-3xl lg:text-4xl"
+                                                                        onClick={handleViewProduct}
+                                                                >
+                                                                        {product.title}
+                                                                </h3>
+                                                                <p className="mt-3 text-sm leading-relaxed text-indigo-100/80 sm:text-base">
+                                                                        {product.longDescription || product.description}
+                                                                </p>
+                                                        </div>
 
-							<p className="text-gray-600 mb-6 text-sm md:text-base lg:text-lg">
-								{product.longDescription || product.description}
-							</p>
+                                                        <div className="space-y-2 text-white">
+                                                                <p className="text-3xl font-semibold sm:text-4xl">
+                                                                        {salePriceLabel}
+                                                                </p>
+                                                                {showMrpLabel && (
+                                                                        <p className="text-sm text-indigo-100/70">
+                                                                                <span className="mr-2 line-through">{mrpLabel}</span>
+                                                                                <span className="text-emerald-300">
+                                                                                        Save {discountPercentage}% today
+                                                                                </span>
+                                                                        </p>
+                                                                )}
+                                                        </div>
 
-                                                        <p className="text-2xl md:text-3xl font-bold mb-1">
-                                                                {salePriceLabel}
-                                                        </p>
-
-                                                        {showMrpLabel && (
-                                                                <div className="flex items-center mb-6">
-                                                                        <span className="text-gray-500 line-through mr-2">
-                                                                                {mrpLabel}
-                                                                        </span>
-                                                                        <span className="text-green-500">
-                                                                                {discountPercentage}% off
-                                                                        </span>
-                                                                </div>
-                                                        )}
-
-							<div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4 mt-4">
+                                                        <div className="flex flex-col gap-3 sm:flex-row">
                                                                 <Button
                                                                         onClick={handleBuyNow}
-                                                                        className="bg-black text-white px-4 py-2 md:py-3 rounded-full w-full md:w-fit"
+                                                                        className="h-12 rounded-full bg-white px-6 text-sm font-semibold text-slate-900 shadow-lg transition hover:bg-slate-100 sm:w-auto"
                                                                 >
-									BUY NOW
-									<ArrowRight className="ml-2 h-4 w-4" />
-								</Button>
+                                                                        Buy now
+                                                                        <ArrowRight className="ml-2 h-4 w-4" />
+                                                                </Button>
                                                                 <Button
                                                                         onClick={handleAddToCart}
                                                                         disabled={isLoading}
-                                                                        className="bg-black text-white px-4 py-2 md:py-3 rounded-full w-full md:w-fit"
+                                                                        className="h-12 rounded-full bg-[#301b70] px-6 text-sm font-semibold text-white shadow-lg transition hover:bg-[#2a1660] sm:w-auto"
                                                                 >
-                                                                        Add to Cart
+                                                                        Add to cart
                                                                         <ShoppingCart className="ml-2 h-4 w-4" />
                                                                 </Button>
-							</div>
-						</div>
-					</div>
-				</CardContent>
-			</Card>
-		</motion.div>
-	);
+                                                        </div>
+                                                </div>
+                                        </div>
+                                </CardContent>
+                        </Card>
+                </motion.div>
+        );
 }
