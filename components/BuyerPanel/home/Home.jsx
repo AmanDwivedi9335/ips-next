@@ -10,7 +10,7 @@ import SupportSection from "@/components/BuyerPanel/home/SupportSection.jsx";
 import FeaturedSection from "@/components/BuyerPanel/home/FeaturedSection.jsx";
 import SearchSection from "@/components/BuyerPanel/home/SearchSection.jsx";
 
-export default function HomePage() {
+export default function HomePage({ initialBanners = [] }) {
         const [searchQuery, setSearchQuery] = useState("");
         const [selectedCategory, setSelectedCategory] = useState("All");
         const [currentPage, setCurrentPage] = useState(1);
@@ -71,7 +71,7 @@ export default function HomePage() {
                         <div className="relative z-10 flex flex-col gap-20 pb-20">
                                 <div className="relative">
                                         <div className="absolute inset-0 bg-gradient-to-b from-slate-900/0 via-slate-900/60 to-slate-950" />
-                                        <BannerCarousel />
+                                        <BannerCarousel initialBanners={initialBanners} />
                                 </div>
 
                                 <div className="px-6 lg:px-10">
