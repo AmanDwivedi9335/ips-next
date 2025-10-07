@@ -25,13 +25,15 @@ export default function BannerCarousel({ initialBanners = [] }) {
         );
 
         const hasInitialBanners = initialBanners?.length > 0;
-        const bannersToRender = banners.length ? banners : initialBanners;
+
+        useEffect(() => {
+                if (!hasInitialBanners && !banners.length) {
+                        fetchBanners();
+                }
+        }, [banners.length, fetchBanners, hasInitialBanners]);
 
         useEffect(() => {
                 if (!hasInitialBanners) {
-                        if (!banners.length) {
-                                fetchBanners();
-                        }
                         return;
                 }
 
@@ -51,13 +53,7 @@ export default function BannerCarousel({ initialBanners = [] }) {
                 if (!bannersMatchInitial) {
                         setBanners(initialBanners);
                 }
-        }, [banners, fetchBanners, hasInitialBanners, initialBanners, setBanners]);
-
-        useEffect(() => {
-                if (!emblaApi) return;
-
-                emblaApi.reInit();
-        }, [emblaApi, bannersToRender.length]);
+        }, [banners, hasInitialBanners, initialBanners, setBanners]);
 
         useEffect(() => {
                 if (!emblaApi) return;
@@ -94,7 +90,7 @@ export default function BannerCarousel({ initialBanners = [] }) {
                                 ref={emblaRef}
                         >
                                 <div className="relative flex h-[360px] sm:h-[420px] lg:h-[520px] w-full overflow-hidden rounded-[36px] border border-white/60 bg-white/80 shadow-[0_32px_120px_rgba(148,163,184,0.25)] backdrop-blur-xl">
-                                        {bannersToRender.map((banner, index) => {
+                                        {banners.map((banner, index) => {
                                                 const heading = banner?.title?.trim() || FALLBACK_CONTENT.heading;
                                                 const subheading =
                                                         banner?.description?.trim() || FALLBACK_CONTENT.subheading;
@@ -166,7 +162,7 @@ export default function BannerCarousel({ initialBanners = [] }) {
                                 </div>
 
                                 <div className="mt-6 flex items-center justify-center gap-2">
-                                        {bannersToRender.map((banner, index) => {
+                                        {banners.map((banner, index) => {
                                                 const bannerKey =
                                                         banner?._id || `${banner?.image || "banner"}-${index}`;
 
