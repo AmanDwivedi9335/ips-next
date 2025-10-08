@@ -267,7 +267,7 @@ export default function ProductCard({ product, viewMode = "grid" }) {
                 <motion.div
                         whileHover={{ y: -5 }}
                         transition={{ duration: 0.2 }}
-                        className="h-full"
+                        className="flex flex-col"
                 >
                         <Card
                                 onClick={handleViewProduct}
@@ -275,14 +275,14 @@ export default function ProductCard({ product, viewMode = "grid" }) {
                         >
                                 <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(59,130,246,0.08),transparent_55%)] opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
                                 <CardContent className="relative flex h-full flex-col p-0">
-                                        <div className="relative aspect-[4/5] w-full overflow-hidden rounded-b-[2.75rem] bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-                                                <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(56,189,248,0.35),transparent_60%)]" />
+                                        <div className="relative w-full overflow-hidden rounded-b-[2.75rem] bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 aspect-[4/5] sm:aspect-[3/4]">
+                                                <div className="absolute inset-0" />
                                                 <div className="absolute inset-0">
                                                         <Image
                                                                 src={defaultImage}
                                                                 alt={productTitle}
                                                                 fill
-                                                                className="object-contain p-6 transition-transform duration-700 ease-out group-hover:scale-110"
+                                                                className="object-contain transition-transform duration-700 ease-out group-hover:scale-110"
                                                                 onClick={handleViewProduct}
                                                         />
                                                 </div>
@@ -302,7 +302,7 @@ export default function ProductCard({ product, viewMode = "grid" }) {
                                                 <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
 
                                                 <div className="pointer-events-none absolute bottom-6 left-6 flex translate-y-3 items-center gap-3 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
-                                                        <Button
+                                                        {/* <Button
                                                                 variant="secondary"
                                                                 size="icon"
                                                                 className="rounded-full border border-white/40 bg-white/80 text-slate-900 shadow-lg backdrop-blur transition hover:bg-white"
@@ -312,7 +312,7 @@ export default function ProductCard({ product, viewMode = "grid" }) {
                                                                 }}
                                                         >
                                                                 <Eye className="h-4 w-4" />
-                                                        </Button>
+                                                        </Button> */}
                                                         <Button
                                                                 variant="secondary"
                                                                 size="icon"
@@ -324,7 +324,7 @@ export default function ProductCard({ product, viewMode = "grid" }) {
                                                 </div>
                                         </div>
 
-                                        <div className="flex h-full flex-col gap-6 px-7 pb-7 pt-10">
+                                        <div className="flex h-full flex-col gap-6 px-4 pt-5 pb-5">
                                                 <div className="space-y-3" onClick={handleViewProduct}>
                                                         <div className="inline-flex items-center gap-2">
                                                                 <Badge className="rounded-full bg-slate-900/5 px-3 py-1 text-[11px] font-semibold tracking-[0.2em] text-slate-500">
@@ -334,35 +334,35 @@ export default function ProductCard({ product, viewMode = "grid" }) {
                                                         <h3 className="text-xl font-semibold leading-snug text-slate-900 transition-colors line-clamp-2 group-hover:text-slate-700">
                                                                 {productTitle}
                                                         </h3>
-                                                        {shortDescription && (
+                                                        {/* {shortDescription && (
                                                                 <p className="text-sm text-slate-500 line-clamp-2">
                                                                         {shortDescription}
                                                                 </p>
-                                                        )}
+                                                        )} */}
                                                 </div>
 
                                                 <div className="space-y-4">
                                                         <div className="flex items-baseline gap-3">
-                                                                <p className="text-3xl font-semibold text-slate-900">
+                                                                <p className="text-xl font-semibold text-slate-900">
                                                                         {salePriceLabel}
                                                                 </p>
-                                                                {formattedOriginalPrice && (
+                                                                {/* {formattedOriginalPrice && (
                                                                         <span className="text-sm text-slate-400 line-through">
                                                                                 {formattedOriginalPrice}
                                                                         </span>
-                                                                )}
+                                                                )} */}
                                                         </div>
 
-                                                        {discountPercentage > 0 && (
+                                                        {/* {discountPercentage > 0 && (
                                                                 <div className="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-600">
                                                                         <ArrowDownRight className="h-3 w-3" />
                                                                         Save {discountPercentage}% today
                                                                 </div>
-                                                        )}
+                                                        )} */}
                                                 </div>
 
-                                                <div className="mt-auto flex flex-col gap-3">
-                                                        <div className="flex items-center gap-2">
+                                                <div className="flex flex-col gap-3">
+                                                        {/* <div className="flex items-center gap-2">
                                                                 <Button
                                                                         variant="ghost"
                                                                         size="icon"
@@ -380,8 +380,8 @@ export default function ProductCard({ product, viewMode = "grid" }) {
                                                                 >
                                                                         <ShoppingCart className="h-4 w-4" />
                                                                 </Button>
-                                                        </div>
-                                                        <div className="flex flex-col gap-2 sm:flex-row">
+                                                        </div> */}
+                                                        <div className="flex flex-col gap-2 sm:flex-col">
                                                                 <Button
                                                                         onClick={handleAddToCart}
                                                                         disabled={isLoading}
