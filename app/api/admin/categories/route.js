@@ -4,6 +4,7 @@ import Product from "@/model/Product.js";
 import ProductFamily from "@/model/ProductFamily.js";
 import { DEFAULT_PRODUCT_FAMILIES } from "@/constants/productFamilies.js";
 import mongoose from "mongoose";
+import { clampPercentage } from "@/lib/categoryDiscount.js";
 
 
 function escapeRegex(value) {
@@ -186,8 +187,16 @@ export async function POST(request) {
 
 	try {
 
-                const { name, description, icon, published, sortOrder, parent, productFamily } =
-                        await request.json();
+                const {
+                        name,
+                        description,
+                        icon,
+                        published,
+                        sortOrder,
+                        parent,
+                        productFamily,
+                        discount,
+                } = await request.json();
 
                 if (!name || !description || !productFamily) {
                         return Response.json(
@@ -208,13 +217,17 @@ export async function POST(request) {
 
                 }
 
+                const normalizedParent = parent || null;
+                const normalizedDiscount = clampPercentage(discount ?? 0);
+
                 const category = new Category({
                         name,
                         description,
                         icon: icon || "",
                         published: published !== undefined ? published : true,
                         sortOrder: sortOrder || 0,
-                        parent: parent || null,
+                        parent: normalizedParent,
+                        discount: normalizedParent ? 0 : normalizedDiscount,
                         productFamily: new mongoose.Types.ObjectId(productFamilyId),
                 });
 
@@ -276,23 +289,47 @@ export async function PUT(request) {
                         updateData.productFamily = new mongoose.Types.ObjectId(resolvedProductFamilyId);
                 }
 
+                const existingCategory = await Category.findById(categoryId).select("parent");
+
+                if (!existingCategory) {
+                        return Response.json(
+                                { success: false, message: "Category not found" },
+                                { status: 404 }
+                        );
+                }
+
+                if (Object.prototype.hasOwnProperty.call(updateData, "parent")) {
+                        updateData.parent = updateData.parent || null;
+                }
+
+                const targetParent = Object.prototype.hasOwnProperty.call(updateData, "parent")
+                        ? updateData.parent
+                        : existingCategory.parent;
+
+                if (Object.prototype.hasOwnProperty.call(updateData, "discount")) {
+                        const normalizedDiscount = clampPercentage(updateData.discount ?? 0);
+                        updateData.discount = targetParent ? 0 : normalizedDiscount;
+                } else if (targetParent) {
+                        updateData.discount = 0;
+                }
+
                 const category = await Category.findByIdAndUpdate(categoryId, updateData, {
                         new: true,
                         runValidators: true,
                 });
 
-		if (!category) {
-			return Response.json(
-				{ success: false, message: "Category not found" },
-				{ status: 404 }
-			);
-		}
+                if (!category) {
+                        return Response.json(
+                                { success: false, message: "Category not found" },
+                                { status: 404 }
+                        );
+                }
 
-		return Response.json({
-			success: true,
-			message: "Category updated successfully",
-			category,
-		});
+                return Response.json({
+                        success: true,
+                        message: "Category updated successfully",
+                        category,
+                });
 	} catch (error) {
 		console.error("Update category error:", error);
 		return Response.json(

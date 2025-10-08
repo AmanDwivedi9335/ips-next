@@ -41,15 +41,24 @@ export function AddCategoryPopup({ open, onOpenChange }) {
                 sortOrder: 0,
                 parent: "",
                 productFamily: "",
+                discount: "0",
         });
 
         const handleSubmit = async (e) => {
                 e.preventDefault();
                 setIsSubmitting(true);
 
+                const parsedDiscount = Number.parseFloat(formData.discount);
+                const normalizedDiscount = formData.parent
+                        ? 0
+                        : Number.isNaN(parsedDiscount)
+                          ? 0
+                          : Math.min(Math.max(parsedDiscount, 0), 100);
+
                 const success = await addCategory({
                         ...formData,
                         parent: formData.parent || null,
+                        discount: normalizedDiscount,
                 });
                 if (success) {
                         onOpenChange(false);
@@ -67,6 +76,7 @@ export function AddCategoryPopup({ open, onOpenChange }) {
                         sortOrder: 0,
                         parent: "",
                         productFamily: "",
+                        discount: "0",
                 });
         };
 
@@ -202,10 +212,17 @@ export function AddCategoryPopup({ open, onOpenChange }) {
                                                                                 <Select
                                                                                         value={formData.parent}
                                                                                         onValueChange={(value) =>
-                                                                                                setFormData({
-                                                                                                        ...formData,
-                                                                                                        parent: value === "none" ? "" : value,
-                                                                                                })
+                                                                                                setFormData((prev) => ({
+                                                                                                        ...prev,
+                                                                                                        parent:
+                                                                                                                value === "none"
+                                                                                                                        ? ""
+                                                                                                                        : value,
+                                                                                                        discount:
+                                                                                                                value === "none"
+                                                                                                                        ? prev.discount
+                                                                                                                        : "0",
+                                                                                                }))
                                                                                         }
                                                                                 >
                                                                                         <SelectTrigger>
@@ -223,6 +240,66 @@ export function AddCategoryPopup({ open, onOpenChange }) {
                                                                                         </SelectContent>
                                                                                 </Select>
                                                                         </div>
+
+                                                                        {!formData.parent && (
+                                                                                <div className="space-y-2">
+                                                                                        <Label htmlFor="discount">
+                                                                                                Category Discount (%)
+                                                                                        </Label>
+                                                                                        <Input
+                                                                                                id="discount"
+                                                                                                type="number"
+                                                                                                min={0}
+                                                                                                max={100}
+                                                                                                placeholder="0"
+                                                                                                value={formData.discount}
+                                                                                                onChange={(e) => {
+                                                                                                        const value =
+                                                                                                                e.target.value;
+
+                                                                                                        if (value === "") {
+                                                                                                                setFormData((prev) => ({
+                                                                                                                        ...prev,
+                                                                                                                        discount: "",
+                                                                                                                }));
+                                                                                                                return;
+                                                                                                        }
+
+                                                                                                        const parsed =
+                                                                                                                Number.parseFloat(
+                                                                                                                        value
+                                                                                                                );
+
+                                                                                                        if (
+                                                                                                                Number.isNaN(
+                                                                                                                        parsed
+                                                                                                                )
+                                                                                                        ) {
+                                                                                                                return;
+                                                                                                        }
+
+                                                                                                        const clamped = Math.min(
+                                                                                                                Math.max(
+                                                                                                                        parsed,
+                                                                                                                        0
+                                                                                                                ),
+                                                                                                                100
+                                                                                                        );
+
+                                                                                                        setFormData((prev) => ({
+                                                                                                                ...prev,
+                                                                                                                discount:
+                                                                                                                        clamped.toString(),
+                                                                                                        }));
+                                                                                                }}
+                                                                                        />
+                                                                                        <p className="text-xs text-muted-foreground">
+                                                                                                Applied to all products in this
+                                                                                                category and its
+                                                                                                subcategories.
+                                                                                        </p>
+                                                                                </div>
+                                                                        )}
 
                                                                         <div className="space-y-2">
                                                                                 <Label htmlFor="sortOrder">Sort Order</Label>

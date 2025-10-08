@@ -5,7 +5,7 @@ import Cart from "@/model/Cart.js";
 import Product from "@/model/Product.js";
 import { verifyToken } from "@/lib/auth.js";
 import { cookies } from "next/headers";
-import { deriveProductPricing } from "@/lib/pricing.js";
+import { CART_PRODUCT_SELECTION, buildCartResponse } from "@/lib/cartResponse.js";
 
 export async function GET() {
 	await dbConnect();
@@ -25,16 +25,17 @@ export async function GET() {
 
                 let cart = await Cart.findOne({ user: decoded.id }).populate({
                         path: "products.product",
-                        select:
-                                "title description images price salePrice discount mrp type",
+                        select: CART_PRODUCT_SELECTION,
                 });
 
-		if (!cart) {
-			cart = new Cart({ user: decoded.id, products: [], totalPrice: 0 });
-			await cart.save();
-		}
+                if (!cart) {
+                        cart = new Cart({ user: decoded.id, products: [], totalPrice: 0 });
+                        await cart.save();
+                }
 
-		return Response.json({ cart });
+                const responseCart = await buildCartResponse(cart);
+
+                return Response.json({ cart: responseCart });
 	} catch (error) {
 		console.error("Cart fetch error:", error);
 		return Response.json({ message: "Failed to fetch cart" }, { status: 500 });
@@ -85,15 +86,20 @@ export async function POST(req) {
 		}
 
 		// Recalculate total price
-		await cart.populate("products.product");
-                cart.totalPrice = cart.products.reduce((total, item) => {
-                        const pricing = deriveProductPricing(item.product);
-                        return total + pricing.finalPrice * item.quantity;
-                }, 0);
+                await cart.populate({
+                        path: "products.product",
+                        select: CART_PRODUCT_SELECTION,
+                });
 
-		await cart.save();
+                const responseCart = await buildCartResponse(cart);
 
-		return Response.json({ message: "Product added to cart", cart });
+                cart.totalPrice = responseCart.totalPrice;
+                await cart.save();
+
+                return Response.json({
+                        message: "Product added to cart",
+                        cart: responseCart,
+                });
 	} catch (error) {
 		console.error("Add to cart error:", error);
 		return Response.json({ message: "Failed to add to cart" }, { status: 500 });

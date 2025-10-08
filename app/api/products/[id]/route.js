@@ -3,6 +3,7 @@ import Price from "@/model/Price.js";
 import "@/model/Review.js";
 import { dbConnect } from "@/lib/dbConnect.js";
 import { deriveProductPriceRange, deriveProductPricing } from "@/lib/pricing.js";
+import { attachCategoryDiscount } from "@/lib/categoryDiscount.js";
 
 export async function GET(req, { params }) {
 	await dbConnect();
@@ -35,9 +36,12 @@ export async function GET(req, { params }) {
                         .limit(4)
                         .lean();
 
+                const [enrichedProduct, ...enrichedRelatedProducts] =
+                        await attachCategoryDiscount([product, ...relatedProducts]);
+
                 const productIds = [
-                        product._id?.toString(),
-                        ...relatedProducts.map((related) => related._id?.toString()),
+                        enrichedProduct?._id?.toString(),
+                        ...enrichedRelatedProducts.map((related) => related._id?.toString()),
                 ].filter(Boolean);
 
                 let pricingMap = {};
@@ -65,16 +69,16 @@ export async function GET(req, { params }) {
                 }
 
 		// Transform product data to match frontend expectations
-                const reviewCount = product.reviews?.length || 0;
+                const reviewCount = enrichedProduct.reviews?.length || 0;
                 const averageRating =
                         reviewCount > 0
-                                ? product.reviews.reduce((sum, r) => sum + r.rating, 0) /
+                                ? enrichedProduct.reviews.reduce((sum, r) => sum + r.rating, 0) /
                                   reviewCount
                                 : 0;
 
                 // Safeguard against products with no reviews to prevent runtime errors
                 // when attempting to map over an undefined value.
-                const transformedReviews = (product.reviews || []).map((r) => ({
+                const transformedReviews = (enrichedProduct.reviews || []).map((r) => ({
                         id: r._id.toString(),
                         rating: r.rating,
                         comment: r.comment,
@@ -88,57 +92,60 @@ export async function GET(req, { params }) {
                         createdAt: r.createdAt,
                 }));
 
-                const pricing = deriveProductPricing(product);
-                const productIdString = product._id?.toString();
+                const pricing = deriveProductPricing(enrichedProduct);
+                const productIdString = enrichedProduct._id?.toString();
                 const priceRange = deriveProductPriceRange(
-                        product,
+                        enrichedProduct,
                         pricingMap[productIdString] || []
                 );
 
                 const transformedProduct = {
-                        id: product._id.toString(),
+                        id: enrichedProduct._id.toString(),
                         // expose both title and name
-                        title: product.title,
-                        name: product.title,
-                        description: product.description,
-                        longDescription: product.longDescription || product.description,
+                        title: enrichedProduct.title,
+                        name: enrichedProduct.title,
+                        description: enrichedProduct.description,
+                        longDescription:
+                                enrichedProduct.longDescription || enrichedProduct.description,
                         // provide pricing with applied discounts
                         price: pricing.finalPrice,
                         salePrice: pricing.finalPrice,
                         mrp: pricing.mrp,
                         originalPrice: pricing.mrp,
-                        productCode: product.productCode || product.code,
-                        code: product.productCode || product.code,
+                        productCode:
+                                enrichedProduct.productCode || enrichedProduct.code,
+                        code: enrichedProduct.productCode || enrichedProduct.code,
                         discountPercentage: pricing.discountPercentage,
                         discountAmount: pricing.discountAmount,
-                        productFamily: product.productFamily,
-                        category: product.category,
-                        subcategory: product.subcategory,
-                        images: product.images || [],
-                        gallery: product.images || [],
-                        languageImages: product.languageImages || [],
-                        languages: product.languages || [],
-                        sizes: product.sizes || [],
-                        materials: product.materials || [],
-                        layouts: product.layouts || [],
-                        materialSpecification: product.materialSpecification || "",
+                        categoryDiscount: enrichedProduct.categoryDiscount || 0,
+                        productFamily: enrichedProduct.productFamily,
+                        category: enrichedProduct.category,
+                        subcategory: enrichedProduct.subcategory,
+                        images: enrichedProduct.images || [],
+                        gallery: enrichedProduct.images || [],
+                        languageImages: enrichedProduct.languageImages || [],
+                        languages: enrichedProduct.languages || [],
+                        sizes: enrichedProduct.sizes || [],
+                        materials: enrichedProduct.materials || [],
+                        layouts: enrichedProduct.layouts || [],
+                        materialSpecification: enrichedProduct.materialSpecification || "",
                         image:
-                                product.images?.[0] ||
+                                enrichedProduct.images?.[0] ||
                                 "https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png",
-                        type: product.type,
-                        published: product.published,
-                        features: product.features || [],
+                        type: enrichedProduct.type,
+                        published: enrichedProduct.published,
+                        features: enrichedProduct.features || [],
                         rating: averageRating,
                         reviewCount,
                         reviews: transformedReviews,
-                        createdAt: product.createdAt,
-                        updatedAt: product.updatedAt,
+                        createdAt: enrichedProduct.createdAt,
+                        updatedAt: enrichedProduct.updatedAt,
                         priceRange,
                         pricingRange: priceRange,
                 };
 
                 // Transform related products
-                const transformedRelatedProducts = relatedProducts.map((p) => {
+                const transformedRelatedProducts = enrichedRelatedProducts.map((p) => {
                         const relatedPricing = deriveProductPricing(p);
                         const relatedId = p._id?.toString();
                         const relatedRange = deriveProductPriceRange(
@@ -157,6 +164,7 @@ export async function GET(req, { params }) {
                                 mrp: relatedPricing.mrp,
                                 discountPercentage: relatedPricing.discountPercentage,
                                 discountAmount: relatedPricing.discountAmount,
+                                categoryDiscount: p.categoryDiscount || 0,
                                 image:
                                         p.images?.[0] ||
                                         "https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png",
