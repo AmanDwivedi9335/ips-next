@@ -47,6 +47,11 @@ import { formatCurrency as formatCurrencyValue } from "@/lib/pricing.js";
 
 const formatCurrency = (value) => `₹${formatCurrencyValue(value ?? 0)}`;
 
+const LOGO_STATUS_STYLES = {
+        pending: "bg-amber-100 text-amber-800",
+        submitted: "bg-emerald-100 text-emerald-800",
+};
+
 function OrderPage() {
 	const {
 		orders,
@@ -405,19 +410,30 @@ function OrderPage() {
 											<TableHead>Customer</TableHead>
 											<TableHead>Products</TableHead>
 											<TableHead>Payment</TableHead>
-											<TableHead>Amount</TableHead>
-											<TableHead>Status</TableHead>
-											<TableHead>Actions</TableHead>
+                                                                                        <TableHead>Amount</TableHead>
+                                                                                        <TableHead>Status</TableHead>
+                                                                                        <TableHead>Logo</TableHead>
+                                                                                        <TableHead>Actions</TableHead>
 										</TableRow>
 									</TableHeader>
-									<TableBody>
-										{orders.map((order) => (
-											<motion.tr
-												key={order._id}
-												initial={{ opacity: 0, y: 10 }}
-												animate={{ opacity: 1, y: 0 }}
-												transition={{ duration: 0.2 }}
-											>
+                                                                        <TableBody>
+                                                                                {orders.map((order) => {
+                                                                                        const logoStatus =
+                                                                                                order.logoStatus || (order.logoUrl ? "submitted" : "pending");
+                                                                                        const logoBadgeClass =
+                                                                                                LOGO_STATUS_STYLES[logoStatus] ||
+                                                                                                "bg-gray-200 text-gray-800";
+                                                                                        const logoSubmittedAt = order.logoSubmittedAt
+                                                                                                ? new Date(order.logoSubmittedAt)
+                                                                                                : null;
+
+                                                                                        return (
+                                                                                                <motion.tr
+                                                                                                        key={order._id}
+                                                                                                        initial={{ opacity: 0, y: 10 }}
+                                                                                                        animate={{ opacity: 1, y: 0 }}
+                                                                                                        transition={{ duration: 0.2 }}
+                                                                                                >
 												<TableCell>
 													<Checkbox
 														checked={selectedOrders.includes(order._id)}
@@ -478,12 +494,12 @@ function OrderPage() {
                                                                                                 <TableCell className="font-medium text-green-600">
                                                                                                         {formatCurrency(order.totalAmount)}
                                                                                                 </TableCell>
-												<TableCell>
-													<Select
-														value={order.status}
-														onValueChange={(value) =>
-															handleStatusUpdate(order._id, value)
-														}
+                                                                                                <TableCell>
+                                                                                                        <Select
+                                                                                                                value={order.status}
+                                                                                                                onValueChange={(value) =>
+                                                                                                                        handleStatusUpdate(order._id, value)
+                                                                                                                }
 													>
 														<SelectTrigger className="w-32">
 															<SelectValue>
@@ -510,12 +526,39 @@ function OrderPage() {
 														</SelectContent>
 													</Select>
 												</TableCell>
-												<TableCell>
-													<div className="flex gap-1">
-														<Button
-															size="icon"
-															variant="outline"
-															onClick={() => openPopup("details", order)}
+                                                                                                <TableCell>
+                                                                                                        <div className="flex flex-col gap-2">
+                                                                                                                <Badge className={`${logoBadgeClass} capitalize`}>
+                                                                                                                        {logoStatus === "submitted" ? "Received" : "Pending"}
+                                                                                                                </Badge>
+                                                                                                                {order.logoUrl ? (
+                                                                                                                        <Button variant="link" size="sm" asChild>
+                                                                                                                                <a
+                                                                                                                                        href={order.logoUrl}
+                                                                                                                                        target="_blank"
+                                                                                                                                        rel="noopener noreferrer"
+                                                                                                                                >
+                                                                                                                                        View logo
+                                                                                                                                </a>
+                                                                                                                        </Button>
+                                                                                                                ) : (
+                                                                                                                        <span className="text-xs text-gray-500">
+                                                                                                                                Awaiting upload
+                                                                                                                        </span>
+                                                                                                                )}
+                                                                                                                {logoSubmittedAt && (
+                                                                                                                        <span className="text-xs text-gray-500">
+                                                                                                                                Uploaded {logoSubmittedAt.toLocaleString()}
+                                                                                                                        </span>
+                                                                                                                )}
+                                                                                                        </div>
+                                                                                                </TableCell>
+                                                                                                <TableCell>
+                                                                                                        <div className="flex gap-1">
+                                                                                                                <Button
+                                                                                                                        size="icon"
+                                                                                                                        variant="outline"
+                                                                                                                        onClick={() => openPopup("details", order)}
 														>
 															<Eye className="w-4 h-4" />
 														</Button>
@@ -542,10 +585,11 @@ function OrderPage() {
 															<Trash2 className="w-4 h-4" />
 														</Button>
 													</div>
-												</TableCell>
-											</motion.tr>
-										))}
-									</TableBody>
+                                                                                                </TableCell>
+                                                                                        </motion.tr>
+                                                                                        );
+                                                                                })}
+                                                                        </TableBody>
 								</Table>
 
 								{/* Pagination */}

@@ -1,15 +1,25 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { extractOrderItemOptions } from "@/lib/orderOptions.js";
-import { CheckCircle, Truck, Home, Download, Loader2, CreditCard } from "lucide-react";
+import {
+        CheckCircle,
+        Truck,
+        Home,
+        Download,
+        Loader2,
+        CreditCard,
+        UploadCloud,
+        BadgeCheck,
+} from "lucide-react";
 
 import Link from "next/link";
+import { toast } from "react-hot-toast";
 
 export default function OrderSuccessPage() {
 	const router = useRouter();
@@ -17,6 +27,9 @@ export default function OrderSuccessPage() {
         const [orderDetails, setOrderDetails] = useState(null);
         const [isConfirming, setIsConfirming] = useState(true);
         const [error, setError] = useState(null);
+        const [isUploadingLogo, setIsUploadingLogo] = useState(false);
+
+        const fileInputRef = useRef(null);
 
 
         const orderId = searchParams.get("orderId");
@@ -56,6 +69,59 @@ export default function OrderSuccessPage() {
 
                 fetchOrderDetails();
         }, [orderId, orderNumber, router]);
+
+        const handleLogoUpload = async (file) => {
+                if (!file || !orderDetails?._id) {
+                        return;
+                }
+
+                if (file.type && !file.type.startsWith("image/")) {
+                        toast.error("Please upload an image file for your logo.");
+                        return;
+                }
+
+                if (file.size > 5 * 1024 * 1024) {
+                        toast.error("Logo must be 5MB or smaller.");
+                        return;
+                }
+
+                const formData = new FormData();
+                formData.append("file", file);
+
+                setIsUploadingLogo(true);
+
+                try {
+                        const response = await fetch(`/api/orders/${orderDetails._id}/logo`, {
+                                method: "POST",
+                                body: formData,
+                        });
+
+                        const data = await response.json();
+
+                        if (!response.ok || !data?.success) {
+                                throw new Error(data?.message || "Failed to upload logo");
+                        }
+
+                        setOrderDetails(data.order);
+                        toast.success("Logo uploaded successfully.");
+                } catch (uploadError) {
+                        console.error("Logo upload failed", uploadError);
+                        toast.error(uploadError.message || "Failed to upload logo");
+                } finally {
+                        setIsUploadingLogo(false);
+                }
+        };
+
+        const handleLogoInputChange = (event) => {
+                const [file] = event.target.files || [];
+                if (file) {
+                        handleLogoUpload(file);
+                }
+
+                if (event.target) {
+                        event.target.value = "";
+                }
+        };
 
         const purchasedItems = useMemo(() => {
                 if (!orderDetails?.products?.length) {
@@ -186,6 +252,90 @@ export default function OrderSuccessPage() {
                                                                 </span>
                                                         </div>
                                                 </CardContent>
+                                        </Card>
+
+                                        {/* Logo Upload Prompt */}
+                                        <Card className="border-dashed border-primary/40 bg-primary/5">
+                                                <CardHeader className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                                                        <div className="flex items-start gap-3 text-left">
+                                                                <div className="mt-1 rounded-full bg-primary/10 p-2">
+                                                                        {orderDetails.logoStatus === "submitted" ? (
+                                                                                <BadgeCheck className="h-5 w-5 text-primary" />
+                                                                        ) : (
+                                                                                <UploadCloud className="h-5 w-5 text-primary" />
+                                                                        )}
+                                                                </div>
+                                                                <div>
+                                                                        <CardTitle className="text-lg">
+                                                                                {orderDetails.logoStatus === "submitted"
+                                                                                        ? "Thank you for sharing your logo"
+                                                                                        : "Add your company logo for customisation"}
+                                                                        </CardTitle>
+                                                                        <p className="mt-1 text-sm text-muted-foreground">
+                                                                                {orderDetails.logoStatus === "submitted"
+                                                                                        ? "Our team has received your branding assets. We'll use them to personalise your posters."
+                                                                                        : "Upload a high-quality version of your company logo so we can personalise your posters exactly the way you need."}
+                                                                        </p>
+                                                                </div>
+                                                        </div>
+                                                        {orderDetails.logoStatus === "submitted" && orderDetails.logoUrl ? (
+                                                                <Button variant="outline" asChild>
+                                                                        <a
+                                                                                href={orderDetails.logoUrl}
+                                                                                target="_blank"
+                                                                                rel="noopener noreferrer"
+                                                                        >
+                                                                                View logo
+                                                                        </a>
+                                                                </Button>
+                                                        ) : (
+                                                                <div className="flex items-center gap-3">
+                                                                        <input
+                                                                                ref={fileInputRef}
+                                                                                type="file"
+                                                                                accept="image/*"
+                                                                                className="hidden"
+                                                                                onChange={handleLogoInputChange}
+                                                                        />
+                                                                        <Button
+                                                                                onClick={() => fileInputRef.current?.click()}
+                                                                                disabled={isUploadingLogo}
+                                                                        >
+                                                                                {isUploadingLogo ? (
+                                                                                        <>
+                                                                                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                                                                                Uploading
+                                                                                        </>
+                                                                                ) : (
+                                                                                        "Upload logo"
+                                                                                )}
+                                                                        </Button>
+                                                                        <p className="text-xs text-muted-foreground">
+                                                                                PNG, JPG or SVG up to 5MB.
+                                                                        </p>
+                                                                </div>
+                                                        )}
+                                                </CardHeader>
+                                                {orderDetails.logoStatus === "submitted" && orderDetails.logoUrl && (
+                                                        <CardContent>
+                                                                <div className="overflow-hidden rounded-lg border bg-white p-4">
+                                                                        <img
+                                                                                src={orderDetails.logoUrl}
+                                                                                alt="Uploaded company logo"
+                                                                                className="mx-auto h-32 w-auto object-contain"
+                                                                        />
+                                                                        {orderDetails.logoSubmittedAt ? (
+                                                                                <p className="mt-2 text-center text-xs text-muted-foreground">
+                                                                                        Uploaded on {new Date(orderDetails.logoSubmittedAt).toLocaleString()}
+                                                                                </p>
+                                                                        ) : (
+                                                                                <p className="mt-2 text-center text-xs text-muted-foreground">
+                                                                                        Thanks! Our design team will review your logo shortly.
+                                                                                </p>
+                                                                        )}
+                                                                </div>
+                                                        </CardContent>
+                                                )}
                                         </Card>
 
                                         {/* Purchased Items */}

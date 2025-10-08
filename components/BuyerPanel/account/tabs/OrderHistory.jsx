@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -26,10 +26,11 @@ import {
         TableHeader,
         TableRow,
 } from "@/components/ui/table";
-import { Loader2, Eye, RefreshCw } from "lucide-react";
+import { Loader2, Eye, RefreshCw, BadgeCheck, UploadCloud } from "lucide-react";
 import { useLoggedInUser } from "@/store/authStore";
 import { formatCurrency } from "@/lib/pricing";
 import { getOrderItemOptionEntries } from "@/lib/orderOptions.js";
+import { toast } from "react-hot-toast";
 
 const ORDER_STATUS_STYLES = {
         pending: "bg-amber-100 text-amber-800",
@@ -107,6 +108,10 @@ export function OrderHistory() {
         const [isLoadingMore, setIsLoadingMore] = useState(false);
         const [error, setError] = useState(null);
         const [selectedOrder, setSelectedOrder] = useState(null);
+        const [logoUploadOrder, setLogoUploadOrder] = useState(null);
+        const [isUploadingLogo, setIsUploadingLogo] = useState(false);
+
+        const fileInputRef = useRef(null);
 
         const hasMore = pagination?.hasNextPage;
 
@@ -199,6 +204,84 @@ export function OrderHistory() {
                 setSelectedOrder(order);
         };
 
+        const handleLogoFileChange = useCallback(
+                async (event) => {
+                        const [file] = event.target.files || [];
+
+                        if (!logoUploadOrder?._id) {
+                                if (event.target) {
+                                        event.target.value = "";
+                                }
+                                return;
+                        }
+
+                        if (!file) {
+                                setLogoUploadOrder(null);
+                                return;
+                        }
+
+                        if (file.type && !file.type.startsWith("image/")) {
+                                toast.error("Please upload an image file.");
+                                event.target.value = "";
+                                setLogoUploadOrder(null);
+                                return;
+                        }
+
+                        if (file.size > 5 * 1024 * 1024) {
+                                toast.error("Logo must be 5MB or smaller.");
+                                event.target.value = "";
+                                setLogoUploadOrder(null);
+                                return;
+                        }
+
+                        setIsUploadingLogo(true);
+
+                        try {
+                                const formData = new FormData();
+                                formData.append("file", file);
+
+                                const response = await fetch(`/api/orders/${logoUploadOrder._id}/logo`, {
+                                        method: "POST",
+                                        body: formData,
+                                });
+
+                                const data = await response.json();
+
+                                if (!response.ok || !data?.success) {
+                                        throw new Error(data?.message || "Failed to upload logo");
+                                }
+
+                                setOrders((prev) =>
+                                        prev.map((order) => (order._id === data.order._id ? data.order : order))
+                                );
+
+                                setSelectedOrder((prev) =>
+                                        prev && prev._id === data.order._id ? data.order : prev
+                                );
+
+                                toast.success("Logo uploaded successfully.");
+                        } catch (uploadError) {
+                                console.error("Logo upload failed", uploadError);
+                                toast.error(uploadError.message || "Failed to upload logo");
+                        } finally {
+                                setIsUploadingLogo(false);
+                                setLogoUploadOrder(null);
+
+                                if (event.target) {
+                                        event.target.value = "";
+                                }
+                        }
+                },
+                [logoUploadOrder]
+        );
+
+        const handleLogoButtonClick = useCallback((order) => {
+                setLogoUploadOrder(order);
+                if (fileInputRef.current) {
+                        fileInputRef.current.click();
+                }
+        }, []);
+
         const renderTableBody = () => (
                 <TableBody>
                         {orders.map((order) => {
@@ -234,6 +317,9 @@ export function OrderHistory() {
                                 ) {
                                         subtitle = firstProduct.productId.title;
                                 }
+
+                                const hasLogo = Boolean(order?.logoUrl);
+                                const logoStatus = order?.logoStatus || (hasLogo ? "submitted" : "pending");
 
                                 return (
                                         <motion.tr
@@ -282,6 +368,44 @@ export function OrderHistory() {
                                                                 )}
                                                         </div>
                                                 </TableCell>
+                                                <TableCell>
+                                                        <div className="flex flex-col gap-2">
+                                                                <Badge
+                                                                        className={`${
+                                                                                logoStatus === "submitted"
+                                                                                        ? "bg-emerald-100 text-emerald-800"
+                                                                                        : "bg-amber-100 text-amber-800"
+                                                                        } capitalize`}
+                                                                >
+                                                                        {logoStatus === "submitted" ? "Logo received" : "Pending"}
+                                                                </Badge>
+                                                                {hasLogo ? (
+                                                                        <Button variant="link" size="sm" asChild>
+                                                                                <a
+                                                                                        href={order.logoUrl}
+                                                                                        target="_blank"
+                                                                                        rel="noopener noreferrer"
+                                                                                >
+                                                                                        View logo
+                                                                                </a>
+                                                                        </Button>
+                                                                ) : (
+                                                                        <Button
+                                                                                variant="link"
+                                                                                size="sm"
+                                                                                onClick={() => handleLogoButtonClick(order)}
+                                                                                disabled={
+                                                                                        isUploadingLogo &&
+                                                                                        logoUploadOrder?._id === order._id
+                                                                                }
+                                                                        >
+                                                                                {isUploadingLogo && logoUploadOrder?._id === order._id
+                                                                                        ? "Uploading..."
+                                                                                        : "Upload logo"}
+                                                                        </Button>
+                                                                )}
+                                                        </div>
+                                                </TableCell>
                                                 <TableCell className="text-right">
                                                         <Button
                                                                 variant="ghost"
@@ -300,6 +424,13 @@ export function OrderHistory() {
 
         return (
                 <>
+                        <input
+                                ref={fileInputRef}
+                                type="file"
+                                accept="image/*"
+                                className="hidden"
+                                onChange={handleLogoFileChange}
+                        />
                         <Card>
                                 <CardHeader className="flex flex-row items-start justify-between gap-4">
                                         <div>
@@ -360,6 +491,7 @@ export function OrderHistory() {
                                                                                         <TableHead>Placed On</TableHead>
                                                                                         <TableHead>Total</TableHead>
                                                                                         <TableHead>Status</TableHead>
+                                                                                        <TableHead>Logo</TableHead>
                                                                                         <TableHead className="text-right">Actions</TableHead>
                                                                                 </TableRow>
                                                                         </TableHeader>
@@ -428,6 +560,82 @@ export function OrderHistory() {
                                                                         <Badge variant="outline" className="capitalize">
                                                                                 {formatStatusLabel(selectedOrder.paymentMethod)}
                                                                         </Badge>
+                                                                )}
+                                                        </div>
+
+                                                        <div className="rounded-lg border bg-muted/30 p-4">
+                                                                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                                                                        <div className="flex items-center gap-3">
+                                                                                <div className="rounded-full bg-primary/10 p-2">
+                                                                                        {selectedOrder.logoStatus === "submitted" || selectedOrder.logoUrl ? (
+                                                                                                <BadgeCheck className="h-5 w-5 text-primary" />
+                                                                                        ) : (
+                                                                                                <UploadCloud className="h-5 w-5 text-primary" />
+                                                                                        )}
+                                                                                </div>
+                                                                                <div>
+                                                                                        <p className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+                                                                                                Branding assets
+                                                                                        </p>
+                                                                                        <Badge
+                                                                                                className={`${
+                                                                                                        selectedOrder.logoStatus === "submitted" || selectedOrder.logoUrl
+                                                                                                                ? "bg-emerald-100 text-emerald-800"
+                                                                                                                : "bg-amber-100 text-amber-800"
+                                                                                                } capitalize`}
+                                                                                        >
+                                                                                                {selectedOrder.logoStatus === "submitted" || selectedOrder.logoUrl
+                                                                                                        ? "Logo received"
+                                                                                                        : "Logo pending"}
+                                                                                        </Badge>
+                                                                                </div>
+                                                                        </div>
+                                                                        <div className="flex items-center gap-3">
+                                                                                {selectedOrder.logoUrl ? (
+                                                                                        <Button variant="outline" asChild>
+                                                                                                <a
+                                                                                                        href={selectedOrder.logoUrl}
+                                                                                                        target="_blank"
+                                                                                                        rel="noopener noreferrer"
+                                                                                                >
+                                                                                                        View logo
+                                                                                                </a>
+                                                                                        </Button>
+                                                                                ) : (
+                                                                                        <Button
+                                                                                                onClick={() => handleLogoButtonClick(selectedOrder)}
+                                                                                                disabled={
+                                                                                                        isUploadingLogo &&
+                                                                                                        logoUploadOrder?._id === selectedOrder._id
+                                                                                                }
+                                                                                        >
+                                                                                                {isUploadingLogo && logoUploadOrder?._id === selectedOrder._id
+                                                                                                        ? "Uploading..."
+                                                                                                        : "Upload logo"}
+                                                                                        </Button>
+                                                                                )}
+                                                                                <p className="text-xs text-muted-foreground">
+                                                                                        Upload PNG, JPG or SVG up to 5MB.
+                                                                                </p>
+                                                                        </div>
+                                                                </div>
+                                                                {selectedOrder.logoUrl && (
+                                                                        <div className="mt-4 rounded-lg border bg-background p-4">
+                                                                                <img
+                                                                                        src={selectedOrder.logoUrl}
+                                                                                        alt="Uploaded company logo"
+                                                                                        className="mx-auto h-32 w-auto object-contain"
+                                                                                />
+                                                                                {selectedOrder.logoSubmittedAt ? (
+                                                                                        <p className="mt-2 text-center text-xs text-muted-foreground">
+                                                                                                Uploaded on {formatDate(selectedOrder.logoSubmittedAt)}
+                                                                                        </p>
+                                                                                ) : (
+                                                                                        <p className="mt-2 text-center text-xs text-muted-foreground">
+                                                                                                Logo received and queued for design work.
+                                                                                        </p>
+                                                                                )}
+                                                                        </div>
                                                                 )}
                                                         </div>
 

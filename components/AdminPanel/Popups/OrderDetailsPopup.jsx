@@ -10,6 +10,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import {
         Package,
         User,
@@ -19,6 +20,8 @@ import {
         Phone,
         Mail,
         Truck,
+        BadgeCheck,
+        UploadCloud,
 } from "lucide-react";
 import { formatCurrency as formatCurrencyValue } from "@/lib/pricing.js";
 
@@ -282,53 +285,116 @@ export function OrderDetailsPopup({ open, onOpenChange, order }) {
 						</div>
 
 						{/* Customer Information */}
-						<Card>
-							<CardHeader>
-								<CardTitle className="flex items-center gap-2">
-									<User className="w-5 h-5" />
-									Customer Information
-								</CardTitle>
-							</CardHeader>
-							<CardContent>
-								<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-									<div>
+                                                <Card>
+                                                        <CardHeader>
+                                                                <CardTitle className="flex items-center gap-2">
+                                                                        <User className="w-5 h-5" />
+                                                                        Customer Information
+                                                                </CardTitle>
+                                                        </CardHeader>
+                                                        <CardContent>
+                                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                                        <div>
                                                                                 <p className="text-sm text-gray-600">Name</p>
 
                                                                                 <p className="font-medium">{displayCustomerName}</p>
 
-									</div>
-									<div>
-										<p className="text-sm text-gray-600">Email</p>
-										<div className="flex items-center gap-2">
-											<Mail className="w-4 h-4 text-gray-400" />
+                                                                        </div>
+                                                                        <div>
+                                                                                <p className="text-sm text-gray-600">Email</p>
+                                                                                <div className="flex items-center gap-2">
+                                                                                        <Mail className="w-4 h-4 text-gray-400" />
 
                                                                                         <p className="font-medium">{displayCustomerEmail}</p>
 
-										</div>
-									</div>
-									<div>
-										<p className="text-sm text-gray-600">Phone</p>
-										<div className="flex items-center gap-2">
-											<Phone className="w-4 h-4 text-gray-400" />
+                                                                                </div>
+                                                                        </div>
+                                                                        <div>
+                                                                                <p className="text-sm text-gray-600">Phone</p>
+                                                                                <div className="flex items-center gap-2">
+                                                                                        <Phone className="w-4 h-4 text-gray-400" />
 
                                                                                         <p className="font-medium">{displayCustomerPhone}</p>
 
-										</div>
-									</div>
-									<div>
-										<p className="text-sm text-gray-600">Customer ID</p>
+                                                                                </div>
+                                                                        </div>
+                                                                        <div>
+                                                                                <p className="text-sm text-gray-600">Customer ID</p>
 
                                                                                 <p className="font-medium text-blue-600">{displayCustomerId}</p>
 
-									</div>
-								</div>
-							</CardContent>
-						</Card>
+                                                                        </div>
+                                                                </div>
+                                                        </CardContent>
+                                                </Card>
 
-						{/* Delivery Address */}
-						{order.deliveryAddress && (
-							<Card>
-								<CardHeader>
+                                                {/* Branding Assets */}
+                                                <Card>
+                                                        <CardHeader>
+                                                                <CardTitle className="flex items-center gap-2">
+                                                                        <BadgeCheck className="w-5 h-5 text-primary" />
+                                                                        Branding Assets
+                                                                </CardTitle>
+                                                        </CardHeader>
+                                                        <CardContent>
+                                                                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                                                                        <div className="space-y-2">
+                                                                                <p className="text-sm text-gray-600">Logo status</p>
+                                                                                <Badge
+                                                                                        className={`${
+                                                                                                order.logoStatus === "submitted" || order.logoUrl
+                                                                                                        ? "bg-emerald-100 text-emerald-800"
+                                                                                                        : "bg-amber-100 text-amber-800"
+                                                                                        } capitalize`}
+                                                                                >
+                                                                                        {order.logoStatus === "submitted" || order.logoUrl
+                                                                                                ? "Logo received"
+                                                                                                : "Awaiting logo"}
+                                                                                </Badge>
+                                                                                {order.logoSubmittedAt && (
+                                                                                        <p className="text-xs text-gray-500">
+                                                                                                Uploaded on {formatDate(order.logoSubmittedAt)}
+                                                                                        </p>
+                                                                                )}
+                                                                        </div>
+                                                                        <div className="flex flex-col items-start gap-2 sm:items-end">
+                                                                                {order.logoUrl ? (
+                                                                                        <Button variant="outline" asChild>
+                                                                                                <a
+                                                                                                        href={order.logoUrl}
+                                                                                                        target="_blank"
+                                                                                                        rel="noopener noreferrer"
+                                                                                                >
+                                                                                                        View logo
+                                                                                                </a>
+                                                                                        </Button>
+                                                                                ) : (
+                                                                                        <div className="flex items-center gap-2 text-sm text-gray-600">
+                                                                                                <UploadCloud className="h-4 w-4" />
+                                                                                                <span>Waiting for customer upload</span>
+                                                                                        </div>
+                                                                                )}
+                                                                                <p className="text-xs text-gray-500">
+                                                                                        Provided logos are shared with the production team automatically.
+                                                                                </p>
+                                                                        </div>
+                                                                </div>
+                                                                {order.logoUrl && (
+                                                                        <div className="mt-4 rounded-lg border bg-muted/30 p-4">
+                                                                                <img
+                                                                                        src={order.logoUrl}
+                                                                                        alt="Uploaded customer logo"
+                                                                                        className="mx-auto h-32 w-auto object-contain"
+                                                                                />
+                                                                        </div>
+                                                                )}
+                                                        </CardContent>
+                                                </Card>
+
+                                                {/* Delivery Address */}
+                                                {order.deliveryAddress && (
+                                                        <Card>
+                                                                <CardHeader>
 									<CardTitle className="flex items-center gap-2">
 										<MapPin className="w-5 h-5" />
 										Delivery Address
