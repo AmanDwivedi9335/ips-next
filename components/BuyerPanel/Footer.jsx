@@ -118,7 +118,7 @@ return (
 <div className="absolute -top-32 -left-24 h-80 w-80 rounded-full bg-[radial-gradient(circle_at_center,_rgba(234,181,67,0.45),_transparent_70%)]" />
 <div className="absolute bottom-0 right-0 h-72 w-72 rounded-full bg-[radial-gradient(circle_at_center,_rgba(255,255,255,0.08),_transparent_70%)]" />
 </div>
-<div className="relative mx-auto max-w-6xl px-6 py-16 md:px-10 md:py-20">
+<div className="relative mx-auto max-w-8xl px-6 py-16 md:px-10 md:py-20">
 <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-5">
 {/* Logo & Social */}
 <div className="flex flex-col space-y-8">
@@ -129,9 +129,9 @@ printing supplies tailored for growth.
 </p>
 <div className="flex items-center gap-3">
 {[
-{ icon: Facebook, label: "Facebook" },
+// { icon: Facebook, label: "Facebook" },
 { icon: Instagram, label: "Instagram" },
-{ icon: Linkedin, label: "LinkedIn" },
+// { icon: Linkedin, label: "LinkedIn" },
 ].map(({ icon: Icon, label }) => (
 <button
 key={label}
