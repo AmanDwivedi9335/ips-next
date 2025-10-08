@@ -13,6 +13,7 @@ export default function CategoryPage({ params }) {
         const [categories, setCategories] = useState([]);
         const [currentCategory, setCurrentCategory] = useState(null);
         const [loading, setLoading] = useState(true);
+        const [sortDirection, setSortDirection] = useState("asc");
 
         useEffect(() => {
                 const fetchCategories = async () => {
@@ -45,9 +46,31 @@ export default function CategoryPage({ params }) {
                 return <div className="p-8">Category not found</div>;
         }
 
-        const topCategories = categories.filter((cat) => !cat.parent);
-        const subCategories = categories.filter(
-                (cat) => cat.parent === currentCategory._id
+        const sortCategories = (list) => {
+                const normalizeSortValue = (value) => {
+                        const numericValue = Number(value);
+                        return Number.isFinite(numericValue) ? numericValue : 0;
+                };
+
+                return [...list].sort((a, b) => {
+                        const aOrder = normalizeSortValue(a.sortOrder);
+                        const bOrder = normalizeSortValue(b.sortOrder);
+
+                        if (aOrder !== bOrder) {
+                                return sortDirection === "asc"
+                                        ? aOrder - bOrder
+                                        : bOrder - aOrder;
+                        }
+
+                        return sortDirection === "asc"
+                                ? a.name.localeCompare(b.name)
+                                : b.name.localeCompare(a.name);
+                });
+        };
+
+        const topCategories = sortCategories(categories.filter((cat) => !cat.parent));
+        const subCategories = sortCategories(
+                categories.filter((cat) => cat.parent === currentCategory._id)
         );
 
         const handleCategoryChange = (catSlug) => {
@@ -83,9 +106,24 @@ export default function CategoryPage({ params }) {
                                         </ul>
                                 </aside>
                                 <main className="flex-1 p-4">
-                                        <h1 className="text-2xl font-bold mb-4">
-                                                {currentCategory.name}
-                                        </h1>
+                                        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-4">
+                                                <h1 className="text-2xl font-bold">
+                                                        {currentCategory.name}
+                                                </h1>
+                                                <label className="flex items-center gap-2 text-sm">
+                                                        <span className="text-gray-600">Sort order:</span>
+                                                        <select
+                                                                value={sortDirection}
+                                                                onChange={(event) =>
+                                                                        setSortDirection(event.target.value)
+                                                                }
+                                                                className="border rounded-md px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-black"
+                                                        >
+                                                                <option value="asc">Increasing</option>
+                                                                <option value="desc">Decreasing</option>
+                                                        </select>
+                                                </label>
+                                        </div>
                                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                                                 {subCategories.map((sub) => (
                                                         <div
