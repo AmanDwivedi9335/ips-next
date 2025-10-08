@@ -21,9 +21,29 @@ export default function CategoriesGrid() {
                                 );
                                 const data = await res.json();
                                 if (isMounted && data.success) {
-                                        const topLevel = data.categories.filter(
-                                                (cat) => !cat.parent
-                                        );
+                                        const topLevel = data.categories
+                                                .filter((cat) => !cat.parent)
+                                                .sort((a, b) => {
+                                                        const aOrder = Number(a.sortOrder);
+                                                        const bOrder = Number(b.sortOrder);
+
+                                                        const aIsFinite = Number.isFinite(
+                                                                aOrder
+                                                        );
+                                                        const bIsFinite = Number.isFinite(
+                                                                bOrder
+                                                        );
+
+                                                        if (aIsFinite && bIsFinite) {
+                                                                if (aOrder !== bOrder) {
+                                                                        return aOrder - bOrder;
+                                                                }
+                                                        } else if (aIsFinite || bIsFinite) {
+                                                                return aIsFinite ? -1 : 1;
+                                                        }
+
+                                                        return a.name.localeCompare(b.name);
+                                                });
                                         setCategories(topLevel);
                                 }
                         } catch (err) {
