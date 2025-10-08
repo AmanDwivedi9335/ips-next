@@ -75,7 +75,7 @@ export default function HomePage() {
                         {/* <ProductShowcase products={discountedProducts} /> */}
                         {/* <TrustedCompanies /> */}
 
-                        <CategorySection
+                        {/* <CategorySection
                                 products={categoryProducts}
                                 categories={categories}
                                 searchQuery={searchQuery}
@@ -85,15 +85,15 @@ export default function HomePage() {
                                 pagination={pagination}
                                 onLoadMore={handleLoadMore}
                                 isLoading={isLoading}
-                        />
+                        /> */}
                         <AboutSection />
                         <SupportSection />
 
-			<FeaturedSection
+			{/* <FeaturedSection
 				topSellingProducts={topSellingProducts}
 				bestSellingProduct={bestSellingProduct}
 				featuredProducts={featuredProducts}
-			/>
+			/> */}
 
 			<SearchSection
 				searchQuery={searchQuery}
