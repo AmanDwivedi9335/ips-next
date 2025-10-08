@@ -1,6 +1,7 @@
 import { dbConnect } from "@/lib/dbConnect.js";
 import Product from "@/model/Product.js";
 import { deriveProductPricing } from "@/lib/pricing.js";
+import { attachCategoryDiscount } from "@/lib/categoryDiscount.js";
 
 export async function POST(request, { params }) {
 	await dbConnect();
@@ -26,20 +27,22 @@ export async function POST(request, { params }) {
                         );
                 }
 
-                const pricing = deriveProductPricing(product);
+                const enrichedProduct = await attachCategoryDiscount(product);
+                const pricing = deriveProductPricing(enrichedProduct);
 
                 // Create order data for buy now
                 const orderData = {
                         productId: product._id.toString(),
-                        productName: product.title,
+                        productName: enrichedProduct.title,
                         quantity: quantity,
                         unitPrice: pricing.finalPrice,
                         mrp: pricing.mrp,
                         discountPercentage: pricing.discountPercentage,
                         discountAmount: pricing.discountAmount,
+                        categoryDiscount: enrichedProduct.categoryDiscount || 0,
                         totalPrice: pricing.finalPrice * quantity,
                         productImage:
-                                product.images?.[0] ||
+                                enrichedProduct.images?.[0] ||
                                 "https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png",
 		};
 

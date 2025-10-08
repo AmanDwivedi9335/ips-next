@@ -1,16 +1,63 @@
 import { dbConnect } from "@/lib/dbConnect.js";
 import Product from "@/model/Product.js";
 import Price from "@/model/Price.js";
+import Category from "@/model/Category.js";
 import { deriveProductPriceRange, deriveProductPricing } from "@/lib/pricing.js";
+import { attachCategoryDiscount } from "@/lib/categoryDiscount.js";
 
 export async function GET(request) {
 	await dbConnect();
 
 	try {
-		// Get discounted products for showcase section
+                const discountedCategoryDocs = await Category.find({
+                        parent: null,
+                        discount: { $gt: 0 },
+                })
+                        .select("_id slug")
+                        .lean();
+
+                const discountedCategorySlugs = discountedCategoryDocs
+                        .map((category) => category.slug)
+                        .filter(Boolean);
+
+                let discountedSubcategorySlugs = [];
+
+                if (discountedCategoryDocs.length > 0) {
+                        const parentIds = discountedCategoryDocs
+                                .map((category) => category._id?.toString())
+                                .filter(Boolean);
+
+                        if (parentIds.length > 0) {
+                                const subcategories = await Category.find({
+                                        parent: { $in: parentIds },
+                                })
+                                        .select("slug")
+                                        .lean();
+
+                                discountedSubcategorySlugs = subcategories
+                                        .map((subcategory) => subcategory.slug)
+                                        .filter(Boolean);
+                        }
+                }
+
+                const discountedProductConditions = [{ discount: { $gt: 0 } }];
+
+                if (discountedCategorySlugs.length > 0) {
+                        discountedProductConditions.push({
+                                category: { $in: discountedCategorySlugs },
+                        });
+                }
+
+                if (discountedSubcategorySlugs.length > 0) {
+                        discountedProductConditions.push({
+                                subcategory: { $in: discountedSubcategorySlugs },
+                        });
+                }
+
+                // Get discounted products for showcase section
                 const discountedProducts = await Product.find({
                         published: true,
-                        $or: [{ discount: { $gt: 0 } }],
+                        $or: discountedProductConditions,
                 })
                         .limit(6)
                         .lean();
@@ -70,16 +117,41 @@ export async function GET(request) {
 		// Get available categories
                 const categories = await Product.distinct("category", { published: true });
 
-                const allProducts = [
-                        ...discountedProducts,
-                        ...topSellingProducts,
-                        ...featuredProducts,
-                        ...categoryProducts,
+                const productGroups = [
+                        discountedProducts,
+                        topSellingProducts,
+                        bestSellingProduct ? [bestSellingProduct] : [],
+                        featuredProducts,
+                        categoryProducts,
                 ];
 
-                if (bestSellingProduct) {
-                        allProducts.push(bestSellingProduct);
-                }
+                const groupOffsets = [];
+                const combinedProducts = [];
+
+                productGroups.forEach((group) => {
+                        groupOffsets.push({ start: combinedProducts.length, length: group.length });
+                        combinedProducts.push(...group);
+                });
+
+                const enrichedCombinedProducts = await attachCategoryDiscount(combinedProducts);
+
+                const getGroupSlice = (groupIndex) => {
+                        const { start, length } = groupOffsets[groupIndex];
+                        return enrichedCombinedProducts.slice(start, start + length);
+                };
+
+                const enrichedDiscountedProducts = getGroupSlice(0);
+                const enrichedTopSellingProducts = getGroupSlice(1);
+                const enrichedBestSellingProducts = getGroupSlice(2);
+                const enrichedFeaturedProducts = getGroupSlice(3);
+                const enrichedCategoryProducts = getGroupSlice(4);
+
+                const enrichedBestSellingProduct =
+                        bestSellingProduct && enrichedBestSellingProducts.length > 0
+                                ? enrichedBestSellingProducts[0]
+                                : null;
+
+                const allProducts = enrichedCombinedProducts;
 
                 const priceQueryIds = Array.from(
                         new Set(
@@ -136,6 +208,7 @@ export async function GET(request) {
                                 originalPrice: pricing.mrp,
                                 salePrice: pricing.finalPrice,
                                 discount: product.discount,
+                                categoryDiscount: product.categoryDiscount || 0,
                                 discountPercentage: pricing.discountPercentage,
                                 discountAmount: pricing.discountAmount,
                                 image:
@@ -163,13 +236,13 @@ export async function GET(request) {
 		return Response.json({
 			success: true,
 			data: {
-				discountedProducts: discountedProducts.map(transformProduct),
-				topSellingProducts: topSellingProducts.map(transformProduct),
-				bestSellingProduct: bestSellingProduct
-					? transformProduct(bestSellingProduct)
-					: null,
-				featuredProducts: featuredProducts.map(transformProduct),
-				categoryProducts: categoryProducts.map(transformProduct),
+                                discountedProducts: enrichedDiscountedProducts.map(transformProduct),
+                                topSellingProducts: enrichedTopSellingProducts.map(transformProduct),
+                                bestSellingProduct: enrichedBestSellingProduct
+                                        ? transformProduct(enrichedBestSellingProduct)
+                                        : null,
+                                featuredProducts: enrichedFeaturedProducts.map(transformProduct),
+                                categoryProducts: enrichedCategoryProducts.map(transformProduct),
 				categories: ["All", ...categories],
 				pagination: {
 					currentPage: page,
