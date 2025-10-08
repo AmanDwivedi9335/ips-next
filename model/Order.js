@@ -182,16 +182,29 @@ const OrderSchema = new mongoose.Schema(
 		// Tracking
 		trackingNumber: String,
 		estimatedDelivery: Date,
-		actualDelivery: Date,
+                actualDelivery: Date,
 
-		// Notes
-		orderNotes: String,
-		adminNotes: String,
+                // Notes
+                orderNotes: String,
+                adminNotes: String,
 
-		// Timestamps
-		orderDate: {
-			type: Date,
-			default: Date.now,
+                // Branding / Logo
+                logoStatus: {
+                        type: String,
+                        enum: ["pending", "submitted"],
+                        default: "pending",
+                },
+                logoUrl: { type: String },
+                logoRequestedAt: {
+                        type: Date,
+                        default: Date.now,
+                },
+                logoSubmittedAt: { type: Date },
+
+                // Timestamps
+                orderDate: {
+                        type: Date,
+                        default: Date.now,
 		},
 	},
 	{
