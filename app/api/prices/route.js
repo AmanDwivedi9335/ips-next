@@ -3,7 +3,7 @@ import { dbConnect } from "@/lib/dbConnect.js";
 import Product from "@/model/Product.js";
 import Price from "@/model/Price.js";
 import { deriveVariantPricing } from "@/lib/pricing.js";
-import { attachCategoryDiscount } from "@/lib/categoryDiscount.js";
+import { attachSubcategoryDiscount } from "@/lib/categoryDiscount.js";
 
 export async function GET(request) {
         await dbConnect();
@@ -28,13 +28,15 @@ export async function GET(request) {
 
         if (product) {
                 const productDoc = await Product.findById(product)
-                        .select("discount type category subcategory")
+                        .select("type category subcategory")
                         .lean();
 
                 if (productDoc) {
-                        const enrichedProduct = await attachCategoryDiscount(productDoc);
+                        const enrichedProduct = await attachSubcategoryDiscount(productDoc);
                         productContext = {
                                 ...productDoc,
+                                subcategoryDiscount:
+                                        enrichedProduct?.subcategoryDiscount ?? 0,
                                 categoryDiscount: enrichedProduct?.categoryDiscount ?? 0,
                         };
                 }

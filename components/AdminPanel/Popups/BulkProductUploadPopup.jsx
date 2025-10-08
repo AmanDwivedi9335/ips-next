@@ -49,7 +49,6 @@ export function BulkUploadPopup({ open, onOpenChange }) {
 				category: "personal-safety",
                                 price: 99.99,
                                 salePrice: 79.99,
-				discount: 20,
 				type: "featured",
 				published: true,
 				features: [
@@ -70,7 +69,6 @@ export function BulkUploadPopup({ open, onOpenChange }) {
 				category: "road-safety",
                                 price: 149.99,
                                 salePrice: 0,
-				discount: 0,
 				type: "top-selling",
 				published: true,
 				features: [],

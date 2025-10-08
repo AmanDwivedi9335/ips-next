@@ -105,7 +105,6 @@ export function UpdateProductPopup({ open, onOpenChange, product }) {
     productCode: product?.productCode || product?.code || "",
     category: product?.category || "",
     subcategory: product?.subcategory || "",
-    discount: product?.discount?.toString() || "",
     type: product?.type || "featured",
     productFamily: product?.productFamily || "",
     published:
@@ -166,19 +165,6 @@ export function UpdateProductPopup({ open, onOpenChange, product }) {
 
   const shouldShowPricing = showBasicFields || hasExistingPricing;
 
-  const parsedDiscount = Number.parseFloat(formData.discount);
-  const normalizedDiscount =
-    Number.isFinite(parsedDiscount) && parsedDiscount > 0
-      ? Math.min(parsedDiscount, 100)
-      : 0;
-  const hasActiveDiscount =
-    formData.type === "discounted" && normalizedDiscount > 0;
-  const formattedDiscount = hasActiveDiscount
-    ? normalizedDiscount % 1 === 0
-      ? normalizedDiscount.toFixed(0)
-      : normalizedDiscount.toFixed(2)
-    : "0";
-
   const renderReadOnlyValue = (value, fallback = "Not set") =>
     value ? (
       <span>{value}</span>
@@ -233,7 +219,6 @@ export function UpdateProductPopup({ open, onOpenChange, product }) {
         productCode: product.productCode || product.code || "",
         category: product.category || "",
         subcategory: product.subcategory || "",
-        discount: product.discount?.toString() || "",
         type: product.type || "featured",
         productFamily: product.productFamily || "",
         published:
@@ -316,7 +301,6 @@ export function UpdateProductPopup({ open, onOpenChange, product }) {
         longDescription: formData.longDescription || formData.description,
         category: formData.category,
         subcategory: formData.subcategory,
-        discount: formData.discount ? parseFloat(formData.discount) : 0,
         type: formData.type,
         published: formData.published,
         features: features.filter((f) => f.title && f.description),
@@ -735,20 +719,6 @@ export function UpdateProductPopup({ open, onOpenChange, product }) {
                 </Select>
               </div>
 
-              <div>
-                <Label htmlFor="discount">Discount (%)</Label>
-                <Input
-                  id="discount"
-                  placeholder="0"
-                  value={formData.discount}
-                  onChange={(e) =>
-                    setFormData({ ...formData, discount: e.target.value })
-                  }
-                  className="mt-1"
-                  type="number"
-                  max="100"
-                />
-              </div>
             </div>
             {showBasicFields && (
               <div className="mt-4">
@@ -866,10 +836,8 @@ export function UpdateProductPopup({ open, onOpenChange, product }) {
                 </div>
 
                 <p className="text-sm text-gray-500">
-                  Enter MRPs for each combination.{" "}
-                  {hasActiveDiscount
-                    ? `A discount of ${formattedDiscount}% will be applied automatically when prices are shown to buyers.`
-                    : "These prices will be shown to buyers as entered."}
+                  Enter MRPs for each combination. These prices will be shown to
+                  buyers as entered.
                 </p>
 
                 {priceError && (

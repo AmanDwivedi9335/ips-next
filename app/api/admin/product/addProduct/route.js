@@ -91,30 +91,7 @@ export async function POST(request) {
                 }
 
 
-               const rawDiscount = formData.get("discount");
-               const parsedDiscount = rawDiscount ? Number.parseFloat(rawDiscount) : 0;
-               const discount = Number.isFinite(parsedDiscount)
-                       ? Math.min(Math.max(parsedDiscount, 0), 100)
-                       : 0;
                const type = formData.get("type") || "featured";
-               const shouldApplyDiscount = type === "discounted" && discount > 0;
-
-               const applyDiscount = (value) => {
-                       if (!shouldApplyDiscount) {
-                               return value;
-                       }
-
-                       if (typeof value !== "number" || Number.isNaN(value)) {
-                               return value;
-                       }
-
-                       const discountedValue = value - (value * discount) / 100;
-                       const roundedValue = Number.parseFloat(discountedValue.toFixed(2));
-
-                       return Number.isFinite(roundedValue) && roundedValue > 0
-                               ? roundedValue
-                               : 0;
-               };
 
 
                // Parse images and languageImages
@@ -141,7 +118,6 @@ export async function POST(request) {
                  const basePrice =
                          pricing.find((p) => typeof p?.price === "number" && !Number.isNaN(p.price))
                                  ?.price || 0;
-                 const discountedBasePrice = applyDiscount(basePrice);
 
                 const product = new Product({
                         title,
@@ -158,8 +134,8 @@ export async function POST(request) {
                         published: formData.get("published") === "true",
                         price: basePrice,
                         mrp: basePrice,
-                        salePrice: discountedBasePrice,
-                        discount,
+                        salePrice: 0,
+                        discount: 0,
                         type,
                         productType: type,
                         features: features,
