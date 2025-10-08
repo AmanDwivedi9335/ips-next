@@ -5,10 +5,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ArrowRight, Facebook, Instagram, Linkedin } from "lucide-react";
+import { ArrowRight, Instagram, Loader2 } from "lucide-react";
 import Logo from "@/public/ipslogowhite.png";
-import { ArrowRight, Facebook, Instagram, Linkedin, Loader2 } from "lucide-react";
-import Logo from "@/public/ipslogo.png";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
