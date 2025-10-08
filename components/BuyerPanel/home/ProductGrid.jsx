@@ -14,10 +14,10 @@ export default function ProductGrid({ products, viewMode = "grid" }) {
 		);
 	}
 
-	const gridClass =
-		viewMode === "grid"
-			? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6"
-			: "space-y-4";
+        const gridClass =
+                viewMode === "grid"
+                        ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6"
+                        : "space-y-4";
 
 	return (
 		<div className={gridClass}>
