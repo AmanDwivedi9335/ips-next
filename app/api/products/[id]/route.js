@@ -119,6 +119,17 @@ export async function GET(req, { params }) {
                                 pricingMap[relatedId] || []
                         );
 
+                        const englishLanguageImage = p.languageImages?.find(
+                                (languageImage) =>
+                                        languageImage.language?.toLowerCase() === "english"
+                        )?.image;
+
+                        const resolvedImage =
+                                englishLanguageImage ||
+                                p.languageImages?.[0]?.image ||
+                                p.images?.[0] ||
+                                "https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png";
+
                         return {
                                 id: p._id.toString(),
                                 title: p.title,
@@ -131,9 +142,9 @@ export async function GET(req, { params }) {
                                 discountPercentage: relatedPricing.discountPercentage,
                                 discountAmount: relatedPricing.discountAmount,
                                 categoryDiscount: p.categoryDiscount || 0,
-                                image:
-                                        p.images?.[0] ||
-                                        "https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png",
+                                image: resolvedImage,
+                                images: p.images || [],
+                                languageImages: p.languageImages || [],
                                 category: p.category,
                                 type: p.type,
                                 productCode: p.productCode || p.code,
