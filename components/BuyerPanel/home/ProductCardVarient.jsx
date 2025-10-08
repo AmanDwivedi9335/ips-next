@@ -60,14 +60,12 @@ function ProductCardVarient({ product, variant = "vertical" }) {
                 product?.image ||
                 FALLBACK_IMAGE;
 
-        const productCode = product?.productCode || product?.code;
-
         const priceRangeData = product?.pricingRange || product?.priceRange;
         const fallbackPricing = {
                 finalPrice: product?.price,
                 mrp: product?.originalPrice,
         };
-        const { min: saleMin, max: saleMax, mrpMin, mrpMax } = normalizeDisplayPriceRange(
+        const { min: saleMin, max: saleMax } = normalizeDisplayPriceRange(
                 priceRangeData,
                 fallbackPricing
         );
@@ -100,8 +98,6 @@ function ProductCardVarient({ product, variant = "vertical" }) {
                 (typeof product?.price === "number"
                         ? formatPriceValue(product?.price)
                         : product?.price);
-        const mrpLabel = formatRangeLabel(mrpMin, mrpMax);
-        const hasDiscount = Boolean(mrpLabel) && (mrpMax > saleMax || mrpMin > saleMin);
 
         const colorSwatches =
                 product?.colors?.length > 0 ? (
@@ -134,11 +130,6 @@ function ProductCardVarient({ product, variant = "vertical" }) {
                         >
                                 <CardContent className="flex flex-col gap-4 p-0 md:flex-row md:gap-0">
                                         <div className="relative flex items-center justify-center overflow-hidden bg-gradient-to-br from-gray-50 via-white to-gray-100 md:w-1/2">
-                                                {productCode && (
-                                                        <span className="absolute left-4 top-4 rounded-full bg-black px-3 py-1 text-xs font-medium uppercase tracking-wide text-white shadow-md">
-                                                                {productCode}
-                                                        </span>
-                                                )}
                                                 <Image
                                                         src={defaultImage}
                                                         alt={product?.title || "Product image"}
@@ -157,16 +148,7 @@ function ProductCardVarient({ product, variant = "vertical" }) {
                                                                         {product?.subtitle}
                                                                 </p>
                                                         )}
-                                                        {productCode && (
-                                                                <p className="text-xs uppercase tracking-wide text-gray-400">
-                                                                        Code: <span className="text-gray-500">{productCode}</span>
-                                                                </p>
-                                                        )}
-                                                        {product?.description && (
-                                                                <p className="text-sm leading-relaxed text-gray-600 line-clamp-3">
-                                                                        {product?.description}
-                                                                </p>
-                                                        )}
+                                                        <div className="h-3" aria-hidden="true" />
                                                 </div>
 
                                                 {colorSwatches}
@@ -176,14 +158,6 @@ function ProductCardVarient({ product, variant = "vertical" }) {
                                                                 <p className="text-2xl font-semibold text-gray-900">
                                                                         {salePriceLabel}
                                                                 </p>
-                                                                {hasDiscount && (
-                                                                        <p className="text-sm text-gray-400">
-                                                                                <span className="line-through">{mrpLabel}</span>
-                                                                                <span className="ml-2 inline-flex items-center rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">
-                                                                                        Save 25%
-                                                                                </span>
-                                                                        </p>
-                                                                )}
                                                         </div>
                                                         <div className="flex items-center gap-2">
                                                                 <Button
@@ -222,11 +196,6 @@ function ProductCardVarient({ product, variant = "vertical" }) {
                                         <div className="absolute inset-0" aria-hidden="true">
                                                 <div className="h-full w-full bg-[radial-gradient(circle_at_top,#f3f4f6,transparent_60%)]" />
                                         </div>
-                                        {productCode && (
-                                                <span className="absolute right-4 top-4 rounded-full bg-black px-3 py-1 text-xs font-medium uppercase tracking-wide text-white shadow-md">
-                                                        {productCode}
-                                                </span>
-                                        )}
                                         <div className="relative aspect-[4/5]">
                                                 <Image
                                                         src={defaultImage}
@@ -248,12 +217,7 @@ function ProductCardVarient({ product, variant = "vertical" }) {
                                                                 {product?.subtitle}
                                                         </p>
                                                 )}
-                                                {product?.description && (
-                                                        <p className="text-sm leading-relaxed text-gray-600 line-clamp-3">
-                                                                {product?.description}
-                                                        </p>
-                                                )}
-
+                                                <div className="h-3" aria-hidden="true" />
                                         </div>
 
 
@@ -264,11 +228,6 @@ function ProductCardVarient({ product, variant = "vertical" }) {
                                                         <p className="text-2xl font-semibold text-gray-900">
                                                                 {salePriceLabel}
                                                         </p>
-                                                        {hasDiscount && (
-                                                                <p className="text-sm text-gray-400 line-through">
-                                                                        {mrpLabel}
-                                                                </p>
-                                                        )}
                                                 </div>
                                                 <div className="flex items-center justify-between gap-3">
                                                         <div className="flex items-center gap-2">

@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ShoppingCart, Heart, Eye, ArrowRight, Star } from "lucide-react";
+import { ShoppingCart, Heart, Eye, ArrowRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCartStore } from "@/store/cartStore";
 import { useWishlistStore } from "@/store/wishlistStore";
@@ -20,15 +20,15 @@ export default function ProductCard({ product, viewMode = "grid" }) {
         // Ensure consistent identifiers and titles across different API shapes
         const productId = product.id || product._id;
         const productTitle = product.title || product.name || "";
-        const productCode = product.productCode || product.code;
-
         const pricing = deriveProductPricing(product);
         const finalPrice = pricing.finalPrice;
         const originalPrice = pricing.mrp;
         const discountPercentage = pricing.discountPercentage;
         const priceRangeData = product.pricingRange || product.priceRange;
-        const { min: saleMin, max: saleMax, mrpMin, mrpMax } =
-                normalizeDisplayPriceRange(priceRangeData, pricing);
+        const { min: saleMin, max: saleMax } = normalizeDisplayPriceRange(
+                priceRangeData,
+                pricing
+        );
 
         const formatPriceValue = (value) => {
                 if (typeof value !== "number" || !Number.isFinite(value)) {
@@ -55,8 +55,6 @@ export default function ProductCard({ product, viewMode = "grid" }) {
 
         const salePriceLabel =
                 formatRangeLabel(saleMin, saleMax) || formatPriceValue(finalPrice);
-        const mrpLabel = formatRangeLabel(mrpMin, mrpMax);
-        const showMrpLabel = Boolean(mrpLabel) && (mrpMax > saleMax || mrpMin > saleMin);
 
         const englishImage = product.languageImages?.find(
                 (l) => l.language?.toLowerCase() === "english"
@@ -140,11 +138,6 @@ export default function ProductCard({ product, viewMode = "grid" }) {
                                                         )}
 
                                                         <div className="absolute top-2 right-2 flex flex-col items-end gap-1">
-                                                                {productCode && (
-                                                                        <Badge className="bg-black text-white">
-                                                                                {productCode}
-                                                                        </Badge>
-                                                                )}
                                                                 {product.type === "featured" && (
                                                                         <Badge className="bg-blue-500 text-white">Featured</Badge>
                                                                 )}
@@ -156,25 +149,6 @@ export default function ProductCard({ product, viewMode = "grid" }) {
                                                                 <h3 className="text-xl font-semibold hover:text-blue-600 transition-colors">
                                                                         {productTitle}
                                                                 </h3>
-                                                                {productCode && (
-
-                                                                        <p className="text-sm text-gray-500">Product Code: {productCode}</p>
-
-                                                                )}
-                                                                <p className="text-gray-600 mt-2 line-clamp-2">
-                                                                        {product.description}
-                                                                </p>
-								<div className="flex items-center gap-2 mt-2">
-									<div className="flex items-center">
-										{[...Array(5)].map((_, i) => (
-											<Star
-												key={i}
-												className="h-4 w-4 fill-yellow-400 text-yellow-400"
-											/>
-										))}
-									</div>
-									<span className="text-sm text-gray-500">(4.5)</span>
-								</div>
 							</div>
 
 							<div className="flex items-center justify-between">
@@ -183,13 +157,8 @@ export default function ProductCard({ product, viewMode = "grid" }) {
                                                                                 <p className="text-2xl font-bold">
                                                                                         {salePriceLabel}
                                                                                 </p>
-                                                                                {showMrpLabel && (
-                                                                                        <p className="text-lg text-gray-500 line-through">
-                                                                                                {mrpLabel}
-                                                                                        </p>
-                                                                                )}
                                                                         </div>
-								</div>
+                                                                </div>
 
 								<div className="flex items-center gap-2">
                                                                         <Button
@@ -259,13 +228,6 @@ export default function ProductCard({ product, viewMode = "grid" }) {
                                                                 )}
                                                         </div>
 
-                                                        {/* Product code badge */}
-                                                        {productCode && (
-                                                                <Badge className="absolute top-2 right-2 bg-black text-white">
-                                                                        {productCode}
-                                                                </Badge>
-                                                        )}
-
                                                         {/* Quick view overlay */}
                                                         <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
                                                                 <Button
@@ -285,27 +247,6 @@ export default function ProductCard({ product, viewMode = "grid" }) {
                                                         <h3 className="font-semibold text-lg mb-2 line-clamp-2 hover:text-blue-600 transition-colors">
                                                                 {productTitle}
                                                         </h3>
-                                                        {productCode && (
-
-                                                                <p className="text-xs text-gray-500 mb-1">Product Code: {productCode}</p>
-
-                                                        )}
-                                                        <p className="text-gray-600 text-sm mb-3 line-clamp-2">
-                                                                {product.description}
-                                                        </p>
-
-							{/* Rating */}
-							<div className="flex items-center gap-2 mb-3">
-								<div className="flex items-center">
-									{[...Array(5)].map((_, i) => (
-										<Star
-											key={i}
-											className="h-3 w-3 fill-yellow-400 text-yellow-400"
-										/>
-									))}
-								</div>
-								<span className="text-xs text-gray-500">(4.5)</span>
-							</div>
 						</div>
 
 						{/* Price */}
@@ -314,11 +255,6 @@ export default function ProductCard({ product, viewMode = "grid" }) {
                                                                 <p className="text-xl font-bold">
                                                                         {salePriceLabel}
                                                                 </p>
-                                                                {showMrpLabel && (
-                                                                        <p className="text-sm text-gray-500 line-through">
-                                                                                {mrpLabel}
-                                                                        </p>
-                                                                )}
                                                         </div>
 						</div>
 

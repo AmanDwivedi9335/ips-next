@@ -22,8 +22,6 @@ export default function ProductCard({ product }) {
                 product.images?.[0] ||
                 product.image ||
                 "https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png";
-        const productCode = product.productCode || product.code;
-
         const priceRangeData = product.pricingRange || product.priceRange;
         const fallbackPricing = {
                 finalPrice: product.price,
@@ -57,7 +55,7 @@ export default function ProductCard({ product }) {
                 return formattedMin;
         };
 
-        const priceLabel =
+        const salePriceLabel =
                 formatRangeLabel(saleMin, saleMax) ||
                 (typeof product.price === "number"
                         ? formatPriceValue(product.price)
@@ -74,15 +72,10 @@ export default function ProductCard({ product }) {
                                                 <h3 className="font-bold text-base md:text-lg mb-1">
                                                         {product.title}
                                                 </h3>
-                                                {productCode && (
-
-                                                        <p className="text-gray-500 text-xs">Product Code: {productCode}</p>
-
-                                                )}
                                                 {product.subtitle && (
                                                         <p className="text-gray-600 text-sm">{product.subtitle}</p>
                                                 )}
-                                                <p className="font-bold text-lg md:text-xl mt-2">{priceLabel}</p>
+                                                <p className="font-bold text-lg md:text-xl mt-2">{salePriceLabel}</p>
 					</div>
 					{product.colors && (
 						<div className="flex space-x-1">
@@ -104,18 +97,7 @@ export default function ProductCard({ product }) {
 					)}
 				</div>
 
-				{product.description && (
-					<p className="text-gray-600 text-sm mb-4 line-clamp-3">
-						{product.description}
-					</p>
-				)}
-
                                 <div className="relative mb-4">
-                                        {productCode && (
-                                                <span className="absolute top-2 right-2 bg-black text-white text-xs px-2 py-1 rounded">
-                                                        {productCode}
-                                                </span>
-                                        )}
                                         <img
                                                 src={defaultImage}
                                                 alt={product.title}

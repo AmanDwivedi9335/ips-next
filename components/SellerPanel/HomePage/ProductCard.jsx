@@ -5,13 +5,11 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ShoppingCart, Heart, Eye, ArrowRight, Star } from "lucide-react";
+import { ShoppingCart, Heart, Eye, ArrowRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export default function ProductCard({ product, viewMode = "grid" }) {
         const router = useRouter();
-        const productCode = product.productCode || product.code;
-
         const priceRange = product.pricingRange || product.priceRange;
         const saleMin =
                 typeof priceRange?.min === "number" && Number.isFinite(priceRange.min)
@@ -22,15 +20,6 @@ export default function ProductCard({ product, viewMode = "grid" }) {
                         ? priceRange.max
                         : null;
         const saleMax = saleMaxRaw !== null ? saleMaxRaw : saleMin;
-        const mrpMin =
-                typeof priceRange?.mrpMin === "number" && Number.isFinite(priceRange.mrpMin)
-                        ? priceRange.mrpMin
-                        : null;
-        const mrpMaxRaw =
-                typeof priceRange?.mrpMax === "number" && Number.isFinite(priceRange.mrpMax)
-                        ? priceRange.mrpMax
-                        : null;
-        const mrpMax = mrpMaxRaw !== null ? mrpMaxRaw : mrpMin;
 
         const formatPriceValue = (value) => {
                 if (typeof value === "number" && Number.isFinite(value)) {
@@ -63,16 +52,6 @@ export default function ProductCard({ product, viewMode = "grid" }) {
                 saleMax,
                 formatPriceValue(product.price)
         );
-        const mrpLabel = formatRangeLabel(
-                mrpMin,
-                mrpMax,
-                formatPriceValue(product.originalPrice)
-        );
-
-        const showMrpLabel = Boolean(mrpLabel) &&
-                ((typeof saleMin === "number" && typeof mrpMin === "number" && mrpMin > saleMin) ||
-                        (typeof saleMax === "number" && typeof mrpMax === "number" && mrpMax > saleMax) ||
-                        (!priceRange && product.originalPrice && product.price));
 
         const englishImage = product.languageImages?.find(
                 (l) => l.language?.toLowerCase() === "english"
@@ -120,25 +99,6 @@ export default function ProductCard({ product, viewMode = "grid" }) {
                                                                 <h3 className="text-xl font-semibold hover:text-blue-600 transition-colors">
                                                                         {product.title}
                                                                 </h3>
-                                                                {productCode && (
-
-                                                                        <p className="text-sm text-gray-500">Product Code: {productCode}</p>
-
-                                                                )}
-                                                                <p className="text-gray-600 mt-2 line-clamp-2">
-                                                                        {product.description}
-                                                                </p>
-								<div className="flex items-center gap-2 mt-2">
-									<div className="flex items-center">
-										{[...Array(5)].map((_, i) => (
-											<Star
-												key={i}
-												className="h-4 w-4 fill-yellow-400 text-yellow-400"
-											/>
-										))}
-									</div>
-									<span className="text-sm text-gray-500">(4.5)</span>
-								</div>
 							</div>
 
 							<div className="flex items-center justify-between">
@@ -147,11 +107,6 @@ export default function ProductCard({ product, viewMode = "grid" }) {
                                                                                 <p className="text-2xl font-bold">
                                                                                         {salePriceLabel}
                                                                                 </p>
-                                                                                {showMrpLabel && (
-                                                                                        <p className="text-lg text-gray-500 line-through">
-                                                                                                {mrpLabel}
-                                                                                        </p>
-                                                                                )}
                                                                         </div>
                                                                         {/* Availability status removed */}
 								</div>
@@ -236,27 +191,7 @@ export default function ProductCard({ product, viewMode = "grid" }) {
                                                         <h3 className="font-semibold text-lg mb-2 line-clamp-2 hover:text-blue-600 transition-colors">
                                                                 {product.title}
                                                         </h3>
-                                                        {productCode && (
-
-                                                                <p className="text-xs text-gray-500 mb-1">Product Code: {productCode}</p>
-
-                                                        )}
-                                                        <p className="text-gray-600 text-sm mb-3 line-clamp-2">
-                                                                {product.description}
-                                                        </p>
-
-							{/* Rating */}
-							<div className="flex items-center gap-2 mb-3">
-								<div className="flex items-center">
-									{[...Array(5)].map((_, i) => (
-										<Star
-											key={i}
-											className="h-3 w-3 fill-yellow-400 text-yellow-400"
-										/>
-									))}
-								</div>
-								<span className="text-xs text-gray-500">(4.5)</span>
-							</div>
+                                                        <div className="mb-3" aria-hidden="true" />
 						</div>
 
 						{/* Price */}
@@ -265,18 +200,6 @@ export default function ProductCard({ product, viewMode = "grid" }) {
                                                                 <p className="text-xl font-bold">
                                                                         {salePriceLabel}
                                                                 </p>
-                                                                {showMrpLabel && (
-                                                                        <div className="flex items-center gap-2">
-                                                                                <p className="text-sm text-gray-500 line-through">
-                                                                                        {mrpLabel}
-                                                                                </p>
-                                                                                {product.discount && (
-                                                                                        <p className="text-sm text-green-600 font-semibold">
-                                                                                                {product.discount}
-                                                                                        </p>
-                                                                                )}
-                                                                        </div>
-                                                                )}
                                                         </div>
                                                         {/* Availability information removed */}
 						</div>
