@@ -15,8 +15,14 @@ export default function Footer() {
                 },
                 account: {
                         title: "Account",
-			items: ["My Account", "Login / Register", "Cart", "Wishlist", "Shop"],
-		},
+                        items: [
+                                { label: "My Account", href: "/account" },
+                                { label: "Login / Register", href: "/login" },
+                                { label: "Cart", href: "/cart" },
+                                { label: "Wishlist", href: "/wishlist" },
+                                { label: "Shop", href: "/products" },
+                        ],
+                },
                 quickLinks: {
                         title: "Quick Links",
                         items: [
