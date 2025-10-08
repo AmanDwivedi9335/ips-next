@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
 import { dbConnect } from "@/lib/dbConnect.js";
 import cloudinary from "@/lib/cloudnary.js";
+import { verifyToken } from "@/lib/auth.js";
 import Order from "@/model/Order.js";
 
 export const runtime = "nodejs";
@@ -17,6 +19,42 @@ export async function POST(request, { params }) {
                         return NextResponse.json(
                                 { success: false, message: "Order id is required" },
                                 { status: 400 }
+                        );
+                }
+
+                const cookieStore = cookies();
+                const token = cookieStore.get("auth_token")?.value;
+
+                if (!token) {
+                        return NextResponse.json(
+                                { success: false, message: "Authentication required" },
+                                { status: 401 }
+                        );
+                }
+
+                let decodedToken;
+                try {
+                        decodedToken = verifyToken(token);
+                } catch (error) {
+                        return NextResponse.json(
+                                { success: false, message: "Invalid authentication token" },
+                                { status: 401 }
+                        );
+                }
+
+                const order = await Order.findById(id);
+
+                if (!order) {
+                        return NextResponse.json(
+                                { success: false, message: "Order not found" },
+                                { status: 404 }
+                        );
+                }
+
+                if (order.userId?.toString() !== decodedToken.id) {
+                        return NextResponse.json(
+                                { success: false, message: "You do not have permission to update this order" },
+                                { status: 403 }
                         );
                 }
 
@@ -79,23 +117,11 @@ export async function POST(request, { params }) {
                         );
                 }
 
-                const updatePayload = {
-                        logoUrl: uploadedLogoUrl,
-                        logoStatus: "submitted",
-                        logoSubmittedAt: new Date(),
-                };
+                order.logoUrl = uploadedLogoUrl;
+                order.logoStatus = "submitted";
+                order.logoSubmittedAt = new Date();
 
-                const order = await Order.findByIdAndUpdate(id, updatePayload, {
-                        new: true,
-                        runValidators: true,
-                });
-
-                if (!order) {
-                        return NextResponse.json(
-                                { success: false, message: "Order not found" },
-                                { status: 404 }
-                        );
-                }
+                await order.save();
 
                 return NextResponse.json({
                         success: true,
