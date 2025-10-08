@@ -112,92 +112,107 @@ export default function Footer() {
         };
 
 
-        return (
-                <footer className="bg-black text-white py-8 md:py-16">
-                        <div className="px-10">
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8">
-                                        {/* Logo & Social */}
-                                        <div className="flex flex-col space-y-6">
-                                                <Image
-                                                        src={Logo}
-                                                        alt="Logo"
-                                                        className="w-32 h-auto object-contain"
-                                                />
-                                                <div className="flex space-x-4">
-                                                        <Facebook className="h-6 w-6 hover:text-blue-400 cursor-pointer transition-colors" />
-                                                        <Instagram className="h-6 w-6 hover:text-pink-400 cursor-pointer transition-colors" />
-                                                        <Linkedin className="h-6 w-6 hover:text-blue-600 cursor-pointer transition-colors" />
-                                                </div>
-                                                <Button
-                                                        asChild
-                                                        className="w-full sm:w-auto bg-white text-black hover:bg-white/90"
-                                                >
-                                                        <Link href="/contact">Contact Us</Link>
-                                                </Button>
-                                        </div>
+return (
+<footer className="relative overflow-hidden bg-gradient-to-b from-[#111111] via-[#0c0c0c] to-black text-white">
+<div className="pointer-events-none absolute inset-0 opacity-40" aria-hidden>
+<div className="absolute -top-32 -left-24 h-80 w-80 rounded-full bg-[radial-gradient(circle_at_center,_rgba(234,181,67,0.45),_transparent_70%)]" />
+<div className="absolute bottom-0 right-0 h-72 w-72 rounded-full bg-[radial-gradient(circle_at_center,_rgba(255,255,255,0.08),_transparent_70%)]" />
+</div>
+<div className="relative mx-auto max-w-6xl px-6 py-16 md:px-10 md:py-20">
+<div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-5">
+{/* Logo & Social */}
+<div className="flex flex-col space-y-8">
+<Image src={Logo} alt="Logo" className="w-36 h-auto object-contain drop-shadow-[0_0_25px_rgba(234,181,67,0.25)]" />
+<p className="text-sm text-white/70">
+Industrial Print Solutions empowers businesses with premium quality industrial
+printing supplies tailored for growth.
+</p>
+<div className="flex items-center gap-3">
+{[
+{ icon: Facebook, label: "Facebook" },
+{ icon: Instagram, label: "Instagram" },
+{ icon: Linkedin, label: "LinkedIn" },
+].map(({ icon: Icon, label }) => (
+<button
+key={label}
+type="button"
+className="group flex h-10 w-10 items-center justify-center rounded-full border border-white/15 bg-white/5 backdrop-blur transition hover:-translate-y-1 hover:border-amber-400/70 hover:bg-amber-400/20"
+aria-label={label}
+>
+<Icon className="h-5 w-5 text-white transition group-hover:text-amber-300" />
+</button>
+))}
+</div>
+<Button
+asChild
+className="w-full sm:w-auto rounded-full bg-amber-400 px-6 py-2 text-black shadow-[0_15px_40px_rgba(234,181,67,0.35)] transition hover:bg-amber-300"
+>
+<Link href="/contact">Contact Us</Link>
+</Button>
+</div>
 
-					{/* Support */}
-					<div>
-						<h3 className="text-xl font-bold mb-4">
-							{footerSections.support.title}
-						</h3>
-                                                <div className="space-y-3 text-gray-400">
-                                                        {footerSections.support.items.map((item, index) =>
-                                                                renderFooterItem(item, index)
-                                                        )}
-                                                </div>
-					</div>
+{/* Support */}
+<div className="space-y-4">
+<h3 className="text-xl font-semibold text-amber-300">
+{footerSections.support.title}
+</h3>
+<div className="space-y-3 text-sm text-white/70">
+{footerSections.support.items.map((item, index) => renderFooterItem(item, index))}
+</div>
+</div>
 
-					{/* Account */}
-					<div>
-						<h3 className="text-xl font-bold mb-4">
-							{footerSections.account.title}
-						</h3>
-                                                <div className="space-y-3 text-gray-400">
-                                                        {footerSections.account.items.map((item, index) =>
-                                                                renderFooterItem(item, index)
-                                                        )}
-                                                </div>
-					</div>
+{/* Account */}
+<div className="space-y-4">
+<h3 className="text-xl font-semibold text-amber-300">
+{footerSections.account.title}
+</h3>
+<div className="space-y-3 text-sm text-white/70">
+{footerSections.account.items.map((item, index) => renderFooterItem(item, index))}
+</div>
+</div>
 
-                                        {/* Quick Links */}
+{/* Quick Links */}
+<div className="space-y-4">
+<h3 className="text-xl font-semibold text-amber-300">
+{footerSections.quickLinks.title}
+</h3>
+<div className="space-y-3 text-sm text-white/70">
+{footerSections.quickLinks.items.map((item, index) => renderFooterItem(item, index))}
+</div>
+</div>
 
-                                        <div>
-                                                <h3 className="text-xl font-bold mb-4">
-                                                        {footerSections.quickLinks.title}
-                                                </h3>
-                                                <div className="space-y-3 text-gray-400">
-                                                        {footerSections.quickLinks.items.map((item, index) =>
-                                                                renderFooterItem(item, index)
-                                                        )}
-                                                </div>
-                                        </div>
+{/* Subscribe */}
+<div className="space-y-4">
+<h3 className="text-xl font-semibold text-amber-300">Subscribe</h3>
+<p className="text-sm text-white/60">
+Stay updated on the latest industrial print innovations, offers, and expert tips.
+</p>
+<div className="flex overflow-hidden rounded-full border border-white/15 bg-white/5 p-1 shadow-[0_10px_30px_rgba(0,0,0,0.35)] backdrop-blur">
+<Input
+placeholder="Enter your email"
+type="email"
+className="border-0 bg-transparent text-sm text-white placeholder:text-white/50 focus-visible:ring-0"
+/>
+<Button
+variant="ghost"
+size="icon"
+className="h-10 w-10 rounded-full bg-amber-400 text-black transition hover:bg-amber-300"
+>
+<ArrowRight className="h-4 w-4" />
+</Button>
+</div>
+</div>
+</div>
 
-
-
-                                        {/* Subscribe */}
-                                        <div>
-                                                <h3 className="text-xl font-bold mb-4">Subscribe</h3>
-                                                <div className="flex">
-                                                        <Input
-                                                                placeholder="Enter your email"
-                                                                className="bg-transparent border-white/20 border-r-0 text-white placeholder-gray-400 rounded-r-none"
-                                                        />
-                                                        <Button
-                                                                variant="ghost"
-                                                                size="icon"
-                                                                className="text-white border border-l-0 border-white/20 rounded-l-none"
-                                                        >
-                                                                <ArrowRight className="h-4 w-4" />
-                                                        </Button>
-                                                </div>
-                                        </div>
-                                </div>
-
-				<div className="border-t border-white/20 mt-8 md:mt-12 pt-8 text-center text-gray-400">
-					<p>© Copyright Industrial Print Solutions 2025. All right reserved</p>
-				</div>
-			</div>
-		</footer>
-	);
+<div className="mt-16 flex flex-col gap-6 border-t border-white/10 pt-8 text-sm text-white/60 md:flex-row md:items-center md:justify-between">
+<p>© Copyright Industrial Print Solutions 2025. All rights reserved.</p>
+<div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs uppercase tracking-[0.3em] text-white/40">
+<span className="font-medium text-white/70">Industrial Excellence</span>
+<span>•</span>
+<span className="font-medium text-amber-300">Trusted by Businesses Nationwide</span>
+</div>
+</div>
+</div>
+</footer>
+);
 }
