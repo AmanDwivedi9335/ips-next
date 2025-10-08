@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/select";
 import {
         ArrowLeft,
+        ArrowRight,
         ShoppingCart,
         Heart,
         Share2,
@@ -586,334 +587,324 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                                         )}
                                 </div>
                                 {/* Product Details */}
-				<div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
-					{/* Product Images */}
-					<div className="space-y-6">
+                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
+                                        {/* Product Images */}
+                                        <div className="space-y-6">
                                                 <motion.div
-                                                        className="relative bg-white rounded-lg overflow-hidden shadow-sm"
+                                                        className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 shadow-[0_40px_80px_-40px_rgba(15,23,42,0.8)]"
                                                         initial={{ opacity: 0, x: -20 }}
                                                         animate={{ opacity: 1, x: 0 }}
                                                         transition={{ duration: 0.5 }}
                                                 >
-                                                        <div className="absolute top-4 left-4 z-10">
+                                                        <div className="pointer-events-none absolute inset-0 opacity-80">
+                                                                <div className="absolute -top-20 -left-16 h-72 w-72 rounded-full bg-emerald-400/10 blur-3xl" />
+                                                                <div className="absolute -bottom-24 -right-16 h-72 w-72 rounded-full bg-cyan-400/10 blur-3xl" />
+                                                                <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.25),rgba(15,23,42,0.2))]" />
+                                                        </div>
+
+                                                        <div className="absolute top-6 left-6 z-20 flex items-center gap-3">
                                                                 <Link
                                                                         href="/products"
-                                                                        className="inline-flex items-center bg-black text-white py-2 px-4 rounded-full hover:bg-gray-800 transition-colors"
+                                                                        className="inline-flex items-center gap-2 rounded-full bg-white/95 px-5 py-2 text-sm font-medium text-slate-900 shadow-lg transition hover:-translate-y-0.5 hover:shadow-xl"
                                                                 >
-                                                                        <ArrowLeft className="h-4 w-4 mr-2" />
-                                                                        Back
+                                                                        <ArrowLeft className="h-4 w-4" />
+                                                                        Back to products
                                                                 </Link>
                                                         </div>
 
                                                         {productCode && (
-                                                                <Badge className="absolute top-4 right-4 z-10 bg-black text-white">
+                                                                <Badge className="absolute top-6 right-6 z-20 rounded-full border border-white/30 bg-white/15 px-4 py-1 text-xs font-semibold tracking-wide text-white backdrop-blur">
                                                                         {productCode}
                                                                 </Badge>
                                                         )}
 
-                                                        <div className="relative w-full h-96 lg:h-[400px]">
-                                                               <Image
-                                                                       src={
-                                                                               languageImage ||
-                                                                               product.images?.[selectedImage] ||
-                                                                               product.image ||
-                                                                               "https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png"
-                                                                       }
-                                                                       alt={product.name}
-                                                                       fill
-                                                                       className="object-contain p-8"
-                                                                       priority
-                                                               />
-							</div>
-						</motion.div>
-
-						{/* Image Gallery */}
-						{product.images && product.images.length > 1 && (
-							<div className="flex space-x-4 justify-center overflow-x-auto">
-								{product.images.map((image, index) => (
-									<button
-										key={index}
-										onClick={() => setSelectedImage(index)}
-										className={`relative w-20 h-20 border-2 rounded-lg overflow-hidden flex-shrink-0 ${
-											selectedImage === index
-												? "border-black"
-												: "border-gray-200 hover:border-gray-400"
-										}`}
-									>
-										<Image
-											src={
-												image ||
-												"https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png"
-											}
-											alt={`${product.name} view ${index + 1}`}
-											fill
-											className="object-contain p-2"
-										/>
-									</button>
-								))}
-							</div>
-						)}
-					</div>
-
-					{/* Product Info */}
-					<motion.div
-						className="space-y-6"
-						initial={{ opacity: 0, x: 20 }}
-						animate={{ opacity: 1, x: 0 }}
-						transition={{ duration: 0.5, delay: 0.2 }}
-					>
-						<div>
-							<Badge variant="secondary" className="mb-4">
-								{product.category?.replace("-", " ").toUpperCase()}
-							</Badge>
-							<h1 className="text-3xl lg:text-4xl font-bold mb-4">
-								{product.name}
-							</h1>
-
-                                                        {/* Product code */}
-                                                        {productCode && (
-                                                                <p className="text-sm text-gray-600 mb-2">
-                                                                        Code: {productCode}
-                                                                </p>
-                                                        )}
-
-                                                        {/* Product rating */}
-                                                        <div className="flex items-center mb-2">
-                                                                <span className="flex items-center gap-2 bg-green-600 text-white px-2 py-1 rounded-lg">
-                                                                        {averageRating.toFixed(1)}
-                                                                        <Star className="w-4 h-4 fill-white text-white" />
-                                                                </span>
-								<span className="ml-2 text-gray-600 font-semibold">
-									({reviews.length} Reviews)
-								</span>
-							</div>
-
-                                        {/* Product price */}
-                                        {isLoadingPriceWithoutValue ? (
-                                                <p className="text-sm text-gray-500 mb-2">
-                                                        Fetching latest price...
-                                                </p>
-                                        ) : shouldShowUnavailableMessage ? (
-                                                <p className="text-lg lg:text-xl font-semibold text-red-600 mb-2">
-                                                        Please select another size
-                                                </p>
-                                        ) : displayPrice !== null ? (
-                                                <div className="space-y-1 mb-2">
-                                                        <div className="flex items-baseline gap-3 flex-wrap">
-                                                                <p className="text-xl lg:text-2xl font-semibold text-black">
-                                                                        ₹ {displayPrice.toLocaleString()}
-                                                                </p>
-                                                                {showOriginalPrice && (
-                                                                        <p className="text-base text-gray-500 line-through">
-                                                                                ₹ {effectiveMrp.toLocaleString()}
-                                                                        </p>
-                                                                )}
-                                                                {showDiscountBadge && (
-                                                                        <Badge className="bg-red-500 text-white">
-                                                                                {discountToShow}% OFF
-                                                                        </Badge>
-                                                                )}
+                                                        <div className="relative w-full h-[520px] lg:h-[560px]">
+                                                                <Image
+                                                                        src={
+                                                                                languageImage ||
+                                                                                product.images?.[selectedImage] ||
+                                                                                product.image ||
+                                                                                "https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png"
+                                                                        }
+                                                                        alt={product.name}
+                                                                        fill
+                                                                        className="object-contain p-10 drop-shadow-[0_25px_50px_rgba(0,0,0,0.45)]"
+                                                                        priority
+                                                                />
                                                         </div>
-                                                        {numericCalculatedPrice !== null ? (
-                                                                <p className="text-sm text-gray-500">
-                                                                        Price based on selected options
-                                                                </p>
-                                                        ) : showDiscountBadge ? (
-                                                                <p className="text-sm text-green-600 font-medium">
-                                                                        Sale price after discount
-                                                                </p>
-                                                        ) : null}
-                                                </div>
-                                        ) : null}
-                                        {hasQrOption && (
-                                                <div className="mt-4 flex items-center gap-3">
-                                                        <span className="font-medium whitespace-nowrap">QR Code:</span>
-                                                        <Select
-                                                                value={hasQr ? "yes" : "no"}
-                                                                onValueChange={(v) => setHasQr(v === "yes")}
-                                                        >
-                                                                <SelectTrigger className="w-40">
-                                                                        <SelectValue placeholder="QR Code" />
-                                                                </SelectTrigger>
-                                                                <SelectContent>
-                                                                        <SelectItem value="yes">
-                                                                                With QR Code
-                                                                        </SelectItem>
-                                                                        <SelectItem value="no">
-                                                                                Without QR Code
-                                                                        </SelectItem>
-                                                                </SelectContent>
-                                                        </Select>
-                                                </div>
-                                        )}
-                                </div>
+                                                </motion.div>
 
-                                {/* Product Colors */}
-                                {/* <div className="w-fit flex space-x-2 p-3 bg-gray-200 rounded-lg">
-                                        {colors.map((color, i) => (
-                                                <div
-                                                        key={i}
-                                                        className={`w-6 h-6 rounded-full border border-gray-200 cursor-pointer ${color}`}
-                                                />
-                                        ))}
-                                </div> */}
-
-                                {languages.length > 0 && (
-                                        <div className="mt-4 flex items-center gap-3">
-                                                <span className="font-medium whitespace-nowrap">Language:</span>
-                                                <Select
-                                                        value={selectedLanguage}
-                                                        onValueChange={setSelectedLanguage}
-                                                >
-                                                        <SelectTrigger className="w-40">
-                                                                <SelectValue placeholder="Language" />
-                                                        </SelectTrigger>
-                                                        <SelectContent>
-                                                                {languages.map((lang) => (
-                                                                        <SelectItem key={lang} value={lang}>
-                                                                                {lang}
-                                                                        </SelectItem>
-                                                                ))}
-                                                        </SelectContent>
-                                                </Select>
-                                        </div>
-                                )}
-
-                                                {isLayoutSelectionEnabled &&
-                                                        availableLayouts &&
-                                                        availableLayouts.length > 0 && (
-                                                        <div className="mt-4 flex items-center gap-3">
-                                                                <span className="font-medium whitespace-nowrap">Layout:</span>
-                                                                <Select
-                                                                        value={selectedLayout}
-                                                                        onValueChange={setSelectedLayout}
-                                                                >
-                                                                        <SelectTrigger className="w-40">
-                                                                                <SelectValue placeholder="Layout" />
-                                                                        </SelectTrigger>
-                                                                        <SelectContent>
-                                                                                {availableLayouts.map((lay) => (
-                                                                                        <SelectItem key={lay} value={lay}>
-                                                                                                {lay}
-                                                                                        </SelectItem>
-                                                                                ))}
-                                                                        </SelectContent>
-                                                                </Select>
-                                                        </div>
-                                                )}
-                                                {availableSizes && availableSizes.length > 0 && (
-                                                        <div className="mt-4 flex items-center gap-3">
-                                                                <span className="font-medium whitespace-nowrap">Size:</span>
-                                                                <Select
-                                                                        value={selectedSize}
-                                                                        onValueChange={setSelectedSize}
-                                                                >
-                                                                        <SelectTrigger className="w-40">
-                                                                                <SelectValue placeholder="Size" />
-                                                                        </SelectTrigger>
-                                                                        <SelectContent>
-                                                                                {availableSizes.map((size) => (
-                                                                                        <SelectItem key={size} value={size}>
-                                                                                                {size}
-                                                                                        </SelectItem>
-                                                                                ))}
-                                                                        </SelectContent>
-                                                                </Select>
-                                                        </div>
-                                                )}
-
-                                                {availableMaterials && availableMaterials.length > 0 && (
-                                                        <div className="mt-4 flex items-center gap-3">
-                                                                <span className="font-medium whitespace-nowrap">Material:</span>
-                                                                <Select
-                                                                        value={selectedMaterial}
-                                                                        onValueChange={setSelectedMaterial}
-                                                                >
-                                                                        <SelectTrigger className="w-40">
-                                                                                <SelectValue placeholder="Material" />
-                                                                        </SelectTrigger>
-                                                                        <SelectContent>
-                                                                                {availableMaterials.map((mat) => (
-                                                                                        <SelectItem key={mat} value={mat}>
-                                                                                                {mat}
-                                                                                        </SelectItem>
-                                                                                ))}
-                                                                        </SelectContent>
-                                                                </Select>
-                                                        </div>
-                                                )}
-
-                                                {/* Quantity and Add to Cart */}
-                                                <div className="space-y-4">
-							<div className="flex items-center space-x-4">
-								<span className="font-medium">Quantity:</span>
-								<div className="flex items-center border rounded-lg">
-									<Button
-										variant="ghost"
-										size="icon"
-										onClick={() => handleQuantityChange(-1)}
-										disabled={quantity <= 1}
-									>
-										<Minus className="h-4 w-4" />
-									</Button>
-									<span className="px-4 py-2 font-medium">{quantity}</span>
-                                                                        <Button
-                                                                                variant="ghost"
-                                                                                size="icon"
-                                                                                onClick={() => handleQuantityChange(1)}
+                                                {/* Image Gallery */}
+                                                {product.images && product.images.length > 1 && (
+                                                        <div className="flex justify-center gap-4 overflow-x-auto pb-2">
+                                                                {product.images.map((image, index) => (
+                                                                        <button
+                                                                                key={index}
+                                                                                onClick={() => setSelectedImage(index)}
+                                                                                className={`relative h-24 w-24 flex-shrink-0 overflow-hidden rounded-2xl border-2 transition-all duration-200 ${
+                                                                                        selectedImage === index
+                                                                                                ? "border-slate-900 shadow-lg"
+                                                                                                : "border-transparent bg-white/40 hover:border-slate-300"
+                                                                                }`}
                                                                         >
-                                                                                <Plus className="h-4 w-4" />
-                                                                        </Button>
-                                                                </div>
+                                                                                <Image
+                                                                                        src={
+                                                                                                image ||
+                                                                                                "https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png"
+                                                                                        }
+                                                                                        alt={`${product.name} view ${index + 1}`}
+                                                                                        fill
+                                                                                        className="object-contain p-3"
+                                                                                />
+                                                                        </button>
+                                                                ))}
                                                         </div>
+                                                )}
+                                        </div>
 
-							<div className="flex flex-col sm:flex-row gap-4">
-                                                                <Button
-                                                                        onClick={handleAddToCart}
-                                                                        disabled={
-                                                                                isLoading ||
-                                                                                calculatedPrice === null ||
-                                                                                isPriceLoading ||
-                                                                                isMrpMissingForSelection
-                                                                        }
-                                                                        className="flex-1 bg-black text-white hover:bg-gray-800"
-                                                                        size="lg"
-                                                                >
-									<ShoppingCart className="h-5 w-5 mr-2" />
-									Add to Cart
-								</Button>
-                                                                <Button
-                                                                        onClick={handleBuyNow}
-                                                                        disabled={
-                                                                                calculatedPrice === null ||
-                                                                                isPriceLoading ||
-                                                                                isMrpMissingForSelection
-                                                                        }
-                                                                        className="flex-1 bg-green-600 text-white hover:bg-green-700"
-                                                                        size="lg"
-                                                                >
-                                                                        Buy Now
-                                                                </Button>
-                                                                <Button
-                                                                        variant="outline"
-                                                                        size="lg"
-                                                                        onClick={handleAddToWishlist}
-                                                                        disabled={
-                                                                                calculatedPrice === null ||
-                                                                                isPriceLoading ||
-                                                                                isMrpMissingForSelection
-                                                                        }
-                                                                >
-                                                                        <Heart className="h-5 w-5 mr-2" />
-                                                                        Wishlist
-                                                                </Button>
-								<Button variant="outline" size="lg">
-									<Share2 className="h-5 w-5" />
-								</Button>
-							</div>
-						</div>
+                                        {/* Product Info */}
+                                        <motion.div
+                                                className="relative"
+                                                initial={{ opacity: 0, x: 20 }}
+                                                animate={{ opacity: 1, x: 0 }}
+                                                transition={{ duration: 0.5, delay: 0.2 }}
+                                        >
+                                                <Card className="relative overflow-hidden border-none bg-white/85 backdrop-blur-xl shadow-[0_45px_80px_-40px_rgba(15,23,42,0.55)]">
+                                                        <div className="pointer-events-none absolute -right-24 top-0 h-56 w-56 rounded-full bg-amber-100/80 blur-3xl" />
+                                                        <div className="pointer-events-none absolute -left-24 bottom-0 h-56 w-56 rounded-full bg-emerald-100/70 blur-3xl" />
+                                                        <CardContent className="relative z-10 space-y-8 p-8 lg:p-10">
+                                                                <div className="space-y-4">
+                                                                        <Badge variant="secondary" className="w-fit rounded-full bg-slate-900/5 px-4 py-1 text-xs font-semibold tracking-[0.18em] text-slate-600">
+                                                                                {product.category?.replace("-", " ").toUpperCase()}
+                                                                        </Badge>
+                                                                        <h1 className="text-3xl font-bold leading-tight text-slate-900 lg:text-4xl">
+                                                                                {product.name}
+                                                                        </h1>
 
-                                                {/* Availability status removed */}
+                                                                        {productCode && (
+                                                                                <p className="text-sm font-medium text-slate-500">
+                                                                                        Product Code: <span className="text-slate-800">{productCode}</span>
+                                                                                </p>
+                                                                        )}
+
+                                                                        <div className="flex flex-wrap items-center gap-3">
+                                                                                <span className="inline-flex items-center gap-2 rounded-full bg-emerald-500 px-3 py-1 text-sm font-semibold text-white shadow">
+                                                                                        <Star className="h-4 w-4 fill-white text-white" />
+                                                                                        {averageRating.toFixed(1)}
+                                                                                </span>
+                                                                                <span className="text-sm font-semibold text-slate-500">
+                                                                                        {reviews.length} review{reviews.length === 1 ? "" : "s"}
+                                                                                </span>
+                                                                        </div>
+                                                                </div>
+
+                                                                <div>
+                                                                        {isLoadingPriceWithoutValue ? (
+                                                                                <div className="rounded-2xl border border-slate-200/80 bg-white/70 p-5 text-sm font-medium text-slate-500">
+                                                                                        Fetching latest price...
+                                                                                </div>
+                                                                        ) : shouldShowUnavailableMessage ? (
+                                                                                <div className="rounded-2xl border border-red-200 bg-red-50/80 p-5 text-base font-semibold text-red-600">
+                                                                                        Please select another size
+                                                                                </div>
+                                                                        ) : displayPrice !== null ? (
+                                                                                <div className="relative overflow-hidden rounded-2xl border border-slate-900/10 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-6 text-white shadow-inner">
+                                                                                        <div className="pointer-events-none absolute -bottom-16 -right-10 h-40 w-40 rounded-full bg-white/10 blur-3xl" />
+                                                                                        <div className="relative z-10 flex flex-wrap items-end gap-4">
+                                                                                                <p className="text-3xl font-bold tracking-tight">
+                                                                                                        ₹ {displayPrice.toLocaleString()}
+                                                                                                </p>
+                                                                                                {showOriginalPrice && (
+                                                                                                        <p className="text-base font-medium text-white/70 line-through">
+                                                                                                                ₹ {effectiveMrp.toLocaleString()}
+                                                                                                        </p>
+                                                                                                )}
+                                                                                                {showDiscountBadge && (
+                                                                                                        <Badge className="rounded-full bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white">
+                                                                                                                {discountToShow}% OFF
+                                                                                                        </Badge>
+                                                                                                )}
+                                                                                        </div>
+                                                                                        {numericCalculatedPrice !== null ? (
+                                                                                                <p className="mt-2 text-sm text-white/70">
+                                                                                                        Price shown for the selected configuration
+                                                                                                </p>
+                                                                                        ) : showDiscountBadge ? (
+                                                                                                <p className="mt-2 text-sm font-medium text-emerald-200">
+                                                                                                        Limited-time savings applied automatically
+                                                                                                </p>
+                                                                                        ) : null}
+                                                                                </div>
+                                                                        ) : null}
+                                                                </div>
+
+                                                                <div className="grid gap-4 sm:grid-cols-2">
+                                                                        {hasQrOption && (
+                                                                                <div className="flex flex-col gap-2">
+                                                                                        <span className="text-sm font-medium text-slate-600">QR Code</span>
+                                                                                        <Select value={hasQr ? "yes" : "no"} onValueChange={(v) => setHasQr(v === "yes")}>
+                                                                                                <SelectTrigger className="h-12 w-full rounded-xl border border-slate-200 bg-white/70 px-4 text-sm font-medium text-slate-700 shadow-sm">
+                                                                                                        <SelectValue placeholder="QR Code" />
+                                                                                                </SelectTrigger>
+                                                                                                <SelectContent>
+                                                                                                        <SelectItem value="yes">With QR Code</SelectItem>
+                                                                                                        <SelectItem value="no">Without QR Code</SelectItem>
+                                                                                                </SelectContent>
+                                                                                        </Select>
+                                                                                </div>
+                                                                        )}
+
+                                                                        {languages.length > 0 && (
+                                                                                <div className="flex flex-col gap-2">
+                                                                                        <span className="text-sm font-medium text-slate-600">Language</span>
+                                                                                        <Select value={selectedLanguage} onValueChange={setSelectedLanguage}>
+                                                                                                <SelectTrigger className="h-12 w-full rounded-xl border border-slate-200 bg-white/70 px-4 text-sm font-medium text-slate-700 shadow-sm">
+                                                                                                        <SelectValue placeholder="Language" />
+                                                                                                </SelectTrigger>
+                                                                                                <SelectContent>
+                                                                                                        {languages.map((lang) => (
+                                                                                                                <SelectItem key={lang} value={lang}>
+                                                                                                                        {lang}
+                                                                                                                </SelectItem>
+                                                                                                        ))}
+                                                                                                </SelectContent>
+                                                                                        </Select>
+                                                                                </div>
+                                                                        )}
+
+                                                                        {isLayoutSelectionEnabled && availableLayouts && availableLayouts.length > 0 && (
+                                                                                <div className="flex flex-col gap-2">
+                                                                                        <span className="text-sm font-medium text-slate-600">Layout</span>
+                                                                                        <Select value={selectedLayout} onValueChange={setSelectedLayout}>
+                                                                                                <SelectTrigger className="h-12 w-full rounded-xl border border-slate-200 bg-white/70 px-4 text-sm font-medium text-slate-700 shadow-sm">
+                                                                                                        <SelectValue placeholder="Layout" />
+                                                                                                </SelectTrigger>
+                                                                                                <SelectContent>
+                                                                                                        {availableLayouts.map((lay) => (
+                                                                                                                <SelectItem key={lay} value={lay}>
+                                                                                                                        {lay}
+                                                                                                                </SelectItem>
+                                                                                                        ))}
+                                                                                                </SelectContent>
+                                                                                        </Select>
+                                                                                </div>
+                                                                        )}
+
+                                                                        {availableSizes && availableSizes.length > 0 && (
+                                                                                <div className="flex flex-col gap-2">
+                                                                                        <span className="text-sm font-medium text-slate-600">Size</span>
+                                                                                        <Select value={selectedSize} onValueChange={setSelectedSize}>
+                                                                                                <SelectTrigger className="h-12 w-full rounded-xl border border-slate-200 bg-white/70 px-4 text-sm font-medium text-slate-700 shadow-sm">
+                                                                                                        <SelectValue placeholder="Size" />
+                                                                                                </SelectTrigger>
+                                                                                                <SelectContent>
+                                                                                                        {availableSizes.map((size) => (
+                                                                                                                <SelectItem key={size} value={size}>
+                                                                                                                        {size}
+                                                                                                                </SelectItem>
+                                                                                                        ))}
+                                                                                                </SelectContent>
+                                                                                        </Select>
+                                                                                </div>
+                                                                        )}
+
+                                                                        {availableMaterials && availableMaterials.length > 0 && (
+                                                                                <div className="flex flex-col gap-2">
+                                                                                        <span className="text-sm font-medium text-slate-600">Material</span>
+                                                                                        <Select value={selectedMaterial} onValueChange={setSelectedMaterial}>
+                                                                                                <SelectTrigger className="h-12 w-full rounded-xl border border-slate-200 bg-white/70 px-4 text-sm font-medium text-slate-700 shadow-sm">
+                                                                                                        <SelectValue placeholder="Material" />
+                                                                                                </SelectTrigger>
+                                                                                                <SelectContent>
+                                                                                                        {availableMaterials.map((mat) => (
+                                                                                                                <SelectItem key={mat} value={mat}>
+                                                                                                                        {mat}
+                                                                                                                </SelectItem>
+                                                                                                        ))}
+                                                                                                </SelectContent>
+                                                                                        </Select>
+                                                                                </div>
+                                                                        )}
+                                                                </div>
+
+                                                                <div className="space-y-5">
+                                                                <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-white/70 p-4">
+                                                                        <div className="space-y-1">
+                                                                                <p className="text-xs font-medium uppercase tracking-widest text-slate-400">Quantity</p>
+                                                                                <p className="text-sm text-slate-600">Choose how many units you need</p>
+                                                                        </div>
+                                                                        <div className="flex items-center rounded-full border border-slate-200 bg-white/80 shadow-sm">
+                                                                                <Button
+                                                                                        variant="ghost"
+                                                                                        size="icon"
+                                                                                        className="h-11 w-11 rounded-full text-slate-600 hover:bg-slate-100"
+                                                                                                onClick={() => handleQuantityChange(-1)}
+                                                                                                disabled={quantity <= 1}
+                                                                                        >
+                                                                                                <Minus className="h-4 w-4" />
+                                                                                        </Button>
+                                                                                        <span className="px-6 text-lg font-semibold text-slate-800">{quantity}</span>
+                                                                                        <Button
+                                                                                                variant="ghost"
+                                                                                                size="icon"
+                                                                                                className="h-11 w-11 rounded-full text-slate-600 hover:bg-slate-100"
+                                                                                                onClick={() => handleQuantityChange(1)}
+                                                                                        >
+                                                                                                <Plus className="h-4 w-4" />
+                                                                                        </Button>
+                                                                                </div>
+                                                                        </div>
+
+                                                                        <div className="grid gap-3 sm:grid-cols-2">
+                                                                                <Button
+                                                                                        onClick={handleAddToCart}
+                                                                                        disabled={
+                                                                                                isLoading ||
+                                                                                                calculatedPrice === null ||
+                                                                                                isPriceLoading ||
+                                                                                                isMrpMissingForSelection
+                                                                                        }
+                                                                                        className="group flex h-14 items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-slate-900 to-slate-700 text-lg font-semibold text-white shadow-lg transition hover:from-slate-800 hover:to-slate-600"
+                                                                                >
+                                                                                        <ShoppingCart className="h-5 w-5 transition-transform group-hover:scale-110" />
+                                                                                        Add to Cart
+                                                                                </Button>
+                                                                                <Button
+                                                                                        onClick={handleBuyNow}
+                                                                                        disabled={
+                                                                                                calculatedPrice === null ||
+                                                                                                isPriceLoading ||
+                                                                                                isMrpMissingForSelection
+                                                                                        }
+                                                                                        className="group flex h-14 items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-emerald-500 to-emerald-600 text-lg font-semibold text-white shadow-lg transition hover:from-emerald-600 hover:to-emerald-700"
+                                                                                >
+                                                                                        Buy Now
+                                                                                        <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
+                                                                                </Button>
+                                                                                <Button
+                                                                                        variant="outline"
+                                                                                        onClick={handleAddToWishlist}
+                                                                                        disabled={
+                                                                                                calculatedPrice === null ||
+                                                                                                isPriceLoading ||
+                                                                                                isMrpMissingForSelection
+                                                                                        }
+                                                                                        className="flex h-14 items-center justify-center gap-2 rounded-2xl border-slate-200 bg-white/80 text-slate-700 transition hover:border-slate-300 hover:bg-white"
+                                                                                >
+                                                                                        <Heart className="h-5 w-5" />
+                                                                                        Wishlist
+                                                                                </Button>
+                                                                                <Button
+                                                                                        variant="outline"
+                                                                                        className="flex h-14 items-center justify-center gap-2 rounded-2xl border-slate-200 bg-white/80 text-slate-700 transition hover:border-slate-300 hover:bg-white"
+                                                                                >
+                                                                                        <Share2 className="h-5 w-5" />
+                                                                                        Share
+                                                                                </Button>
+                                                                        </div>
+                                                                </div>
+                                                        </CardContent>
+                                                </Card>
                                         </motion.div>
                                 </div>
                                 {product.materialSpecification ||
