@@ -3,6 +3,7 @@ import { dbConnect } from "@/lib/dbConnect.js";
 import Product from "@/model/Product.js";
 import Price from "@/model/Price.js";
 import { deriveVariantPricing } from "@/lib/pricing.js";
+import { attachCategoryDiscount } from "@/lib/categoryDiscount.js";
 
 export async function GET(request) {
         await dbConnect();
@@ -23,11 +24,21 @@ export async function GET(request) {
         if (material) query.material = material;
         if (qr !== null && qr !== "null") query.qr = qr === "true";
 
-        const productContext = product
-                ? await Product.findById(product)
-                        .select("discount type")
-                        .lean()
-                : null;
+        let productContext = null;
+
+        if (product) {
+                const productDoc = await Product.findById(product)
+                        .select("discount type category subcategory")
+                        .lean();
+
+                if (productDoc) {
+                        const enrichedProduct = await attachCategoryDiscount(productDoc);
+                        productContext = {
+                                ...productDoc,
+                                categoryDiscount: enrichedProduct?.categoryDiscount ?? 0,
+                        };
+                }
+        }
 
         const prices = await Price.find(query)
                 .populate("product", "title")
