@@ -5,7 +5,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ArrowRight, Facebook, Instagram, Linkedin } from "lucide-react";
-import Logo from "@/public/ipslogo.png";
+import Logo from "@/public/ipslogowhite.png";
 
 export default function Footer() {
         const footerSections = {
