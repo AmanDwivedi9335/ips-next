@@ -382,13 +382,13 @@ export default function ProductCard({ product, viewMode = "grid" }) {
                                                                 </Button>
                                                         </div> */}
                                                         <div className="flex flex-col gap-2 sm:flex-col">
-                                                                <Button
+                                                                {/* <Button
                                                                         onClick={handleAddToCart}
                                                                         disabled={isLoading}
                                                                         className="flex-1 rounded-full bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 px-6 py-2 text-sm font-semibold text-white shadow-lg transition-all duration-300 hover:from-slate-800 hover:via-slate-700 hover:to-slate-800 hover:shadow-xl"
                                                                 >
                                                                         <ShoppingCart className="mr-2 h-4 w-4" /> Add to Cart
-                                                                </Button>
+                                                                </Button> */}
                                                                 <Button
                                                                         onClick={handleBuyNow}
                                                                         disabled={isLoading}
