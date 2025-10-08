@@ -4,7 +4,14 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ShoppingCart, Heart, Eye, ArrowRight, ArrowDownRight } from "lucide-react";
+import {
+        ShoppingCart,
+        Heart,
+        Eye,
+        ArrowRight,
+        ArrowDownRight,
+        Sparkles,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCartStore } from "@/store/cartStore";
 import { useWishlistStore } from "@/store/wishlistStore";
@@ -81,6 +88,18 @@ export default function ProductCard({ product, viewMode = "grid" }) {
                 product.image ||
                 "https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png";
 
+        const descriptionSource =
+                product.subtitle ||
+                product.tagline ||
+                (typeof product.description === "string" ? product.description : "");
+        const sanitizedDescription = descriptionSource
+                ? descriptionSource.replace(/<[^>]*>?/gm, "")
+                : "";
+        const shortDescription =
+                sanitizedDescription.length > 110
+                        ? `${sanitizedDescription.slice(0, 107)}...`
+                        : sanitizedDescription;
+
         const handleViewProduct = () => {
                 if (productId) {
                         router.push(`/products/${productId}`);
@@ -133,82 +152,116 @@ export default function ProductCard({ product, viewMode = "grid" }) {
                 return (
                         <Card
                                 onClick={handleViewProduct}
-                                className="hover:shadow-lg transition-all duration-300 cursor-pointer group"
+                                className="group relative cursor-pointer overflow-hidden border border-slate-200/70 bg-white/80 shadow-xl backdrop-blur-sm transition-all duration-500 hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-[0_32px_80px_-40px_rgba(15,23,42,0.3)]"
                         >
-                                <CardContent className="p-6">
-                                        <div className="flex flex-col sm:flex-row gap-6">
-                                                <div className="relative w-full sm:w-48 h-48 bg-gray-50 rounded-lg overflow-hidden flex-shrink-0">
-                                                        <Image
-                                                                src={defaultImage}
-                                                                alt={productTitle}
-                                                                fill
-                                                                className="object-contain p-4 group-hover:scale-105 transition-transform duration-300"
-                                                                onClick={handleViewProduct}
-                                                        />
+                                <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-slate-50 via-white to-slate-100 opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+                                <CardContent className="relative flex flex-col gap-6 p-6 sm:flex-row sm:items-stretch">
+                                        <div className="relative flex w-full items-center justify-center overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 px-6 py-8 shadow-inner sm:w-60">
+                                                <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.18),transparent_55%)]" />
+                                                <div className="absolute -bottom-12 -left-10 h-36 w-36 rounded-full bg-emerald-500/10 blur-3xl" />
+                                                <div className="absolute -top-8 -right-6 h-32 w-32 rounded-full bg-sky-500/10 blur-3xl" />
+                                                <Image
+                                                        src={defaultImage}
+                                                        alt={productTitle}
+                                                        fill
+                                                        className="object-contain p-4 transition-transform duration-500 group-hover:scale-105"
+                                                        onClick={handleViewProduct}
+                                                />
 
+                                                <div className="absolute right-4 top-4 flex flex-col gap-2">
                                                         {discountPercentage > 0 && (
-                                                                <Badge className="absolute top-2 left-2 bg-red-500 text-white">
-                                                                        {discountPercentage}% OFF
+                                                                <Badge className="rounded-full bg-emerald-500 px-3 py-1 text-xs font-semibold text-white shadow-md">
+                                                                        Save {discountPercentage}%
                                                                 </Badge>
                                                         )}
+                                                        {product.type === "featured" && (
+                                                                <Badge className="flex items-center gap-1 rounded-full bg-white/20 px-3 py-1 text-xs font-medium uppercase text-white backdrop-blur">
+                                                                        <Sparkles className="h-3 w-3" /> Featured
+                                                                </Badge>
+                                                        )}
+                                                </div>
+                                        </div>
 
-                                                        <div className="absolute top-2 right-2 flex flex-col items-end gap-1">
-                                                                {product.type === "featured" && (
-                                                                        <Badge className="bg-blue-500 text-white">Featured</Badge>
-                                                                )}
+                                        <div className="flex flex-1 flex-col gap-6">
+                                                <div className="space-y-3" onClick={handleViewProduct}>
+                                                        <div className="inline-flex items-center gap-2">
+                                                                <Badge className="rounded-full bg-slate-900/5 px-3 py-1 text-[11px] font-semibold tracking-[0.18em] text-slate-500">
+                                                                        {categoryLabel}
+                                                                </Badge>
                                                         </div>
+                                                        <h3 className="text-2xl font-semibold leading-tight text-slate-900 transition-colors group-hover:text-slate-700">
+                                                                {productTitle}
+                                                        </h3>
+                                                        {shortDescription && (
+                                                                <p className="max-w-2xl text-sm text-slate-500">
+                                                                        {shortDescription}
+                                                                </p>
+                                                        )}
                                                 </div>
 
-						<div className="flex-1 space-y-4">
-                                                        <div onClick={handleViewProduct}>
-                                                                <h3 className="text-xl font-semibold hover:text-blue-600 transition-colors">
-                                                                        {productTitle}
-                                                                </h3>
-							</div>
+                                                <div className="flex flex-wrap items-end gap-4">
+                                                        <div>
+                                                                <p className="text-3xl font-semibold text-slate-900">
+                                                                        {salePriceLabel}
+                                                                </p>
+                                                                {formattedOriginalPrice && (
+                                                                        <span className="text-sm text-slate-400 line-through">
+                                                                                {formattedOriginalPrice}
+                                                                        </span>
+                                                                )}
+                                                        </div>
 
-							<div className="flex items-center justify-between">
-								<div className="space-y-1">
-									<div className="flex items-center gap-2">
-                                                                                <p className="text-2xl font-bold">
-                                                                                        {salePriceLabel}
-                                                                                </p>
-                                                                        </div>
+                                                        {discountPercentage > 0 && (
+                                                                <div className="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-600">
+                                                                        <ArrowDownRight className="h-3 w-3" />
+                                                                        Limited time offer
                                                                 </div>
+                                                        )}
+                                                </div>
 
-								<div className="flex items-center gap-2">
-                                                                        <Button
-                                                                                variant="outline"
-                                                                                size="icon"
-                                                                                onClick={handleAddToWishlist}
-                                                                                className="rounded-full bg-transparent"
-                                                                        >
-                                                                                <Heart className="h-4 w-4" />
-                                                                        </Button>
-                                                                        <Button
-                                                                                onClick={handleAddToCart}
-                                                                                disabled={isLoading}
-                                                                                variant="outline"
-                                                                                className="rounded-full bg-transparent"
-                                                                        >
-										<ShoppingCart className="h-4 w-4 mr-2" />
-										Add to Cart
-									</Button>
-                                                                        <Button
-                                                                                onClick={handleBuyNow}
-                                                                                disabled={isLoading}
-                                                                                className="bg-black text-white hover:bg-gray-800 rounded-full"
-                                                                        >
-										Buy Now
-										<ArrowRight className="ml-2 h-4 w-4" />
-									</Button>
-								</div>
-							</div>
-						</div>
-					</div>
-				</CardContent>
-			</Card>
-		);
-	}
+                                                <div className="mt-auto flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                                                        <div className="flex items-center gap-2">
+                                                                <Button
+                                                                        variant="ghost"
+                                                                        size="icon"
+                                                                        onClick={handleAddToWishlist}
+                                                                        className="rounded-full border border-transparent bg-slate-900/5 text-slate-700 transition hover:border-slate-200 hover:bg-slate-900/10"
+                                                                >
+                                                                        <Heart className="h-4 w-4" />
+                                                                </Button>
+                                                                <Button
+                                                                        variant="ghost"
+                                                                        size="icon"
+                                                                        onClick={handleAddToCart}
+                                                                        disabled={isLoading}
+                                                                        className="rounded-full border border-transparent bg-slate-900/5 text-slate-700 transition hover:border-slate-200 hover:bg-slate-900/10"
+                                                                >
+                                                                        <ShoppingCart className="h-4 w-4" />
+                                                                </Button>
+                                                        </div>
+                                                        <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-1 sm:flex-row sm:justify-end">
+                                                                <Button
+                                                                        onClick={handleAddToCart}
+                                                                        disabled={isLoading}
+                                                                        className="flex-1 rounded-full bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 px-6 py-2 text-sm font-semibold text-white shadow-lg transition-all duration-300 hover:from-slate-800 hover:via-slate-700 hover:to-slate-800 hover:shadow-xl"
+                                                                >
+                                                                        <ShoppingCart className="mr-2 h-4 w-4" /> Add to Cart
+                                                                </Button>
+                                                                <Button
+                                                                        onClick={handleBuyNow}
+                                                                        disabled={isLoading}
+                                                                        className="flex-1 rounded-full border border-slate-200 bg-white px-6 py-2 text-sm font-semibold text-slate-900 shadow-md transition-all duration-300 hover:border-slate-300 hover:bg-slate-50"
+                                                                >
+                                                                        Buy Now
+                                                                        <ArrowRight className="ml-2 h-4 w-4" />
+                                                                </Button>
+                                                        </div>
+                                                </div>
+                                        </div>
+                                </CardContent>
+                        </Card>
+                );
+        }
 
         return (
                 <motion.div
@@ -218,41 +271,41 @@ export default function ProductCard({ product, viewMode = "grid" }) {
                 >
                         <Card
                                 onClick={handleViewProduct}
-                                className="group relative flex h-full cursor-pointer flex-col overflow-hidden border-none bg-white shadow-md transition-all duration-500 hover:-translate-y-1 hover:shadow-2xl"
+                                className="group relative flex h-full cursor-pointer flex-col overflow-hidden border border-slate-100/70 bg-white/90 shadow-[0_24px_60px_-32px_rgba(15,23,42,0.28)] transition-all duration-500 hover:-translate-y-1.5 hover:border-slate-200 hover:shadow-[0_40px_120px_-45px_rgba(15,23,42,0.35)]"
                         >
-                                <CardContent className="flex h-full flex-col p-0">
-                                        <div className="relative aspect-[4/5] w-full overflow-hidden rounded-b-[2.5rem] bg-gradient-to-br from-slate-100 via-white to-slate-200">
+                                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(59,130,246,0.08),transparent_55%)] opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+                                <CardContent className="relative flex h-full flex-col p-0">
+                                        <div className="relative aspect-[4/5] w-full overflow-hidden rounded-b-[2.75rem] bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+                                                <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(56,189,248,0.35),transparent_60%)]" />
                                                 <div className="absolute inset-0">
                                                         <Image
                                                                 src={defaultImage}
                                                                 alt={productTitle}
                                                                 fill
-                                                                className="object-contain transition-transform duration-500 ease-out group-hover:scale-110"
+                                                                className="object-contain p-6 transition-transform duration-700 ease-out group-hover:scale-110"
                                                                 onClick={handleViewProduct}
                                                         />
                                                 </div>
 
                                                 {discountPercentage > 0 && (
-                                                        <Badge className="absolute left-4 top-4 bg-red-500 text-white shadow-lg">
-                                                                {discountPercentage}% OFF
+                                                        <Badge className="absolute left-6 top-6 rounded-full bg-emerald-500/95 px-4 py-1 text-xs font-semibold uppercase text-white shadow-lg">
+                                                                {discountPercentage}% Off
                                                         </Badge>
                                                 )}
 
                                                 {product.type === "featured" && (
-                                                        <Badge className="absolute right-4 top-4 bg-blue-600 text-white shadow-lg">
-                                                                Featured
+                                                        <Badge className="absolute right-6 top-6 flex items-center gap-1 rounded-full bg-white/25 px-4 py-1 text-xs font-semibold uppercase text-white backdrop-blur">
+                                                                <Sparkles className="h-3 w-3" /> Featured
                                                         </Badge>
                                                 )}
 
-                                                <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+                                                <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
 
-                                                <div className="pointer-events-none absolute inset-0 rounded-b-[2.5rem] border border-white/40 opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
-
-                                                <div className="pointer-events-none absolute bottom-6 right-6 flex translate-y-2 items-center gap-2 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100 group-hover:pointer-events-auto">
+                                                <div className="pointer-events-none absolute bottom-6 left-6 flex translate-y-3 items-center gap-3 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
                                                         <Button
                                                                 variant="secondary"
                                                                 size="icon"
-                                                                className="rounded-full bg-white/90 text-gray-900 shadow-lg transition hover:bg-white"
+                                                                className="rounded-full border border-white/40 bg-white/80 text-slate-900 shadow-lg backdrop-blur transition hover:bg-white"
                                                                 onClick={(e) => {
                                                                         e.stopPropagation();
                                                                         handleViewProduct();
@@ -263,7 +316,7 @@ export default function ProductCard({ product, viewMode = "grid" }) {
                                                         <Button
                                                                 variant="secondary"
                                                                 size="icon"
-                                                                className="rounded-full bg-white/90 text-gray-900 shadow-lg transition hover:bg-white"
+                                                                className="rounded-full border border-white/40 bg-white/80 text-slate-900 shadow-lg backdrop-blur transition hover:bg-white"
                                                                 onClick={handleAddToWishlist}
                                                         >
                                                                 <Heart className="h-4 w-4" />
@@ -271,23 +324,30 @@ export default function ProductCard({ product, viewMode = "grid" }) {
                                                 </div>
                                         </div>
 
-                                        <div className="flex h-full flex-col gap-5 px-6 pb-6 pt-10">
-                                                <div className="space-y-2" onClick={handleViewProduct}>
-                                                        <span className="text-xs font-medium uppercase tracking-[0.28em] text-gray-400">
-                                                                {categoryLabel}
-                                                        </span>
-                                                        <h3 className="text-lg font-semibold leading-snug text-gray-900 transition-colors line-clamp-2 group-hover:text-gray-700">
+                                        <div className="flex h-full flex-col gap-6 px-7 pb-7 pt-10">
+                                                <div className="space-y-3" onClick={handleViewProduct}>
+                                                        <div className="inline-flex items-center gap-2">
+                                                                <Badge className="rounded-full bg-slate-900/5 px-3 py-1 text-[11px] font-semibold tracking-[0.2em] text-slate-500">
+                                                                        {categoryLabel}
+                                                                </Badge>
+                                                        </div>
+                                                        <h3 className="text-xl font-semibold leading-snug text-slate-900 transition-colors line-clamp-2 group-hover:text-slate-700">
                                                                 {productTitle}
                                                         </h3>
+                                                        {shortDescription && (
+                                                                <p className="text-sm text-slate-500 line-clamp-2">
+                                                                        {shortDescription}
+                                                                </p>
+                                                        )}
                                                 </div>
 
-                                                <div className="space-y-3">
+                                                <div className="space-y-4">
                                                         <div className="flex items-baseline gap-3">
-                                                                <p className="text-2xl font-semibold text-gray-900">
+                                                                <p className="text-3xl font-semibold text-slate-900">
                                                                         {salePriceLabel}
                                                                 </p>
                                                                 {formattedOriginalPrice && (
-                                                                        <span className="text-sm text-gray-400 line-through">
+                                                                        <span className="text-sm text-slate-400 line-through">
                                                                                 {formattedOriginalPrice}
                                                                         </span>
                                                                 )}
@@ -301,32 +361,43 @@ export default function ProductCard({ product, viewMode = "grid" }) {
                                                         )}
                                                 </div>
 
-                                                <div className="mt-auto flex items-center gap-3">
-                                                        <Button
-                                                                variant="outline"
-                                                                size="icon"
-                                                                onClick={handleAddToWishlist}
-                                                                className="rounded-full border-gray-200 bg-white text-gray-700 transition hover:border-gray-300 hover:bg-gray-50"
-                                                        >
-                                                                <Heart className="h-4 w-4" />
-                                                        </Button>
-                                                        <Button
-                                                                variant="outline"
-                                                                size="icon"
-                                                                onClick={handleAddToCart}
-                                                                disabled={isLoading}
-                                                                className="rounded-full border-gray-200 bg-white text-gray-700 transition hover:border-gray-300 hover:bg-gray-50"
-                                                        >
-                                                                <ShoppingCart className="h-4 w-4" />
-                                                        </Button>
-                                                        <Button
-                                                                onClick={handleBuyNow}
-                                                                disabled={isLoading}
-                                                                className="flex-1 rounded-full bg-gray-900 px-6 py-2 text-sm font-semibold text-white shadow-lg transition-all duration-300 hover:bg-gray-700 hover:shadow-xl"
-                                                        >
-                                                                Buy Now
-                                                                <ArrowRight className="ml-2 h-4 w-4" />
-                                                        </Button>
+                                                <div className="mt-auto flex flex-col gap-3">
+                                                        <div className="flex items-center gap-2">
+                                                                <Button
+                                                                        variant="ghost"
+                                                                        size="icon"
+                                                                        onClick={handleAddToWishlist}
+                                                                        className="rounded-full border border-transparent bg-slate-900/5 text-slate-700 transition hover:border-slate-200 hover:bg-slate-900/10"
+                                                                >
+                                                                        <Heart className="h-4 w-4" />
+                                                                </Button>
+                                                                <Button
+                                                                        variant="ghost"
+                                                                        size="icon"
+                                                                        onClick={handleAddToCart}
+                                                                        disabled={isLoading}
+                                                                        className="rounded-full border border-transparent bg-slate-900/5 text-slate-700 transition hover:border-slate-200 hover:bg-slate-900/10"
+                                                                >
+                                                                        <ShoppingCart className="h-4 w-4" />
+                                                                </Button>
+                                                        </div>
+                                                        <div className="flex flex-col gap-2 sm:flex-row">
+                                                                <Button
+                                                                        onClick={handleAddToCart}
+                                                                        disabled={isLoading}
+                                                                        className="flex-1 rounded-full bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 px-6 py-2 text-sm font-semibold text-white shadow-lg transition-all duration-300 hover:from-slate-800 hover:via-slate-700 hover:to-slate-800 hover:shadow-xl"
+                                                                >
+                                                                        <ShoppingCart className="mr-2 h-4 w-4" /> Add to Cart
+                                                                </Button>
+                                                                <Button
+                                                                        onClick={handleBuyNow}
+                                                                        disabled={isLoading}
+                                                                        className="flex-1 rounded-full border border-slate-200 bg-white px-6 py-2 text-sm font-semibold text-slate-900 shadow-md transition-all duration-300 hover:border-slate-300 hover:bg-slate-50"
+                                                                >
+                                                                        Buy Now
+                                                                        <ArrowRight className="ml-2 h-4 w-4" />
+                                                                </Button>
+                                                        </div>
                                                 </div>
                                         </div>
                                 </CardContent>
