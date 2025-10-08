@@ -2,11 +2,9 @@
 
 import { motion } from "framer-motion";
 import Image from "next/image";
-import { Star } from "lucide-react";
 import {
-	avatar,
-	Logo,
-	Icon,
+        Logo,
+        Icon,
 	Banner,
 	Picture1,
 	Picture2,
@@ -25,66 +23,32 @@ const products = [
 		title: "Retro reflective Sign",
 		price: "₹5,000",
 		originalPrice: "₹7,500",
-		discount: "33% OFF",
+                discount: "33% OFF",
                 image: Product1.src,
-                rating: 4.5,
 	},
 	{
 		id: 2,
 		title: "Road Safety",
 		price: "₹5,000",
 		originalPrice: "₹7,500",
-		discount: "33% OFF",
+                discount: "33% OFF",
                 image: Product2.src,
-                rating: 4.8,
 	},
 	{
 		id: 3,
 		title: "Industrial Safety",
 		price: "₹5,000",
 		originalPrice: "₹7,500",
-		discount: "33% OFF",
+                discount: "33% OFF",
                 image: Product3.src,
-                rating: 4.6,
 	},
 	{
 		id: 4,
 		title: "Retro reflective Sign",
 		price: "₹5,000",
 		originalPrice: "₹7,500",
-		discount: "33% OFF",
+                discount: "33% OFF",
                 image: Product4.src,
-                rating: 4.7,
-	},
-];
-
-const reviews = [
-	{
-		id: 1,
-		title: "Ethan Williams",
-		role: "Digital Marketing Specialist",
-		rating: 5,
-		comment:
-			"Experience a payment app built on simplicity and transparency. No hidden fees, just a seamless experience that makes every transaction a breeze. Pay, buy, goodbye to confusion and hello to straightforward payments.",
-		avatar: avatar,
-	},
-	{
-		id: 2,
-		title: "Daniel Thompson",
-		role: "Product Designer",
-		rating: 5,
-		comment:
-			"Discover a payment app focused on simplicity and transparency. Enjoy a seamless experience with no hidden fees, providing clarity and ease in every transaction. It's designed to put you in control of your payments.",
-		avatar: avatar,
-	},
-	{
-		id: 3,
-		title: "Daniel Thompson",
-		role: "Product Designer",
-		rating: 5,
-		comment:
-			"Discover a payment app focused on simplicity and transparency. Enjoy a seamless experience with no hidden fees, providing clarity and ease in every transaction. It's designed to put you in control of your payments.",
-		avatar: avatar,
 	},
 ];
 
@@ -243,59 +207,6 @@ export default function SellerStorefrontShowcase() {
 							>
 								{products.map((product) => (
 									<ProductCard key={product.id} product={product} />
-								))}
-							</motion.div>
-						</motion.div>
-
-						{/* Ratings & Reviews */}
-						<motion.div variants={itemVariants}>
-							<h3 className="text-2xl font-bold text-gray-900 mb-8">
-								4. Ratings & Reviews
-							</h3>
-							<motion.div
-								variants={containerVariants}
-								className="grid grid-cols-1 md:grid-cols-3 gap-6"
-							>
-								{reviews.map((review) => (
-									<motion.div
-										key={review.id}
-										variants={cardVariants}
-										whileHover={{ y: -5 }}
-										className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100"
-									>
-										<div className="flex items-center gap-1 mb-4">
-											{[...Array(5)].map((_, i) => (
-												<Star
-													key={i}
-													className={`w-4 h-4 ${
-														i < review.rating
-															? "text-yellow-400 fill-current"
-															: "text-gray-300"
-													}`}
-												/>
-											))}
-										</div>
-
-										<p className="text-gray-700 text-sm mb-4 leading-relaxed">
-											{review.comment}
-										</p>
-
-										<div className="flex items-center gap-3">
-											<Image
-												src={review.avatar || "/placeholder.svg"}
-												alt={review.name}
-												width={40}
-												height={40}
-												className="rounded-full"
-											/>
-											<div>
-												<h5 className="font-semibold text-gray-900">
-													{review.name}
-												</h5>
-												<p className="text-sm text-gray-600">{review.role}</p>
-											</div>
-										</div>
-									</motion.div>
 								))}
 							</motion.div>
 						</motion.div>
