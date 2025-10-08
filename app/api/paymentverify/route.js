@@ -59,7 +59,7 @@ export async function POST(req) {
                                 gateway: "razorpay",
                                 razorpayOrderId: razorpay_order_id,
                                 razorpayPaymentId: razorpay_payment_id,
-                                razorpaySignature,
+                                razorpaySignature: razorpay_signature,
                                 amountPaid: orderData?.totalAmount,
                         },
                 });
