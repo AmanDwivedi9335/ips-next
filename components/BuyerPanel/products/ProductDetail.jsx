@@ -928,13 +928,25 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
 						className="mb-10"
 					>
 						<h2 className="text-2xl font-bold mb-8">Related Products</h2>
-						<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-							{relatedProducts.map((relatedProduct) => (
-								<ProductCard key={relatedProduct.id} product={relatedProduct} />
-							))}
-						</div>
-					</motion.div>
-				)}
+                                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                                                        {relatedProducts.map((relatedProduct, index) => (
+                                                                <motion.div
+                                                                        key={relatedProduct.id || relatedProduct._id || index}
+                                                                        initial={{ opacity: 0, y: 20 }}
+                                                                        whileInView={{ opacity: 1, y: 0 }}
+                                                                        viewport={{ once: true, amount: 0.2 }}
+                                                                        transition={{ duration: 0.4, delay: index * 0.05 }}
+                                                                        className="h-full"
+                                                                >
+                                                                        <ProductCard
+                                                                                product={relatedProduct}
+                                                                                viewMode="grid"
+                                                                        />
+                                                                </motion.div>
+                                                        ))}
+                                                </div>
+                                        </motion.div>
+                                )}
 
 				{/* Benefits and Warranty Section */}
 				<motion.div
