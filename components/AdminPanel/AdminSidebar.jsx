@@ -42,6 +42,7 @@ import {
         Languages,
         Package as PackageIcon,
         Mail,
+        MailPlus,
 } from "lucide-react";
 import Logo from "@/public/ipslogo.png";
 
@@ -69,6 +70,11 @@ const menuItems = [
                 title: "Customers",
                 icon: Users,
                 href: "/admin/customers",
+        },
+        {
+                title: "Subscribers",
+                icon: MailPlus,
+                href: "/admin/subscribers",
         },
         {
                 title: "Orders",
