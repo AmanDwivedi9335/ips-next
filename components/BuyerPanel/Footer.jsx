@@ -1,13 +1,21 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ArrowRight, Facebook, Instagram, Linkedin } from "lucide-react";
 import Logo from "@/public/ipslogowhite.png";
+import { ArrowRight, Facebook, Instagram, Linkedin, Loader2 } from "lucide-react";
+import Logo from "@/public/ipslogo.png";
+
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export default function Footer() {
+        const [email, setEmail] = useState("");
+        const [isSubmitting, setIsSubmitting] = useState(false);
+        const [feedback, setFeedback] = useState({ type: null, message: "" });
         const footerSections = {
                 support: {
                         title: "Support",
@@ -15,8 +23,14 @@ export default function Footer() {
                 },
                 account: {
                         title: "Account",
-			items: ["My Account", "Login / Register", "Cart", "Wishlist", "Shop"],
-		},
+                        items: [
+                                { label: "My Account", href: "/account" },
+                                { label: "Login / Register", href: "/login" },
+                                { label: "Cart", href: "/cart" },
+                                { label: "Wishlist", href: "/wishlist" },
+                                { label: "Shop", href: "/products" },
+                        ],
+                },
                 quickLinks: {
                         title: "Quick Links",
                         items: [
@@ -111,6 +125,44 @@ export default function Footer() {
                 return null;
         };
 
+        const handleSubscribe = async (event) => {
+                event.preventDefault();
+
+                const trimmedEmail = email.trim().toLowerCase();
+
+                if (!trimmedEmail || !EMAIL_REGEX.test(trimmedEmail)) {
+                        setFeedback({ type: "error", message: "Please enter a valid email address." });
+                        return;
+                }
+
+                setIsSubmitting(true);
+                setFeedback({ type: null, message: "" });
+
+                try {
+                        const response = await fetch("/api/subscribers", {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({ email: trimmedEmail, source: "buyer-footer" }),
+                        });
+
+                        const data = await response.json();
+
+                        if (!response.ok || !data.success) {
+                                throw new Error(data?.error || "Unable to subscribe right now.");
+                        }
+
+                        setFeedback({ type: "success", message: data?.message || "You are now subscribed!" });
+                        setEmail("");
+                } catch (error) {
+                        setFeedback({
+                                type: "error",
+                                message: error.message || "Unable to subscribe right now. Please try again later.",
+                        });
+                } finally {
+                        setIsSubmitting(false);
+                }
+        };
+
 
 return (
 <footer className="relative overflow-hidden bg-gradient-to-b from-[#111111] via-[#0c0c0c] to-black text-white">
@@ -181,27 +233,48 @@ className="w-full sm:w-auto rounded-full bg-amber-400 px-6 py-2 text-black shado
 </div>
 </div>
 
-{/* Subscribe */}
-<div className="space-y-4">
-<h3 className="text-xl font-semibold text-amber-300">Subscribe</h3>
-<p className="text-sm text-white/60">
-Stay updated on the latest industrial print innovations, offers, and expert tips.
-</p>
-<div className="flex overflow-hidden rounded-full border border-white/15 bg-white/5 p-1 shadow-[0_10px_30px_rgba(0,0,0,0.35)] backdrop-blur">
-<Input
-placeholder="Enter your email"
-type="email"
-className="border-0 bg-transparent text-sm text-white placeholder:text-white/50 focus-visible:ring-0"
-/>
-<Button
-variant="ghost"
-size="icon"
-className="h-10 w-10 rounded-full bg-amber-400 text-black transition hover:bg-amber-300"
->
-<ArrowRight className="h-4 w-4" />
-</Button>
-</div>
-</div>
+        {/* Subscribe */}
+        <div className="space-y-4">
+                <h3 className="text-xl font-semibold text-amber-300">Subscribe</h3>
+                <p className="text-sm text-white/60">
+                        Stay updated on the latest industrial print innovations, offers, and expert tips.
+                </p>
+                <form
+                        onSubmit={handleSubscribe}
+                        className="flex overflow-hidden rounded-full border border-white/15 bg-white/5 p-1 shadow-[0_10px_30px_rgba(0,0,0,0.35)] backdrop-blur"
+                >
+                        <Input
+                                placeholder="Enter your email"
+                                type="email"
+                                value={email}
+                                onChange={(event) => setEmail(event.target.value)}
+                                disabled={isSubmitting}
+                                className="border-0 bg-transparent text-sm text-white placeholder:text-white/50 focus-visible:ring-0"
+                        />
+                        <Button
+                                type="submit"
+                                variant="ghost"
+                                size="icon"
+                                disabled={isSubmitting}
+                                className="h-10 w-10 rounded-full bg-amber-400 text-black transition hover:bg-amber-300 disabled:opacity-70"
+                        >
+                                {isSubmitting ? (
+                                        <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : (
+                                        <ArrowRight className="h-4 w-4" />
+                                )}
+                        </Button>
+                </form>
+                {feedback.message && (
+                        <p
+                                className={`text-xs font-medium ${
+                                        feedback.type === "success" ? "text-emerald-300" : "text-rose-300"
+                                }`}
+                        >
+                                {feedback.message}
+                        </p>
+                )}
+        </div>
 </div>
 
 <div className="mt-16 flex flex-col gap-6 border-t border-white/10 pt-8 text-sm text-white/60 md:flex-row md:items-center md:justify-between">
