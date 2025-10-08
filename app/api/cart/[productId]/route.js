@@ -4,7 +4,7 @@ import { dbConnect } from "@/lib/dbConnect.js";
 import Cart from "@/model/Cart.js";
 import { verifyToken } from "@/lib/auth.js";
 import { cookies } from "next/headers";
-import { deriveProductPricing } from "@/lib/pricing.js";
+import { CART_PRODUCT_SELECTION, buildCartResponse } from "@/lib/cartResponse.js";
 
 export async function PUT(req, { params }) {
 	await dbConnect();
@@ -25,8 +25,7 @@ export async function PUT(req, { params }) {
 
                 const cart = await Cart.findOne({ user: decoded.id }).populate({
                         path: "products.product",
-                        select:
-                                "title description images price salePrice discount mrp type",
+                        select: CART_PRODUCT_SELECTION,
                 });
 		if (!cart) {
 			return Response.json({ message: "Cart not found" }, { status: 404 });
@@ -48,15 +47,12 @@ export async function PUT(req, { params }) {
 			cart.products[productIndex].quantity = quantity;
 		}
 
-		// Recalculate total price
-                cart.totalPrice = cart.products.reduce((total, item) => {
-                        const pricing = deriveProductPricing(item.product);
-                        return total + pricing.finalPrice * item.quantity;
-                }, 0);
+                const responseCart = await buildCartResponse(cart);
 
-		await cart.save();
+                cart.totalPrice = responseCart.totalPrice;
+                await cart.save();
 
-		return Response.json({ message: "Cart updated", cart });
+                return Response.json({ message: "Cart updated", cart: responseCart });
 	} catch (error) {
 		console.error("Update cart error:", error);
 		return Response.json({ message: "Failed to update cart" }, { status: 500 });
@@ -81,8 +77,7 @@ export async function DELETE(req, { params }) {
 
                 const cart = await Cart.findOne({ user: decoded.id }).populate({
                         path: "products.product",
-                        select:
-                                "title description images price salePrice discount mrp type",
+                        select: CART_PRODUCT_SELECTION,
                 });
 		if (!cart) {
 			return Response.json({ message: "Cart not found" }, { status: 404 });
@@ -92,15 +87,15 @@ export async function DELETE(req, { params }) {
 			(item) => item.product._id.toString() !== params.productId
 		);
 
-		// Recalculate total price
-                cart.totalPrice = cart.products.reduce((total, item) => {
-                        const pricing = deriveProductPricing(item.product);
-                        return total + pricing.finalPrice * item.quantity;
-                }, 0);
+                const responseCart = await buildCartResponse(cart);
 
-		await cart.save();
+                cart.totalPrice = responseCart.totalPrice;
+                await cart.save();
 
-		return Response.json({ message: "Product removed from cart", cart });
+                return Response.json({
+                        message: "Product removed from cart",
+                        cart: responseCart,
+                });
 	} catch (error) {
 		console.error("Remove from cart error:", error);
 		return Response.json(

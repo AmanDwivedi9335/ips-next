@@ -37,14 +37,20 @@ const CategorySchema = new mongoose.Schema(
                         type: Boolean,
                         default: true,
                 },
-		sortOrder: {
-			type: Number,
-			default: 0,
-		},
-		productCount: {
-			type: Number,
-			default: 0,
-		},
+                sortOrder: {
+                        type: Number,
+                        default: 0,
+                },
+                discount: {
+                        type: Number,
+                        default: 0,
+                        min: 0,
+                        max: 100,
+                },
+                productCount: {
+                        type: Number,
+                        default: 0,
+                },
 	},
 	{
 		timestamps: true,
