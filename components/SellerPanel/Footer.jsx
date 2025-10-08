@@ -1,11 +1,20 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, Facebook, Instagram, Linkedin } from "lucide-react";
+import { ArrowRight, Facebook, Instagram, Linkedin, Loader2 } from "lucide-react";
 import Logo from "@/public/ipslogo.png";
 
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 export default function Footer() {
-	const footerSections = {
-		support: {
+        const [email, setEmail] = useState("");
+        const [isSubmitting, setIsSubmitting] = useState(false);
+        const [feedback, setFeedback] = useState({ type: null, message: "" });
+
+        const footerSections = {
+                support: {
 			title: "Support",
 			links: [
 				{ label: "info@industrialprintsolutions.com", href: "mailto:info@industrialprintsolutions.com" },
@@ -38,7 +47,45 @@ export default function Footer() {
                                 { label: "Disclaimer Policy", href: "/disclaimer" },
                         ],
                 },
-	};
+        };
+
+        const handleSubscribe = async (event) => {
+                event.preventDefault();
+
+                const trimmedEmail = email.trim().toLowerCase();
+
+                if (!trimmedEmail || !EMAIL_REGEX.test(trimmedEmail)) {
+                        setFeedback({ type: "error", message: "Please enter a valid email address." });
+                        return;
+                }
+
+                setIsSubmitting(true);
+                setFeedback({ type: null, message: "" });
+
+                try {
+                        const response = await fetch("/api/subscribers", {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({ email: trimmedEmail, source: "seller-footer" }),
+                        });
+
+                        const data = await response.json();
+
+                        if (!response.ok || !data.success) {
+                                throw new Error(data?.error || "Unable to subscribe right now.");
+                        }
+
+                        setFeedback({ type: "success", message: data?.message || "You are now subscribed!" });
+                        setEmail("");
+                } catch (error) {
+                        setFeedback({
+                                type: "error",
+                                message: error.message || "Unable to subscribe right now. Please try again later.",
+                        });
+                } finally {
+                        setIsSubmitting(false);
+                }
+        };
 
 return (
 <footer className="relative overflow-hidden bg-gradient-to-b from-[#211f1d] via-[#181614] to-black text-white">
@@ -111,23 +158,42 @@ aria-label={label}
 </div>
 ))}
 
-{/* Subscribe */}
-<div className="space-y-4">
-<h4 className="text-lg font-semibold text-amber-300">Subscribe</h4>
-<p className="text-sm text-white/60">
-Insights, tips, and exclusive programs to accelerate your seller growth.
-</p>
-<div className="flex overflow-hidden rounded-full border border-white/15 bg-white/5 p-1 shadow-[0_10px_30px_rgba(0,0,0,0.35)] backdrop-blur">
-<input
-type="email"
-placeholder="Enter your email"
-className="flex-1 border-0 bg-transparent px-4 text-sm text-white placeholder:text-white/50 focus:outline-none"
-/>
-<button className="flex h-10 w-10 items-center justify-center rounded-full bg-amber-400 text-black transition hover:bg-amber-300">
-<ArrowRight className="w-5 h-5" />
-</button>
-</div>
-</div>
+ {/* Subscribe */}
+ <div className="space-y-4">
+         <h4 className="text-lg font-semibold text-amber-300">Subscribe</h4>
+         <p className="text-sm text-white/60">
+                 Insights, tips, and exclusive programs to accelerate your seller growth.
+         </p>
+         <form
+                 onSubmit={handleSubscribe}
+                 className="flex overflow-hidden rounded-full border border-white/15 bg-white/5 p-1 shadow-[0_10px_30px_rgba(0,0,0,0.35)] backdrop-blur"
+         >
+                 <input
+                         type="email"
+                         value={email}
+                         onChange={(event) => setEmail(event.target.value)}
+                         disabled={isSubmitting}
+                         placeholder="Enter your email"
+                         className="flex-1 border-0 bg-transparent px-4 text-sm text-white placeholder:text-white/50 focus:outline-none disabled:cursor-not-allowed"
+                 />
+                 <button
+                         type="submit"
+                         disabled={isSubmitting}
+                         className="flex h-10 w-10 items-center justify-center rounded-full bg-amber-400 text-black transition hover:bg-amber-300 disabled:opacity-70"
+                 >
+                         {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : <ArrowRight className="w-5 h-5" />}
+                 </button>
+         </form>
+         {feedback.message && (
+                 <p
+                         className={`text-xs font-medium ${
+                                 feedback.type === "success" ? "text-emerald-300" : "text-rose-300"
+                         }`}
+                 >
+                         {feedback.message}
+                 </p>
+         )}
+ </div>
 </div>
 
 {/* Copyright */}
