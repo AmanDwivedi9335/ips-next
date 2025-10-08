@@ -73,7 +73,6 @@ export function AddProductPopup({ open, onOpenChange }) {
     productCode: "",
     category: "",
     subcategory: "",
-    discount: "",
     type: "featured",
     productFamily: "",
     published: true,
@@ -93,19 +92,6 @@ export function AddProductPopup({ open, onOpenChange }) {
     "monthly-poster-subscription",
     "iso-wall-kraft",
   ].includes(formData.productFamily);
-
-  const parsedDiscount = Number.parseFloat(formData.discount);
-  const normalizedDiscount =
-    Number.isFinite(parsedDiscount) && parsedDiscount > 0
-      ? Math.min(parsedDiscount, 100)
-      : 0;
-  const hasActiveDiscount =
-    formData.type === "discounted" && normalizedDiscount > 0;
-  const formattedDiscount = hasActiveDiscount
-    ? normalizedDiscount % 1 === 0
-      ? normalizedDiscount.toFixed(0)
-      : normalizedDiscount.toFixed(2)
-    : "0";
 
   const sizeOptions =
     formData.productFamily === "industrial-safety-packs"
@@ -196,7 +182,6 @@ export function AddProductPopup({ open, onOpenChange }) {
         longDescription: formData.longDescription || formData.description,
         category: formData.category,
         subcategory: formData.subcategory,
-        discount: formData.discount ? parseFloat(formData.discount) : 0,
         type: formData.type,
         published: formData.published,
         features: features.filter((f) => f.title && f.description),
@@ -236,7 +221,6 @@ export function AddProductPopup({ open, onOpenChange }) {
       productCode: "",
       category: "",
       subcategory: "",
-      discount: "",
       type: "featured",
 
       productFamily: productFamilies[0]?.slug || "",
@@ -543,20 +527,6 @@ export function AddProductPopup({ open, onOpenChange }) {
                 </Select>
               </div>
 
-              <div>
-                <Label htmlFor="discount">Discount (%)</Label>
-                <Input
-                  id="discount"
-                  placeholder="0"
-                  value={formData.discount}
-                  onChange={(e) =>
-                    setFormData({ ...formData, discount: e.target.value })
-                  }
-                  className="mt-1"
-                  type="number"
-                  max="100"
-                />
-              </div>
             </div>
             {showBasicFields && (
               <div className="mt-4">
@@ -663,10 +633,8 @@ export function AddProductPopup({ open, onOpenChange }) {
               <div className="mt-6">
                 <Label>Pricing (MRP)</Label>
                 <p className="mt-1 text-sm text-gray-500">
-                  Enter MRPs for each combination.{" "}
-                  {hasActiveDiscount
-                    ? `A discount of ${formattedDiscount}% will be applied automatically when prices are shown to buyers.`
-                    : "These prices will be shown to buyers as entered."}
+                  Enter MRPs for each combination. These prices will be shown to
+                  buyers as entered.
                 </p>
                 {prices.map((p, index) => (
                   <div

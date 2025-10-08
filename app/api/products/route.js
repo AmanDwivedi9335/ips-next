@@ -6,7 +6,7 @@ import Price from "@/model/Price.js";
 import "@/model/Review.js";
 import { deriveProductPriceRange, deriveProductPricing } from "@/lib/pricing.js";
 import Category from "@/model/Category.js";
-import { attachCategoryDiscount } from "@/lib/categoryDiscount.js";
+import { attachSubcategoryDiscount } from "@/lib/categoryDiscount.js";
 
 export async function GET(request) {
 	await dbConnect();
@@ -102,72 +102,64 @@ export async function GET(request) {
                 }
 
 
-		// Discount filter
+                // Discount filter
                 if (discount) {
                         const discountValue = Number.parseInt(discount);
 
-                        const parentCategories = await Category.find({
-                                parent: null,
+                        const discountedSubcategories = await Category.find({
+                                parent: { $ne: null },
                                 discount: { $gte: discountValue },
                         })
-                                .select("_id slug")
+                                .select("slug")
                                 .lean();
 
-                        const discountedCategorySlugs = parentCategories
-                                .map((category) => category.slug)
+                        const discountedSubcategorySlugs = discountedSubcategories
+                                .map((subcategory) => subcategory.slug)
                                 .filter(Boolean);
 
-                        let discountedSubcategorySlugs = [];
-
-                        if (parentCategories.length > 0) {
-                                const parentIds = parentCategories
-                                        .map((category) => category._id?.toString())
-                                        .filter(Boolean);
-
-                                if (parentIds.length > 0) {
-                                        const subcategories = await Category.find({
-                                                parent: { $in: parentIds },
-                                        })
-                                                .select("slug")
-                                                .lean();
-
-                                        discountedSubcategorySlugs = subcategories
-                                                .map((subcategory) => subcategory.slug)
-                                                .filter(Boolean);
-                                }
-                        }
-
-                        const discountConditions = [
-                                { discount: { $gte: discountValue } },
-                                {
-                                        $expr: {
-                                                $gte: [
-                                                        {
-                                                                $multiply: [
-                                                                        {
-                                                                                $divide: [
-                                                                                        { $subtract: ["$price", "$salePrice"] },
-                                                                                        "$price",
-                                                                                ],
-                                                                        },
-                                                                        100,
-                                                                ],
-                                                        },
-                                                        discountValue,
-                                                ],
-                                        },
-                                },
-                        ];
-
-                        if (discountedCategorySlugs.length > 0) {
-                                discountConditions.push({ category: { $in: discountedCategorySlugs } });
-                        }
+                        const discountConditions = [];
 
                         if (discountedSubcategorySlugs.length > 0) {
-                                discountConditions.push({ subcategory: { $in: discountedSubcategorySlugs } });
+                                discountConditions.push({
+                                        subcategory: { $in: discountedSubcategorySlugs },
+                                });
                         }
 
-                        query.$or = discountConditions;
+                        discountConditions.push({
+                                $expr: {
+                                        $and: [
+                                                { $gt: ["$price", 0] },
+                                                { $gt: ["$salePrice", 0] },
+                                                { $gt: ["$price", "$salePrice"] },
+                                                {
+                                                        $gte: [
+                                                                {
+                                                                        $multiply: [
+                                                                                {
+                                                                                        $divide: [
+                                                                                                {
+                                                                                                        $subtract: [
+                                                                                                                "$price",
+                                                                                                                "$salePrice",
+                                                                                                        ],
+                                                                                                },
+                                                                                                "$price",
+                                                                                        ],
+                                                                                },
+                                                                                100,
+                                                                        ],
+                                                                },
+                                                                discountValue,
+                                                        ],
+                                                },
+                                        ],
+                                },
+                        });
+
+                        if (discountConditions.length > 0) {
+                                query.$and = query.$and || [];
+                                query.$and.push({ $or: discountConditions });
+                        }
                 }
 
 		// Type filter
@@ -224,7 +216,7 @@ export async function GET(request) {
                         }, {});
                 }
 
-                const productsWithDiscount = await attachCategoryDiscount(products);
+                const productsWithDiscount = await attachSubcategoryDiscount(products);
 
                 const transformedProducts = productsWithDiscount.map((product) => {
                         const reviewCount = product.reviews?.length || 0;
@@ -256,9 +248,13 @@ export async function GET(request) {
                                 originalPrice: pricing.mrp,
                                 productCode: product.productCode || product.code,
                                 code: product.productCode || product.code,
-                                discount: product.discount,
+                                discount: 0,
                                 subcategory: product.subcategory,
-                                categoryDiscount: product.categoryDiscount || 0,
+                                subcategoryDiscount: product.subcategoryDiscount || 0,
+                                categoryDiscount:
+                                        product.categoryDiscount ??
+                                        product.subcategoryDiscount ??
+                                        0,
                                 languageImages: product.languageImages || [],
                                 languages: product.languages || [],
                                 sizes: product.sizes || [],

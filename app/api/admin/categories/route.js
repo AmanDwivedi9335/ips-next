@@ -227,7 +227,7 @@ export async function POST(request) {
                         published: published !== undefined ? published : true,
                         sortOrder: sortOrder || 0,
                         parent: normalizedParent,
-                        discount: normalizedParent ? 0 : normalizedDiscount,
+                        discount: normalizedParent ? normalizedDiscount : 0,
                         productFamily: new mongoose.Types.ObjectId(productFamilyId),
                 });
 
@@ -308,8 +308,8 @@ export async function PUT(request) {
 
                 if (Object.prototype.hasOwnProperty.call(updateData, "discount")) {
                         const normalizedDiscount = clampPercentage(updateData.discount ?? 0);
-                        updateData.discount = targetParent ? 0 : normalizedDiscount;
-                } else if (targetParent) {
+                        updateData.discount = targetParent ? normalizedDiscount : 0;
+                } else if (!targetParent) {
                         updateData.discount = 0;
                 }
 

@@ -1,7 +1,7 @@
 import { dbConnect } from "@/lib/dbConnect.js";
 import Product from "@/model/Product.js";
 import { deriveProductPricing } from "@/lib/pricing.js";
-import { attachCategoryDiscount } from "@/lib/categoryDiscount.js";
+import { attachSubcategoryDiscount } from "@/lib/categoryDiscount.js";
 
 export async function POST(request, { params }) {
 	await dbConnect();
@@ -27,7 +27,7 @@ export async function POST(request, { params }) {
                         );
                 }
 
-                const enrichedProduct = await attachCategoryDiscount(product);
+                const enrichedProduct = await attachSubcategoryDiscount(product);
                 const pricing = deriveProductPricing(enrichedProduct);
 
                 // Create order data for buy now
@@ -39,6 +39,8 @@ export async function POST(request, { params }) {
                         mrp: pricing.mrp,
                         discountPercentage: pricing.discountPercentage,
                         discountAmount: pricing.discountAmount,
+                        subcategoryDiscount:
+                                enrichedProduct.subcategoryDiscount || 0,
                         categoryDiscount: enrichedProduct.categoryDiscount || 0,
                         totalPrice: pricing.finalPrice * quantity,
                         productImage:

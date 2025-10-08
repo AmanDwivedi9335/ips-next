@@ -3,7 +3,7 @@ import Price from "@/model/Price.js";
 import "@/model/Review.js";
 import { dbConnect } from "@/lib/dbConnect.js";
 import { deriveProductPriceRange, deriveProductPricing } from "@/lib/pricing.js";
-import { attachCategoryDiscount } from "@/lib/categoryDiscount.js";
+import { attachSubcategoryDiscount } from "@/lib/categoryDiscount.js";
 
 export async function GET(req, { params }) {
 	await dbConnect();
@@ -37,7 +37,7 @@ export async function GET(req, { params }) {
                         .lean();
 
                 const [enrichedProduct, ...enrichedRelatedProducts] =
-                        await attachCategoryDiscount([product, ...relatedProducts]);
+                        await attachSubcategoryDiscount([product, ...relatedProducts]);
 
                 const productIds = [
                         enrichedProduct?._id?.toString(),
@@ -117,6 +117,8 @@ export async function GET(req, { params }) {
                         code: enrichedProduct.productCode || enrichedProduct.code,
                         discountPercentage: pricing.discountPercentage,
                         discountAmount: pricing.discountAmount,
+                        subcategoryDiscount:
+                                enrichedProduct.subcategoryDiscount || 0,
                         categoryDiscount: enrichedProduct.categoryDiscount || 0,
                         productFamily: enrichedProduct.productFamily,
                         category: enrichedProduct.category,
@@ -164,6 +166,7 @@ export async function GET(req, { params }) {
                                 mrp: relatedPricing.mrp,
                                 discountPercentage: relatedPricing.discountPercentage,
                                 discountAmount: relatedPricing.discountAmount,
+                                subcategoryDiscount: p.subcategoryDiscount || 0,
                                 categoryDiscount: p.categoryDiscount || 0,
                                 image:
                                         p.images?.[0] ||

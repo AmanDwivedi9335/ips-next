@@ -3,56 +3,48 @@ import Product from "@/model/Product.js";
 import Price from "@/model/Price.js";
 import Category from "@/model/Category.js";
 import { deriveProductPriceRange, deriveProductPricing } from "@/lib/pricing.js";
-import { attachCategoryDiscount } from "@/lib/categoryDiscount.js";
+import { attachSubcategoryDiscount } from "@/lib/categoryDiscount.js";
 
 export async function GET(request) {
 	await dbConnect();
 
 	try {
-                const discountedCategoryDocs = await Category.find({
-                        parent: null,
+                const discountedSubcategoryDocs = await Category.find({
+                        parent: { $ne: null },
                         discount: { $gt: 0 },
                 })
-                        .select("_id slug")
+                        .select("slug")
                         .lean();
 
-                const discountedCategorySlugs = discountedCategoryDocs
-                        .map((category) => category.slug)
+                const discountedSubcategorySlugs = discountedSubcategoryDocs
+                        .map((subcategory) => subcategory.slug)
                         .filter(Boolean);
 
-                let discountedSubcategorySlugs = [];
-
-                if (discountedCategoryDocs.length > 0) {
-                        const parentIds = discountedCategoryDocs
-                                .map((category) => category._id?.toString())
-                                .filter(Boolean);
-
-                        if (parentIds.length > 0) {
-                                const subcategories = await Category.find({
-                                        parent: { $in: parentIds },
-                                })
-                                        .select("slug")
-                                        .lean();
-
-                                discountedSubcategorySlugs = subcategories
-                                        .map((subcategory) => subcategory.slug)
-                                        .filter(Boolean);
-                        }
-                }
-
-                const discountedProductConditions = [{ discount: { $gt: 0 } }];
-
-                if (discountedCategorySlugs.length > 0) {
-                        discountedProductConditions.push({
-                                category: { $in: discountedCategorySlugs },
-                        });
-                }
+                const discountedProductConditions = [];
 
                 if (discountedSubcategorySlugs.length > 0) {
                         discountedProductConditions.push({
                                 subcategory: { $in: discountedSubcategorySlugs },
                         });
                 }
+
+                discountedProductConditions.push({
+                        $expr: {
+                                $and: [
+                                        { $gt: ["$price", 0] },
+                                        { $gt: ["$salePrice", 0] },
+                                        { $gt: ["$price", "$salePrice"] },
+                                        {
+                                                $gt: [
+                                                        {
+                                                                $subtract: ["$price", "$salePrice"],
+                                                        },
+                                                        0,
+                                                ],
+                                        },
+                                ],
+                        },
+                });
 
                 // Get discounted products for showcase section
                 const discountedProducts = await Product.find({
@@ -133,7 +125,9 @@ export async function GET(request) {
                         combinedProducts.push(...group);
                 });
 
-                const enrichedCombinedProducts = await attachCategoryDiscount(combinedProducts);
+                const enrichedCombinedProducts = await attachSubcategoryDiscount(
+                        combinedProducts
+                );
 
                 const getGroupSlice = (groupIndex) => {
                         const { start, length } = groupOffsets[groupIndex];
@@ -207,7 +201,8 @@ export async function GET(request) {
                                 price: pricing.finalPrice,
                                 originalPrice: pricing.mrp,
                                 salePrice: pricing.finalPrice,
-                                discount: product.discount,
+                                discount: 0,
+                                subcategoryDiscount: product.subcategoryDiscount || 0,
                                 categoryDiscount: product.categoryDiscount || 0,
                                 discountPercentage: pricing.discountPercentage,
                                 discountAmount: pricing.discountAmount,

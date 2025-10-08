@@ -92,9 +92,7 @@ export async function POST(request) {
                                         salePrice: productData.salePrice
                                                 ? Number.parseFloat(productData.salePrice)
                                                 : 0,
-                                        discount: productData.discount
-                                                ? Number.parseFloat(productData.discount)
-                                                : 0,
+                                        discount: 0,
                                         type: productData.type || "featured",
                                         productType: productData.type || "featured",
                                         features: productData.features || [],

@@ -200,15 +200,14 @@ export function BulkUpdateProductsPopup({
 	const { bulkUpdateProducts } = useAdminProductStore();
 	const [isSubmitting, setIsSubmitting] = useState(false);
 
-	const [formData, setFormData] = useState({
-		category: "",
-		type: "",
-		published: true,
-		discount: "",
-		salePrice: "",
-		images: [],
-		updateImages: false, // Whether to update images
-	});
+        const [formData, setFormData] = useState({
+                category: "",
+                type: "",
+                published: true,
+                salePrice: "",
+                images: [],
+                updateImages: false, // Whether to update images
+        });
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
@@ -219,10 +218,8 @@ export function BulkUpdateProductsPopup({
 		// Only include fields that have values
 		if (formData.category) updateData.category = formData.category;
 		if (formData.type) updateData.type = formData.type;
-		if (formData.discount)
-			updateData.discount = Number.parseFloat(formData.discount);
-		if (formData.salePrice)
-			updateData.salePrice = Number.parseFloat(formData.salePrice);
+                if (formData.salePrice)
+                        updateData.salePrice = Number.parseFloat(formData.salePrice);
 		if (formData.updateImages && formData.images.length > 0) {
 			updateData.images = formData.images;
 		}
@@ -239,17 +236,16 @@ export function BulkUpdateProductsPopup({
 		setIsSubmitting(false);
 	};
 
-	const resetForm = () => {
-		setFormData({
-			category: "",
-			type: "",
-			published: true,
-			discount: "",
-			salePrice: "",
-			images: [],
-			updateImages: false,
-		});
-	};
+        const resetForm = () => {
+                setFormData({
+                        category: "",
+                        type: "",
+                        published: true,
+                        salePrice: "",
+                        images: [],
+                        updateImages: false,
+                });
+        };
 
 	return (
 		<Dialog open={open} onOpenChange={onOpenChange}>
@@ -328,20 +324,6 @@ export function BulkUpdateProductsPopup({
 								/>
 							</div>
 
-							<div>
-								<Label htmlFor="discount">Discount (%)</Label>
-								<Input
-									id="discount"
-									placeholder="0 (leave empty to skip)"
-									value={formData.discount}
-									onChange={(e) =>
-										setFormData({ ...formData, discount: e.target.value })
-									}
-									className="mt-1"
-									type="number"
-									max="100"
-								/>
-							</div>
 						</div>
 
 						{/* Published Toggle */}

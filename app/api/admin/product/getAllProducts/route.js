@@ -1,6 +1,7 @@
 import { dbConnect } from "@/lib/dbConnect.js";
 import Product from "@/model/Product.js";
 import Price from "@/model/Price.js";
+import Category from "@/model/Category.js";
 
 export async function GET(request) {
 	await dbConnect();
@@ -45,30 +46,64 @@ export async function GET(request) {
 		}
 
 		// Discount filter
-		if (discount) {
-			const discountValue = Number.parseInt(discount);
-			query.$or = [
-				{ discount: { $gte: discountValue } },
-				{
-					$expr: {
-						$gte: [
-							{
-								$multiply: [
-									{
-										$divide: [
-											{ $subtract: ["$price", "$salePrice"] },
-											"$price",
-										],
-									},
-									100,
-								],
-							},
-							discountValue,
-						],
-					},
-				},
-			];
-		}
+                if (discount) {
+                        const discountValue = Number.parseInt(discount);
+
+                        const discountedSubcategories = await Category.find({
+                                parent: { $ne: null },
+                                discount: { $gte: discountValue },
+                        })
+                                .select("slug")
+                                .lean();
+
+                        const discountedSubcategorySlugs = discountedSubcategories
+                                .map((subcategory) => subcategory.slug)
+                                .filter(Boolean);
+
+                        const discountConditions = [];
+
+                        if (discountedSubcategorySlugs.length > 0) {
+                                discountConditions.push({
+                                        subcategory: { $in: discountedSubcategorySlugs },
+                                });
+                        }
+
+                        discountConditions.push({
+                                $expr: {
+                                        $and: [
+                                                { $gt: ["$price", 0] },
+                                                { $gt: ["$salePrice", 0] },
+                                                { $gt: ["$price", "$salePrice"] },
+                                                {
+                                                        $gte: [
+                                                                {
+                                                                        $multiply: [
+                                                                                {
+                                                                                        $divide: [
+                                                                                                {
+                                                                                                        $subtract: [
+                                                                                                                "$price",
+                                                                                                                "$salePrice",
+                                                                                                        ],
+                                                                                                },
+                                                                                                "$price",
+                                                                                        ],
+                                                                                },
+                                                                                100,
+                                                                        ],
+                                                                },
+                                                                discountValue,
+                                                        ],
+                                                },
+                                        ],
+                                },
+                        });
+
+                        if (discountConditions.length > 0) {
+                                query.$and = query.$and || [];
+                                query.$and.push({ $or: discountConditions });
+                        }
+                }
 
 		// Published filter
 		if (published !== null && published !== undefined) {
