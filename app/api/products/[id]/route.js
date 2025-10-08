@@ -1,6 +1,5 @@
 import Product from "@/model/Product.js";
 import Price from "@/model/Price.js";
-import "@/model/Review.js";
 import { dbConnect } from "@/lib/dbConnect.js";
 import { deriveProductPriceRange, deriveProductPricing } from "@/lib/pricing.js";
 import { attachCategoryDiscount } from "@/lib/categoryDiscount.js";
@@ -14,14 +13,7 @@ export async function GET(req, { params }) {
 	console.log("Product ID:", id);
 
         try {
-                const product = await Product.findById(id)
-                        .populate({
-                                path: "reviews",
-                                select: "rating comment user",
-                                strictPopulate: false,
-                                populate: { path: "user", select: "firstName lastName" },
-                        })
-                        .lean();
+                const product = await Product.findById(id).lean();
 
                 if (!product) {
                         return Response.json({ message: "Product not found" }, { status: 404 });
@@ -69,29 +61,6 @@ export async function GET(req, { params }) {
                 }
 
 		// Transform product data to match frontend expectations
-                const reviewCount = enrichedProduct.reviews?.length || 0;
-                const averageRating =
-                        reviewCount > 0
-                                ? enrichedProduct.reviews.reduce((sum, r) => sum + r.rating, 0) /
-                                  reviewCount
-                                : 0;
-
-                // Safeguard against products with no reviews to prevent runtime errors
-                // when attempting to map over an undefined value.
-                const transformedReviews = (enrichedProduct.reviews || []).map((r) => ({
-                        id: r._id.toString(),
-                        rating: r.rating,
-                        comment: r.comment,
-                        user: r.user
-                                ? {
-                                        id: r.user._id.toString(),
-                                        firstName: r.user.firstName,
-                                        lastName: r.user.lastName,
-                                }
-                                : null,
-                        createdAt: r.createdAt,
-                }));
-
                 const pricing = deriveProductPricing(enrichedProduct);
                 const productIdString = enrichedProduct._id?.toString();
                 const priceRange = deriveProductPriceRange(
@@ -135,9 +104,6 @@ export async function GET(req, { params }) {
                         type: enrichedProduct.type,
                         published: enrichedProduct.published,
                         features: enrichedProduct.features || [],
-                        rating: averageRating,
-                        reviewCount,
-                        reviews: transformedReviews,
                         createdAt: enrichedProduct.createdAt,
                         updatedAt: enrichedProduct.updatedAt,
                         priceRange,

@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { useCallback, useEffect, useState } from "react";
 import useEmblaCarousel from "embla-carousel-react";
-import { Star, Shield, MoreHorizontal } from "lucide-react";
+import { Shield, MoreHorizontal } from "lucide-react";
 import Image from "next/image";
 import avatar1 from "@/public/images/avatar/avatar1.png";
 import avatar2 from "@/public/images/avatar/avatar2.png";
@@ -18,11 +18,9 @@ const sellers = [
 		name: "Rahul Kumar",
 		avatar: avatar1,
 		logo: "🏢",
-		location:
-			"Explore the vibrant city of Maplewood, located at 12345 Elm Street, in the scenic Blue Ridge area.",
-		rating: 4.5,
-		reviews: "4.5 Rating",
-		verified: true,
+                location:
+                        "Explore the vibrant city of Maplewood, located at 12345 Elm Street, in the scenic Blue Ridge area.",
+                verified: true,
 		featuredProduct: {
 			name: "Yellow Color Heavy Duty Helmet",
 			image: product1,
@@ -36,11 +34,9 @@ const sellers = [
 		name: "Priya Sharma",
 		avatar: avatar2,
 		logo: "🔥",
-		location:
-			"Located in the heart of Mumbai, Maharashtra, serving industrial clients nationwide.",
-		rating: 4.8,
-		reviews: "4.8 Rating",
-		verified: true,
+                location:
+                        "Located in the heart of Mumbai, Maharashtra, serving industrial clients nationwide.",
+                verified: true,
 		featuredProduct: {
 			name: "Fire Safety Equipment Kit",
 			image: product2,
@@ -54,11 +50,9 @@ const sellers = [
 		name: "Amit Patel",
 		avatar: avatar3,
 		logo: "🦺",
-		location:
-			"Based in Ahmedabad, Gujarat, specializing in reflective safety gear and PPE equipment.",
-		rating: 4.9,
-		reviews: "4.9 Rating",
-		verified: true,
+                location:
+                        "Based in Ahmedabad, Gujarat, specializing in reflective safety gear and PPE equipment.",
+                verified: true,
 		featuredProduct: {
 			name: "High Visibility Safety Jacket",
 			image: product3,
@@ -196,30 +190,10 @@ export default function FeaturedSellerCarousel() {
 															<MoreHorizontal className="w-5 h-5 text-gray-400" />
 														</div>
 
-														<div className="flex items-center gap-2 mb-2">
-															<div className="flex">
-																{[...Array(5)].map((_, i) => (
-																	<Star
-																		key={i}
-																		className={`w-4 h-4 ${
-																			i < Math.floor(seller.rating)
-																				? "text-yellow-400 fill-current"
-																				: i < seller.rating
-																				? "text-yellow-400 fill-current"
-																				: "text-gray-300"
-																		}`}
-																	/>
-																))}
-															</div>
-															<span className="text-sm text-gray-600">
-																{seller.reviews}
-															</span>
-															<span className="text-sm text-gray-500">
-																({seller.featuredProduct.views})
-															</span>
-														</div>
-
-														{/* Product Card */}
+														<div className="flex items-center gap-2 mb-2 text-sm text-gray-500">
+								<span>{seller.featuredProduct.views} views</span>
+				</div>
+								{/* Product Card */}
 														<div className="bg-gray-50 rounded-xl p-4">
 															<div className="flex flex-col items-center gap-4">
 																<div className="relative">
