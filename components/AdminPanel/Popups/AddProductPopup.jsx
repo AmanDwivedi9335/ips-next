@@ -35,6 +35,8 @@ import { sortCategoriesByOrder } from "@/lib/sortCategories.js";
 import { useAdminProductFamilyStore } from "@/store/adminProductFamilyStore.js";
 
 import { ImageUpload } from "@/components/AdminPanel/ImageUpload.jsx";
+const NO_PARENT_VALUE = "no-parent";
+
 const productTags = [
   { value: "featured", label: "Featured" },
   { value: "top-selling", label: "Top Selling" },
@@ -378,11 +380,12 @@ export function AddProductPopup({ open, onOpenChange }) {
               <div className="md:col-span-2">
                 <Label>Parent Product</Label>
                 <Select
-                  value={formData.parentProduct}
+                  value={formData.parentProduct || NO_PARENT_VALUE}
                   onValueChange={(value) =>
                     setFormData({
                       ...formData,
-                      parentProduct: value,
+                      parentProduct:
+                        value === NO_PARENT_VALUE ? "" : value,
                     })
                   }
                   disabled={isParentLoading}
@@ -397,7 +400,7 @@ export function AddProductPopup({ open, onOpenChange }) {
                     />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">No parent</SelectItem>
+                    <SelectItem value={NO_PARENT_VALUE}>No parent</SelectItem>
                     {parentProducts.map((parent) => (
                       <SelectItem key={parent._id} value={parent._id}>
                         {parent.title}
