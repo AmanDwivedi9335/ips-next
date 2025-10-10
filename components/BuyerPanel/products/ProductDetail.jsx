@@ -528,7 +528,7 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                                 className="pointer-events-none absolute inset-x-0 top-0 h-80 bg-gradient-to-b from-white via-slate-100/80 to-transparent"
                                 aria-hidden="true"
                         />
-                        <div className="relative z-10 mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
+                        <div className="relative z-10 mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-2 lg:py-7">
                                 <nav
                                         aria-label="Breadcrumb"
                                         className="flex items-center gap-2 text-sm text-slate-500"
@@ -567,7 +567,7 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                                         )}
                                 </nav>
 
-                                <div className="mt-6 flex flex-wrap items-start justify-between gap-4">
+                                {/* <div className="mt-6 flex flex-wrap items-start justify-between gap-4">
                                         <div className="max-w-3xl space-y-3">
                                                 <h1 className="text-3xl font-semibold text-slate-900 sm:text-4xl">
                                                         {product.title}
@@ -595,12 +595,11 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                                                         )}
                                                 </div>
                                         </div>
-                                </div>
+                                </div> */}
 
-                                <div className="mt-10 grid items-start gap-10 lg:grid-cols-[1.1fr_1fr]">
+                                <div className="mt-5 grid items-start gap-10 lg:grid-cols-[1.1fr_1fr]">
                                         <Card className="relative overflow-hidden rounded-3xl border border-white/60 bg-white/90 shadow-xl backdrop-blur">
-                                                <CardContent className="p-6 sm:p-8">
-                                                        <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+                                                {/* <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
                                                                 <Link
                                                                         href="/products"
                                                                         className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-600 shadow-sm transition hover:border-slate-300 hover:text-slate-900"
@@ -608,28 +607,35 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                                                                         <ArrowLeft className="h-4 w-4" />
                                                                         Back to products
                                                                 </Link>
-                                                                {productCode && (
+                                                                 {productCode && (
                                                                         <Badge className="rounded-full border border-slate-200 bg-slate-900/90 px-4 py-1 text-white shadow-sm">
                                                                                 {productCode}
                                                                         </Badge>
                                                                 )}
-                                                        </div>
+                                                </div> */}
+                                                <div className="relative w-full h-[550px] lg:h-[500px]">
+                                                        <Image
+                                                        src={
+                                                        languageImage ||
+                                                        product.images?.[selectedImage] ||
+                                                        product.image ||
+                                                        "https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png"
+                                                        }
+                                                        alt={product.name}
+                                                        fill
+                                                        className="object-contain m-0 p-0"
+                                                        priority
+                                                        />
+                                                </div>
+                                                <p className="mt-2 mb-2 text-xs text-center text-slate-500">
+                                                        ** Images shown are of low resolution due to privacy concerns, actual product will be clear, sharp and high quality.
+                                                </p>
+
+                                                {/* <CardContent className="p-6 sm:p-8">
+                                                        
 
                                                         <div className="relative overflow-hidden rounded-2xl border border-slate-200 bg-gradient-to-br from-slate-50 via-white to-white">
-                                                                <div className="relative aspect-square w-full">
-                                                                        <Image
-                                                                                src={
-                                                                                        languageImage ||
-                                                                                        product.images?.[selectedImage] ||
-                                                                                        product.image ||
-                                                                                        "https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png"
-                                                                                }
-                                                                                alt={product.name}
-                                                                                fill
-                                                                                className="object-contain p-8"
-                                                                                priority
-                                                                        />
-                                                                </div>
+                                                                
                                                         </div>
 
                                                         {product.images && product.images.length > 1 && (
@@ -657,13 +663,40 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                                                                         ))}
                                                                 </div>
                                                         )}
-                                                </CardContent>
+                                                </CardContent> */}
                                         </Card>
 
                                         <div className="space-y-6">
                                                 <Card className="rounded-3xl border border-white/60 bg-white shadow-xl">
-                                                        <CardContent className="space-y-6 p-6 sm:p-8">
+                                                        <CardContent className="space-y-6 p-3 sm:p-8">
                                                                 <div className="space-y-3">
+                                                                        <div className="max-w-3xl space-y-3">
+                                                <h1 className="text-xl font-semibold text-slate-900 sm:text-2xl">
+                                                        {product.title}
+                                                </h1>
+                                                {heroDescription && (
+                                                        <p className="text-base leading-relaxed text-slate-600">
+                                                                {heroDescription}
+                                                        </p>
+                                                )}
+                                                <div className="flex flex-wrap gap-2">
+                                                        {product.productFamily && (
+                                                                <Badge className="rounded-full border border-slate-200 bg-white px-3 py-1 text-slate-700 shadow-sm">
+                                                                        {product.productFamily}
+                                                                </Badge>
+                                                        )}
+                                                        {categoryName && (
+                                                                <Badge className="rounded-full border border-slate-200 bg-white px-3 py-1 text-slate-700 shadow-sm">
+                                                                        {categoryName}
+                                                                </Badge>
+                                                        )}
+                                                        {product.subcategory && (
+                                                                <Badge className="rounded-full border border-slate-200 bg-white px-3 py-1 text-slate-700 shadow-sm">
+                                                                        {subcategoryName}
+                                                                </Badge>
+                                                        )}
+                                                </div>
+                                        </div>
                                                                         {displayPrice !== null ? (
                                                                                 <>
                                                                                         <div className="flex flex-wrap items-end gap-3">
@@ -906,10 +939,9 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
 
                                                                         <div className="grid gap-3 sm:grid-cols-3">
                                                                                 {quickHighlights.map(({ icon: Icon, label }) => (
-                                                                                        <div
-                                                                                                key={label}
-                                                                                                className="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-600"
-                                                                                        >
+                                                                                        <div key={label}
+                                                                                                className="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-[11px] text-slate-600"
+                                                                                                >
                                                                                                 <Icon className="h-4 w-4 text-slate-500" />
                                                                                                 <span>{label}</span>
                                                                                         </div>
