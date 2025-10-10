@@ -82,8 +82,9 @@ export default function TermsPage() {
                                                         <li>
                                                                 <span className="font-semibold">Pricing &amp; taxes.</span>
                                                                 {" "}
-                                                                Prices are in INR and exclusive of GST unless stated. Taxes,
-                                                                duties and shipping charges (if any) are shown at checkout.
+                                                                Prices are in INR and exclusive of GST unless stated. Taxes (if
+                                                                applicable) are shown at checkout, and shipping is free on every
+                                                                order.
                                                         </li>
                                                         <li>
                                                                 <span className="font-semibold">Payment.</span>

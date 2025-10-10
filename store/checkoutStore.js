@@ -286,8 +286,8 @@ export const useCheckoutStore = create(
 						0
 					);
 
-					// Calculate shipping cost: free if subtotal >= 500, else 50
-					const shippingCost = subtotal >= 500 ? 0 : 50;
+                                        // Shipping is always free across all orders
+                                        const shippingCost = 0;
 
 					// Set coupon based on checkout type
 					let discount = 0;
@@ -301,7 +301,7 @@ export const useCheckoutStore = create(
 						discount = appliedCoupon?.discountAmount || 0;
 					}
 
-					const total = subtotal + shippingCost - discount;
+                                        const total = subtotal + shippingCost - discount;
 
 					set({
 						orderSummary: {
@@ -501,8 +501,8 @@ export const useCheckoutStore = create(
 						checkoutType,
 					} = get();
 
-					// Calculate shipping cost
-					const shippingCost = orderSummary.subtotal >= 500 ? 0 : 50;
+                                        // Shipping remains free irrespective of subtotal
+                                        const shippingCost = 0;
 
 					// Calculate discount based on checkout type
 					let discount = 0;
