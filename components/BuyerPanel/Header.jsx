@@ -66,6 +66,11 @@ export default function Header({ onMenuToggle, isMenuOpen }) {
                 { name: "Industrial Safety Packs", href: "/industrial-safety-packs" },
                 { name: "Monthly Poster Subscriptions", href: "/monthly-poster-subscriptions" },
                 {
+                        name: "Smart QR vs Standard Posters",
+                        href: "/smart-qr-vs-standard-posters",
+                        isNew: true
+                },
+                {
                         name: "Corporate Bulk/Custom Orders",
                         href: "/corporate-bulk-orders",
                         highlight: true
