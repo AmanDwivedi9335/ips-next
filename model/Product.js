@@ -11,6 +11,7 @@ const ProductSchema = new mongoose.Schema(
                         type: String,
                         required: true,
                 },
+                specialNote: { type: String, default: "" },
                 published: { type: Boolean, default: true },
                 price: { type: Number, required: true },
                 salePrice: { type: Number, default: 0 },
