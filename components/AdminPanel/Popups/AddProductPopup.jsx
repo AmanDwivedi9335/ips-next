@@ -70,6 +70,7 @@ export function AddProductPopup({ open, onOpenChange }) {
     title: "",
     description: "",
     longDescription: "",
+    specialNote: "",
     productCode: "",
     category: "",
     subcategory: "",
@@ -199,6 +200,7 @@ export function AddProductPopup({ open, onOpenChange }) {
         discount: formData.discount ? parseFloat(formData.discount) : 0,
         type: formData.type,
         published: formData.published,
+        specialNote: formData.specialNote,
         features: features.filter((f) => f.title && f.description),
         languageImages: languageImagesData,
         languages: allLanguages,
@@ -233,6 +235,7 @@ export function AddProductPopup({ open, onOpenChange }) {
       title: "",
       description: "",
       longDescription: "",
+      specialNote: "",
       productCode: "",
       category: "",
       subcategory: "",
@@ -401,6 +404,28 @@ export function AddProductPopup({ open, onOpenChange }) {
                   className="mt-1"
                   rows={4}
                 />
+              </div>
+
+              <div className="md:col-span-2 space-y-1">
+                <div>
+                  <Label htmlFor="specialNote">Special Note</Label>
+                  <Textarea
+                    id="specialNote"
+                    placeholder="Highlight important information about this product"
+                    value={formData.specialNote}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        specialNote: e.target.value,
+                      })
+                    }
+                    className="mt-1"
+                    rows={3}
+                  />
+                </div>
+                <p className="text-xs text-slate-500">
+                  This note appears on the product details page below the main image.
+                </p>
               </div>
 
               {showBasicFields && (
