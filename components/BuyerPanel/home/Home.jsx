@@ -12,6 +12,7 @@ import AboutSection from "@/components/BuyerPanel/home/AboutSection.jsx";
 import SupportSection from "@/components/BuyerPanel/home/SupportSection.jsx";
 import FeaturedSection from "@/components/BuyerPanel/home/FeaturedSection.jsx";
 import SearchSection from "@/components/BuyerPanel/home/SearchSection.jsx";
+import StoreBenefits from "@/components/BuyerPanel/home/StoreBenefits.jsx";
 
 export default function HomePage() {
 	const [searchQuery, setSearchQuery] = useState("");
@@ -87,6 +88,7 @@ export default function HomePage() {
                                 isLoading={isLoading}
                         /> */}
                         <AboutSection />
+                        <StoreBenefits />
                         <SupportSection />
 
 			{/* <FeaturedSection
