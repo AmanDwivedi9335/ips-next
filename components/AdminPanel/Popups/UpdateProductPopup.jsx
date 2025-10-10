@@ -30,6 +30,7 @@ import { useAdminMaterialStore } from "@/store/adminMaterialStore.js";
 import { useAdminSizeStore } from "@/store/adminSizeStore.js";
 import { useAdminCategoryStore } from "@/store/adminCategoryStore.js";
 import { useAdminLayoutStore } from "@/store/adminLayoutStore.js";
+import { sortCategoriesByOrder } from "@/lib/sortCategories.js";
 import { useAdminProductFamilyStore } from "@/store/adminProductFamilyStore.js";
 
 import { ImageUpload } from "@/components/AdminPanel/ImageUpload.jsx";
@@ -188,10 +189,13 @@ export function UpdateProductPopup({ open, onOpenChange, product }) {
     );
 
 
-  const parentCategories = categoryList.filter((cat) => !cat.parent);
+  const parentCategories = sortCategoriesByOrder(
+    categoryList.filter((cat) => !cat.parent),
+  );
   const subCategories = selectedCategoryId
-    ? categoryList.filter((cat) => cat.parent === selectedCategoryId)
-
+    ? sortCategoriesByOrder(
+        categoryList.filter((cat) => cat.parent === selectedCategoryId),
+      )
     : [];
 
   useEffect(() => {
