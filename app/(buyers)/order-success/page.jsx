@@ -499,10 +499,12 @@ export default function OrderSuccessPage() {
                                                         <div className="flex justify-between">
                                                                 <span>Shipping</span>
                                                                 <span className="font-medium text-gray-900">
-                                                                        ₹
-                                                                        {orderDetails.shippingCost?.toLocaleString?.() ||
-                                                                                orderDetails.shippingCost ||
-                                                                                0}
+                                                                        {Number(orderDetails.shippingCost) > 0
+                                                                                ? `₹${
+                                                                                          orderDetails.shippingCost?.toLocaleString?.() ||
+                                                                                          orderDetails.shippingCost
+                                                                                  }`
+                                                                                : "Free"}
                                                                 </span>
                                                         </div>
                                                         <div className="flex justify-between">

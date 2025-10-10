@@ -64,11 +64,11 @@ const sections = [
                 items: [
                         {
                                 type: "paragraph",
-                                text: "Shipping fees (and any remote-area surcharge) are shown at checkout.",
+                                text: "Shipping is free across India on every order—no minimum purchase or hidden fees.",
                         },
                         {
                                 type: "paragraph",
-                                text: "Free-shipping thresholds, if offered, are applied after discounts.",
+                                text: "International shipping can be enabled on request; duties/taxes/KYC formalities remain the buyer's responsibility.",
                         },
                         {
                                 type: "paragraph",
@@ -85,7 +85,7 @@ const sections = [
                         },
                         {
                                 type: "paragraph",
-                                text: "Couriers usually make 2–3 attempts; undelivered parcels may be RTO (returned to origin). Re-shipping on RTO may incur additional charges.",
+                                text: "Couriers usually make 2–3 attempts; undelivered parcels may be RTO (returned to origin). We will coordinate with you for the smoothest possible resolution.",
                         },
                 ],
         },

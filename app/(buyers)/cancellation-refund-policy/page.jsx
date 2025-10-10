@@ -116,8 +116,8 @@ export default function CancellationRefundPolicyPage() {
                                 <section className="space-y-4">
                                         <h2 className="text-2xl font-semibold">6. Fees, shipping &amp; title</h2>
                                         <ul className="list-disc space-y-2 pl-6 text-base leading-7 text-gray-700">
-                                                <li>Original shipping/handling is non-refundable unless IPS error.</li>
-                                                <li>For approved returns, customer bears return shipping unless IPS authorises otherwise.</li>
+                                                <li>Outbound shipping is free on every order; you only pay for the products and applicable taxes.</li>
+                                                <li>For approved returns, IPS coordinates return shipping at no additional cost to you.</li>
                                                 <li>Title and risk pass on delivery.</li>
                                         </ul>
                                 </section>
