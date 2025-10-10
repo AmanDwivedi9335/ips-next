@@ -25,6 +25,10 @@ import {
         Receipt,
         Lock,
         HelpCircle,
+        ChevronRight,
+        CheckCircle2,
+        Sparkles,
+        Truck,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -445,13 +449,20 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                 }
         };
 
-	const colors = [
-		"bg-blue-500",
-		"bg-black",
-		"bg-red-500",
-		"bg-orange-500",
-		"bg-gray-500",
-	];
+        const quickHighlights = [
+                {
+                        icon: Sparkles,
+                        label: "Premium print finish",
+                },
+                {
+                        icon: Truck,
+                        label: "Fast pan-India delivery",
+                },
+                {
+                        icon: CheckCircle2,
+                        label: "Quality checked materials",
+                },
+        ];
 
         const numericCalculatedPrice = toNumber(calculatedPrice);
         const numericCalculatedMrp = toNumber(calculatedMrp);
@@ -484,6 +495,11 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                           : 0;
         const showDiscountBadge = discountToShow > 0;
         const isLoadingPriceWithoutValue = isPriceLoading && baseDisplayPrice === null;
+        const heroDescription =
+                product.shortDescription ||
+                product.tagline ||
+                product.metaDescription ||
+                product.description;
 
         if (!product) {
                 return (
@@ -506,491 +522,571 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
 		);
 	}
 
-	return (
-                <div className="min-h-screen bg-gray-50">
-                        <div className="container mx-auto px-4 lg:px-10 py-8">
-                                <div className="text-sm mb-4">
+        return (
+                <div className="relative min-h-screen bg-slate-100">
+                        <div
+                                className="pointer-events-none absolute inset-x-0 top-0 h-80 bg-gradient-to-b from-white via-slate-100/80 to-transparent"
+                                aria-hidden="true"
+                        />
+                        <div className="relative z-10 mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
+                                <nav
+                                        aria-label="Breadcrumb"
+                                        className="flex items-center gap-2 text-sm text-slate-500"
+                                >
                                         <Link
                                                 href="/"
-                                                className="text-gray-600 hover:underline"
+                                                className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1.5 font-medium text-slate-600 shadow-sm transition hover:border-slate-300 hover:text-slate-900"
                                         >
+                                                <Home className="h-4 w-4" />
                                                 Home
                                         </Link>
-                                        {" > "}
-                                        <Link
-                                                href={`/products?category=${product.category}`}
-                                                className="text-gray-600 hover:underline"
-                                        >
-                                                {categoryName}
-                                        </Link>
+                                        {categoryName && (
+                                                <>
+                                                        <ChevronRight
+                                                                className="h-3.5 w-3.5 text-slate-300"
+                                                                aria-hidden="true"
+                                                        />
+                                                        <Link
+                                                                href={`/products?category=${product.category}`}
+                                                                className="rounded-full border border-transparent px-3 py-1.5 text-slate-600 transition hover:text-slate-900"
+                                                        >
+                                                                {categoryName}
+                                                        </Link>
+                                                </>
+                                        )}
                                         {product.subcategory && (
                                                 <>
-                                                        {" > "}
-                                                        <span className="text-gray-600">
+                                                        <ChevronRight
+                                                                className="h-3.5 w-3.5 text-slate-300"
+                                                                aria-hidden="true"
+                                                        />
+                                                        <span className="rounded-full bg-white/70 px-3 py-1.5 text-slate-500 shadow-sm">
                                                                 {subcategoryName}
                                                         </span>
                                                 </>
                                         )}
-                                </div>
-                                {/* Product Details */}
-				<div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
-					{/* Product Images */}
-					<div className="space-y-6">
-                                                <motion.div
-                                                        className="relative bg-white rounded-lg overflow-hidden shadow-sm"
-                                                        initial={{ opacity: 0, x: -20 }}
-                                                        animate={{ opacity: 1, x: 0 }}
-                                                        transition={{ duration: 0.5 }}
-                                                >
-                                                        <div className="absolute top-4 left-4 z-10">
-                                                                <Link
-                                                                        href="/products"
-                                                                        className="inline-flex items-center bg-black text-white py-2 px-4 rounded-full hover:bg-gray-800 transition-colors"
-                                                                >
-                                                                        <ArrowLeft className="h-4 w-4 mr-2" />
-                                                                        Back
-                                                                </Link>
-                                                        </div>
+                                </nav>
 
-                                                        {productCode && (
-                                                                <Badge className="absolute top-4 right-4 z-10 bg-black text-white">
-                                                                        {productCode}
+                                <div className="mt-6 flex flex-wrap items-start justify-between gap-4">
+                                        <div className="max-w-3xl space-y-3">
+                                                <h1 className="text-3xl font-semibold text-slate-900 sm:text-4xl">
+                                                        {product.title}
+                                                </h1>
+                                                {heroDescription && (
+                                                        <p className="text-base leading-relaxed text-slate-600">
+                                                                {heroDescription}
+                                                        </p>
+                                                )}
+                                                <div className="flex flex-wrap gap-2">
+                                                        {product.productFamily && (
+                                                                <Badge className="rounded-full border border-slate-200 bg-white px-3 py-1 text-slate-700 shadow-sm">
+                                                                        {product.productFamily}
                                                                 </Badge>
                                                         )}
-
-                                                        <div className="relative w-full h-96 lg:h-[400px]">
-                                                               <Image
-                                                                       src={
-                                                                               languageImage ||
-                                                                               product.images?.[selectedImage] ||
-                                                                               product.image ||
-                                                                               "https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png"
-                                                                       }
-                                                                       alt={product.name}
-                                                                       fill
-                                                                       className="object-contain p-8"
-                                                                       priority
-                                                               />
-							</div>
-						</motion.div>
-
-						{/* Image Gallery */}
-						{product.images && product.images.length > 1 && (
-							<div className="flex space-x-4 justify-center overflow-x-auto">
-								{product.images.map((image, index) => (
-									<button
-										key={index}
-										onClick={() => setSelectedImage(index)}
-										className={`relative w-20 h-20 border-2 rounded-lg overflow-hidden flex-shrink-0 ${
-											selectedImage === index
-												? "border-black"
-												: "border-gray-200 hover:border-gray-400"
-										}`}
-									>
-										<Image
-											src={
-												image ||
-												"https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png"
-											}
-											alt={`${product.name} view ${index + 1}`}
-											fill
-											className="object-contain p-2"
-										/>
-									</button>
-								))}
-							</div>
-						)}
-					</div>
-
-					{/* Product Info */}
-					<motion.div
-						className="space-y-6"
-						initial={{ opacity: 0, x: 20 }}
-						animate={{ opacity: 1, x: 0 }}
-						transition={{ duration: 0.5, delay: 0.2 }}
-					>
-						<div>
-							<Badge variant="secondary" className="mb-4">
-								{product.category?.replace("-", " ").toUpperCase()}
-							</Badge>
-							<h1 className="text-3xl lg:text-4xl font-bold mb-4">
-								{product.name}
-							</h1>
-
-                                                        {/* Product code */}
-                                                        {productCode && (
-                                                                <p className="text-sm text-gray-600 mb-2">
-                                                                        Code: {productCode}
-                                                                </p>
+                                                        {categoryName && (
+                                                                <Badge className="rounded-full border border-slate-200 bg-white px-3 py-1 text-slate-700 shadow-sm">
+                                                                        {categoryName}
+                                                                </Badge>
                                                         )}
+                                                        {product.subcategory && (
+                                                                <Badge className="rounded-full border border-slate-200 bg-white px-3 py-1 text-slate-700 shadow-sm">
+                                                                        {subcategoryName}
+                                                                </Badge>
+                                                        )}
+                                                </div>
+                                        </div>
+                                </div>
 
-                                        {/* Product price */}
-                                        {isLoadingPriceWithoutValue ? (
-                                                <p className="text-sm text-gray-500 mb-2">
-                                                        Fetching latest price...
-                                                </p>
-                                        ) : shouldShowUnavailableMessage ? (
-                                                <p className="text-lg lg:text-xl font-semibold text-red-600 mb-2">
-                                                        Please select another size
-                                                </p>
-                                        ) : displayPrice !== null ? (
-                                                <div className="space-y-1 mb-2">
-                                                        <div className="flex items-baseline gap-3 flex-wrap">
-                                                                <p className="text-xl lg:text-2xl font-semibold text-black">
-                                                                        ₹ {displayPrice.toLocaleString()}
-                                                                </p>
-                                                                {showOriginalPrice && (
-                                                                        <p className="text-base text-gray-500 line-through">
-                                                                                ₹ {effectiveMrp.toLocaleString()}
-                                                                        </p>
-                                                                )}
-                                                                {showDiscountBadge && (
-                                                                        <Badge className="bg-red-500 text-white">
-                                                                                {discountToShow}% OFF
+                                <div className="mt-10 grid items-start gap-10 lg:grid-cols-[1.1fr_1fr]">
+                                        <Card className="relative overflow-hidden rounded-3xl border border-white/60 bg-white/90 shadow-xl backdrop-blur">
+                                                <CardContent className="p-6 sm:p-8">
+                                                        <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+                                                                <Link
+                                                                        href="/products"
+                                                                        className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-600 shadow-sm transition hover:border-slate-300 hover:text-slate-900"
+                                                                >
+                                                                        <ArrowLeft className="h-4 w-4" />
+                                                                        Back to products
+                                                                </Link>
+                                                                {productCode && (
+                                                                        <Badge className="rounded-full border border-slate-200 bg-slate-900/90 px-4 py-1 text-white shadow-sm">
+                                                                                {productCode}
                                                                         </Badge>
                                                                 )}
                                                         </div>
-                                                        {numericCalculatedPrice !== null ? (
-                                                                <p className="text-sm text-gray-500">
-                                                                        Price based on selected options
-                                                                </p>
-                                                        ) : showDiscountBadge ? (
-                                                                <p className="text-sm text-green-600 font-medium">
-                                                                        Sale price after discount
-                                                                </p>
-                                                        ) : null}
-                                                </div>
-                                        ) : null}
-                                        {hasQrOption && (
-                                                <div className="mt-4 flex items-center gap-3">
-                                                        <span className="font-medium whitespace-nowrap">QR Code:</span>
-                                                        <Select
-                                                                value={hasQr ? "yes" : "no"}
-                                                                onValueChange={(v) => setHasQr(v === "yes")}
-                                                        >
-                                                                <SelectTrigger className="w-40">
-                                                                        <SelectValue placeholder="QR Code" />
-                                                                </SelectTrigger>
-                                                                <SelectContent>
-                                                                        <SelectItem value="yes">
-                                                                                With QR Code
-                                                                        </SelectItem>
-                                                                        <SelectItem value="no">
-                                                                                Without QR Code
-                                                                        </SelectItem>
-                                                                </SelectContent>
-                                                        </Select>
-                                                </div>
-                                        )}
-                                </div>
 
-                                {/* Product Colors */}
-                                {/* <div className="w-fit flex space-x-2 p-3 bg-gray-200 rounded-lg">
-                                        {colors.map((color, i) => (
-                                                <div
-                                                        key={i}
-                                                        className={`w-6 h-6 rounded-full border border-gray-200 cursor-pointer ${color}`}
-                                                />
-                                        ))}
-                                </div> */}
-
-                                {languages.length > 0 && (
-                                        <div className="mt-4 flex items-center gap-3">
-                                                <span className="font-medium whitespace-nowrap">Language:</span>
-                                                <Select
-                                                        value={selectedLanguage}
-                                                        onValueChange={setSelectedLanguage}
-                                                >
-                                                        <SelectTrigger className="w-40">
-                                                                <SelectValue placeholder="Language" />
-                                                        </SelectTrigger>
-                                                        <SelectContent>
-                                                                {languages.map((lang) => (
-                                                                        <SelectItem key={lang} value={lang}>
-                                                                                {lang}
-                                                                        </SelectItem>
-                                                                ))}
-                                                        </SelectContent>
-                                                </Select>
-                                        </div>
-                                )}
-
-                                                {isLayoutSelectionEnabled &&
-                                                        availableLayouts &&
-                                                        availableLayouts.length > 0 && (
-                                                        <div className="mt-4 flex items-center gap-3">
-                                                                <span className="font-medium whitespace-nowrap">Layout:</span>
-                                                                <Select
-                                                                        value={selectedLayout}
-                                                                        onValueChange={setSelectedLayout}
-                                                                >
-                                                                        <SelectTrigger className="w-40">
-                                                                                <SelectValue placeholder="Layout" />
-                                                                        </SelectTrigger>
-                                                                        <SelectContent>
-                                                                                {availableLayouts.map((lay) => (
-                                                                                        <SelectItem key={lay} value={lay}>
-                                                                                                {lay}
-                                                                                        </SelectItem>
-                                                                                ))}
-                                                                        </SelectContent>
-                                                                </Select>
-                                                        </div>
-                                                )}
-                                                {availableSizes && availableSizes.length > 0 && (
-                                                        <div className="mt-4 flex items-center gap-3">
-                                                                <span className="font-medium whitespace-nowrap">Size:</span>
-                                                                <Select
-                                                                        value={selectedSize}
-                                                                        onValueChange={setSelectedSize}
-                                                                >
-                                                                        <SelectTrigger className="w-40">
-                                                                                <SelectValue placeholder="Size" />
-                                                                        </SelectTrigger>
-                                                                        <SelectContent>
-                                                                                {availableSizes.map((size) => (
-                                                                                        <SelectItem key={size} value={size}>
-                                                                                                {size}
-                                                                                        </SelectItem>
-                                                                                ))}
-                                                                        </SelectContent>
-                                                                </Select>
-                                                        </div>
-                                                )}
-
-                                                {availableMaterials && availableMaterials.length > 0 && (
-                                                        <div className="mt-4 flex items-center gap-3">
-                                                                <span className="font-medium whitespace-nowrap">Material:</span>
-                                                                <Select
-                                                                        value={selectedMaterial}
-                                                                        onValueChange={setSelectedMaterial}
-                                                                >
-                                                                        <SelectTrigger className="w-40">
-                                                                                <SelectValue placeholder="Material" />
-                                                                        </SelectTrigger>
-                                                                        <SelectContent>
-                                                                                {availableMaterials.map((mat) => (
-                                                                                        <SelectItem key={mat} value={mat}>
-                                                                                                {mat}
-                                                                                        </SelectItem>
-                                                                                ))}
-                                                                        </SelectContent>
-                                                                </Select>
-                                                        </div>
-                                                )}
-
-                                                {/* Quantity and Add to Cart */}
-                                                <div className="space-y-4">
-							<div className="flex items-center space-x-4">
-								<span className="font-medium">Quantity:</span>
-								<div className="flex items-center border rounded-lg">
-									<Button
-										variant="ghost"
-										size="icon"
-										onClick={() => handleQuantityChange(-1)}
-										disabled={quantity <= 1}
-									>
-										<Minus className="h-4 w-4" />
-									</Button>
-									<span className="px-4 py-2 font-medium">{quantity}</span>
-                                                                        <Button
-                                                                                variant="ghost"
-                                                                                size="icon"
-                                                                                onClick={() => handleQuantityChange(1)}
-                                                                        >
-                                                                                <Plus className="h-4 w-4" />
-                                                                        </Button>
+                                                        <div className="relative overflow-hidden rounded-2xl border border-slate-200 bg-gradient-to-br from-slate-50 via-white to-white">
+                                                                <div className="relative aspect-square w-full">
+                                                                        <Image
+                                                                                src={
+                                                                                        languageImage ||
+                                                                                        product.images?.[selectedImage] ||
+                                                                                        product.image ||
+                                                                                        "https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png"
+                                                                                }
+                                                                                alt={product.name}
+                                                                                fill
+                                                                                className="object-contain p-8"
+                                                                                priority
+                                                                        />
                                                                 </div>
                                                         </div>
 
-							<div className="flex flex-col sm:flex-row gap-4">
-                                                                <Button
-                                                                        onClick={handleAddToCart}
-                                                                        disabled={
-                                                                                isLoading ||
-                                                                                calculatedPrice === null ||
-                                                                                isPriceLoading ||
-                                                                                isMrpMissingForSelection
-                                                                        }
-                                                                        className="flex-1 bg-black text-white hover:bg-gray-800"
-                                                                        size="lg"
-                                                                >
-									<ShoppingCart className="h-5 w-5 mr-2" />
-									Add to Cart
-								</Button>
-                                                                <Button
-                                                                        onClick={handleBuyNow}
-                                                                        disabled={
-                                                                                calculatedPrice === null ||
-                                                                                isPriceLoading ||
-                                                                                isMrpMissingForSelection
-                                                                        }
-                                                                        className="flex-1 bg-green-600 text-white hover:bg-green-700"
-                                                                        size="lg"
-                                                                >
-                                                                        Buy Now
-                                                                </Button>
-                                                                <Button
-                                                                        variant="outline"
-                                                                        size="lg"
-                                                                        onClick={handleAddToWishlist}
-                                                                        disabled={
-                                                                                calculatedPrice === null ||
-                                                                                isPriceLoading ||
-                                                                                isMrpMissingForSelection
-                                                                        }
-                                                                >
-                                                                        <Heart className="h-5 w-5 mr-2" />
-                                                                        Wishlist
-                                                                </Button>
-								<Button variant="outline" size="lg">
-									<Share2 className="h-5 w-5" />
-								</Button>
-							</div>
-						</div>
+                                                        {product.images && product.images.length > 1 && (
+                                                                <div className="mt-6 flex gap-4 overflow-x-auto pb-2">
+                                                                        {product.images.map((image, index) => (
+                                                                                <button
+                                                                                        key={index}
+                                                                                        onClick={() => setSelectedImage(index)}
+                                                                                        className={`relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-2xl border-2 transition ${
+                                                                                                selectedImage === index
+                                                                                                        ? "border-slate-900 shadow-md"
+                                                                                                        : "border-slate-200 hover:border-slate-400"
+                                                                                        }`}
+                                                                                >
+                                                                                        <Image
+                                                                                                src={
+                                                                                                        image ||
+                                                                                                        "https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png"
+                                                                                                }
+                                                                                                alt={`${product.name} view ${index + 1}`}
+                                                                                                fill
+                                                                                                className="object-cover"
+                                                                                        />
+                                                                                </button>
+                                                                        ))}
+                                                                </div>
+                                                        )}
+                                                </CardContent>
+                                        </Card>
 
-                                                {/* Availability status removed */}
-                                        </motion.div>
+                                        <div className="space-y-6">
+                                                <Card className="rounded-3xl border border-white/60 bg-white shadow-xl">
+                                                        <CardContent className="space-y-6 p-6 sm:p-8">
+                                                                <div className="space-y-3">
+                                                                        {displayPrice !== null ? (
+                                                                                <>
+                                                                                        <div className="flex flex-wrap items-end gap-3">
+                                                                                                <p className="text-3xl font-semibold text-slate-900">
+                                                                                                        ₹ {displayPrice.toLocaleString()}
+                                                                                                </p>
+                                                                                                {showOriginalPrice && (
+                                                                                                        <p className="text-base text-slate-400 line-through">
+                                                                                                                ₹ {effectiveMrp.toLocaleString()}
+                                                                                                        </p>
+                                                                                                )}
+                                                                                                {showDiscountBadge && (
+                                                                                                        <Badge className="rounded-full bg-emerald-100 px-3 py-1 text-sm font-medium text-emerald-700">
+                                                                                                                {discountToShow}% OFF
+                                                                                                        </Badge>
+                                                                                                )}
+                                                                                        </div>
+                                                                                        {numericCalculatedPrice !== null ? (
+                                                                                                <p className="text-sm text-slate-500">
+                                                                                                        Price based on selected options
+                                                                                                </p>
+                                                                                        ) : showDiscountBadge ? (
+                                                                                                <p className="text-sm font-medium text-emerald-600">
+                                                                                                        Sale price after discount
+                                                                                                </p>
+                                                                                        ) : null}
+                                                                                </>
+                                                                        ) : isLoadingPriceWithoutValue ? (
+                                                                                <p className="text-sm text-slate-500">
+                                                                                        Fetching latest price...
+                                                                                </p>
+                                                                        ) : shouldShowUnavailableMessage ? (
+                                                                                <p className="text-sm font-medium text-amber-600">
+                                                                                        Currently unavailable for the selected configuration. Please try a different combination.
+                                                                                </p>
+                                                                        ) : null}
+                                                                </div>
+
+                                                                <div className="space-y-5">
+                                                                        <h3 className="text-sm font-semibold uppercase tracking-[0.25em] text-slate-800">
+                                                                                Customise your selection
+                                                                        </h3>
+                                                                        <div className="grid gap-4 sm:grid-cols-2">
+                                                                                {languages.length > 0 && (
+                                                                                        <div className="space-y-2">
+                                                                                                <span className="text-sm font-medium text-slate-700">
+                                                                                                        Language
+                                                                                                </span>
+                                                                                                <Select
+                                                                                                        value={selectedLanguage}
+                                                                                                        onValueChange={setSelectedLanguage}
+                                                                                                >
+                                                                                                        <SelectTrigger className="w-full border border-slate-200 bg-white focus:ring-slate-300">
+                                                                                                                <SelectValue placeholder="Language" />
+                                                                                                        </SelectTrigger>
+                                                                                                        <SelectContent>
+                                                                                                                {languages.map((lang) => (
+                                                                                                                        <SelectItem key={lang} value={lang}>
+                                                                                                                                {lang}
+                                                                                                                        </SelectItem>
+                                                                                                                ))}
+                                                                                                        </SelectContent>
+                                                                                                </Select>
+                                                                                        </div>
+                                                                                )}
+                                                                                {isLayoutSelectionEnabled &&
+                                                                                        availableLayouts &&
+                                                                                        availableLayouts.length > 0 && (
+                                                                                                <div className="space-y-2">
+                                                                                                        <span className="text-sm font-medium text-slate-700">
+                                                                                                                Layout
+                                                                                                        </span>
+                                                                                                        <Select
+                                                                                                                value={selectedLayout}
+                                                                                                                onValueChange={setSelectedLayout}
+                                                                                                        >
+                                                                                                                <SelectTrigger className="w-full border border-slate-200 bg-white focus:ring-slate-300">
+                                                                                                                        <SelectValue placeholder="Layout" />
+                                                                                                                </SelectTrigger>
+                                                                                                                <SelectContent>
+                                                                                                                        {availableLayouts.map((lay) => (
+                                                                                                                                <SelectItem key={lay} value={lay}>
+                                                                                                                                        {lay}
+                                                                                                                                </SelectItem>
+                                                                                                                        ))}
+                                                                                                                </SelectContent>
+                                                                                                        </Select>
+                                                                                                </div>
+                                                                                        )}
+                                                                                {availableSizes && availableSizes.length > 0 && (
+                                                                                        <div className="space-y-2">
+                                                                                                <span className="text-sm font-medium text-slate-700">
+                                                                                                        Size
+                                                                                                </span>
+                                                                                                <Select
+                                                                                                        value={selectedSize}
+                                                                                                        onValueChange={setSelectedSize}
+                                                                                                >
+                                                                                                        <SelectTrigger className="w-full border border-slate-200 bg-white focus:ring-slate-300">
+                                                                                                                <SelectValue placeholder="Size" />
+                                                                                                        </SelectTrigger>
+                                                                                                        <SelectContent>
+                                                                                                                {availableSizes.map((size) => (
+                                                                                                                        <SelectItem key={size} value={size}>
+                                                                                                                                {size}
+                                                                                                                        </SelectItem>
+                                                                                                                ))}
+                                                                                                        </SelectContent>
+                                                                                                </Select>
+                                                                                        </div>
+                                                                                )}
+                                                                                {availableMaterials && availableMaterials.length > 0 && (
+                                                                                        <div className="space-y-2">
+                                                                                                <span className="text-sm font-medium text-slate-700">
+                                                                                                        Material
+                                                                                                </span>
+                                                                                                <Select
+                                                                                                        value={selectedMaterial}
+                                                                                                        onValueChange={setSelectedMaterial}
+                                                                                                >
+                                                                                                        <SelectTrigger className="w-full border border-slate-200 bg-white focus:ring-slate-300">
+                                                                                                                <SelectValue placeholder="Material" />
+                                                                                                        </SelectTrigger>
+                                                                                                        <SelectContent>
+                                                                                                                {availableMaterials.map((mat) => (
+                                                                                                                        <SelectItem key={mat} value={mat}>
+                                                                                                                                {mat}
+                                                                                                                        </SelectItem>
+                                                                                                                ))}
+                                                                                                        </SelectContent>
+                                                                                                </Select>
+                                                                                        </div>
+                                                                                )}
+                                                                                {hasQrOption && (
+                                                                                        <div className="space-y-2">
+                                                                                                <span className="text-sm font-medium text-slate-700">
+                                                                                                        QR Code
+                                                                                                </span>
+                                                                                                <Select
+                                                                                                        value={hasQr ? "yes" : "no"}
+                                                                                                        onValueChange={(v) => setHasQr(v === "yes")}
+                                                                                                >
+                                                                                                        <SelectTrigger className="w-full border border-slate-200 bg-white focus:ring-slate-300">
+                                                                                                                <SelectValue placeholder="QR Code" />
+                                                                                                        </SelectTrigger>
+                                                                                                        <SelectContent>
+                                                                                                                <SelectItem value="yes">With QR Code</SelectItem>
+                                                                                                                <SelectItem value="no">Without QR Code</SelectItem>
+                                                                                                        </SelectContent>
+                                                                                                </Select>
+                                                                                        </div>
+                                                                                )}
+                                                                        </div>
+                                                                </div>
+
+                                                                <div className="space-y-4">
+                                                                        <div className="space-y-2">
+                                                                                <span className="text-sm font-medium text-slate-700">
+                                                                                        Quantity
+                                                                                </span>
+                                                                                <div className="flex flex-wrap items-center gap-4">
+                                                                                        <div className="flex items-center rounded-full border border-slate-200 bg-white shadow-sm">
+                                                                                                <Button
+                                                                                                        variant="ghost"
+                                                                                                        size="icon"
+                                                                                                        onClick={() => handleQuantityChange(-1)}
+                                                                                                        disabled={quantity <= 1}
+                                                                                                        className="rounded-full text-slate-700 hover:text-slate-900"
+                                                                                                >
+                                                                                                        <Minus className="h-4 w-4" />
+                                                                                                </Button>
+                                                                                                <span className="px-4 py-2 font-medium text-slate-900">
+                                                                                                        {quantity}
+                                                                                                </span>
+                                                                                                <Button
+                                                                                                        variant="ghost"
+                                                                                                        size="icon"
+                                                                                                        onClick={() => handleQuantityChange(1)}
+                                                                                                        className="rounded-full text-slate-700 hover:text-slate-900"
+                                                                                                >
+                                                                                                        <Plus className="h-4 w-4" />
+                                                                                                </Button>
+                                                                                        </div>
+                                                                                        <p className="text-xs text-slate-500">
+                                                                                                Need more? Bulk discounts available on request.
+                                                                                        </p>
+                                                                                </div>
+                                                                        </div>
+
+                                                                        <div className="grid gap-3 sm:grid-cols-2">
+                                                                                <Button
+                                                                                        onClick={handleAddToCart}
+                                                                                        disabled={
+                                                                                                isLoading ||
+                                                                                                calculatedPrice === null ||
+                                                                                                isPriceLoading ||
+                                                                                                isMrpMissingForSelection
+                                                                                        }
+                                                                                        className="w-full bg-slate-900 text-white transition hover:bg-slate-800"
+                                                                                        size="lg"
+                                                                                >
+                                                                                        <ShoppingCart className="mr-2 h-5 w-5" />
+                                                                                        Add to Cart
+                                                                                </Button>
+                                                                                <Button
+                                                                                        onClick={handleBuyNow}
+                                                                                        disabled={
+                                                                                                calculatedPrice === null ||
+                                                                                                isPriceLoading ||
+                                                                                                isMrpMissingForSelection
+                                                                                        }
+                                                                                        className="w-full bg-emerald-600 text-white transition hover:bg-emerald-700"
+                                                                                        size="lg"
+                                                                                >
+                                                                                        Buy Now
+                                                                                </Button>
+                                                                                <Button
+                                                                                        variant="outline"
+                                                                                        size="lg"
+                                                                                        onClick={handleAddToWishlist}
+                                                                                        disabled={
+                                                                                                calculatedPrice === null ||
+                                                                                                isPriceLoading ||
+                                                                                                isMrpMissingForSelection
+                                                                                        }
+                                                                                        className="w-full border-slate-200 text-slate-700 hover:bg-slate-50"
+                                                                                >
+                                                                                        <Heart className="mr-2 h-5 w-5" />
+                                                                                        Wishlist
+                                                                                </Button>
+                                                                                <Button
+                                                                                        variant="outline"
+                                                                                        size="lg"
+                                                                                        className="w-full border-slate-200 text-slate-700 hover:bg-slate-50"
+                                                                                >
+                                                                                        <Share2 className="mr-2 h-5 w-5" />
+                                                                                        Share
+                                                                                </Button>
+                                                                        </div>
+
+                                                                        <div className="grid gap-3 sm:grid-cols-3">
+                                                                                {quickHighlights.map(({ icon: Icon, label }) => (
+                                                                                        <div
+                                                                                                key={label}
+                                                                                                className="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-600"
+                                                                                        >
+                                                                                                <Icon className="h-4 w-4 text-slate-500" />
+                                                                                                <span>{label}</span>
+                                                                                        </div>
+                                                                                ))}
+                                                                        </div>
+
+                                                                        <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
+                                                                                Looking for bulk pricing or customisation?{" "}
+                                                                                <Link
+                                                                                        href="/corporate-bulk-orders"
+                                                                                        className="font-semibold text-slate-900 underline-offset-4 hover:underline"
+                                                                                >
+                                                                                        Let's talk
+                                                                                </Link>
+                                                                                .
+                                                                        </div>
+                                                                </div>
+                                                        </CardContent>
+                                                </Card>
+                                        </div>
                                 </div>
-                                {product.materialSpecification ||
+                                {(product.materialSpecification ||
                                         product.description ||
-                                        product.longDescription ? (
-                                        <div className="space-y-6 mb-10">
+                                        product.longDescription) && (
+                                        <div className="mb-12 mt-12 grid gap-6">
                                                 {product.materialSpecification && (
-                                                        <div>
-                                                                <h2 className="text-xl font-bold mb-2">
-                                                                        Material Specification
-                                                                </h2>
-                                                                <p className="text-gray-700 whitespace-pre-line">
-                                                                        {product.materialSpecification}
-                                                                </p>
-                                                        </div>
+                                                        <Card className="rounded-3xl border border-white/60 bg-white shadow-sm">
+                                                                <CardContent className="space-y-3 p-6 sm:p-8">
+                                                                        <h2 className="text-2xl font-semibold text-slate-900">
+                                                                                Material Specification
+                                                                        </h2>
+                                                                        <p className="whitespace-pre-line text-slate-600">
+                                                                                {product.materialSpecification}
+                                                                        </p>
+                                                                </CardContent>
+                                                        </Card>
                                                 )}
                                                 {product.description && (
-                                                        <div>
-                                                                <h2 className="text-xl font-bold mb-2">
-                                                                        Product Short Description
-                                                                </h2>
-                                                                <p className="text-gray-700 whitespace-pre-line">
-                                                                        {product.description}
-                                                                </p>
-                                                        </div>
+                                                        <Card className="rounded-3xl border border-white/60 bg-white shadow-sm">
+                                                                <CardContent className="space-y-3 p-6 sm:p-8">
+                                                                        <h2 className="text-2xl font-semibold text-slate-900">
+                                                                                Product Short Description
+                                                                        </h2>
+                                                                        <p className="whitespace-pre-line text-slate-600">
+                                                                                {product.description}
+                                                                        </p>
+                                                                </CardContent>
+                                                        </Card>
                                                 )}
                                                 {product.longDescription && (
-                                                        <div>
-                                                                <h2 className="text-xl font-bold mb-2">
-                                                                        Description
-                                                                </h2>
-                                                                <p className="text-gray-700 whitespace-pre-line">
-                                                                        {product.longDescription}
-                                                                </p>
-                                                        </div>
+                                                        <Card className="rounded-3xl border border-white/60 bg-white shadow-sm">
+                                                                <CardContent className="space-y-3 p-6 sm:p-8">
+                                                                        <h2 className="text-2xl font-semibold text-slate-900">
+                                                                                Description
+                                                                        </h2>
+                                                                        <p className="whitespace-pre-line text-slate-600">
+                                                                                {product.longDescription}
+                                                                        </p>
+                                                                </CardContent>
+                                                        </Card>
                                                 )}
                                         </div>
-                                ) : null}
+                                )}
 
                                 {/* Product Features */}
                                 {product.features && product.features.length > 0 && (
                                         <motion.div
-                                                className="mb-10"
-						initial={{ opacity: 0, y: 20 }}
-						animate={{ opacity: 1, y: 0 }}
-						transition={{ duration: 0.5, delay: 0.5 }}
-					>
-						<h2 className="text-2xl font-bold mb-8">Product Features</h2>
-						<div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-							{product.features.map((feature, index) => (
-								<Card key={index} className="bg-white rounded-xl p-6 shadow-sm">
-									<h3 className="font-semibold text-lg mb-3">
-										{feature.title}
-									</h3>
-									<p className="text-gray-600">{feature.description}</p>
-								</Card>
-							))}
-						</div>
-						{product.longDescription && (
-							<Card className="bg-white rounded-xl p-6 shadow-sm">
-								<h2 className="text-2xl font-bold mb-4">Product Description</h2>
-								<p className="text-gray-600 leading-relaxed">
-									{product.longDescription}
-								</p>
-							</Card>
-						)}
-					</motion.div>
-				)}
+                                                className="mb-12"
+                                                initial={{ opacity: 0, y: 20 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                transition={{ duration: 0.5, delay: 0.5 }}
+                                        >
+                                                <div className="rounded-3xl border border-white/60 bg-white/90 p-6 shadow-sm sm:p-8">
+                                                        <h2 className="mb-8 text-2xl font-semibold text-slate-900">
+                                                                Product Features
+                                                        </h2>
+                                                        <div className="grid gap-6 md:grid-cols-2">
+                                                                {product.features.map((feature, index) => (
+                                                                        <div
+                                                                                key={index}
+                                                                                className="rounded-2xl border border-slate-200 bg-slate-50/70 p-6"
+                                                                        >
+                                                                                <h3 className="mb-3 text-lg font-semibold text-slate-900">
+                                                                                        {feature.title}
+                                                                                </h3>
+                                                                                <p className="text-slate-600">{feature.description}</p>
+                                                                        </div>
+                                                                ))}
+                                                        </div>
+                                                        {product.longDescription && (
+                                                                <div className="mt-8 rounded-2xl border border-slate-200 bg-slate-50/70 p-6">
+                                                                        <h2 className="mb-3 text-xl font-semibold text-slate-900">
+                                                                                Product Description
+                                                                        </h2>
+                                                                        <p className="leading-relaxed text-slate-600">
+                                                                                {product.longDescription}
+                                                                        </p>
+                                                                </div>
+                                                        )}
+                                                </div>
+                                        </motion.div>
+                                )}
 
 				{/* Related Products */}
-				{relatedProducts.length > 0 && (
-					<motion.div
-						initial={{ opacity: 0, y: 20 }}
-						animate={{ opacity: 1, y: 0 }}
-						transition={{ duration: 0.5, delay: 0.7 }}
-						className="mb-10"
-					>
-						<h2 className="text-2xl font-bold mb-8">Related Products</h2>
-						<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-							{relatedProducts.map((relatedProduct) => (
-								<ProductCard key={relatedProduct.id} product={relatedProduct} />
-							))}
-						</div>
-					</motion.div>
-				)}
+                                {relatedProducts.length > 0 && (
+                                        <motion.div
+                                                initial={{ opacity: 0, y: 20 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                transition={{ duration: 0.5, delay: 0.7 }}
+                                                className="mb-12"
+                                        >
+                                                <div className="rounded-3xl border border-white/60 bg-white/90 p-6 shadow-sm sm:p-8">
+                                                        <h2 className="mb-8 text-2xl font-semibold text-slate-900">Related Products</h2>
+                                                        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                                                                {relatedProducts.map((relatedProduct) => (
+                                                                        <ProductCard key={relatedProduct.id} product={relatedProduct} />
+                                                                ))}
+                                                        </div>
+                                                </div>
+                                        </motion.div>
+                                )}
 
 				{/* Benefits and Warranty Section */}
-				<motion.div
-					className="mb-10"
-					initial={{ opacity: 0, y: 20 }}
-					animate={{ opacity: 1, y: 0 }}
-					transition={{ duration: 0.5, delay: 0.8 }}
-				>
-					<div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-						{/* Store Benefits */}
-						<Card>
-							<CardContent className="p-6">
-								<h2 className="text-xl font-bold mb-6">Store Benefits</h2>
-								<div className="space-y-4">
-									<div className="flex items-center space-x-3 p-3 border border-green-200 rounded-lg">
-										<Receipt className="h-5 w-5 text-green-600" />
-										<span className="font-medium">GST Invoice Available</span>
-									</div>
-									<div className="flex items-center space-x-3 p-3 border border-green-200 rounded-lg">
-										<Lock className="h-5 w-5 text-green-600" />
-										<span className="font-medium">Secure Payments</span>
-									</div>
-									<div className="flex items-center space-x-3 p-3 border border-green-200 rounded-lg">
-										<HelpCircle className="h-5 w-5 text-green-600" />
-										<span className="font-medium">365 Days Help Desk</span>
-									</div>
-								</div>
-							</CardContent>
-						</Card>
+                                <motion.div
+                                        className="mb-10"
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ duration: 0.5, delay: 0.8 }}
+                                >
+                                        <div className="grid gap-8 md:grid-cols-2">
+                                                <Card className="rounded-3xl border border-white/60 bg-white shadow-sm">
+                                                        <CardContent className="space-y-4 p-6 sm:p-8">
+                                                                <h2 className="text-xl font-semibold text-slate-900">
+                                                                        Store Benefits
+                                                                </h2>
+                                                                <div className="space-y-4">
+                                                                        <div className="flex items-center gap-3 rounded-2xl border border-emerald-100 bg-emerald-50/60 p-3">
+                                                                                <Receipt className="h-5 w-5 text-emerald-600" />
+                                                                                <span className="font-medium text-slate-700">GST Invoice Available</span>
+                                                                        </div>
+                                                                        <div className="flex items-center gap-3 rounded-2xl border border-emerald-100 bg-emerald-50/60 p-3">
+                                                                                <Lock className="h-5 w-5 text-emerald-600" />
+                                                                                <span className="font-medium text-slate-700">Secure Payments</span>
+                                                                        </div>
+                                                                        <div className="flex items-center gap-3 rounded-2xl border border-emerald-100 bg-emerald-50/60 p-3">
+                                                                                <HelpCircle className="h-5 w-5 text-emerald-600" />
+                                                                                <span className="font-medium text-slate-700">365 Days Help Desk</span>
+                                                                        </div>
+                                                                </div>
+                                                        </CardContent>
+                                                </Card>
 
-						{/* Return & Warranty Policy */}
-						<Card>
-							<CardContent className="p-6">
-								<h2 className="text-xl font-bold mb-6">
-									Return & Warranty Policy
-								</h2>
-								<div className="space-y-4">
-									<div className="flex items-center space-x-3 p-3 border border-green-200 rounded-lg">
-										<RotateCcw className="h-5 w-5 text-green-600" />
-										<span className="font-medium">
-											Upto 7 Days Return Policy
-										</span>
-									</div>
-									<div className="flex items-center space-x-3 p-3 border border-green-200 rounded-lg">
-										<Home className="h-5 w-5 text-green-600" />
-										<span className="font-medium">Damage Products</span>
-									</div>
-									<div className="flex items-center space-x-3 p-3 border border-green-200 rounded-lg">
-										<AlertCircle className="h-5 w-5 text-green-600" />
-										<span className="font-medium">Wrong Product</span>
-									</div>
-								</div>
-							</CardContent>
-						</Card>
-					</div>
-				</motion.div>
+                                                <Card className="rounded-3xl border border-white/60 bg-white shadow-sm">
+                                                        <CardContent className="space-y-4 p-6 sm:p-8">
+                                                                <h2 className="text-xl font-semibold text-slate-900">
+                                                                        Return & Warranty Policy
+                                                                </h2>
+                                                                <div className="space-y-4">
+                                                                        <div className="flex items-center gap-3 rounded-2xl border border-emerald-100 bg-emerald-50/60 p-3">
+                                                                                <RotateCcw className="h-5 w-5 text-emerald-600" />
+                                                                                <span className="font-medium text-slate-700">
+                                                                                        Upto 7 Days Return Policy
+                                                                                </span>
+                                                                        </div>
+                                                                        <div className="flex items-center gap-3 rounded-2xl border border-emerald-100 bg-emerald-50/60 p-3">
+                                                                                <Home className="h-5 w-5 text-emerald-600" />
+                                                                                <span className="font-medium text-slate-700">Damage Products</span>
+                                                                        </div>
+                                                                        <div className="flex items-center gap-3 rounded-2xl border border-emerald-100 bg-emerald-50/60 p-3">
+                                                                                <AlertCircle className="h-5 w-5 text-emerald-600" />
+                                                                                <span className="font-medium text-slate-700">Wrong Product</span>
+                                                                        </div>
+                                                                </div>
+                                                        </CardContent>
+                                                </Card>
+                                        </div>
+                                </motion.div>
 			</div>
 		</div>
 	);
