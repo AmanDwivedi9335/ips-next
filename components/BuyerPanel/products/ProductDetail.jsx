@@ -1081,13 +1081,13 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                                         animate={{ opacity: 1, y: 0 }}
                                         transition={{ duration: 0.5, delay: 0.8 }}
                                 >
-                                        <div className="grid gap-8 md:grid-cols-2">
+                                        <div className="grid gap-8 md:grid-rows-2">
                                                 <Card className="rounded-3xl border border-white/60 bg-white shadow-sm">
                                                         <CardContent className="space-y-4 p-6 sm:p-8">
                                                                 <h2 className="text-xl font-semibold text-slate-900">
                                                                         Store Benefits
                                                                 </h2>
-                                                                <div className="space-y-4">
+                                                                <div className="flex gap-2 space-y-4">
                                                                         <div className="flex items-center gap-3 rounded-2xl border border-emerald-100 bg-emerald-50/60 p-3">
                                                                                 <Receipt className="h-5 w-5 text-emerald-600" />
                                                                                 <span className="font-medium text-slate-700">GST Invoice Available</span>
@@ -1104,7 +1104,7 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                                                         </CardContent>
                                                 </Card>
 
-                                                <Card className="rounded-3xl border border-white/60 bg-white shadow-sm">
+                                                {/* <Card className="rounded-3xl border border-white/60 bg-white shadow-sm">
                                                         <CardContent className="space-y-4 p-6 sm:p-8">
                                                                 <h2 className="text-xl font-semibold text-slate-900">
                                                                         Return & Warranty Policy
@@ -1126,7 +1126,7 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                                                                         </div>
                                                                 </div>
                                                         </CardContent>
-                                                </Card>
+                                                </Card> */}
                                         </div>
                                 </motion.div>
 			</div>

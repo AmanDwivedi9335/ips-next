@@ -265,7 +265,7 @@ export default function ContactPage() {
                                                         <div className="overflow-hidden rounded-3xl border border-blue-100 shadow-lg">
                                                                 <iframe
                                                                         title="Industrial Print Solutions on Google Maps"
-                                                                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3559.224289942699!2d80.31396417551908!3d26.866750776672238!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x399c3863ae327733%3A0xd78420c2facbc1a9!2sIndustrial%20Print%20Solutions!5e0!3m2!1sen!2sin!4v1704727033628!5m2!1sen!2sin"
+                                                                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3395.599662362024!2d80.3103163!3d26.444222099999998!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x399c47f11b9bc73b%3A0x4352d2ed59d2705a!2sIndustrial%20Print%20Solutions!5e1!3m2!1sen!2sin!4v1760083368875!5m2!1sen!2sin"
                                                                         className="h-80 w-full border-0"
                                                                         allowFullScreen=""
                                                                         loading="lazy"
