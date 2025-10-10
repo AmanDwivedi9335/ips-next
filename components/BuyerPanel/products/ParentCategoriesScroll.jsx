@@ -109,14 +109,14 @@ export default function ParentCategoriesScroll() {
                                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                                         <div>
                                                 <span className="inline-flex items-center rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-indigo-700">
-                                                        Keep exploring
+                                                        Keep exploring 😉
                                                 </span>
-                                                <h2 className="mt-3 text-2xl font-semibold text-slate-900 sm:text-3xl">
+                                                {/* <h2 className="mt-3 text-2xl font-semibold text-slate-900 sm:text-3xl">
                                                         Shop by parent category
                                                 </h2>
                                                 <p className="mt-2 max-w-2xl text-sm text-slate-600">
                                                         Browse our full range of safety signage and compliance essentials curated by industry experts.
-                                                </p>
+                                                </p> */}
                                         </div>
                                 </div>
 
