@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, Facebook, Instagram, Linkedin, Loader2 } from "lucide-react";
 import Logo from "@/public/ipslogo.png";
+import IndiaMartLogo from "@/public/indiamart-logo.svg";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -124,22 +125,36 @@ Download Seller Guide PDF
 <p className="text-sm text-white/70">
 Industrial Print Solutions partners with trusted suppliers to deliver dependable safety products nationwide.
 </p>
-<div className="flex items-center gap-3">
-{[
-{ icon: Facebook, label: "Facebook" },
-{ icon: Instagram, label: "Instagram" },
-{ icon: Linkedin, label: "LinkedIn" },
-].map(({ icon: Icon, label }) => (
-<button
-key={label}
-type="button"
-className="group flex h-10 w-10 items-center justify-center rounded-full border border-white/15 bg-white/5 backdrop-blur transition hover:-translate-y-1 hover:border-amber-400/70 hover:bg-amber-400/20"
-aria-label={label}
->
-<Icon className="h-5 w-5 text-white transition group-hover:text-amber-300" />
-</button>
-))}
-</div>
+                <div className="flex items-center gap-3">
+                        {[
+                                { icon: Facebook, label: "Facebook" },
+                                { icon: Instagram, label: "Instagram" },
+                                { icon: Linkedin, label: "LinkedIn" },
+                        ].map(({ icon: Icon, label }) => (
+                                <button
+                                        key={label}
+                                        type="button"
+                                        className="group flex h-10 w-10 items-center justify-center rounded-full border border-white/15 bg-white/5 backdrop-blur transition hover:-translate-y-1 hover:border-amber-400/70 hover:bg-amber-400/20"
+                                        aria-label={label}
+                                >
+                                        <Icon className="h-5 w-5 text-white transition group-hover:text-amber-300" />
+                                </button>
+                        ))}
+                        <a
+                                href="https://www.indiamart.com/industrialprintsolutions-kanpur/"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="group flex h-10 w-10 items-center justify-center rounded-full border border-white/15 bg-white/5 backdrop-blur transition hover:-translate-y-1 hover:border-amber-400/70 hover:bg-amber-400/20"
+                                aria-label="IndiaMART"
+                                title="IndiaMART"
+                        >
+                                <Image
+                                        src={IndiaMartLogo}
+                                        alt="IndiaMART"
+                                        className="h-5 w-5 object-contain transition group-hover:opacity-90"
+                                />
+                        </a>
+                </div>
 </div>
 
 {/* Footer Links */}
