@@ -94,7 +94,10 @@ export async function GET(req, { params }) {
                         gallery: enrichedProduct.images || [],
                         languageImages: enrichedProduct.languageImages || [],
                         languages: enrichedProduct.languages || [],
-                        specialNote: enrichedProduct.specialNote || "",
+                        specialNote:
+                                typeof enrichedProduct.specialNote === "string"
+                                        ? enrichedProduct.specialNote.trim()
+                                        : "",
                         sizes: enrichedProduct.sizes || [],
                         materials: enrichedProduct.materials || [],
                         layouts: enrichedProduct.layouts || [],
@@ -146,7 +149,10 @@ export async function GET(req, { params }) {
                                 image: resolvedImage,
                                 images: p.images || [],
                         languageImages: p.languageImages || [],
-                        specialNote: p.specialNote || "",
+                        specialNote:
+                                typeof p.specialNote === "string"
+                                        ? p.specialNote.trim()
+                                        : "",
                                 category: p.category,
                                 type: p.type,
                                 productCode: p.productCode || p.code,

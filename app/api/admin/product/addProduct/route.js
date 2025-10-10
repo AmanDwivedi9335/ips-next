@@ -17,7 +17,11 @@ export async function POST(request) {
                 const subcategory = formData.get("subcategory");
                 const productFamily = formData.get("productFamily");
                 const productCode = formData.get("productCode");
-                const specialNote = formData.get("specialNote") || "";
+                const specialNoteInput = formData.get("specialNote");
+                const specialNote =
+                        typeof specialNoteInput === "string"
+                                ? specialNoteInput.trim()
+                                : "";
 
                 console.log("Received data:", {
                         title,

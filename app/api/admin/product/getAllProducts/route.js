@@ -120,6 +120,9 @@ export async function GET(request) {
 
                 const productsWithPricing = products.map((product) => ({
                         ...product,
+                        specialNote: typeof product.specialNote === "string"
+                                ? product.specialNote
+                                : "",
                         pricing: pricingMap[product._id.toString()] || [],
                 }));
 
