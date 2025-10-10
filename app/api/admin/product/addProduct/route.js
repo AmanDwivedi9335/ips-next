@@ -1,6 +1,7 @@
 import { dbConnect } from "@/lib/dbConnect.js";
 import Product from "@/model/Product.js";
 import Price from "@/model/Price.js";
+import mongoose from "mongoose";
 
 
 
@@ -16,6 +17,7 @@ export async function POST(request) {
                 const category = formData.get("category");
                 const subcategory = formData.get("subcategory");
                 const productFamily = formData.get("productFamily");
+                const parentProductInput = formData.get("parentProduct");
                 const productCode = formData.get("productCode");
                 const specialNoteInput = formData.get("specialNote");
                 const specialNote =
@@ -52,7 +54,24 @@ export async function POST(request) {
                         );
                 }
 
-		// Parse features safely
+                // Validate parent product
+                let parentProduct = null;
+
+                if (typeof parentProductInput === "string" && parentProductInput.trim() !== "") {
+                        if (!mongoose.Types.ObjectId.isValid(parentProductInput.trim())) {
+                                return Response.json(
+                                        {
+                                                success: false,
+                                                message: "Invalid parent product selected",
+                                        },
+                                        { status: 400 }
+                                );
+                        }
+
+                        parentProduct = parentProductInput.trim();
+                }
+
+                // Parse features safely
                 let features = [];
                 try {
                         const featuresString = formData.get("features");
@@ -159,6 +178,7 @@ export async function POST(request) {
                         languageImages,
                         category,
                         subcategory,
+                        parentProduct,
                         productFamily,
                         specialNote,
                         published: formData.get("published") === "true",

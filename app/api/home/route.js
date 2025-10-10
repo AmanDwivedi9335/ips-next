@@ -57,30 +57,34 @@ export async function GET(request) {
                 // Get discounted products for showcase section
                 const discountedProducts = await Product.find({
                         published: true,
+                        parentProduct: null,
                         $or: discountedProductConditions,
                 })
                         .limit(6)
                         .lean();
 
 		// Get top selling products
-		const topSellingProducts = await Product.find({
-			published: true,
-			type: "top-selling",
-		})
+                const topSellingProducts = await Product.find({
+                        published: true,
+                        parentProduct: null,
+                        type: "top-selling",
+                })
 			.limit(6)
 			.lean();
 
 		// Get best selling product (single product)
-		const bestSellingProduct = await Product.findOne({
-			published: true,
-			type: "best-selling",
-		}).lean();
+                const bestSellingProduct = await Product.findOne({
+                        published: true,
+                        parentProduct: null,
+                        type: "best-selling",
+                }).lean();
 
 		// Get featured products
-		const featuredProducts = await Product.find({
-			published: true,
-			type: "featured",
-		})
+                const featuredProducts = await Product.find({
+                        published: true,
+                        parentProduct: null,
+                        type: "featured",
+                })
 			.limit(3)
 			.lean();
 
@@ -92,7 +96,7 @@ export async function GET(request) {
 		const limit = Number.parseInt(searchParams.get("limit") || "12");
 
 		// Build query for category section
-		const categoryQuery = { published: true };
+                const categoryQuery = { published: true, parentProduct: null };
 
 		if (category !== "all" && category !== "All") {
 			categoryQuery.category = category;
@@ -115,7 +119,10 @@ export async function GET(request) {
 		const totalCategoryProducts = await Product.countDocuments(categoryQuery);
 
 		// Get available categories
-                const categories = await Product.distinct("category", { published: true });
+                const categories = await Product.distinct("category", {
+                        published: true,
+                        parentProduct: null,
+                });
 
                 const productGroups = [
                         discountedProducts,

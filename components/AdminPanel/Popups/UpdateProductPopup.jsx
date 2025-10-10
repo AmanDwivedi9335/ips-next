@@ -98,6 +98,8 @@ export function UpdateProductPopup({ open, onOpenChange, product }) {
   );
   const [priceError, setPriceError] = useState("");
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
+  const [parentProducts, setParentProducts] = useState([]);
+  const [isParentLoading, setIsParentLoading] = useState(false);
 
   const [formData, setFormData] = useState({
     title: product?.title || "",
@@ -110,6 +112,10 @@ export function UpdateProductPopup({ open, onOpenChange, product }) {
     discount: product?.discount?.toString() || "",
     type: product?.type || "featured",
     productFamily: product?.productFamily || "",
+    parentProduct:
+      typeof product?.parentProduct === "string"
+        ? product.parentProduct
+        : product?.parentProduct?._id || "",
     published:
       product?.published !== undefined ? product.published : true,
   });
@@ -217,8 +223,30 @@ export function UpdateProductPopup({ open, onOpenChange, product }) {
   useEffect(() => {
     if (open) {
       fetchAllCategories();
+
+      const loadParentProducts = async () => {
+        setIsParentLoading(true);
+        try {
+          const response = await fetch("/api/admin/product/parent-options");
+          if (response.ok) {
+            const data = await response.json();
+            if (data.success) {
+              const options = (data.products || []).filter(
+                (parent) => parent._id !== (product?._id || ""),
+              );
+              setParentProducts(options);
+            }
+          }
+        } catch (error) {
+          console.error("Failed to fetch parent products", error);
+        } finally {
+          setIsParentLoading(false);
+        }
+      };
+
+      loadParentProducts();
     }
-  }, [open, fetchAllCategories]);
+  }, [open, fetchAllCategories, product?._id]);
 
   useEffect(() => {
     if (productFamilies.length) {
@@ -242,6 +270,10 @@ export function UpdateProductPopup({ open, onOpenChange, product }) {
         discount: product.discount?.toString() || "",
         type: product.type || "featured",
         productFamily: product.productFamily || "",
+        parentProduct:
+          typeof product.parentProduct === "string"
+            ? product.parentProduct
+            : product.parentProduct?._id || "",
         published:
           product.published !== undefined ? product.published : true,
       });
@@ -334,6 +366,7 @@ export function UpdateProductPopup({ open, onOpenChange, product }) {
         layouts: showLayout ? selectedLayouts : [],
 
         productFamily: formData.productFamily,
+        parentProduct: formData.parentProduct || "",
 
         pricing: priceData,
       };
@@ -537,6 +570,38 @@ export function UpdateProductPopup({ open, onOpenChange, product }) {
                     {productFamilies.map((family) => (
                       <SelectItem key={family._id} value={family.slug}>
                         {family.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="md:col-span-2">
+                <Label>Parent Product</Label>
+                <Select
+                  value={formData.parentProduct}
+                  onValueChange={(value) =>
+                    setFormData({
+                      ...formData,
+                      parentProduct: value,
+                    })
+                  }
+                  disabled={isParentLoading}
+                >
+                  <SelectTrigger className="mt-1">
+                    <SelectValue
+                      placeholder={
+                        isParentLoading
+                          ? "Loading parent products..."
+                          : "Select parent product"
+                      }
+                    />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">No parent</SelectItem>
+                    {parentProducts.map((parent) => (
+                      <SelectItem key={parent._id} value={parent._id}>
+                        {parent.title}
                       </SelectItem>
                     ))}
                   </SelectContent>

@@ -31,7 +31,7 @@ export async function GET(request) {
 		const order = searchParams.get("order") || "desc";
 
 		// Build query
-		const query = { published: true };
+                const query = { published: true, parentProduct: null };
 
                 // Category filter
                 if (category && category !== "all") {

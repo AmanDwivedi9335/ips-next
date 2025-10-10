@@ -1,6 +1,7 @@
 import { dbConnect } from "@/lib/dbConnect";
 import Product from "@/model/Product";
 import Price from "@/model/Price.js";
+import mongoose from "mongoose";
 
 export async function PUT(request) {
 	await dbConnect();
@@ -35,6 +36,7 @@ export async function PUT(request) {
                 const category = formData.get("category");
                 const subcategory = formData.get("subcategory");
                 const productFamily = formData.get("productFamily");
+                const parentProductInput = formData.get("parentProduct");
                 const productCode = formData.get("productCode");
                 const specialNoteInput = formData.get("specialNote");
                 const specialNote =
@@ -48,6 +50,34 @@ export async function PUT(request) {
                         : 0;
                 const type = formData.get("type") || "featured";
                 const published = formData.get("published") === "true";
+
+                let parentProduct = null;
+
+                if (typeof parentProductInput === "string" && parentProductInput.trim() !== "") {
+                        const trimmedParent = parentProductInput.trim();
+
+                        if (!mongoose.Types.ObjectId.isValid(trimmedParent)) {
+                                return Response.json(
+                                        {
+                                                success: false,
+                                                message: "Invalid parent product selected",
+                                        },
+                                        { status: 400 }
+                                );
+                        }
+
+                        if (trimmedParent === productId) {
+                                return Response.json(
+                                        {
+                                                success: false,
+                                                message: "Product cannot be its own parent",
+                                        },
+                                        { status: 400 }
+                                );
+                        }
+
+                        parentProduct = trimmedParent;
+                }
 
                 // Parse array fields
                 let features = [];
@@ -92,6 +122,7 @@ export async function PUT(request) {
                 product.category = category;
                 product.subcategory = subcategory || "";
                 product.productFamily = productFamily;
+                product.parentProduct = parentProduct;
                 product.specialNote = specialNote;
                 product.discount = discount;
                 product.type = type;

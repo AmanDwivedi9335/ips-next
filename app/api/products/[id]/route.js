@@ -19,21 +19,32 @@ export async function GET(req, { params }) {
                         return Response.json({ message: "Product not found" }, { status: 404 });
                 }
 
+                const childProducts = await Product.find({
+                        parentProduct: product._id,
+                        published: true,
+                }).lean();
+
                 // Get related products from same category
                 const relatedProducts = await Product.find({
                         category: product.category,
                         _id: { $ne: product._id },
                         published: true,
+                        parentProduct: null,
                 })
                         .limit(4)
                         .lean();
 
-                const [enrichedProduct, ...enrichedRelatedProducts] =
-                        await attachCategoryDiscount([product, ...relatedProducts]);
+                const combinedProducts = [product, ...relatedProducts, ...childProducts];
+                const enrichedProducts = await attachCategoryDiscount(combinedProducts);
+
+                const enrichedProduct = enrichedProducts[0];
+                const enrichedRelatedProducts = enrichedProducts.slice(1, 1 + relatedProducts.length);
+                const enrichedChildProducts = enrichedProducts.slice(1 + relatedProducts.length);
 
                 const productIds = [
                         enrichedProduct?._id?.toString(),
                         ...enrichedRelatedProducts.map((related) => related._id?.toString()),
+                        ...enrichedChildProducts.map((child) => child._id?.toString()),
                 ].filter(Boolean);
 
                 let pricingMap = {};
@@ -112,16 +123,17 @@ export async function GET(req, { params }) {
                         updatedAt: enrichedProduct.updatedAt,
                         priceRange,
                         pricingRange: priceRange,
+                        parentProduct:
+                                enrichedProduct.parentProduct
+                                        ? enrichedProduct.parentProduct.toString()
+                                        : null,
                 };
 
                 // Transform related products
-                const transformedRelatedProducts = enrichedRelatedProducts.map((p) => {
-                        const relatedPricing = deriveProductPricing(p);
-                        const relatedId = p._id?.toString();
-                        const relatedRange = deriveProductPriceRange(
-                                p,
-                                pricingMap[relatedId] || []
-                        );
+                const mapProductToCard = (p) => {
+                        const pricing = deriveProductPricing(p);
+                        const productId = p._id?.toString();
+                        const range = deriveProductPriceRange(p, pricingMap[productId] || []);
 
                         const englishLanguageImage = p.languageImages?.find(
                                 (languageImage) =>
@@ -139,34 +151,38 @@ export async function GET(req, { params }) {
                                 title: p.title,
                                 name: p.title,
                                 description: p.description,
-                                price: relatedPricing.finalPrice,
-                                salePrice: relatedPricing.finalPrice,
-                                originalPrice: relatedPricing.mrp,
-                                mrp: relatedPricing.mrp,
-                                discountPercentage: relatedPricing.discountPercentage,
-                                discountAmount: relatedPricing.discountAmount,
+                                price: pricing.finalPrice,
+                                salePrice: pricing.finalPrice,
+                                originalPrice: pricing.mrp,
+                                mrp: pricing.mrp,
+                                discountPercentage: pricing.discountPercentage,
+                                discountAmount: pricing.discountAmount,
                                 categoryDiscount: p.categoryDiscount || 0,
                                 image: resolvedImage,
                                 images: p.images || [],
-                        languageImages: p.languageImages || [],
-                        specialNote:
-                                typeof p.specialNote === "string"
-                                        ? p.specialNote.trim()
-                                        : "",
+                                languageImages: p.languageImages || [],
+                                specialNote:
+                                        typeof p.specialNote === "string"
+                                                ? p.specialNote.trim()
+                                                : "",
                                 category: p.category,
                                 type: p.type,
                                 productCode: p.productCode || p.code,
                                 code: p.productCode || p.code,
-                                priceRange: relatedRange,
-                                pricingRange: relatedRange,
+                                priceRange: range,
+                                pricingRange: range,
                         };
-                });
+                };
 
-		return Response.json({
-			success: true,
-			product: transformedProduct,
-			relatedProducts: transformedRelatedProducts,
-		});
+                const transformedRelatedProducts = enrichedRelatedProducts.map(mapProductToCard);
+                const transformedChildProducts = enrichedChildProducts.map(mapProductToCard);
+
+                return Response.json({
+                        success: true,
+                        product: transformedProduct,
+                        relatedProducts: transformedRelatedProducts,
+                        childProducts: transformedChildProducts,
+                });
 	} catch (error) {
 		console.error("Product fetch error:", error);
 		return Response.json(
