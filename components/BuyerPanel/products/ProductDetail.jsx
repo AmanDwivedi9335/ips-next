@@ -630,6 +630,14 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                                                 <p className="mt-2 mb-2 text-xs text-center text-slate-500">
                                                         ** Images shown are of low resolution due to privacy concerns, actual product will be clear, sharp and high quality.
                                                 </p>
+                                                {product.specialNote && (
+                                                                <div className="mt-6 rounded-2xl border border-amber-200 bg-amber-50/80 p-4 text-sm text-amber-800">
+                                                                        <div className="flex items-start gap-3">
+                                                                                <AlertCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-amber-500" />
+                                                                                <p className="leading-relaxed">{product.specialNote}</p>
+                                                                        </div>
+                                                                </div>
+                                                )}
 
                                                 {/* <CardContent className="p-6 sm:p-8">
                                                         
@@ -638,14 +646,7 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                                                                 
                                                         </div>
 
-                                                        {product.specialNote && (
-                                                                <div className="mt-6 rounded-2xl border border-amber-200 bg-amber-50/80 p-4 text-sm text-amber-800">
-                                                                        <div className="flex items-start gap-3">
-                                                                                <AlertCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-amber-500" />
-                                                                                <p className="leading-relaxed">{product.specialNote}</p>
-                                                                        </div>
-                                                                </div>
-                                                        )}
+                                                        
 
                                                         {product.images && product.images.length > 1 && (
                                                                 <div className="mt-6 flex gap-4 overflow-x-auto pb-2">
