@@ -19,16 +19,17 @@ import {
         Share2,
         Minus,
         Plus,
-        RotateCcw,
-        Home,
-        AlertCircle,
         Receipt,
         Lock,
-        HelpCircle,
+        AlertCircle,
+        Home,
         ChevronRight,
         CheckCircle2,
         Sparkles,
         Truck,
+        ShieldCheck,
+        Headphones,
+        Gift,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -461,6 +462,39 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                 {
                         icon: CheckCircle2,
                         label: "Quality checked materials",
+                },
+        ];
+
+        const storeBenefits = [
+                {
+                        icon: Receipt,
+                        title: "GST Invoice Available",
+                        description: "Official billing for easy reimbursement and records.",
+                },
+                {
+                        icon: Lock,
+                        title: "Secure Payments",
+                        description: "Encrypted checkout that keeps your data protected.",
+                },
+                {
+                        icon: Headphones,
+                        title: "Priority Support",
+                        description: "Expert assistance 7 days a week for every order.",
+                },
+                {
+                        icon: Truck,
+                        title: "Express Shipping",
+                        description: "Reliable doorstep delivery across India with tracking.",
+                },
+                {
+                        icon: ShieldCheck,
+                        title: "Quality Assurance",
+                        description: "Each item undergoes strict multi-step quality checks.",
+                },
+                {
+                        icon: Gift,
+                        title: "Member Rewards",
+                        description: "Exclusive offers and loyalty perks for repeat buyers.",
                 },
         ];
 
@@ -1081,52 +1115,43 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                                         animate={{ opacity: 1, y: 0 }}
                                         transition={{ duration: 0.5, delay: 0.8 }}
                                 >
-                                        <div className="grid gap-8 md:grid-rows-2">
+                                        <div className="grid gap-8">
                                                 <Card className="rounded-3xl border border-white/60 bg-white shadow-sm">
-                                                        <CardContent className="space-y-4 p-6 sm:p-8">
-                                                                <h2 className="text-xl font-semibold text-slate-900">
-                                                                        Store Benefits
-                                                                </h2>
-                                                                <div className="flex gap-2 space-y-4">
-                                                                        <div className="flex items-center gap-3 rounded-2xl border border-emerald-100 bg-emerald-50/60 p-3">
-                                                                                <Receipt className="h-5 w-5 text-emerald-600" />
-                                                                                <span className="font-medium text-slate-700">GST Invoice Available</span>
-                                                                        </div>
-                                                                        <div className="flex items-center gap-3 rounded-2xl border border-emerald-100 bg-emerald-50/60 p-3">
-                                                                                <Lock className="h-5 w-5 text-emerald-600" />
-                                                                                <span className="font-medium text-slate-700">Secure Payments</span>
-                                                                        </div>
-                                                                        <div className="flex items-center gap-3 rounded-2xl border border-emerald-100 bg-emerald-50/60 p-3">
-                                                                                <HelpCircle className="h-5 w-5 text-emerald-600" />
-                                                                                <span className="font-medium text-slate-700">365 Days Help Desk</span>
-                                                                        </div>
+                                                        <CardContent className="space-y-6 p-6 sm:p-8">
+                                                                <div className="flex items-center justify-between gap-4">
+                                                                        <h2 className="text-xl font-semibold text-slate-900">
+                                                                                Store Benefits
+                                                                        </h2>
+                                                                        <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-emerald-700">
+                                                                                Why shop with us
+                                                                        </span>
+                                                                </div>
+                                                                <div className="grid gap-4 sm:grid-cols-2">
+                                                                        {storeBenefits.map((benefit) => {
+                                                                                const Icon = benefit.icon;
+
+                                                                                return (
+                                                                                        <div
+                                                                                                key={benefit.title}
+                                                                                                className="group flex items-start gap-4 rounded-2xl border border-emerald-100/80 bg-emerald-50/60 p-4 shadow-sm transition-transform duration-200 hover:-translate-y-1 hover:border-emerald-200 hover:shadow-md"
+                                                                                        >
+                                                                                                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white text-emerald-600 shadow-inner">
+                                                                                                        <Icon className="h-5 w-5" />
+                                                                                                </div>
+                                                                                                <div className="space-y-1">
+                                                                                                        <p className="text-sm font-semibold text-emerald-900">
+                                                                                                                {benefit.title}
+                                                                                                        </p>
+                                                                                                        <p className="text-sm leading-snug text-slate-600">
+                                                                                                                {benefit.description}
+                                                                                                        </p>
+                                                                                                </div>
+                                                                                        </div>
+                                                                                );
+                                                                        })}
                                                                 </div>
                                                         </CardContent>
                                                 </Card>
-
-                                                {/* <Card className="rounded-3xl border border-white/60 bg-white shadow-sm">
-                                                        <CardContent className="space-y-4 p-6 sm:p-8">
-                                                                <h2 className="text-xl font-semibold text-slate-900">
-                                                                        Return & Warranty Policy
-                                                                </h2>
-                                                                <div className="space-y-4">
-                                                                        <div className="flex items-center gap-3 rounded-2xl border border-emerald-100 bg-emerald-50/60 p-3">
-                                                                                <RotateCcw className="h-5 w-5 text-emerald-600" />
-                                                                                <span className="font-medium text-slate-700">
-                                                                                        Upto 7 Days Return Policy
-                                                                                </span>
-                                                                        </div>
-                                                                        <div className="flex items-center gap-3 rounded-2xl border border-emerald-100 bg-emerald-50/60 p-3">
-                                                                                <Home className="h-5 w-5 text-emerald-600" />
-                                                                                <span className="font-medium text-slate-700">Damage Products</span>
-                                                                        </div>
-                                                                        <div className="flex items-center gap-3 rounded-2xl border border-emerald-100 bg-emerald-50/60 p-3">
-                                                                                <AlertCircle className="h-5 w-5 text-emerald-600" />
-                                                                                <span className="font-medium text-slate-700">Wrong Product</span>
-                                                                        </div>
-                                                                </div>
-                                                        </CardContent>
-                                                </Card> */}
                                         </div>
                                 </motion.div>
 			</div>
