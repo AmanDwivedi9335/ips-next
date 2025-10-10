@@ -51,16 +51,21 @@ export default function ProductGrid() {
 	return (
 		<div className="space-y-6">
 			{/* Header */}
-			<div className="bg-white rounded-lg p-6 shadow-sm">
-				<div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-					<div>
-						<h1 className="text-3xl font-bold text-gray-900">Products</h1>
-						<p className="text-gray-600 mt-1">
-							{isLoading
-								? "Loading products..."
-								: `Showing ${filteredProducts.length} products`}
-						</p>
-					</div>
+                        <div className="relative overflow-hidden rounded-3xl border border-white/60 bg-white/80 p-6 shadow-xl backdrop-blur">
+                                <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white via-[#f2f7ff] to-[#e7f2ff]" />
+                                <div className="pointer-events-none absolute -top-20 -right-12 h-48 w-48 rounded-full bg-emerald-300/20 blur-3xl" />
+                                <div className="pointer-events-none absolute -bottom-16 -left-10 h-40 w-40 rounded-full bg-sky-400/25 blur-3xl" />
+                                <div className="relative flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                                        <div>
+                                                <h1 className="text-3xl font-semibold bg-gradient-to-r from-slate-900 via-slate-700 to-slate-900 bg-clip-text text-transparent">
+                                                        Discover our products
+                                                </h1>
+                                                <p className="text-slate-600 mt-2">
+                                                        {isLoading
+                                                                ? "Loading products..."
+                                                                : `Showing ${filteredProducts.length} products to explore`}
+                                                </p>
+                                        </div>
 
 					<div className="flex items-center gap-4">
 						{/* Sort Dropdown */}
@@ -80,11 +85,11 @@ export default function ProductGrid() {
 						</Select>
 
 						{/* View Mode Toggle */}
-						<div className="flex items-center border rounded-lg">
-							<Button
-								variant={viewMode === "grid" ? "default" : "ghost"}
-								size="sm"
-								onClick={() => setViewMode("grid")}
+                                                <div className="flex items-center border border-white/70 rounded-xl bg-white/70 shadow-sm">
+                                                        <Button
+                                                                variant={viewMode === "grid" ? "default" : "ghost"}
+                                                                size="sm"
+                                                                onClick={() => setViewMode("grid")}
 								className="rounded-r-none"
 							>
 								<Grid className="h-4 w-4" />
@@ -103,21 +108,23 @@ export default function ProductGrid() {
 			</div>
 
 			{/* Products Grid/List */}
-			{isLoading ? (
-				<div className="bg-white rounded-lg p-12 shadow-sm">
-					<div className="flex items-center justify-center">
-						<div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black"></div>
-					</div>
-				</div>
-			) : filteredProducts.length === 0 ? (
-				<div className="bg-white rounded-lg p-12 shadow-sm text-center">
-					<h3 className="text-xl font-semibold text-gray-900 mb-2">
-						No products found
-					</h3>
-					<p className="text-gray-600">
-						Try adjusting your filters or search terms.
-					</p>
-				</div>
+                        {isLoading ? (
+                                <div className="relative overflow-hidden rounded-3xl border border-white/60 bg-white/80 p-12 shadow-xl backdrop-blur">
+                                        <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white via-[#f5f2ff] to-[#ebf8ff]" />
+                                        <div className="relative flex items-center justify-center">
+                                                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-slate-900"></div>
+                                        </div>
+                                </div>
+                        ) : filteredProducts.length === 0 ? (
+                                <div className="relative overflow-hidden rounded-3xl border border-white/60 bg-white/80 p-12 shadow-xl backdrop-blur text-center">
+                                        <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white via-[#f5f2ff] to-[#ebf8ff]" />
+                                        <h3 className="relative text-xl font-semibold text-slate-900 mb-2">
+                                                No products found
+                                        </h3>
+                                        <p className="relative text-slate-600 max-w-md mx-auto">
+                                                Try adjusting your filters or search terms.
+                                        </p>
+                                </div>
 			) : (
                                 <motion.div
                                         className={
@@ -143,63 +150,66 @@ export default function ProductGrid() {
                         )}
 
 			{/* Pagination */}
-			{totalPages > 1 && (
-				<div className="flex justify-between items-center bg-white rounded-lg px-4 py-3 shadow-sm">
-					<p className="text-center text-sm">
-						Page {currentPage} of {totalPages}
-					</p>
-					<div className="">
-						<div className="flex items-center justify-center space-x-2">
-							<Button
-								variant="outline"
-								size="icon"
-								onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
-								disabled={currentPage === 1}
-							>
-								<ChevronLeft className="h-4 w-4" />
-							</Button>
+                        {totalPages > 1 && (
+                                <div className="relative overflow-hidden flex justify-between items-center rounded-2xl border border-white/60 bg-white/80 px-4 py-3 shadow-lg backdrop-blur">
+                                        <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-white via-[#f4f0ff] to-[#e8f7ff]" />
+                                        <p className="relative text-center text-sm text-slate-600">
+                                                Page {currentPage} of {totalPages}
+                                        </p>
+                                        <div className="relative">
+                                                <div className="flex items-center justify-center space-x-2">
+                                                        <Button
+                                                                variant="outline"
+                                                                size="icon"
+                                                                onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
+                                                                disabled={currentPage === 1}
+                                                        >
+                                                                <ChevronLeft className="h-4 w-4" />
+                                                        </Button>
 
-							{Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-								let pageNum;
-								if (totalPages <= 5) {
-									pageNum = i + 1;
-								} else if (currentPage <= 3) {
-									pageNum = i + 1;
-								} else if (currentPage >= totalPages - 2) {
-									pageNum = totalPages - 4 + i;
-								} else {
-									pageNum = currentPage - 2 + i;
-								}
+                                                        {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                                                                let pageNum;
+                                                                if (totalPages <= 5) {
+                                                                        pageNum = i + 1;
+                                                                } else if (currentPage <= 3) {
+                                                                        pageNum = i + 1;
+                                                                } else if (currentPage >= totalPages - 2) {
+                                                                        pageNum = totalPages - 4 + i;
+                                                                } else {
+                                                                        pageNum = currentPage - 2 + i;
+                                                                }
 
-								return (
-									<Button
-										key={pageNum}
-										variant={currentPage === pageNum ? "default" : "outline"}
-										size="icon"
-										className={
-											currentPage === pageNum ? "bg-black text-white" : ""
-										}
-										onClick={() => handlePageChange(pageNum)}
-									>
-										{pageNum}
-									</Button>
-								);
-							})}
+                                                                return (
+                                                                        <Button
+                                                                                key={pageNum}
+                                                                                variant={currentPage === pageNum ? "default" : "outline"}
+                                                                                size="icon"
+                                                                                className={
+                                                                                        currentPage === pageNum
+                                                                                                ? "bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 text-white"
+                                                                                                : "bg-white/60"
+                                                                                }
+                                                                                onClick={() => handlePageChange(pageNum)}
+                                                                        >
+                                                                                {pageNum}
+                                                                        </Button>
+                                                                );
+                                                        })}
 
-							<Button
-								variant="outline"
-								size="icon"
-								onClick={() =>
-									handlePageChange(Math.min(totalPages, currentPage + 1))
-								}
-								disabled={currentPage === totalPages}
-							>
-								<ChevronRight className="h-4 w-4" />
-							</Button>
-						</div>
-					</div>
-				</div>
-			)}
+                                                        <Button
+                                                                variant="outline"
+                                                                size="icon"
+                                                                onClick={() =>
+                                                                        handlePageChange(Math.min(totalPages, currentPage + 1))
+                                                                }
+                                                                disabled={currentPage === totalPages}
+                                                        >
+                                                                <ChevronRight className="h-4 w-4" />
+                                                        </Button>
+                                                </div>
+                                        </div>
+                                </div>
+                        )}
 		</div>
 	);
 }

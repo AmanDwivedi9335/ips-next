@@ -538,32 +538,35 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
 
         if (!product) {
                 return (
-			<div className="min-h-screen bg-gray-50 flex items-center justify-center">
-				<div className="text-center">
-					<h1 className="text-2xl font-bold text-gray-900 mb-4">
-						Product Not Found
-					</h1>
-					<p className="text-gray-600 mb-8">
-						The requested product could not be found.
-					</p>
-					<Link href="/products">
-						<Button className="bg-black text-white hover:bg-gray-800">
-							<ArrowLeft className="h-4 w-4 mr-2" />
-							Back to Products
-						</Button>
-					</Link>
-				</div>
-			</div>
-		);
-	}
+                        <div className="relative min-h-screen overflow-hidden flex items-center justify-center">
+                                <div className="absolute inset-0 bg-gradient-to-br from-[#f4f0ff] via-white to-[#e8f9ff]" />
+                                <div className="absolute -top-28 -left-24 h-72 w-72 rounded-full bg-emerald-300/30 blur-3xl" />
+                                <div className="absolute -bottom-32 -right-28 h-80 w-80 rounded-full bg-sky-400/25 blur-3xl" />
+                                <div className="relative z-10 text-center px-8 py-12 bg-white/80 backdrop-blur border border-white/60 rounded-3xl shadow-2xl">
+                                        <h1 className="text-3xl font-semibold bg-gradient-to-r from-slate-900 via-slate-700 to-slate-900 bg-clip-text text-transparent mb-4">
+                                                Product Not Found
+                                        </h1>
+                                        <p className="text-slate-600 mb-8 max-w-md">
+                                                The requested product could not be found.
+                                        </p>
+                                        <Link href="/products">
+                                                <Button className="rounded-full bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 px-6 py-3 text-sm font-semibold text-white shadow-lg transition hover:from-slate-800 hover:via-slate-700 hover:to-slate-800">
+                                                        <ArrowLeft className="h-4 w-4 mr-2" />
+                                                        Back to Products
+                                                </Button>
+                                        </Link>
+                                </div>
+                        </div>
+                );
+        }
 
         return (
-                <div className="relative min-h-screen bg-slate-100">
-                        <div
-                                className="pointer-events-none absolute inset-x-0 top-0 h-80 bg-gradient-to-b from-white via-slate-100/80 to-transparent"
-                                aria-hidden="true"
-                        />
-                        <div className="relative z-10 mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-2 lg:py-7">
+                <div className="relative min-h-screen overflow-hidden">
+                        <div className="absolute inset-0 bg-gradient-to-br from-[#f4f0ff] via-white to-[#e8f9ff]" />
+                        <div className="absolute -top-40 -left-32 h-96 w-96 rounded-full bg-emerald-300/25 blur-3xl" />
+                        <div className="absolute -bottom-44 -right-28 h-96 w-96 rounded-full bg-sky-400/25 blur-3xl" />
+                        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.85),_transparent_55%)]" />
+                        <div className="relative z-10 mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-2 lg:py-12">
                                 <nav
                                         aria-label="Breadcrumb"
                                         className="flex items-center gap-2 text-sm text-slate-500"
@@ -634,6 +637,10 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
 
                                 <div className="mt-5 grid items-start gap-10 lg:grid-cols-[1.1fr_1fr]">
                                         <Card className="relative overflow-hidden rounded-3xl border border-white/60 bg-white/90 shadow-xl backdrop-blur">
+                                                <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white via-[#f4f0ff] to-[#e8f7ff]" />
+                                                <div className="pointer-events-none absolute -top-24 -right-16 h-48 w-48 rounded-full bg-emerald-300/25 blur-3xl" />
+                                                <div className="pointer-events-none absolute -bottom-24 -left-20 h-56 w-56 rounded-full bg-sky-400/25 blur-3xl" />
+                                                <div className="relative z-10">
                                                 {/* <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
                                                                 <Link
                                                                         href="/products"
@@ -709,11 +716,15 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                                                                 </div>
                                                         )}
                                                 </CardContent> */}
+                                                </div>
                                         </Card>
 
                                         <div className="space-y-6">
-                                                <Card className="rounded-3xl border border-white/60 bg-white shadow-xl">
-                                                        <CardContent className="space-y-6 p-3 sm:p-8">
+                                                <Card className="relative overflow-hidden rounded-3xl border border-white/60 bg-white/80 shadow-xl backdrop-blur">
+                                                        <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white via-[#f5f2ff] to-[#ebf8ff]" />
+                                                        <div className="pointer-events-none absolute -top-24 -right-20 h-48 w-48 rounded-full bg-emerald-300/25 blur-3xl" />
+                                                        <div className="pointer-events-none absolute -bottom-28 -left-16 h-52 w-52 rounded-full bg-sky-400/25 blur-3xl" />
+                                                        <CardContent className="relative space-y-6 p-3 sm:p-8">
                                                                 <div className="space-y-3">
                                                                         <div className="max-w-3xl space-y-3">
                                                 <h1 className="text-xl font-semibold text-slate-900 sm:text-2xl">
@@ -984,24 +995,25 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
 
                                                                         <div className="grid gap-3 sm:grid-cols-3">
                                                                                 {quickHighlights.map(({ icon: Icon, label }) => (
-                                                                                        <div key={label}
-                                                                                                className="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-[11px] text-slate-600"
-                                                                                                >
-                                                                                                <Icon className="h-4 w-4 text-slate-500" />
-                                                                                                <span>{label}</span>
-                                                                                        </div>
-                                                                                ))}
-                                                                        </div>
-
-                                                                        <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
-                                                                                Looking for bulk pricing or customisation?{" "}
-                                                                                <Link
-                                                                                        href="/corporate-bulk-orders"
-                                                                                        className="font-semibold text-slate-900 underline-offset-4 hover:underline"
+                                                                                <div
+                                                                                        key={label}
+                                                                                        className="flex items-center gap-2 rounded-xl border border-white/60 bg-white/70 px-3 py-2 text-[11px] text-slate-600 shadow-sm backdrop-blur"
                                                                                 >
-                                                                                        Let's talk
-                                                                                </Link>
-                                                                                .
+                                                                                        <Icon className="h-4 w-4 text-slate-500" />
+                                                                                        <span>{label}</span>
+                                                                                </div>
+                                                                        ))}
+                                                                </div>
+
+                                                                <div className="rounded-2xl border border-white/60 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 px-4 py-4 text-sm text-white shadow-lg">
+                                                                        Looking for bulk pricing or customisation?{" "}
+                                                                        <Link
+                                                                                href="/corporate-bulk-orders"
+                                                                                className="font-semibold text-white underline-offset-4 hover:underline"
+                                                                        >
+                                                                                Let's talk
+                                                                        </Link>
+                                                                        .
                                                                         </div>
                                                                 </div>
                                                         </CardContent>
@@ -1013,8 +1025,11 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                                         product.longDescription) && (
                                         <div className="mb-12 mt-12 grid gap-6">
                                                 {product.materialSpecification && (
-                                                        <Card className="rounded-3xl border border-white/60 bg-white shadow-sm">
-                                                                <CardContent className="space-y-3 p-6 sm:p-8">
+                                                        <Card className="relative overflow-hidden rounded-3xl border border-white/60 bg-white/80 shadow-lg backdrop-blur">
+                                                                <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white via-[#f5f2ff] to-[#ebf8ff]" />
+                                                                <div className="pointer-events-none absolute -top-20 -right-12 h-40 w-40 rounded-full bg-emerald-300/25 blur-3xl" />
+                                                                <div className="pointer-events-none absolute -bottom-20 -left-12 h-44 w-44 rounded-full bg-sky-400/25 blur-3xl" />
+                                                                <CardContent className="relative space-y-3 p-6 sm:p-8">
                                                                         <h2 className="text-2xl font-semibold text-slate-900">
                                                                                 Material Specification
                                                                         </h2>
@@ -1025,8 +1040,11 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                                                         </Card>
                                                 )}
                                                 {product.description && (
-                                                        <Card className="rounded-3xl border border-white/60 bg-white shadow-sm">
-                                                                <CardContent className="space-y-3 p-6 sm:p-8">
+                                                        <Card className="relative overflow-hidden rounded-3xl border border-white/60 bg-white/80 shadow-lg backdrop-blur">
+                                                                <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white via-[#f5f2ff] to-[#ebf8ff]" />
+                                                                <div className="pointer-events-none absolute -top-20 -right-12 h-40 w-40 rounded-full bg-emerald-300/25 blur-3xl" />
+                                                                <div className="pointer-events-none absolute -bottom-20 -left-12 h-44 w-44 rounded-full bg-sky-400/25 blur-3xl" />
+                                                                <CardContent className="relative space-y-3 p-6 sm:p-8">
                                                                         <h2 className="text-2xl font-semibold text-slate-900">
                                                                                 Product Short Description
                                                                         </h2>
@@ -1037,8 +1055,11 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                                                         </Card>
                                                 )}
                                                 {product.longDescription && (
-                                                        <Card className="rounded-3xl border border-white/60 bg-white shadow-sm">
-                                                                <CardContent className="space-y-3 p-6 sm:p-8">
+                                                        <Card className="relative overflow-hidden rounded-3xl border border-white/60 bg-white/80 shadow-lg backdrop-blur">
+                                                                <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white via-[#f5f2ff] to-[#ebf8ff]" />
+                                                                <div className="pointer-events-none absolute -top-20 -right-12 h-40 w-40 rounded-full bg-emerald-300/25 blur-3xl" />
+                                                                <div className="pointer-events-none absolute -bottom-20 -left-12 h-44 w-44 rounded-full bg-sky-400/25 blur-3xl" />
+                                                                <CardContent className="relative space-y-3 p-6 sm:p-8">
                                                                         <h2 className="text-2xl font-semibold text-slate-900">
                                                                                 Description
                                                                         </h2>
@@ -1059,7 +1080,11 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                                                 animate={{ opacity: 1, y: 0 }}
                                                 transition={{ duration: 0.5, delay: 0.5 }}
                                         >
-                                                <div className="rounded-3xl border border-white/60 bg-white/90 p-6 shadow-sm sm:p-8">
+                                                <div className="relative overflow-hidden rounded-3xl border border-white/60 bg-white/80 p-6 shadow-lg backdrop-blur sm:p-8">
+                                                        <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white via-[#f4f0ff] to-[#e8f7ff]" />
+                                                        <div className="pointer-events-none absolute -top-20 -right-16 h-44 w-44 rounded-full bg-emerald-300/25 blur-3xl" />
+                                                        <div className="pointer-events-none absolute -bottom-24 -left-14 h-48 w-48 rounded-full bg-sky-400/25 blur-3xl" />
+                                                        <div className="relative">
                                                         <h2 className="mb-8 text-2xl font-semibold text-slate-900">
                                                                 Product Features
                                                         </h2>
@@ -1067,7 +1092,7 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                                                                 {product.features.map((feature, index) => (
                                                                         <div
                                                                                 key={index}
-                                                                                className="rounded-2xl border border-slate-200 bg-slate-50/70 p-6"
+                                                                                className="rounded-2xl border border-white/60 bg-white/75 p-6 shadow-sm backdrop-blur"
                                                                         >
                                                                                 <h3 className="mb-3 text-lg font-semibold text-slate-900">
                                                                                         {feature.title}
@@ -1077,7 +1102,7 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                                                                 ))}
                                                         </div>
                                                         {product.longDescription && (
-                                                                <div className="mt-8 rounded-2xl border border-slate-200 bg-slate-50/70 p-6">
+                                                                <div className="mt-8 rounded-2xl border border-white/60 bg-white/75 p-6 shadow-sm backdrop-blur">
                                                                         <h2 className="mb-3 text-xl font-semibold text-slate-900">
                                                                                 Product Description
                                                                         </h2>
@@ -1086,6 +1111,7 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                                                                         </p>
                                                                 </div>
                                                         )}
+                                                        </div>
                                                 </div>
                                         </motion.div>
                                 )}

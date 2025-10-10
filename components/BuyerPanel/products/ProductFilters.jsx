@@ -57,20 +57,23 @@ export default function ProductFilters() {
                 applyFilters();
         };
 
-	if (!availableFilters) {
-		return (
-			<div className="hidden lg:block bg-white rounded-lg p-6 shadow-sm">
-				<div className="animate-pulse space-y-4">
-					<div className="h-6 bg-gray-200 rounded w-1/2"></div>
-					<div className="space-y-2">
-						{[...Array(5)].map((_, i) => (
-							<div key={i} className="h-4 bg-gray-200 rounded"></div>
-						))}
-					</div>
-				</div>
-			</div>
-		);
-	}
+        if (!availableFilters) {
+                return (
+                        <div className="hidden lg:block relative overflow-hidden rounded-3xl border border-white/60 bg-white/80 p-6 shadow-xl backdrop-blur">
+                                <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white via-[#f5f2ff] to-[#ebf8ff]" />
+                                <div className="pointer-events-none absolute -top-16 -right-12 h-40 w-40 rounded-full bg-emerald-300/20 blur-3xl" />
+                                <div className="pointer-events-none absolute -bottom-20 -left-14 h-48 w-48 rounded-full bg-sky-400/25 blur-3xl" />
+                                <div className="relative animate-pulse space-y-4">
+                                        <div className="h-6 bg-white/60 rounded w-1/2"></div>
+                                        <div className="space-y-2">
+                                                {[...Array(5)].map((_, i) => (
+                                                        <div key={i} className="h-4 bg-white/60 rounded"></div>
+                                                ))}
+                                        </div>
+                                </div>
+                        </div>
+                );
+        }
 
 	return (
 		<>
@@ -87,13 +90,16 @@ export default function ProductFilters() {
 			</div>
 
 			{/* Desktop Filters */}
-			<div className="hidden lg:block bg-white rounded-lg p-6 shadow-sm sticky top-0">
-				<div className="flex items-center justify-between mb-6">
-					<h2 className="text-xl font-semibold">Filters</h2>
-					<Button variant="ghost" size="sm" onClick={clearFilters}>
-						Clear All
-					</Button>
-				</div>
+                        <div className="hidden lg:block relative overflow-hidden rounded-3xl border border-white/60 bg-white/80 p-6 shadow-xl backdrop-blur sticky top-0">
+                                <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white via-[#f4f0ff] to-[#e8f7ff]" />
+                                <div className="pointer-events-none absolute -top-24 -right-16 h-48 w-48 rounded-full bg-emerald-300/20 blur-3xl" />
+                                <div className="pointer-events-none absolute -bottom-24 -left-12 h-52 w-52 rounded-full bg-sky-400/20 blur-3xl" />
+                                <div className="relative flex items-center justify-between mb-6">
+                                        <h2 className="text-xl font-semibold text-slate-900">Filters</h2>
+                                        <Button variant="ghost" size="sm" onClick={clearFilters} className="text-slate-600 hover:text-slate-900">
+                                                Clear All
+                                        </Button>
+                                </div>
 
                                 <FilterContent
                                         availableFilters={availableFilters}
@@ -107,38 +113,44 @@ export default function ProductFilters() {
 			{/* Mobile Filter Modal */}
 			<AnimatePresence>
 				{isOpen && (
-					<motion.div
-						initial={{ opacity: 0 }}
-						animate={{ opacity: 1 }}
-						exit={{ opacity: 0 }}
-						className="fixed inset-0 bg-black bg-opacity-50 z-50 lg:hidden"
-						onClick={() => setIsOpen(false)}
-					>
-						<motion.div
-							initial={{ x: "-100%" }}
-							animate={{ x: 0 }}
-							exit={{ x: "-100%" }}
-							className="bg-white h-full w-80 p-6 overflow-y-auto"
-							onClick={(e) => e.stopPropagation()}
-						>
-							<div className="flex items-center justify-between mb-6">
-								<h2 className="text-xl font-semibold">Filters</h2>
-								<Button
-									variant="ghost"
-									size="icon"
-									onClick={() => setIsOpen(false)}
-								>
-									<X className="h-4 w-4" />
-								</Button>
-							</div>
+                                        <motion.div
+                                                initial={{ opacity: 0 }}
+                                                animate={{ opacity: 1 }}
+                                                exit={{ opacity: 0 }}
+                                                className="fixed inset-0 bg-black/60 z-50 lg:hidden"
+                                                onClick={() => setIsOpen(false)}
+                                        >
+                                                <motion.div
+                                                        initial={{ x: "-100%" }}
+                                                        animate={{ x: 0 }}
+                                                        exit={{ x: "-100%" }}
+                                                        className="relative h-full w-80 overflow-y-auto rounded-r-3xl border border-white/60 bg-white/80 p-6 shadow-2xl backdrop-blur"
+                                                        onClick={(e) => e.stopPropagation()}
+                                                >
+                                                        <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white via-[#f4f0ff] to-[#e8f7ff]" />
+                                                        <div className="pointer-events-none absolute -top-24 -right-12 h-48 w-48 rounded-full bg-emerald-300/25 blur-3xl" />
+                                                        <div className="pointer-events-none absolute -bottom-20 -left-10 h-40 w-40 rounded-full bg-sky-400/30 blur-3xl" />
+                                                        <div className="relative flex items-center justify-between mb-6">
+                                                                <h2 className="text-xl font-semibold text-slate-900">Filters</h2>
+                                                                <Button
+                                                                        variant="ghost"
+                                                                        size="icon"
+                                                                        onClick={() => setIsOpen(false)}
+                                                                        className="text-slate-600 hover:text-slate-900"
+                                                                >
+                                                                        <X className="h-4 w-4" />
+                                                                </Button>
+                                                        </div>
 
-                                                        <FilterContent
-                                                                availableFilters={availableFilters}
-                                                                filters={filters}
-                                                                onCategoryChange={handleCategoryChange}
-                                                                onPriceChange={handlePriceChange}
-                                                                onApply={handleApplyFilters}
-                                                        />
+                                                        <div className="relative">
+                                                                <FilterContent
+                                                                        availableFilters={availableFilters}
+                                                                        filters={filters}
+                                                                        onCategoryChange={handleCategoryChange}
+                                                                        onPriceChange={handlePriceChange}
+                                                                        onApply={handleApplyFilters}
+                                                                />
+                                                        </div>
                                                 </motion.div>
                                         </motion.div>
                                 )}
