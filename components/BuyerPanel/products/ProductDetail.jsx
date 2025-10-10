@@ -92,7 +92,11 @@ const sortByReference = (values = [], reference = []) => {
         return [...ordered.map((item) => item.value), ...extras];
 };
 
-export default function ProductDetail({ product, relatedProducts = [] }) {
+export default function ProductDetail({
+        product,
+        relatedProducts = [],
+        childProducts = [],
+}) {
         const [selectedImage, setSelectedImage] = useState(0);
         const [quantity, setQuantity] = useState(1);
         const languages =
@@ -1090,7 +1094,28 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                                         </motion.div>
                                 )}
 
-				{/* Related Products */}
+                                {/* Child Products */}
+                                {childProducts.length > 0 && (
+                                        <motion.div
+                                                initial={{ opacity: 0, y: 20 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                transition={{ duration: 0.5, delay: 0.6 }}
+                                                className="mb-12"
+                                        >
+                                                <div className="rounded-3xl border border-white/60 bg-white/90 p-6 shadow-sm sm:p-8">
+                                                        <h2 className="mb-8 text-2xl font-semibold text-slate-900">
+                                                                Included Products
+                                                        </h2>
+                                                        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                                                                {childProducts.map((childProduct) => (
+                                                                        <ProductCard key={childProduct.id} product={childProduct} />
+                                                                ))}
+                                                        </div>
+                                                </div>
+                                        </motion.div>
+                                )}
+
+                                {/* Related Products */}
                                 {relatedProducts.length > 0 && (
                                         <motion.div
                                                 initial={{ opacity: 0, y: 20 }}

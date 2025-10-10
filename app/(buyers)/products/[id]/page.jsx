@@ -66,10 +66,11 @@ export default async function ProductPage({ params }) {
 		notFound();
 	}
 
-	return (
-		<ProductDetail
-			product={data.product}
-			relatedProducts={data.relatedProducts}
-		/>
-	);
+        return (
+                <ProductDetail
+                        product={data.product}
+                        relatedProducts={data.relatedProducts}
+                        childProducts={data.childProducts || []}
+                />
+        );
 }

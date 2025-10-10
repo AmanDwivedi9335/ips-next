@@ -66,6 +66,8 @@ export function AddProductPopup({ open, onOpenChange }) {
     { layout: "", material: "", size: "", qr: false, price: "" },
   ]);
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
+  const [parentProducts, setParentProducts] = useState([]);
+  const [isParentLoading, setIsParentLoading] = useState(false);
 
   const [formData, setFormData] = useState({
     title: "",
@@ -78,6 +80,7 @@ export function AddProductPopup({ open, onOpenChange }) {
     discount: "",
     type: "featured",
     productFamily: "",
+    parentProduct: "",
     published: true,
   });
 
@@ -147,6 +150,25 @@ export function AddProductPopup({ open, onOpenChange }) {
   useEffect(() => {
     if (open) {
       fetchAllCategories();
+
+      const loadParentProducts = async () => {
+        setIsParentLoading(true);
+        try {
+          const response = await fetch("/api/admin/product/parent-options");
+          if (response.ok) {
+            const data = await response.json();
+            if (data.success) {
+              setParentProducts(data.products || []);
+            }
+          }
+        } catch (error) {
+          console.error("Failed to fetch parent products", error);
+        } finally {
+          setIsParentLoading(false);
+        }
+      };
+
+      loadParentProducts();
     }
   }, [open, fetchAllCategories]);
 
@@ -213,6 +235,7 @@ export function AddProductPopup({ open, onOpenChange }) {
         layouts: showLayout ? selectedLayouts : [],
 
         productFamily: formData.productFamily,
+        parentProduct: formData.parentProduct || "",
 
         pricing: priceData,
       };
@@ -247,6 +270,7 @@ export function AddProductPopup({ open, onOpenChange }) {
       type: "featured",
 
       productFamily: productFamilies[0]?.slug || "",
+      parentProduct: "",
 
       published: true,
     });
@@ -345,6 +369,38 @@ export function AddProductPopup({ open, onOpenChange }) {
                     {productFamilies.map((family) => (
                       <SelectItem key={family._id} value={family.slug}>
                         {family.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="md:col-span-2">
+                <Label>Parent Product</Label>
+                <Select
+                  value={formData.parentProduct}
+                  onValueChange={(value) =>
+                    setFormData({
+                      ...formData,
+                      parentProduct: value,
+                    })
+                  }
+                  disabled={isParentLoading}
+                >
+                  <SelectTrigger className="mt-1">
+                    <SelectValue
+                      placeholder={
+                        isParentLoading
+                          ? "Loading parent products..."
+                          : "Select parent product"
+                      }
+                    />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">No parent</SelectItem>
+                    {parentProducts.map((parent) => (
+                      <SelectItem key={parent._id} value={parent._id}>
+                        {parent.title}
                       </SelectItem>
                     ))}
                   </SelectContent>

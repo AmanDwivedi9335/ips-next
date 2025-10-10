@@ -20,7 +20,7 @@ export async function GET(request) {
                 const { searchParams } = new URL(request.url);
                 const categoryParam = searchParams.get("category");
 
-                const matchStage = { published: true };
+                const matchStage = { published: true, parentProduct: null };
                 if (categoryParam && categoryParam !== "all") {
                         matchStage.category = categoryParam;
                 }
