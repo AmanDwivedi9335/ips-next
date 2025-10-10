@@ -17,6 +17,7 @@ export async function POST(request) {
                 const subcategory = formData.get("subcategory");
                 const productFamily = formData.get("productFamily");
                 const productCode = formData.get("productCode");
+                const specialNote = formData.get("specialNote") || "";
 
                 console.log("Received data:", {
                         title,
@@ -155,6 +156,7 @@ export async function POST(request) {
                         category,
                         subcategory,
                         productFamily,
+                        specialNote,
                         published: formData.get("published") === "true",
                         price: basePrice,
                         mrp: basePrice,
