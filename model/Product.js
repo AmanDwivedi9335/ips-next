@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
 
 const ProductSchema = new mongoose.Schema(
-	{
-		title: { type: String, required: true },
+        {
+                title: { type: String, required: true },
 		description: { type: String, required: true },
 		longDescription: { type: String, required: true },
 		images: [{ type: String }],
@@ -83,6 +83,22 @@ const ProductSchema = new mongoose.Schema(
 	}
 );
 
+// In Next.js' hot reloading environment mongoose may cache an older version of the
+// model without the newly added fields. To make sure the updated schema (including
+// specialNote) is always used, verify the cached schema has every defined path and
+// drop it when it is outdated.
+const existingModel = mongoose.models.Product;
+if (existingModel) {
+        const schemaPaths = Object.keys(ProductSchema.paths);
+        const hasMissingPath = schemaPaths.some(
+                (path) => !existingModel.schema.path(path)
+        );
+
+        if (hasMissingPath) {
+                mongoose.deleteModel("Product");
+        }
+}
+
 // Pre-save middleware to auto-assign type based on discount if not explicitly set
 ProductSchema.pre("save", function (next) {
         if (
@@ -102,4 +118,4 @@ ProductSchema.pre("save", function (next) {
 });
 
 export default mongoose.models.Product ||
-	mongoose.model("Product", ProductSchema);
+        mongoose.model("Product", ProductSchema);
