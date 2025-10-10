@@ -36,7 +36,11 @@ export async function PUT(request) {
                 const subcategory = formData.get("subcategory");
                 const productFamily = formData.get("productFamily");
                 const productCode = formData.get("productCode");
-                const specialNote = formData.get("specialNote") || "";
+                const specialNoteInput = formData.get("specialNote");
+                const specialNote =
+                        typeof specialNoteInput === "string"
+                                ? specialNoteInput.trim()
+                                : "";
                 const rawDiscount = formData.get("discount");
                 const parsedDiscount = rawDiscount ? Number.parseFloat(rawDiscount) : 0;
                 const discount = Number.isFinite(parsedDiscount)

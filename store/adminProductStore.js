@@ -93,7 +93,11 @@ export const useAdminProductStore = create((set, get) => ({
                                "longDescription",
                                productData.longDescription || productData.description
                        );
-                       formData.append("specialNote", productData.specialNote || "");
+                       const specialNote =
+                               typeof productData.specialNote === "string"
+                                       ? productData.specialNote.trim()
+                                       : "";
+                       formData.append("specialNote", specialNote);
                        formData.append("category", productData.category);
                        formData.append(
                                "subcategory",
@@ -174,7 +178,11 @@ export const useAdminProductStore = create((set, get) => ({
                                 "longDescription",
                                 updateData.longDescription || updateData.description
                         );
-                        formData.append("specialNote", updateData.specialNote || "");
+                        const specialNote =
+                                typeof updateData.specialNote === "string"
+                                        ? updateData.specialNote.trim()
+                                        : "";
+                        formData.append("specialNote", specialNote);
                         formData.append("category", updateData.category);
                         formData.append("subcategory", updateData.subcategory || "");
                         if (updateData.productFamily)
