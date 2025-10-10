@@ -37,6 +37,7 @@ import { useCartStore } from "@/store/cartStore";
 import { useWishlistStore } from "@/store/wishlistStore";
 import { useCheckoutStore } from "@/store/checkoutStore.js";
 import ProductCard from "@/components/BuyerPanel/products/ProductCard.jsx";
+import ParentCategoriesScroll from "@/components/BuyerPanel/products/ParentCategoriesScroll.jsx";
 import { toast } from "react-hot-toast";
 import Image from "next/image";
 
@@ -1108,7 +1109,7 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                                         </motion.div>
                                 )}
 
-				{/* Benefits and Warranty Section */}
+                                {/* Benefits and Warranty Section */}
                                 <motion.div
                                         className="mb-10"
                                         initial={{ opacity: 0, y: 20 }}
@@ -1154,7 +1155,9 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                                                 </Card>
                                         </div>
                                 </motion.div>
-			</div>
-		</div>
-	);
+
+                                <ParentCategoriesScroll />
+                        </div>
+                </div>
+        );
 }
