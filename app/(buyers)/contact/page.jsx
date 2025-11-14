@@ -80,10 +80,10 @@ export default function ContactPage() {
                                 title: "After Sales Service",
                                 primary: (
                                         <a
-                                                href="tel:+918052585504"
+                                                href="tel:+919936814137"
                                                 className="text-base font-semibold text-blue-700"
                                         >
-                                                +91 80525 85504
+                                                +91 99368 14137
                                         </a>
                                 ),
                                 description: "Quick resolutions for installations and maintenance",
@@ -93,10 +93,10 @@ export default function ContactPage() {
                                 title: "Email Support",
                                 primary: (
                                         <a
-                                                href="mailto:support@industrialprintsolutions.com"
+                                                href="mailto:info@industrialprintsolutions.com"
                                                 className="text-base font-semibold text-blue-700"
                                         >
-                                                support@industrialprintsolutions.com
+                                                info@industrialprintsolutions.com
                                         </a>
                                 ),
                                 description: "Share requirements or bulk orders anytime",
