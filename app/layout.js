@@ -19,7 +19,42 @@ export default function RootLayout({ children }) {
                                 />
                         </head>
 
-                        <body className="antialiased" suppressHydrationWarning>{children}</body>
+                        <body className="antialiased" suppressHydrationWarning>
+                                <Script id="disable-context-menu" strategy="afterInteractive">
+                                        {`
+                                                document.addEventListener('contextmenu', (event) => {
+                                                        event.preventDefault();
+                                                });
+                                        `}
+                                </Script>
+                                <noscript>
+                                        <style>{`
+                                                body {
+                                                        margin: 0;
+                                                }
+
+                                                body > * {
+                                                        display: none !important;
+                                                }
+
+                                                body::before {
+                                                        content: "No Cheating!! Enable Javascript first to load this page.";
+                                                        display: flex;
+                                                        align-items: center;
+                                                        justify-content: center;
+                                                        min-height: 100vh;
+                                                        padding: 2rem;
+                                                        text-align: center;
+                                                        font-size: 1.5rem;
+                                                        font-weight: 600;
+                                                        font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+                                                        background: #0f172a;
+                                                        color: #f8fafc;
+                                                }
+                                        `}</style>
+                                </noscript>
+                                {children}
+                        </body>
                 </html>
         );
 }
