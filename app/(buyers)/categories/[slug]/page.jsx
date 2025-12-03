@@ -39,7 +39,14 @@ export default function CategoryPage({ params }) {
         }, [slug]);
 
         if (loading) {
-                return <div className="p-8">Loading...</div>;
+                return (
+                        <div className="min-h-screen bg-white flex items-center justify-center">
+                                <div className="flex flex-col items-center gap-3 text-gray-700">
+                                        <div className="h-12 w-12 border-4 border-gray-200 border-t-black rounded-full animate-spin" />
+                                        <p className="text-sm font-medium">Loading categories...</p>
+                                </div>
+                        </div>
+                );
         }
 
         if (!currentCategory) {
