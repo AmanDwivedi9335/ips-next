@@ -8,20 +8,27 @@ export const useAdminProductStore = create((set, get) => ({
 	products: [],
 	isLoading: false,
 	error: null,
-	filters: {
-		search: "",
-		category: "all",
-		minPrice: "",
-		maxPrice: "",
+        filters: {
+                search: "",
+                category: "all",
+                subcategory: "all",
+                productFamily: "all",
+                minPrice: "",
+                maxPrice: "",
                 discount: "",
                 published: null,
-	},
-	pagination: {
-		currentPage: 1,
-		totalPages: 1,
-		totalProducts: 0,
-		limit: 10,
-	},
+        },
+        pagination: {
+                currentPage: 1,
+                totalPages: 1,
+                totalProducts: 0,
+                limit: 10,
+        },
+        filterOptions: {
+                categories: [],
+                subcategories: [],
+                priceRange: { minPrice: 0, maxPrice: 0 },
+        },
 	selectedProducts: [],
 	sortBy: "createdAt",
 	sortOrder: "desc",
@@ -52,20 +59,28 @@ export const useAdminProductStore = create((set, get) => ({
 				}
 			});
 
-			const response = await fetch(
-				`/api/admin/product/getAllProducts?${params}`
-			);
-			const data = await response.json();
+                        const response = await fetch(
+                                `/api/admin/product/getAllProducts?${params}`
+                        );
+                        const data = await response.json();
 
-			if (data.success) {
-				set({
-					products: data.products,
-					pagination: data.pagination,
-					isLoading: false,
-				});
-			} else {
-				set({ error: data.message, isLoading: false });
-			}
+                        if (data.success) {
+                                set({
+                                        products: data.products,
+                                        pagination: data.pagination,
+                                        filterOptions: {
+                                                categories: data.filters?.categories || [],
+                                                subcategories: data.filters?.subcategories || [],
+                                                priceRange: data.filters?.priceRange || {
+                                                        minPrice: 0,
+                                                        maxPrice: 0,
+                                                },
+                                        },
+                                        isLoading: false,
+                                });
+                        } else {
+                                set({ error: data.message, isLoading: false });
+                        }
 		} catch (error) {
 			set({
 				error: "Failed to fetch products",
@@ -367,14 +382,16 @@ export const useAdminProductStore = create((set, get) => ({
 
 	resetFilters: () => {
 		set({
-			filters: {
-				search: "",
-				category: "all",
-				minPrice: "",
-				maxPrice: "",
-				discount: "",
-				published: null,
-                            
+                        filters: {
+                                search: "",
+                                category: "all",
+                                subcategory: "all",
+                                productFamily: "all",
+                                minPrice: "",
+                                maxPrice: "",
+                                discount: "",
+                                published: null,
+
 			},
 			pagination: { ...get().pagination, currentPage: 1 },
 		});

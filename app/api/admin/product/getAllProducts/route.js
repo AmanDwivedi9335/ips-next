@@ -10,7 +10,9 @@ export async function GET(request) {
 
 		// Extract query parameters
 		const search = searchParams.get("search");
-		const category = searchParams.get("category");
+                const category = searchParams.get("category");
+                const subcategory = searchParams.get("subcategory");
+                const productFamily = searchParams.get("productFamily");
 		const minPrice = searchParams.get("minPrice");
 		const maxPrice = searchParams.get("maxPrice");
 		const discount = searchParams.get("discount");
@@ -32,10 +34,18 @@ export async function GET(request) {
 			];
 		}
 
-		// Category filter
-		if (category && category !== "all") {
-			query.category = category;
-		}
+                // Category filter
+                if (category && category !== "all") {
+                        query.category = category;
+                }
+
+                if (subcategory && subcategory !== "all") {
+                        query.subcategory = subcategory;
+                }
+
+                if (productFamily && productFamily !== "all") {
+                        query.productFamily = productFamily;
+                }
 
 		// Price range filter
 		if (minPrice || maxPrice) {
@@ -130,9 +140,60 @@ export async function GET(request) {
 		const totalPages = Math.ceil(total / limit);
 
 		// Get category counts for filters
-		const categoryStats = await Product.aggregate([
-			{ $group: { _id: "$category", count: { $sum: 1 } } },
-		]);
+                const categoryAggregations = await Product.aggregate([
+                        {
+                                $group: {
+                                        _id: {
+                                                category: "$category",
+                                                subcategory: "$subcategory",
+                                                productFamily: "$productFamily",
+                                        },
+                                        count: { $sum: 1 },
+                                },
+                        },
+                        {
+                                $sort: {
+                                        "_id.category": 1,
+                                        "_id.subcategory": 1,
+                                },
+                        },
+                ]);
+
+                const categoryMap = new Map();
+                const subcategoryFilters = [];
+
+                for (const aggregation of categoryAggregations) {
+                        const categorySlug = aggregation._id?.category || "";
+                        const subcategorySlug = aggregation._id?.subcategory || "";
+                        const family = aggregation._id?.productFamily || "";
+                        const count = aggregation.count || 0;
+
+                        if (!categoryMap.has(categorySlug)) {
+                                categoryMap.set(categorySlug, {
+                                        category: categorySlug,
+                                        productFamily: family,
+                                        count: 0,
+                                });
+                        }
+
+                        const categoryEntry = categoryMap.get(categorySlug);
+                        categoryEntry.count += count;
+
+                        if (!categoryEntry.productFamily && family) {
+                                categoryEntry.productFamily = family;
+                        }
+
+                        if (subcategorySlug) {
+                                subcategoryFilters.push({
+                                        category: categorySlug,
+                                        subcategory: subcategorySlug,
+                                        productFamily: family,
+                                        count,
+                                });
+                        }
+                }
+
+                const categoryFilters = Array.from(categoryMap.values());
 
 		// Get price range
 		const priceStats = await Product.aggregate([
@@ -156,10 +217,11 @@ export async function GET(request) {
 				hasPrevPage: page > 1,
 				limit,
 			},
-			filters: {
-				categories: categoryStats,
-				priceRange: priceStats[0] || { minPrice: 0, maxPrice: 10000 },
-			},
+                        filters: {
+                                categories: categoryFilters,
+                                subcategories: subcategoryFilters,
+                                priceRange: priceStats[0] || { minPrice: 0, maxPrice: 10000 },
+                        },
 		});
 	} catch (error) {
 		console.error("Admin products fetch error:", error);

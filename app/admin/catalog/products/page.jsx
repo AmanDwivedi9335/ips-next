@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -41,36 +41,25 @@ import {
         Loader2,
 } from "lucide-react";
 import { useAdminProductStore } from "@/store/adminProductStore.js";
+import { useAdminProductFamilyStore } from "@/store/adminProductFamilyStore.js";
 import { DeletePopup } from "@/components/AdminPanel/Popups/DeleteProductPopup.jsx";
 import { AddProductPopup } from "@/components/AdminPanel/Popups/AddProductPopup.jsx";
 import { UpdateProductPopup } from "@/components/AdminPanel/Popups/UpdateProductPopup.jsx";
 import { BulkUploadPopup } from "@/components/AdminPanel/Popups/BulkProductUploadPopup.jsx";
 
-const categories = [
-	{ value: "all", label: "All Categories" },
-	{ value: "personal-safety", label: "Personal Safety" },
-	{ value: "road-safety", label: "Road Safety" },
-	{ value: "signage", label: "Signage" },
-	{ value: "industrial-safety", label: "Industrial Safety" },
-	{ value: "queue-management", label: "Queue Management" },
-	{ value: "fire-safety", label: "Fire Safety" },
-	{ value: "first-aid", label: "First Aid" },
-	{ value: "water-safety", label: "Water Safety" },
-	{ value: "emergency-kit", label: "Emergency Kit" },
-];
-
 export default function AdminProductsPage() {
-	const {
-		products,
-		isLoading,
-		error,
-		filters,
-		pagination,
-		selectedProducts,
-		fetchProducts,
-		setFilters,
-		resetFilters,
-		setPage,
+        const {
+                products,
+                isLoading,
+                error,
+                filters,
+                pagination,
+                filterOptions,
+                selectedProducts,
+                fetchProducts,
+                setFilters,
+                resetFilters,
+                setPage,
 		setSorting,
 		selectAllProducts,
 		clearSelection,
@@ -90,17 +79,76 @@ export default function AdminProductsPage() {
 		bulkUpload: false,
 	});
 
-	useEffect(() => {
-		fetchProducts();
-	}, [fetchProducts]);
+        useEffect(() => {
+                fetchProducts();
+        }, [fetchProducts]);
+
+        const { productFamilies, fetchProductFamilies } = useAdminProductFamilyStore();
+
+        useEffect(() => {
+                fetchProductFamilies();
+        }, [fetchProductFamilies]);
+
+        const formatLabel = (value) =>
+                value
+                        ? value
+                                  .split("-")
+                                  .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                                  .join(" ")
+                        : "Unknown";
+
+        const categoryOptions = useMemo(() => {
+                const selectedFamily = filters.productFamily;
+
+                return [
+                        { value: "all", label: "All Categories" },
+                        ...filterOptions.categories
+                                .filter((category) =>
+                                        selectedFamily === "all" || category.productFamily === selectedFamily
+                                )
+                                .map((category) => ({
+                                        value: category.category,
+                                        label: formatLabel(category.category),
+                                })),
+                ];
+        }, [filterOptions.categories, filters.productFamily]);
+
+        const subcategoryOptions = useMemo(() => {
+                if (!filters.category || filters.category === "all") {
+                        return [];
+                }
+
+                return [
+                        { value: "all", label: "All Subcategories" },
+                        ...filterOptions.subcategories
+                                .filter(
+                                        (subcategory) =>
+                                                subcategory.category === filters.category &&
+                                                (filters.productFamily === "all" ||
+                                                        subcategory.productFamily === filters.productFamily)
+                                )
+                                .map((subcategory) => ({
+                                        value: subcategory.subcategory,
+                                        label: formatLabel(subcategory.subcategory),
+                                })),
+                ];
+        }, [filterOptions.subcategories, filters.category, filters.productFamily]);
 
 	const handleSearch = (value) => {
 		setFilters({ search: value });
 	};
 
-	const handleFilterChange = (key, value) => {
-		setFilters({ [key]: value });
-	};
+        const handleFilterChange = (key, value) => {
+                setFilters({ [key]: value });
+        };
+
+        const handleProductFamilyChange = (value) => {
+                setFilters({ productFamily: value, category: "all", subcategory: "all" });
+        };
+
+        const handleCategoryChange = (value) => {
+                setFilters({ category: value, subcategory: "all" });
+        };
 
 	const handleApplyFilters = () => {
 		fetchProducts();
@@ -285,38 +333,74 @@ export default function AdminProductsPage() {
 							</div>
 
 							{/* Search and Filter Row */}
-							<div className="flex gap-4 items-center flex-wrap">
-								<div className="relative flex-1 max-w-md">
-									<Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-									<Input
-										placeholder="Search products..."
-										value={filters.search}
-										onChange={(e) => handleSearch(e.target.value)}
-										className="pl-10"
-									/>
-								</div>
+                                                        <div className="flex gap-4 items-center flex-wrap">
+                                                                <div className="relative flex-1 max-w-md">
+                                                                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                                                                        <Input
+                                                                                placeholder="Search products..."
+                                                                                value={filters.search}
+                                                                                onChange={(e) => handleSearch(e.target.value)}
+                                                                                className="pl-10"
+                                                                        />
+                                                                </div>
 
-								<Select
-									value={filters.category}
-									onValueChange={(value) =>
-										handleFilterChange("category", value)
-									}
-								>
-									<SelectTrigger className="w-48">
-										<SelectValue placeholder="Category" />
-									</SelectTrigger>
-									<SelectContent>
-										{categories.map((category) => (
-											<SelectItem key={category.value} value={category.value}>
-												{category.label}
-											</SelectItem>
-										))}
-									</SelectContent>
-								</Select>
+                                                                <Select
+                                                                        value={filters.productFamily}
+                                                                        onValueChange={handleProductFamilyChange}
+                                                                >
+                                                                        <SelectTrigger className="w-56">
+                                                                                <SelectValue placeholder="Product Family" />
+                                                                        </SelectTrigger>
+                                                                        <SelectContent>
+                                                                                <SelectItem value="all">All Product Families</SelectItem>
+                                                                                {productFamilies.map((family) => (
+                                                                                        <SelectItem key={family._id} value={family.slug}>
+                                                                                                {family.name}
+                                                                                        </SelectItem>
+                                                                                ))}
+                                                                        </SelectContent>
+                                                                </Select>
 
-								<div className="flex gap-2">
-									<Input
-										placeholder="Min Price"
+                                                                <Select
+                                                                        value={filters.category}
+                                                                        onValueChange={handleCategoryChange}
+                                                                        disabled={categoryOptions.length <= 1}
+                                                                >
+                                                                        <SelectTrigger className="w-56">
+                                                                                <SelectValue placeholder="Category" />
+                                                                        </SelectTrigger>
+                                                                        <SelectContent>
+                                                                                {categoryOptions.map((category) => (
+                                                                                        <SelectItem key={category.value} value={category.value}>
+                                                                                                {category.label}
+                                                                                        </SelectItem>
+                                                                                ))}
+                                                                        </SelectContent>
+                                                                </Select>
+
+                                                                <Select
+                                                                        value={filters.subcategory}
+                                                                        onValueChange={(value) => handleFilterChange("subcategory", value)}
+                                                                        disabled={subcategoryOptions.length === 0}
+                                                                >
+                                                                        <SelectTrigger className="w-56">
+                                                                                <SelectValue placeholder="Subcategory" />
+                                                                        </SelectTrigger>
+                                                                        <SelectContent>
+                                                                                {subcategoryOptions.map((subcategory) => (
+                                                                                        <SelectItem
+                                                                                                key={`${filters.category}-${subcategory.value}`}
+                                                                                                value={subcategory.value}
+                                                                                        >
+                                                                                                {subcategory.label}
+                                                                                        </SelectItem>
+                                                                                ))}
+                                                                        </SelectContent>
+                                                                </Select>
+
+                                                                <div className="flex gap-2">
+                                                                        <Input
+                                                                                placeholder="Min Price"
 										value={filters.minPrice}
 										onChange={(e) =>
 											handleFilterChange("minPrice", e.target.value)
