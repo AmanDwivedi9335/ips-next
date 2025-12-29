@@ -17,7 +17,7 @@ export default function CategoriesGrid() {
                 const fetchCategories = async () => {
                         try {
                                 const res = await fetch(
-                                        "/api/admin/categories?published=true&limit=12"
+                                        "/api/admin/categories?published=true&limit=60"
                                 );
                                 const data = await res.json();
                                 if (isMounted && data.success) {
@@ -212,4 +212,3 @@ export default function CategoriesGrid() {
                 </section>
         );
 }
-
