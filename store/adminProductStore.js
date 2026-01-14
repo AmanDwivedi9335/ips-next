@@ -124,6 +124,11 @@ export const useAdminProductStore = create((set, get) => ({
                                formData.append("parentProduct", productData.parentProduct);
                        else
                                formData.append("parentProduct", "");
+                       formData.append("isB2B", productData.isB2B ? "true" : "false");
+                       formData.append(
+                               "youtubeVideoUrl",
+                               productData.youtubeVideoUrl || ""
+                       );
                        formData.append("discount", (productData.discount || 0).toString());
                        formData.append("type", productData.type);
                        formData.append("published", productData.published);
@@ -210,6 +215,11 @@ export const useAdminProductStore = create((set, get) => ({
                                 formData.append("parentProduct", updateData.parentProduct);
                         else
                                 formData.append("parentProduct", "");
+                        formData.append("isB2B", updateData.isB2B ? "true" : "false");
+                        formData.append(
+                                "youtubeVideoUrl",
+                                updateData.youtubeVideoUrl || ""
+                        );
                         formData.append("discount", (updateData.discount || 0).toString());
                         formData.append("type", updateData.type);
                         formData.append("published", updateData.published);

@@ -84,6 +84,9 @@ export function AddProductPopup({ open, onOpenChange }) {
     productFamily: "",
     parentProduct: "",
     published: true,
+    isB2B: false,
+    youtubeVideoUrl: "",
+    images: [],
   });
 
   const showLayout = ["safety-signs", "identification-signs"].includes(
@@ -235,6 +238,9 @@ export function AddProductPopup({ open, onOpenChange }) {
         materials: showBasicFields ? selectedMaterials : [],
         sizes: showBasicFields ? selectedSizes : [],
         layouts: showLayout ? selectedLayouts : [],
+        images: formData.images,
+        isB2B: formData.isB2B,
+        youtubeVideoUrl: formData.youtubeVideoUrl,
 
         productFamily: formData.productFamily,
         parentProduct: formData.parentProduct || "",
@@ -275,6 +281,9 @@ export function AddProductPopup({ open, onOpenChange }) {
       parentProduct: "",
 
       published: true,
+      isB2B: false,
+      youtubeVideoUrl: "",
+      images: [],
     });
     setFeatures([{ title: "", description: "" }]);
     setSelectedLanguages(["English"]);
@@ -490,6 +499,50 @@ export function AddProductPopup({ open, onOpenChange }) {
                   This note appears on the product details page below the main image.
                 </p>
               </div>
+
+              <div className="md:col-span-2 flex items-center justify-between rounded-lg border border-slate-200 bg-slate-50 px-4 py-3">
+                <div>
+                  <Label>B2B Product</Label>
+                  <p className="text-sm text-slate-500">
+                    Enable this to offer a contact-only product with extra media.
+                  </p>
+                </div>
+                <Switch
+                  checked={formData.isB2B}
+                  onCheckedChange={(checked) =>
+                    setFormData({ ...formData, isB2B: checked })
+                  }
+                />
+              </div>
+
+              {formData.isB2B && (
+                <div className="md:col-span-2 space-y-4">
+                  <ImageUpload
+                    images={formData.images}
+                    onImagesChange={(images) =>
+                      setFormData({ ...formData, images })
+                    }
+                    maxImages={5}
+                    label="B2B Product Images"
+                    required={false}
+                  />
+                  <div>
+                    <Label htmlFor="youtubeVideoUrl">YouTube Video URL</Label>
+                    <Input
+                      id="youtubeVideoUrl"
+                      placeholder="https://www.youtube.com/watch?v=..."
+                      value={formData.youtubeVideoUrl}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          youtubeVideoUrl: e.target.value,
+                        })
+                      }
+                      className="mt-1"
+                    />
+                  </div>
+                </div>
+              )}
 
               {showBasicFields && (
                 <div className="md:col-span-2">

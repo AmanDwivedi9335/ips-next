@@ -20,6 +20,8 @@ export async function POST(request) {
                 const parentProductInput = formData.get("parentProduct");
                 const productCode = formData.get("productCode");
                 const specialNoteInput = formData.get("specialNote");
+                const isB2B = formData.get("isB2B") === "true";
+                const youtubeVideoUrl = formData.get("youtubeVideoUrl") || "";
                 const specialNote =
                         typeof specialNoteInput === "string"
                                 ? specialNoteInput.trim()
@@ -181,6 +183,8 @@ export async function POST(request) {
                         parentProduct,
                         productFamily,
                         specialNote,
+                        isB2B,
+                        youtubeVideoUrl,
                         published: formData.get("published") === "true",
                         price: basePrice,
                         mrp: basePrice,
