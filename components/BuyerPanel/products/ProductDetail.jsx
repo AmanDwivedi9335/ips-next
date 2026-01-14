@@ -92,6 +92,47 @@ const sortByReference = (values = [], reference = []) => {
         return [...ordered.map((item) => item.value), ...extras];
 };
 
+const getYoutubeEmbedUrl = (url) => {
+        if (!url || typeof url !== "string") {
+                return "";
+        }
+
+        const trimmed = url.trim();
+        if (!trimmed) {
+                return "";
+        }
+
+        try {
+                const normalized = trimmed.startsWith("http")
+                        ? trimmed
+                        : `https://${trimmed}`;
+                const parsed = new URL(normalized);
+                const hostname = parsed.hostname.toLowerCase();
+
+                if (hostname.includes("youtu.be")) {
+                        const videoId = parsed.pathname.replace("/", "");
+                        return videoId
+                                ? `https://www.youtube.com/embed/${videoId}`
+                                : "";
+                }
+
+                if (hostname.includes("youtube.com")) {
+                        const videoId = parsed.searchParams.get("v");
+                        if (videoId) {
+                                return `https://www.youtube.com/embed/${videoId}`;
+                        }
+
+                        if (parsed.pathname.includes("/embed/")) {
+                                return normalized;
+                        }
+                }
+        } catch (error) {
+                return "";
+        }
+
+        return "";
+};
+
 export default function ProductDetail({
         product,
         relatedProducts = [],
@@ -117,6 +158,7 @@ export default function ProductDetail({
                 typeof product?.productFamily === "string"
                         ? product.productFamily.toLowerCase()
                         : "";
+        const isB2BProduct = !!product?.isB2B;
         const isSignsFamily = normalizedFamily.includes("signs");
         const isLayoutSelectionEnabled = !isSignsFamily;
         const [availableLayouts, setAvailableLayouts] = useState(
@@ -294,8 +336,21 @@ export default function ProductDetail({
                                 l.language?.toLowerCase() ===
                                 selectedLanguage.toLowerCase()
                 )?.image || englishImage;
+        const productImages = Array.isArray(product.images)
+                ? product.images.filter(Boolean)
+                : [];
+        const fallbackImage =
+                "https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png";
+        const displayImage =
+                isB2BProduct && productImages.length > 0
+                        ? productImages[selectedImage]
+                        : languageImage ||
+                          productImages[selectedImage] ||
+                          product.image ||
+                          fallbackImage;
         const categoryName = product.category?.replace("-", " ");
         const subcategoryName = product.subcategory?.replace("-", " ");
+        const youtubeEmbedUrl = getYoutubeEmbedUrl(product.youtubeVideoUrl);
 
         const handleAddToCart = async (e) => {
                 e.stopPropagation();
@@ -408,9 +463,6 @@ export default function ProductDetail({
                         normalizedMrp && normalizedMrp > 0
                                 ? Math.round((discountAmount / normalizedMrp) * 100)
                                 : 0;
-
-                const fallbackImage =
-                        "https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png";
 
                 setBuyNowContext(
                         {
@@ -655,10 +707,7 @@ export default function ProductDetail({
                                                 <div className="relative w-full h-[550px] lg:h-[500px]">
                                                         <Image
                                                         src={
-                                                        languageImage ||
-                                                        product.images?.[selectedImage] ||
-                                                        product.image ||
-                                                        "https://res.cloudinary.com/drjt9guif/image/upload/v1755524911/ipsfallback_alsvmv.png"
+                                                        displayImage
                                                         }
                                                         alt={product.name}
                                                         fill
@@ -669,6 +718,28 @@ export default function ProductDetail({
                                                 <p className="mt-2 mb-2 text-xs text-center text-slate-500">
                                                         ** Images shown are of low resolution due to privacy concerns, actual product will be clear, sharp and high quality.
                                                 </p>
+                                                {productImages.length > 1 && (
+                                                        <div className="mt-4 flex gap-3 overflow-x-auto pb-2">
+                                                                {productImages.map((image, index) => (
+                                                                        <button
+                                                                                key={`${image}-${index}`}
+                                                                                onClick={() => setSelectedImage(index)}
+                                                                                className={`relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-2xl border-2 transition ${
+                                                                                        selectedImage === index
+                                                                                                ? "border-slate-900 shadow-md"
+                                                                                                : "border-slate-200 hover:border-slate-400"
+                                                                                }`}
+                                                                        >
+                                                                                <Image
+                                                                                        src={image || fallbackImage}
+                                                                                        alt={`${product.name} view ${index + 1}`}
+                                                                                        fill
+                                                                                        className="object-cover"
+                                                                                />
+                                                                        </button>
+                                                                ))}
+                                                        </div>
+                                                )}
                                                 {product.specialNote && (
                                                                 <div className="mt-6 rounded-2xl border border-amber-200 bg-amber-50/80 p-4 text-sm text-amber-800">
                                                                         <div className="flex items-start gap-3">
@@ -676,6 +747,19 @@ export default function ProductDetail({
                                                                                 <p className="leading-relaxed">{product.specialNote}</p>
                                                                         </div>
                                                                 </div>
+                                                )}
+                                                {youtubeEmbedUrl && (
+                                                        <div className="mt-6 overflow-hidden rounded-2xl border border-slate-200 bg-white">
+                                                                <div className="relative aspect-video w-full">
+                                                                        <iframe
+                                                                                src={youtubeEmbedUrl}
+                                                                                title={`${product.title} video`}
+                                                                                className="h-full w-full"
+                                                                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                                                                allowFullScreen
+                                                                        />
+                                                                </div>
+                                                        </div>
                                                 )}
 
                                                 {/* <CardContent className="p-6 sm:p-8">
@@ -902,66 +986,81 @@ export default function ProductDetail({
                                                                 </div>
 
                                                                 <div className="space-y-4">
-                                                                        <div className="space-y-2">
-                                                                                <span className="text-sm font-medium text-slate-700">
-                                                                                        Quantity
-                                                                                </span>
-                                                                                <div className="flex flex-wrap items-center gap-4">
-                                                                                        <div className="flex items-center rounded-full border border-slate-200 bg-white shadow-sm">
-                                                                                                <Button
-                                                                                                        variant="ghost"
-                                                                                                        size="icon"
-                                                                                                        onClick={() => handleQuantityChange(-1)}
-                                                                                                        disabled={quantity <= 1}
-                                                                                                        className="rounded-full text-slate-700 hover:text-slate-900"
-                                                                                                >
-                                                                                                        <Minus className="h-4 w-4" />
-                                                                                                </Button>
-                                                                                                <span className="px-4 py-2 font-medium text-slate-900">
-                                                                                                        {quantity}
-                                                                                                </span>
-                                                                                                <Button
-                                                                                                        variant="ghost"
-                                                                                                        size="icon"
-                                                                                                        onClick={() => handleQuantityChange(1)}
-                                                                                                        className="rounded-full text-slate-700 hover:text-slate-900"
-                                                                                                >
-                                                                                                        <Plus className="h-4 w-4" />
-                                                                                                </Button>
+                                                                        {!isB2BProduct && (
+                                                                                <div className="space-y-2">
+                                                                                        <span className="text-sm font-medium text-slate-700">
+                                                                                                Quantity
+                                                                                        </span>
+                                                                                        <div className="flex flex-wrap items-center gap-4">
+                                                                                                <div className="flex items-center rounded-full border border-slate-200 bg-white shadow-sm">
+                                                                                                        <Button
+                                                                                                                variant="ghost"
+                                                                                                                size="icon"
+                                                                                                                onClick={() => handleQuantityChange(-1)}
+                                                                                                                disabled={quantity <= 1}
+                                                                                                                className="rounded-full text-slate-700 hover:text-slate-900"
+                                                                                                        >
+                                                                                                                <Minus className="h-4 w-4" />
+                                                                                                        </Button>
+                                                                                                        <span className="px-4 py-2 font-medium text-slate-900">
+                                                                                                                {quantity}
+                                                                                                        </span>
+                                                                                                        <Button
+                                                                                                                variant="ghost"
+                                                                                                                size="icon"
+                                                                                                                onClick={() => handleQuantityChange(1)}
+                                                                                                                className="rounded-full text-slate-700 hover:text-slate-900"
+                                                                                                        >
+                                                                                                                <Plus className="h-4 w-4" />
+                                                                                                        </Button>
+                                                                                                </div>
+                                                                                                <p className="text-xs text-slate-500">
+                                                                                                        Need more? Bulk discounts available on request.
+                                                                                                </p>
                                                                                         </div>
-                                                                                        <p className="text-xs text-slate-500">
-                                                                                                Need more? Bulk discounts available on request.
-                                                                                        </p>
                                                                                 </div>
-                                                                        </div>
+                                                                        )}
 
                                                                         <div className="grid gap-3 sm:grid-cols-2">
-                                                                                <Button
-                                                                                        onClick={handleAddToCart}
-                                                                                        disabled={
-                                                                                                isLoading ||
-                                                                                                calculatedPrice === null ||
-                                                                                                isPriceLoading ||
-                                                                                                isMrpMissingForSelection
-                                                                                        }
-                                                                                        className="w-full bg-slate-900 text-white transition hover:bg-slate-800"
-                                                                                        size="lg"
-                                                                                >
-                                                                                        <ShoppingCart className="mr-2 h-5 w-5" />
-                                                                                        Add to Cart
-                                                                                </Button>
-                                                                                <Button
-                                                                                        onClick={handleBuyNow}
-                                                                                        disabled={
-                                                                                                calculatedPrice === null ||
-                                                                                                isPriceLoading ||
-                                                                                                isMrpMissingForSelection
-                                                                                        }
-                                                                                        className="w-full bg-emerald-600 text-white transition hover:bg-emerald-700"
-                                                                                        size="lg"
-                                                                                >
-                                                                                        Buy Now
-                                                                                </Button>
+                                                                                {!isB2BProduct && (
+                                                                                        <>
+                                                                                                <Button
+                                                                                                        onClick={handleAddToCart}
+                                                                                                        disabled={
+                                                                                                                isLoading ||
+                                                                                                                calculatedPrice === null ||
+                                                                                                                isPriceLoading ||
+                                                                                                                isMrpMissingForSelection
+                                                                                                        }
+                                                                                                        className="w-full bg-slate-900 text-white transition hover:bg-slate-800"
+                                                                                                        size="lg"
+                                                                                                >
+                                                                                                        <ShoppingCart className="mr-2 h-5 w-5" />
+                                                                                                        Add to Cart
+                                                                                                </Button>
+                                                                                                <Button
+                                                                                                        onClick={handleBuyNow}
+                                                                                                        disabled={
+                                                                                                                calculatedPrice === null ||
+                                                                                                                isPriceLoading ||
+                                                                                                                isMrpMissingForSelection
+                                                                                                        }
+                                                                                                        className="w-full bg-emerald-600 text-white transition hover:bg-emerald-700"
+                                                                                                        size="lg"
+                                                                                                >
+                                                                                                        Buy Now
+                                                                                                </Button>
+                                                                                        </>
+                                                                                )}
+                                                                                {isB2BProduct && (
+                                                                                        <Button
+                                                                                                asChild
+                                                                                                className="w-full bg-indigo-600 text-white transition hover:bg-indigo-700"
+                                                                                                size="lg"
+                                                                                        >
+                                                                                                <Link href="/contact">Contact Us</Link>
+                                                                                        </Button>
+                                                                                )}
                                                                                 <Button
                                                                                         variant="outline"
                                                                                         size="lg"

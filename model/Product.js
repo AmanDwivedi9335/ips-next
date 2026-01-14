@@ -41,6 +41,8 @@ const ProductSchema = new mongoose.Schema(
                 layouts: [{ type: String }],
                 materialSpecification: { type: String },
                 subcategory: { type: String },
+                isB2B: { type: Boolean, default: false },
+                youtubeVideoUrl: { type: String, default: "" },
 
 
                 // Product type for categorization

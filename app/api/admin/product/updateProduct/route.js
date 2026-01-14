@@ -39,6 +39,8 @@ export async function PUT(request) {
                 const parentProductInput = formData.get("parentProduct");
                 const productCode = formData.get("productCode");
                 const specialNoteInput = formData.get("specialNote");
+                const isB2B = formData.get("isB2B") === "true";
+                const youtubeVideoUrl = formData.get("youtubeVideoUrl") || "";
                 const specialNote =
                         typeof specialNoteInput === "string"
                                 ? specialNoteInput.trim()
@@ -124,6 +126,8 @@ export async function PUT(request) {
                 product.productFamily = productFamily;
                 product.parentProduct = parentProduct;
                 product.specialNote = specialNote;
+                product.isB2B = isB2B;
+                product.youtubeVideoUrl = youtubeVideoUrl;
                 product.discount = discount;
                 product.type = type;
                 product.productType = type;
