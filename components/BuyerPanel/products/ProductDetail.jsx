@@ -1061,28 +1061,32 @@ export default function ProductDetail({
                                                                                                 <Link href="/contact">Contact Us</Link>
                                                                                         </Button>
                                                                                 )}
-                                                                                <Button
-                                                                                        variant="outline"
-                                                                                        size="lg"
-                                                                                        onClick={handleAddToWishlist}
-                                                                                        disabled={
-                                                                                                calculatedPrice === null ||
-                                                                                                isPriceLoading ||
-                                                                                                isMrpMissingForSelection
-                                                                                        }
-                                                                                        className="w-full border-slate-200 text-slate-700 hover:bg-slate-50"
-                                                                                >
-                                                                                        <Heart className="mr-2 h-5 w-5" />
-                                                                                        Wishlist
-                                                                                </Button>
-                                                                                <Button
-                                                                                        variant="outline"
-                                                                                        size="lg"
-                                                                                        className="w-full border-slate-200 text-slate-700 hover:bg-slate-50"
-                                                                                >
-                                                                                        <Share2 className="mr-2 h-5 w-5" />
-                                                                                        Share
-                                                                                </Button>
+                                                                                {!isB2BProduct && (
+                                                                                        <>
+                                                                                                <Button
+                                                                                                        variant="outline"
+                                                                                                        size="lg"
+                                                                                                        onClick={handleAddToWishlist}
+                                                                                                        disabled={
+                                                                                                                calculatedPrice === null ||
+                                                                                                                isPriceLoading ||
+                                                                                                                isMrpMissingForSelection
+                                                                                                        }
+                                                                                                        className="w-full border-slate-200 text-slate-700 hover:bg-slate-50"
+                                                                                                >
+                                                                                                        <Heart className="mr-2 h-5 w-5" />
+                                                                                                        Wishlist
+                                                                                                </Button>
+                                                                                                <Button
+                                                                                                        variant="outline"
+                                                                                                        size="lg"
+                                                                                                        className="w-full border-slate-200 text-slate-700 hover:bg-slate-50"
+                                                                                                >
+                                                                                                        <Share2 className="mr-2 h-5 w-5" />
+                                                                                                        Share
+                                                                                                </Button>
+                                                                                        </>
+                                                                                )}
                                                                         </div>
 
                                                                         <div className="grid gap-3 sm:grid-cols-3">
