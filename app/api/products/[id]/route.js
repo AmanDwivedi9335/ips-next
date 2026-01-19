@@ -127,6 +127,7 @@ export async function GET(req, { params }) {
                                 enrichedProduct.parentProduct
                                         ? enrichedProduct.parentProduct.toString()
                                         : null,
+                        isB2B: enrichedProduct.isB2B,
                 };
 
                 // Transform related products
@@ -171,6 +172,7 @@ export async function GET(req, { params }) {
                                 code: p.productCode || p.code,
                                 priceRange: range,
                                 pricingRange: range,
+                                isB2B: p.isB2B,
                         };
                 };
 
