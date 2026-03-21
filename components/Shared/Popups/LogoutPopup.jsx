@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import {
 	Dialog,
@@ -10,12 +12,45 @@ import {
 	DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { useAuthStore } from "@/store/authStore";
 
 export function LogoutPopup({ open, onOpenChange }) {
-	const handleLogout = () => {
-		// Handle logout logic here
-		console.log("Logging out...");
-		onOpenChange(false);
+	const [isLoggingOut, setIsLoggingOut] = useState(false);
+	const router = useRouter();
+	const pathname = usePathname();
+	const clearUser = useAuthStore((state) => state.clearUser);
+
+	const handleLogout = async () => {
+		setIsLoggingOut(true);
+
+		try {
+			const response = await fetch("/api/auth/logout", {
+				method: "POST",
+			});
+
+			if (!response.ok) {
+				throw new Error("Logout failed");
+			}
+
+			clearUser();
+			onOpenChange(false);
+
+			const shouldRedirectToLogin =
+				pathname?.startsWith("/admin") ||
+				pathname?.startsWith("/account") ||
+				pathname?.startsWith("/dashboard");
+
+			if (shouldRedirectToLogin) {
+				router.replace("/login");
+			} else {
+				router.replace("/");
+			}
+			router.refresh();
+		} catch (error) {
+			console.error("Logout error:", error);
+		} finally {
+			setIsLoggingOut(false);
+		}
 	};
 
 	return (
@@ -31,11 +66,10 @@ export function LogoutPopup({ open, onOpenChange }) {
 							<div className="text-4xl">👋</div>
 						</div>
 						<DialogTitle className="text-xl font-semibold">
-							Are You Trying Logging Out ?
+							Are you sure you want to log out?
 						</DialogTitle>
 						<DialogDescription className="text-gray-600">
-							Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-							eiusmod tempor incididunt ut labore et dolore
+							You will need to sign in again to access your account.
 						</DialogDescription>
 					</DialogHeader>
 					<DialogFooter className="flex gap-3 mt-6">
@@ -43,14 +77,16 @@ export function LogoutPopup({ open, onOpenChange }) {
 							variant="outline"
 							onClick={() => onOpenChange(false)}
 							className="flex-1"
+							disabled={isLoggingOut}
 						>
 							Cancel
 						</Button>
 						<Button
 							onClick={handleLogout}
 							className="flex-1 bg-orange-500 hover:bg-orange-600"
+							disabled={isLoggingOut}
 						>
-							Yes Logout
+							{isLoggingOut ? "Logging out..." : "Yes, log out"}
 						</Button>
 					</DialogFooter>
 				</motion.div>
