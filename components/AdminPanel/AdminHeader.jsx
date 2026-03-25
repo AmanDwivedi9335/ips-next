@@ -16,10 +16,12 @@ import {
 import { Search, User, Settings, LogOut } from "lucide-react";
 import { NotificationDropdown } from "@/components/AdminPanel/NotificationDropdown.jsx";
 import { LogoutPopup } from "@/components/Shared/Popups/LogoutPopup.jsx";
+import { ProfileSettingsPopup } from "@/components/AdminPanel/Popups/ProfileSettingsPopup.jsx";
 
 export function AdminHeader() {
 	const [showLogoutPopup, setShowLogoutPopup] = useState(false);
 	const [searchQuery, setSearchQuery] = useState("");
+	const [showProfileSettingsPopup, setShowProfileSettingsPopup] = useState(false);
 
 	return (
 		<>
@@ -58,7 +60,7 @@ export function AdminHeader() {
 							</Button>
 						</DropdownMenuTrigger>
 						<DropdownMenuContent className="w-56" align="end" forceMount>
-							<DropdownMenuItem>
+							<DropdownMenuItem onClick={() => setShowProfileSettingsPopup(true)}>
 								<User className="mr-2 h-4 w-4" />
 								<span>Profile settings</span>
 							</DropdownMenuItem>
@@ -80,6 +82,10 @@ export function AdminHeader() {
 			</motion.header>
 
 			<LogoutPopup open={showLogoutPopup} onOpenChange={setShowLogoutPopup} />
+			<ProfileSettingsPopup
+				open={showProfileSettingsPopup}
+				onOpenChange={setShowProfileSettingsPopup}
+			/>
 		</>
 	);
 }
